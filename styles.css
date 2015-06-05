@@ -1,0 +1,11 @@
+
+.mod_readaloud_listbuttons input[type="submit"]{
+	width: 400px;
+	/*float: left;*/
+}
+
+.mod_readaloud_actionbuttons {
+	display: flex;
+	float: right;
+}
+
