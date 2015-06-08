@@ -90,6 +90,16 @@ function readaloud_reset_course_form_defaults($course) {
     return array('reset_' . MOD_READALOUD_MODNAME =>1);
 }
 
+
+function readaloud_editor_with_files_options($context){
+	return array('maxfiles' => EDITOR_UNLIMITED_FILES,
+               'noclean' => true, 'context' => $context, 'subdirs' => true);
+}
+
+function readaloud_editor_no_files_options($context){
+	return array('maxfiles' => 0, 'noclean' => true,'context'=>$context);
+}
+
 /**
  * Removes all grades from gradebook
  *
@@ -373,6 +383,10 @@ function readaloud_dotask(progress_trace $trace) {
     $trace->output('executing dotask');
 }
 
+function readaloud_get_editornames(){
+	return array('passage','welcome','feedback');
+}
+
 /**
  * Saves a new instance of the readaloud into the database
  *
@@ -389,10 +403,23 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
     global $DB;
 
     $readaloud->timecreated = time();
+	$readaloud = readaloud_process_editors($readaloud,$mform);
+    $instanceid = $DB->insert_record(MOD_READALOUD_TABLE, $readaloud);
+	return $instanceid;
+}
 
-    # You may have to add extra stuff in here #
 
-    return $DB->insert_record(MOD_READALOUD_TABLE, $readaloud);
+function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $mform = null) {
+	global $DB;
+    $cmid = $readaloud->coursemodule; 
+    $context = context_module::instance($cmid);
+	$editors = readaloud_get_editornames();
+	$itemid=0;
+	$edoptions = readaloud_editor_no_files_options($context);
+	foreach($editors as $editor){
+		$readaloud = file_postupdate_standard_editor( $readaloud, $editor, $edoptions,$context,MOD_READALOUD_FRANKY,$editor,$itemid);
+	}
+	return $readaloud;
 }
 
 /**
@@ -411,10 +438,9 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
 
     $readaloud->timemodified = time();
     $readaloud->id = $readaloud->instance;
-
-    # You may have to add extra stuff in here #
-
-    return $DB->update_record(MOD_READALOUD_TABLE, $readaloud);
+	$readaloud = readaloud_process_editors($readaloud,$mform);
+	$success = $DB->update_record(MOD_READALOUD_TABLE, $readaloud);
+	return $success;
 }
 
 /**
@@ -594,7 +620,7 @@ function readaloud_scale_used_anywhere($scaleid) {
  * @return array of [(string)filearea] => (string)description
  */
 function readaloud_get_file_areas($course, $cm, $context) {
-    return array();
+    return readaloud_get_editornames();
 }
 
 /**
@@ -633,15 +659,33 @@ function readaloud_get_file_info($browser, $areas, $course, $cm, $context, $file
  * @param array $options additional options affecting the file serving
  */
 function readaloud_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array()) {
-    global $DB, $CFG;
+       global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
         send_file_not_found();
     }
 
     require_login($course, true, $cm);
+	
+	$itemid = (int)array_shift($args);
 
-    send_file_not_found();
+    require_course_login($course, true, $cm);
+
+    if (!has_capability('mod/readaloud:view', $context)) {
+        return false;
+    }
+
+
+        $fs = get_file_storage();
+        $relativepath = implode('/', $args);
+        $fullpath = "/$context->id/mod_readaloud/$filearea/$itemid/$relativepath";
+        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+
+          return false;
+        }
+
+        // finally send the file
+        send_stored_file($file, null, 0, $forcedownload, $options);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

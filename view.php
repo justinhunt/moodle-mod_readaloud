@@ -78,12 +78,8 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
 
-	//Get an admin settings 
-	$config = get_config(MOD_READALOUD_FRANKY);
-  	$someadminsetting = $config->someadminsetting;
-
-	//Get an instance setting
-	$someinstancesetting = $moduleinstance->someinstancesetting;
+//Get an admin settings 
+$config = get_config(MOD_READALOUD_FRANKY);
 
 
 //get our javascript all ready to go
@@ -96,9 +92,6 @@ $jsmodule = array(
 );
 //here we set up any info we need to pass into javascript
 $opts =Array();
-$opts['someinstancesetting'] = $someinstancesetting;
-
-
 //this inits the M.mod_readaloud thingy, after the page has loaded.
 $PAGE->requires->js_init_call('M.mod_readaloud.helper.init', array($opts),false,$jsmodule);
 
@@ -132,9 +125,9 @@ if($moduleinstance->maxattempts > 0){
 	}
 }
 
-//This is specfic to our renderer
-echo $renderer->show_something($someadminsetting);
-echo $renderer->show_something($someinstancesetting);
+//just for now show something
+echo $renderer->show_something($config->defaultwelcome);
+echo $renderer->show_something($moduleinstance->welcome);
 
 // Finish the page
 echo $renderer->footer();

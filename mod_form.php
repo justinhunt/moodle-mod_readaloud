@@ -60,14 +60,34 @@ class mod_readaloud_mod_form extends moodleform_mod {
 
         // Adding the standard "intro" and "introformat" fields
         $this->add_intro_editor();
-
-        //-------------------------------------------------------------------------------
-        // Adding the rest of readaloud settings, spreeading all them into this fieldset
-        // or adding more fieldsets ('header' elements) if needed for better logic
-        $mform->addElement('static', 'label1', 'readaloudsettings', get_string('readaloudsettings', MOD_READALOUD_LANG));
-        $mform->addElement('text', 'someinstancesetting', get_string('someinstancesetting', MOD_READALOUD_LANG), array('size'=>'64'));
-        $mform->addRule('someinstancesetting', null, 'required', null, 'client');
-        $mform->setType('someinstancesetting', PARAM_TEXT);
+		
+		//time target
+		$mform->addElement('duration', 'timelimit', get_string('timelimit',MOD_READALOUD_LANG));
+		
+		//add other editors
+		//could add files but need the context/mod info. So for now just rich text
+		$config = get_config(MOD_READALOUD_FRANKY);
+		
+		//The pasage
+		//$edfileoptions = readaloud_editor_with_files_options($this->context);
+		$ednofileoptions = readaloud_editor_no_files_options($this->context);
+		$opts = array('rows'=>'15', 'columns'=>'80');
+		$mform->addElement('editor','passage_editor',get_string('passagelabel',MOD_READALOUD_LANG),$opts, $ednofileoptions);
+		
+		//welcome and feedback
+		$opts = array('rows'=>'6', 'columns'=>'80');
+		$mform->addElement('editor','welcome_editor',get_string('welcomelabel',MOD_READALOUD_LANG),$opts, $ednofileoptions);
+		$mform->addElement('editor','feedback_editor',get_string('feedbacklabel',MOD_READALOUD_LANG),$opts, $ednofileoptions);
+		
+		//defaults
+		$mform->setDefault('passage_editor',array('text'=>'', 'format'=>FORMAT_MOODLE));		
+		$mform->setDefault('welcome_editor',array('text'=>$config->defaultwelcome, 'format'=>FORMAT_MOODLE));
+		$mform->setDefault('feedback_editor',array('text'=>$config->defaultfeedback, 'format'=>FORMAT_MOODLE));
+		
+		//types
+		$mform->setType('passage_editor',PARAM_RAW);
+		$mform->setType('welcome_editor',PARAM_RAW);
+		$mform->setType('feedback_editor',PARAM_RAW);
 		
 		//attempts
         $attemptoptions = array(0 => get_string('unlimited', MOD_READALOUD_LANG),
@@ -111,5 +131,17 @@ class mod_readaloud_mod_form extends moodleform_mod {
 	
 	function completion_rule_enabled($data) {
 		return ($data['mingrade']>0);
+	}
+	
+	public function data_preprocessing(&$form_data) {
+		//$edfileoptions = readaloud_editor_with_files_options($this->context);
+		$ednofileoptions = readaloud_editor_no_files_options($this->context);
+		$editors  = readaloud_get_editornames();
+		 if ($this->current->instance) {
+			$itemid = 0;
+			foreach($editors as $editor){
+				$form_data = file_prepare_standard_editor((object)$form_data,$editor, $ednofileoptions, $this->context,MOD_READALOUD_FRANKY,$editor, $itemid);
+			}
+		}
 	}
 }

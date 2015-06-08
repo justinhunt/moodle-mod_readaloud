@@ -31,7 +31,10 @@ if ($ADMIN->fulltree) {
 
 
 
-	  $settings->add(new admin_setting_configtext('mod_readaloud/someadminsetting',
-        get_string('someadminsetting', 'readaloud'), get_string('someadminsetting_details', MOD_READALOUD_LANG), 'default text', PARAM_TEXT));
+	 $settings->add(new admin_setting_configtextarea('mod_readaloud/defaultwelcome',
+        get_string('welcomelabel', 'readaloud'), get_string('welcomelabel_details', MOD_READALOUD_LANG), get_string('defaultwelcome',MOD_READALOUD_LANG), PARAM_TEXT));
+	 $settings->add(new admin_setting_configtextarea('mod_readaloud/defaultfeedback',
+        get_string('feedbacklabel', 'readaloud'), get_string('feedbacklabel_details', MOD_READALOUD_LANG), get_string('defaultfeedback',MOD_READALOUD_LANG), PARAM_TEXT));
+	
 
 }
