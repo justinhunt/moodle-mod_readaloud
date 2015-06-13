@@ -59,7 +59,12 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addHelpButton('name', 'readaloudname', MOD_READALOUD_LANG);
 
         // Adding the standard "intro" and "introformat" fields
-        $this->add_intro_editor();
+         // Adding the standard "intro" and "introformat" fields
+        if($CFG->version < 2015051100){
+        	$this->add_intro_editor();
+        }else{
+        	$this->standard_intro_elements();
+		}
 		
 		//time target
 		$mform->addElement('duration', 'timelimit', get_string('timelimit',MOD_READALOUD_LANG));
