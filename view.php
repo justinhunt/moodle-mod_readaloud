@@ -29,6 +29,7 @@
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__).'/audio/audiohelper.php');
 
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
@@ -77,14 +78,20 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
+//require jquery
+$PAGE->requires->jquery();
+//require bootstrap
+//can skip this ... if bootstrap theme??
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
+//load swf loader
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/audio/embed-compressed.js'));
 
 //Get an admin settings 
 $config = get_config(MOD_READALOUD_FRANKY);
 
 
-//get our javascript all ready to go
-//We can omit $jsmodule, but its nice to have it here, 
-//if for example we need to include some funky YUI stuff
+//get our module javascript all ready to go
 $jsmodule = array(
 	'name'     => 'mod_readaloud',
 	'fullpath' => '/mod/readaloud/module.js',
@@ -94,6 +101,17 @@ $jsmodule = array(
 $opts =Array();
 //this inits the M.mod_readaloud thingy, after the page has loaded.
 $PAGE->requires->js_init_call('M.mod_readaloud.helper.init', array($opts),false,$jsmodule);
+
+
+//here we set up any info we need to pass into javascript
+$ah = new audiohelper();
+$recopts =Array();
+$recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",
+						"p1","p2","p3","p4","therecorderid","false", "volume");
+
+
+//this inits the M.mod_readaloud thingy, after the page has loaded.
+$PAGE->requires->js_init_call('M.mod_readaloud.audiohelper.init', array($recopts),false,$jsmodule);
 
 //this loads any external JS libraries we need to call
 //$PAGE->requires->js("/mod/readaloud/js/somejs.js");
@@ -128,6 +146,7 @@ if($moduleinstance->maxattempts > 0){
 //just for now show something
 echo $renderer->show_something($config->defaultwelcome);
 echo $renderer->show_something($moduleinstance->welcome);
+echo $renderer->show_button_recorder($moduleinstance,$cm);
 
 // Finish the page
 echo $renderer->footer();

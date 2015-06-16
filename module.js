@@ -26,16 +26,120 @@ M.mod_readaloud = M.mod_readaloud || {};
 
 M.mod_readaloud.helper = {
 	gY: null,
-
-
 	 /**
      * @param Y the YUI object
      * @param opts an array of options
      */
     init: function(Y,opts) {
-    	
     	M.mod_readaloud.helper.gY = Y;
-    	console.log(opts['someinstancesetting']);
-    
     }
+};
+
+M.mod_readaloud.audiohelper = {	
+
+	init: function(Y,opts){
+		lzOptions = {ServerRoot: '\\'};
+		lz.embed.swf(JSON.parse(opts['recorderjson']));
+	},
+
+	poodllcallback: function(args){
+		console.log ("poodllcallback:" + args[0] + ":" + args[1] + ":" + args[2] + ":" + args[3] + ":" + args[4] + ":" + args[5] + ":" + args[6]);
+		
+		switch(args[1]){
+			case 'statuschanged':
+								break;
+			case 'filesubmitted':
+					//audio filename
+					var audlabel=document.createTextNode("filename: " + args[2]);
+					
+					//audio element
+					var aud=document.createElement('audio');
+					aud.controls="controls";
+					
+					//audio source
+					var dasrc = document.createElement('source');
+					dasrc.type= 'audio/mpeg';
+					dasrc.src="out/" + args[2];
+					dasrc.setAttribute("preload","auto");
+					
+					//set audio src
+					aud.appendChild(dasrc);
+					aud.load();	
+
+					//put it all on the page
+					var players = document.getElementById('players');
+					players.appendChild(audlabel);
+					players.appendChild(document.createElement('br'));
+					players.appendChild(aud);
+					players.appendChild(document.createElement('br'));
+					
+					//to disablerecorder after exporting
+					if(lz.embed[args[0]] != null){
+						lz.embed[args[0]].callMethod('poodllapi.mp3_disable()');
+					}
+					
+					
+					break;
+			case 'uploadstarted':
+								break;
+			case 'actionerror':
+								break;
+			case 'timeouterror':
+								break;
+			case 'nosound':
+								break;
+			case 'conversionerror':
+								break;
+			case 'beginningconversion':
+								break;
+			case 'conversioncomplete':
+								break;
+			case 'timerevent':
+				if(args[2]!='0'){
+					document.getElementById('displaytime').innerHTML= lz.embed[args[0]].getCanvasAttribute('displaytime');
+				}
+								break;
+		
+		
+		
+		}
+	},
+	
+	//this function shows how to call the MP3 recorder's API to export the recording to the server
+	doexport: function(recorderid){
+		if(lz.embed[recorderid] != null){
+			lz.embed[recorderid].callMethod('poodllapi.mp3_export()');
+		}else{
+			deferredexport(recorderid);
+		}
+	},
+
+	//this function shows how to call the MP3 recorder's API to commence recording
+	dorecord: function(recorderid){
+		if(lz.embed[recorderid] != null){
+			lz.embed[recorderid].callMethod('poodllapi.mp3_record()');
+		}
+	},
+
+	//this function shows how to call the MP3 recorder's API to playback the recording
+	doplay: function(recorderid){
+		if(lz.embed[recorderid] != null){
+			lz.embed[recorderid].callMethod('poodllapi.mp3_play()');
+		}
+	},
+	
+	//this function shows how to call the MP3 recorder's API to stop the recording or playback
+	dostop: function(recorderid){
+		if(lz.embed[recorderid] != null){
+			lz.embed[recorderid].callMethod('poodllapi.mp3_stop()');
+		}
+	},
+	
+	//this function shows how to call the MP3 recorder's API to stop the recording or playback
+	dodisable: function(recorderid){
+		if(lz.embed[recorderid] != null){
+			lz.embed[recorderid].callMethod('poodllapi.mp3_disable()');
+		}
+	}
+
 };

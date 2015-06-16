@@ -40,6 +40,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
+    	global $CFG;
 
         $mform = $this->_form;
 
@@ -58,7 +59,6 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'readaloudname', MOD_READALOUD_LANG);
 
-        // Adding the standard "intro" and "introformat" fields
          // Adding the standard "intro" and "introformat" fields
         if($CFG->version < 2015051100){
         	$this->add_intro_editor();

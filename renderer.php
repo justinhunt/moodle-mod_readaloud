@@ -96,10 +96,26 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 	public function show_intro($readaloud,$cm){
 		$ret = "";
 		if (trim(strip_tags($readaloud->intro))) {
-			echo $this->output->box_start('mod_introbox');
-			echo format_module_intro('readaloud', $readaloud, $cm->id);
-			echo $this->output->box_end();
+			$ret .= $this->output->box_start('mod_introbox');
+			$ret .= format_module_intro('readaloud', $readaloud, $cm->id);
+			$ret .= $this->output->box_end();
 		}
+		return $ret;
+	}
+	
+	/**
+     *
+     */
+	public function show_button_recorder($readaloud,$cm){
+		$ret = "";
+		if (trim(strip_tags($readaloud->intro))) {
+			$ret .= $this->output->box_start('mod_recordbutton_box');
+			$ret .= '<button type="button" class="btn btn-primary">Record</button>';
+			$ret .= $this->output->box_end();
+			//add the recorder to the page
+			$ret .= html_writer::div('<h4>goes here</h4>' ,'',array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
+		}
+		return $ret;
 	}
   
 }

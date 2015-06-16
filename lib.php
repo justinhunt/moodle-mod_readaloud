@@ -38,6 +38,7 @@ define('MOD_READALOUD_USERTABLE','readaloud_attempt');
 define('MOD_READALOUD_MODNAME','readaloud');
 define('MOD_READALOUD_URL','/mod/readaloud');
 define('MOD_READALOUD_CLASS','mod_readaloud');
+define('MOD_READALOUD_RECORDER_CONTAINER','mod_readaloud_rec_cont');
 
 define('MOD_READALOUD_GRADEHIGHEST', 0);
 define('MOD_READALOUD_GRADELOWEST', 1);
