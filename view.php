@@ -106,8 +106,19 @@ $PAGE->requires->js_init_call('M.mod_readaloud.helper.init', array($opts),false,
 //here we set up any info we need to pass into javascript
 $ah = new audiohelper();
 $recopts =Array();
+$recopts['recorderid'] = MOD_READALOUD_RECORDERID;
+$recopts['startbutton'] = MOD_READALOUD_START_BUTTON;
+$recopts['stopbutton'] = MOD_READALOUD_STOP_BUTTON;
+$recopts['recordbutton'] = MOD_READALOUD_RECORD_BUTTON;
+$recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
+$recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
+$recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
+$recopts['instructionscontainer'] = MOD_READALOUD_INSTRUCTIONS_CONTAINER;
+$recopts['recinstructionscontainer'] = MOD_READALOUD_RECORDER_INSTRUCTIONS;
+$recopts['recordbuttoncontainer'] =MOD_READALOUD_RECORD_BUTTON_CONTAINER;
+$recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
 $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",
-						"p1","p2","p3","p4","therecorderid","false", "volume");
+						"p1","p2","p3","p4",MOD_READALOUD_RECORDERID,"false", "volume");
 
 
 //this inits the M.mod_readaloud thingy, after the page has loaded.
@@ -144,9 +155,9 @@ if($moduleinstance->maxattempts > 0){
 }
 
 //just for now show something
-echo $renderer->show_something($config->defaultwelcome);
-echo $renderer->show_something($moduleinstance->welcome);
+echo $renderer->show_welcome($moduleinstance->welcome);
 echo $renderer->show_button_recorder($moduleinstance,$cm);
+echo $renderer->show_passage($moduleinstance,$cm);
 
 // Finish the page
 echo $renderer->footer();

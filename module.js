@@ -36,18 +36,81 @@ M.mod_readaloud.helper = {
 };
 
 M.mod_readaloud.audiohelper = {	
+	recorderid: null,
+	recordbutton: null,
+	startbutton: null,
+	stopbutton: null,
+	passagecontainer: null,
+	recordingcontainer: null,
+	recordercontainer: null,
+	instructionscontainer: null,
+	recinstructionscontainer: null,
+	status: 'stopped',
 
 	init: function(Y,opts){
 		lzOptions = {ServerRoot: '\\'};
 		lz.embed.swf(JSON.parse(opts['recorderjson']));
+		this.recorderid = opts['recorderid'];
+		this.recordbutton = opts['recordbutton'];
+		this.startbutton = opts['startbutton'];
+		this.stopbutton = opts['stopbutton'];
+		this.passagecontainer = opts['passagecontainer'];
+		this.recordingcontainer= opts['recordingcontainer'];
+		this.recordercontainer= opts['recordercontainer'];
+		this.instructionscontainer= opts['instructionscontainer'];
+		this.recinstructionscontainer= opts['recinstructionscontainer'];
+		$('.' + this.recordbutton).click(this.recordbuttonclick);
+		$('.' + this.startbutton).click(this.startbuttonclick);
+		$('.' + this.stopbutton).click(this.stopbuttonclick);
 	},
-
+	beginall: function(){
+		var m = M.mod_readaloud.audiohelper;
+		m.dorecord();
+	},
+	stopbuttonclick: function(){
+		var m = M.mod_readaloud.audiohelper;
+		if(m.fetchrecstatus() !='stopped'){
+			m.dostop();
+			alert('All done');
+		}
+	},
+	startbuttonclick: function(){
+		var m = M.mod_readaloud.audiohelper;
+		if(m.fetchrecstatus() !='stopped'){
+			m.dostop();
+		}
+		$('.mod_intro_box').hide();
+		//$('.' + m.recordingcontainer).hide();
+		$('.' + m.recordbutton).hide();
+		$('.' + m.startbutton).hide();
+		$('.' + m.passagecontainer).show(1000,m.beginall);
+		
+	},
+	recordbuttonclick: function(){
+		var m = M.mod_readaloud.audiohelper;
+		if(m.fetchrecstatus() =='stopped'){
+			m.dorecord();
+			$(this).text("Stopo");
+		}else{
+			m.dostop();
+			$(this).text("Recordo");
+			$('.' + m.recordbutton).hide();
+			$('.' + m.startbutton).prop('disabled',false);
+		}
+	},
+	fetchrecstatus: function(){
+		return this.fetchrecproperty('recorderstatus');
+	},
+	fetchrecproperty: function(propertyname){
+		return lz.embed[this.recorderid].getCanvasAttribute(propertyname);
+	},
 	poodllcallback: function(args){
 		console.log ("poodllcallback:" + args[0] + ":" + args[1] + ":" + args[2] + ":" + args[3] + ":" + args[4] + ":" + args[5] + ":" + args[6]);
 		
 		switch(args[1]){
 			case 'statuschanged':
-								break;
+					this.status = args[2]; 
+					break;
 			case 'filesubmitted':
 					//audio filename
 					var audlabel=document.createTextNode("filename: " + args[2]);
@@ -106,39 +169,46 @@ M.mod_readaloud.audiohelper = {
 	},
 	
 	//this function shows how to call the MP3 recorder's API to export the recording to the server
-	doexport: function(recorderid){
-		if(lz.embed[recorderid] != null){
-			lz.embed[recorderid].callMethod('poodllapi.mp3_export()');
+	doexport: function(){
+		if(lz.embed[this.recorderid] != null){
+			lz.embed[this.recorderid].callMethod('poodllapi.mp3_export()');
 		}else{
-			deferredexport(recorderid);
+			deferredexport(this.recorderid);
 		}
 	},
 
 	//this function shows how to call the MP3 recorder's API to commence recording
-	dorecord: function(recorderid){
-		if(lz.embed[recorderid] != null){
-			lz.embed[recorderid].callMethod('poodllapi.mp3_record()');
+	dorecord: function(){
+		if(lz.embed[this.recorderid] != null){
+			lz.embed[this.recorderid].callMethod('poodllapi.mp3_record()');
 		}
 	},
 
 	//this function shows how to call the MP3 recorder's API to playback the recording
-	doplay: function(recorderid){
-		if(lz.embed[recorderid] != null){
-			lz.embed[recorderid].callMethod('poodllapi.mp3_play()');
+	doplay: function(){
+		if(lz.embed[this.recorderid] != null){
+			lz.embed[this.recorderid].callMethod('poodllapi.mp3_play()');
+		}
+	},
+	
+	//this function shows how to call the MP3 recorder's API to playback the recording
+	dopause: function(){
+		if(lz.embed[this.recorderid] != null){
+			lz.embed[this.recorderid].callMethod('poodllapi.mp3_pause()');
 		}
 	},
 	
 	//this function shows how to call the MP3 recorder's API to stop the recording or playback
-	dostop: function(recorderid){
-		if(lz.embed[recorderid] != null){
-			lz.embed[recorderid].callMethod('poodllapi.mp3_stop()');
+	dostop: function(){
+		if(lz.embed[this.recorderid] != null){
+			lz.embed[this.recorderid].callMethod('poodllapi.mp3_stop()');
 		}
 	},
 	
 	//this function shows how to call the MP3 recorder's API to stop the recording or playback
-	dodisable: function(recorderid){
-		if(lz.embed[recorderid] != null){
-			lz.embed[recorderid].callMethod('poodllapi.mp3_disable()');
+	dodisable: function(){
+		if(lz.embed[this.recorderid] != null){
+			lz.embed[this.recorderid].callMethod('poodllapi.mp3_disable()');
 		}
 	}
 

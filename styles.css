@@ -9,3 +9,32 @@
 	float: right;
 }
 
+.mod_readaloud_recording_cont {
+	display: block;
+}
+
+.mod_readaloud_recorder_cont {
+	float: left;
+}
+
+
+.mod_readaloud_start_button_cont{
+	clear: both;
+	padding: 5px;
+}
+.mod_readaloud_stop_button_cont{
+	clear: both;
+	padding: 5px;
+}
+.mod_readaloud_record_button_cont{
+	clear: both;
+	padding: 5px;
+}
+
+.mod_readaloud_recorder_instr {
+	float: left;
+}
+
+.mod_readaloud_passage_cont {
+	display: none;
+}

@@ -16,7 +16,7 @@
 
 
 defined('MOODLE_INTERNAL') || die();
-
+require_once(dirname(__FILE__).'/lib.php');
 /**
  * A custom renderer class that extends the plugin_renderer_base.
  *
@@ -83,10 +83,12 @@ class mod_readaloud_renderer extends plugin_renderer_base {
     /**
      *
      */
-    public function show_something($showtext) {
-		$ret = $this->output->box_start();
-		$ret .= $this->output->heading($showtext, 4, 'main');
-		$ret .= $this->output->box_end();
+    public function show_welcome($showtext) {
+	
+		$displaytext = $this->output->box_start();
+		$displaytext .= $this->output->heading($showtext, 4, 'main');
+		$displaytext .= $this->output->box_end();
+		$ret= html_writer::div($displaytext,MOD_READALOUD_INSTRUCTIONS_CONTAINER,array('id'=>MOD_READALOUD_INSTRUCTIONS_CONTAINER));
         return $ret;
     }
 
@@ -103,18 +105,47 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 		return $ret;
 	}
 	
+	
+	 /**
+     *
+     */
+	public function show_passage($readaloud,$cm){
+		
+		$stop_button =  html_writer::tag('button','Stopo',
+				array('class'=>'btn btn-primary ' . MOD_READALOUD_STOP_BUTTON));
+		$stop_button_cont= html_writer::div($stop_button,MOD_READALOUD_STOP_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_STOP_BUTTON_CONTAINER));
+		$ret = "";
+		$ret .= html_writer::div($readaloud->passage . $stop_button_cont,MOD_READALOUD_PASSAGE_CONTAINER,
+							array('id'=>MOD_READALOUD_PASSAGE_CONTAINER));
+		return $ret;
+	}
+	
 	/**
      *
      */
 	public function show_button_recorder($readaloud,$cm){
+		
+		//buttons
+		$rec_button =  html_writer::tag('button','Recordo',
+				array('class'=>'btn btn-primary ' . MOD_READALOUD_RECORD_BUTTON));
+		$start_button =  html_writer::tag('button','Starto',
+				array('class'=>'btn btn-primary ' . MOD_READALOUD_START_BUTTON, 'disabled'=>'true'));
+		
+		//recorder + instructions
+		$recorderdiv= html_writer::div('<h4><center>Audio<br/>Recorder<center></h4>',MOD_READALOUD_RECORDER_CONTAINER,
+							array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
+		$instructionsdiv= html_writer::div('<h4><center>Audio<br/>Instructions<center></h4>' ,MOD_READALOUD_RECORDER_INSTRUCTIONS,
+							array('id'=>MOD_READALOUD_RECORDER_INSTRUCTIONS));
+		$recordingdiv = html_writer::div($recorderdiv . $instructionsdiv,MOD_READALOUD_RECORDING_CONTAINER);
+		
+		//prepare output
 		$ret = "";
-		if (trim(strip_tags($readaloud->intro))) {
-			$ret .= $this->output->box_start('mod_recordbutton_box');
-			$ret .= '<button type="button" class="btn btn-primary">Record</button>';
-			$ret .= $this->output->box_end();
-			//add the recorder to the page
-			$ret .= html_writer::div('<h4>goes here</h4>' ,'',array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
-		}
+		$ret .=$recordingdiv;
+		$ret .= html_writer::div($rec_button,MOD_READALOUD_RECORD_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_RECORD_BUTTON_CONTAINER));
+		$ret .= html_writer::div($start_button,MOD_READALOUD_START_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_START_BUTTON_CONTAINER));
+
+		
+		//return it
 		return $ret;
 	}
   
