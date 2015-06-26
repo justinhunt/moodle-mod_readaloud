@@ -114,7 +114,8 @@ $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
 $recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
 $recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
 $recopts['instructionscontainer'] = MOD_READALOUD_INSTRUCTIONS_CONTAINER;
-$recopts['recinstructionscontainer'] = MOD_READALOUD_RECORDER_INSTRUCTIONS;
+$recopts['recinstructionscontainerright'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT;
+$recopts['recinstructionscontainerleft'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT;
 $recopts['recordbuttoncontainer'] =MOD_READALOUD_RECORD_BUTTON_CONTAINER;
 $recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
 $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",
@@ -144,7 +145,8 @@ if(has_capability('mod/readaloud:preview',$modulecontext)){
 	echo $renderer->notabsheader();
 }
 
-echo $renderer->show_intro($moduleinstance,$cm);
+//There is no need to show the Intrduction
+//echo $renderer->show_intro($moduleinstance,$cm);
 
 //if we have too many attempts, lets report that.
 if($moduleinstance->maxattempts > 0){

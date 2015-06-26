@@ -11,28 +11,33 @@
 
 .mod_readaloud_recording_cont {
 	display: block;
+	margin: auto;
+	text-align: center;
 }
 
 .mod_readaloud_recorder_cont {
 	float: left;
 }
-
-
-.mod_readaloud_start_button_cont{
-	clear: both;
-	padding: 5px;
+.mod_readaloud_recorder_instr_right,
+.mod_readaloud_recorder_instr_left {
+	float: left;
 }
+
+
+.mod_readaloud_start_button_cont,
+.mod_readaloud_record_button_cont,
 .mod_readaloud_stop_button_cont{
 	clear: both;
 	padding: 5px;
+	text-align: center;
+	width: 100%;
 }
-.mod_readaloud_record_button_cont{
-	clear: both;
-	padding: 5px;
-}
-
-.mod_readaloud_recorder_instr {
-	float: left;
+.mod_readaloud_stop_button,
+.mod_readaloud_start_button,
+.mod_readaloud_record_button
+{
+	margin: auto;
+	width: 200px;
 }
 
 .mod_readaloud_passage_cont {

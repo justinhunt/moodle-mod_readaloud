@@ -44,7 +44,8 @@ M.mod_readaloud.audiohelper = {
 	recordingcontainer: null,
 	recordercontainer: null,
 	instructionscontainer: null,
-	recinstructionscontainer: null,
+	recinstructionscontainerright: null,
+	recinstructionscontainerleft: null,
 	status: 'stopped',
 
 	init: function(Y,opts){
@@ -58,7 +59,8 @@ M.mod_readaloud.audiohelper = {
 		this.recordingcontainer= opts['recordingcontainer'];
 		this.recordercontainer= opts['recordercontainer'];
 		this.instructionscontainer= opts['instructionscontainer'];
-		this.recinstructionscontainer= opts['recinstructionscontainer'];
+		this.recinstructionscontainerright= opts['recinstructionscontainerright'];
+		this.recinstructionscontainerleft= opts['recinstructionscontainerleft'];
 		$('.' + this.recordbutton).click(this.recordbuttonclick);
 		$('.' + this.startbutton).click(this.startbuttonclick);
 		$('.' + this.stopbutton).click(this.stopbuttonclick);
@@ -79,12 +81,19 @@ M.mod_readaloud.audiohelper = {
 		if(m.fetchrecstatus() !='stopped'){
 			m.dostop();
 		}
-		$('.mod_intro_box').hide();
-		//$('.' + m.recordingcontainer).hide();
-		$('.' + m.recordbutton).hide();
-		$('.' + m.startbutton).hide();
+		m.dopassagelayout();
 		$('.' + m.passagecontainer).show(1000,m.beginall);
 		
+	},
+	dopassagelayout: function(){
+		var m = M.mod_readaloud.audiohelper;
+		$('.mod_intro_box').hide();
+		$('.' + m.recordbutton).hide();
+		$('.' + m.startbutton).hide();
+		$('.' + m.instructionscontainer).hide();
+		$('.' + m.recinstructionscontainerleft).hide();
+		$('.' + m.recinstructionscontainerright).hide();
+		$('.' + m.recordercontainer).attr('style','width: 1px; height: 1px;');
 	},
 	recordbuttonclick: function(){
 		var m = M.mod_readaloud.audiohelper;

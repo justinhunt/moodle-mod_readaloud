@@ -134,9 +134,11 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 		//recorder + instructions
 		$recorderdiv= html_writer::div('<h4><center>Audio<br/>Recorder<center></h4>',MOD_READALOUD_RECORDER_CONTAINER,
 							array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
-		$instructionsdiv= html_writer::div('<h4><center>Audio<br/>Instructions<center></h4>' ,MOD_READALOUD_RECORDER_INSTRUCTIONS,
-							array('id'=>MOD_READALOUD_RECORDER_INSTRUCTIONS));
-		$recordingdiv = html_writer::div($recorderdiv . $instructionsdiv,MOD_READALOUD_RECORDING_CONTAINER);
+		$instructionsrightdiv= html_writer::div('<h4><center>Audio<br/>Instructions<center></h4>' ,MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT,
+							array('id'=>MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT));
+		$instructionsleftdiv= html_writer::div('<h4><center>Audio<br/>Instructions<center></h4>' ,MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT,
+							array('id'=>MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT));
+		$recordingdiv = html_writer::div($instructionsleftdiv . $recorderdiv . $instructionsrightdiv,MOD_READALOUD_RECORDING_CONTAINER);
 		
 		//prepare output
 		$ret = "";
