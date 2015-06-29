@@ -40,9 +40,12 @@ M.mod_readaloud.audiohelper = {
 	recordbutton: null,
 	startbutton: null,
 	stopbutton: null,
+	awaitingpermission: false,
+	recorderallowed: false,
 	passagecontainer: null,
 	recordingcontainer: null,
 	recordercontainer: null,
+	dummyrecorder: null,
 	instructionscontainer: null,
 	recinstructionscontainerright: null,
 	recinstructionscontainerleft: null,
@@ -57,6 +60,7 @@ M.mod_readaloud.audiohelper = {
 		this.stopbutton = opts['stopbutton'];
 		this.passagecontainer = opts['passagecontainer'];
 		this.recordingcontainer= opts['recordingcontainer'];
+		this.dummyrecorder= opts['dummyrecorder'];
 		this.recordercontainer= opts['recordercontainer'];
 		this.instructionscontainer= opts['instructionscontainer'];
 		this.recinstructionscontainerright= opts['recinstructionscontainerright'];
@@ -91,18 +95,45 @@ M.mod_readaloud.audiohelper = {
 		$('.' + m.recordbutton).hide();
 		$('.' + m.startbutton).hide();
 		$('.' + m.instructionscontainer).hide();
-		$('.' + m.recinstructionscontainerleft).hide();
-		$('.' + m.recinstructionscontainerright).hide();
-		$('.' + m.recordercontainer).attr('style','width: 1px; height: 1px;');
+	},
+	transformrecorder: function(){
+		//$('.' + m.recinstructionscontainerleft).hide();
+		//$('.' + m.recinstructionscontainerright).hide();
+		$('.' + this.recordercontainer).attr('style','width: 1px; height: 1px;');
+		$('.' + this.dummyrecorder).removeClass(this.dummyrecorder + '_hidden');
+		$('.' + this.dummyrecorder).addClass(this.dummyrecorder + '_stopped');
+	},
+	getpermissionmode: function(){
+	console.log('getmpermissionde');
+		this.awaitingpermission=true;
+		this.doshowsettings();
+		$('.' + this.recinstructionscontainerleft).addClass('mod_readaloud_getpermissionmode');
+		$('.' + this.recinstructionscontainerright).addClass('mod_readaloud_getpermissionmode');
+	},
+	clearpermissionmode: function(){
+		console.log('clearrecoderallowed1');
+		this.awaitingpermission=false;
+		$('.' + this.recinstructionscontainerleft).removeClass('mod_readaloud_getpermissionmode');
+		$('.' + this.recinstructionscontainerright).removeClass('mod_readaloud_getpermissionmode');
 	},
 	recordbuttonclick: function(){
 		var m = M.mod_readaloud.audiohelper;
+		$(this).text("Stopo");	
+		if(M.mod_readaloud.audiohelper.awaitingpermission){
+			M.mod_readaloud.audiohelper.clearpermissionmode();
+			return;
+		}
 		if(m.fetchrecstatus() =='stopped'){
+			if(!m.recorderallowed){
+				$(this).text("Stopppo");
+				M.mod_readaloud.audiohelper.getpermissionmode();
+				return;
+			}
 			m.dorecord();
-			$(this).text("Stopo");
 		}else{
-			m.dostop();
+			//reset the text label
 			$(this).text("Recordo");
+			m.dostop();
 			$('.' + m.recordbutton).hide();
 			$('.' + m.startbutton).prop('disabled',false);
 		}
@@ -117,6 +148,21 @@ M.mod_readaloud.audiohelper = {
 		console.log ("poodllcallback:" + args[0] + ":" + args[1] + ":" + args[2] + ":" + args[3] + ":" + args[4] + ":" + args[5] + ":" + args[6]);
 		
 		switch(args[1]){
+			case 'allowed':
+					this.recorderallowed = args[2]; 
+					console.log('recoderallowed1:' + this.recorderallowed );
+					if (this.recorderallowed){
+						console.log('recoderallowed2');
+						this.transformrecorder();
+						//if allowed was done after pressing record button
+						//commence recording
+						if(this.awaitingpermission){
+							this.dorecord();
+						}
+						this.clearpermissionmode();
+					}
+					break;
+					
 			case 'statuschanged':
 					this.status = args[2]; 
 					break;
@@ -176,7 +222,23 @@ M.mod_readaloud.audiohelper = {
 		
 		}
 	},
+	//handles calls into the recorder
+	dorecorderapi: function(callingfunction){
+		if(lz.embed[this.recorderid] != null){
+			var apicall = '';
+			switch(callingfunction){
+				case 'dorecord': apicall = 'poodllapi.mp3_record()';break;
+				case 'dostop': apicall = 'poodllapi.mp3_stop()';break;
+				case 'dopause': apicall = 'poodllapi.mp3_pause()';break;
+				case 'doshowsettings': apicall = 'poodllapi.mp3_show_settings()';break;
+				case 'doplay': apicall = 'poodllapi.mp3_play()';break;
+				case 'dodisable': apicall = 'poodllapi.mp3_disable()';break;
+				case 'doenable': apicall = 'poodllapi.mp3_enable()';break;
+			}
+			lz.embed[this.recorderid].callMethod(apicall);
+		}
 	
+	},
 	//this function shows how to call the MP3 recorder's API to export the recording to the server
 	doexport: function(){
 		if(lz.embed[this.recorderid] != null){
@@ -185,40 +247,39 @@ M.mod_readaloud.audiohelper = {
 			deferredexport(this.recorderid);
 		}
 	},
+	
+	//this function shows how to call the MP3 recorder's API to commence recording
+	doshowsettings: function(){
+		this.dorecorderapi('doshowsettings');
+	},
 
 	//this function shows how to call the MP3 recorder's API to commence recording
 	dorecord: function(){
-		if(lz.embed[this.recorderid] != null){
-			lz.embed[this.recorderid].callMethod('poodllapi.mp3_record()');
-		}
+		this.dorecorderapi('dorecord');
+		$('.' + this.dummyrecorder).removeClass(this.dummyrecorder + '_stopped');
+		$('.' + this.dummyrecorder).addClass(this.dummyrecorder + '_recording');
 	},
 
 	//this function shows how to call the MP3 recorder's API to playback the recording
 	doplay: function(){
-		if(lz.embed[this.recorderid] != null){
-			lz.embed[this.recorderid].callMethod('poodllapi.mp3_play()');
-		}
+		this.dorecorderapi('doplay');
 	},
 	
 	//this function shows how to call the MP3 recorder's API to playback the recording
 	dopause: function(){
-		if(lz.embed[this.recorderid] != null){
-			lz.embed[this.recorderid].callMethod('poodllapi.mp3_pause()');
-		}
+		this.dorecorderapi('dopause');
 	},
 	
 	//this function shows how to call the MP3 recorder's API to stop the recording or playback
 	dostop: function(){
-		if(lz.embed[this.recorderid] != null){
-			lz.embed[this.recorderid].callMethod('poodllapi.mp3_stop()');
-		}
+		this.dorecorderapi('dostop');
+		$('.' + this.dummyrecorder).removeClass(this.dummyrecorder + '_recording');
+		$('.' + this.dummyrecorder).addClass(this.dummyrecorder + '_stopped');
 	},
 	
 	//this function shows how to call the MP3 recorder's API to stop the recording or playback
 	dodisable: function(){
-		if(lz.embed[this.recorderid] != null){
-			lz.embed[this.recorderid].callMethod('poodllapi.mp3_disable()');
-		}
+		this.dorecorderapi('dodisable');
 	}
 
 };

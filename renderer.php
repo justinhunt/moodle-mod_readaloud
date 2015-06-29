@@ -26,8 +26,6 @@ require_once(dirname(__FILE__).'/lib.php');
  */
 class mod_readaloud_renderer extends plugin_renderer_base {
 
-
-
 		  /**
      * Returns the header for the module
      *
@@ -132,13 +130,15 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 				array('class'=>'btn btn-primary ' . MOD_READALOUD_START_BUTTON, 'disabled'=>'true'));
 		
 		//recorder + instructions
-		$recorderdiv= html_writer::div('<h4><center>Audio<br/>Recorder<center></h4>',MOD_READALOUD_RECORDER_CONTAINER,
+		$recorderdiv= html_writer::div('',MOD_READALOUD_RECORDER_CONTAINER,
 							array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
-		$instructionsrightdiv= html_writer::div('<h4><center>Audio<br/>Instructions<center></h4>' ,MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT,
+		$dummyrecorderdiv= html_writer::div('',MOD_READALOUD_DUMMY_RECORDER . " " . MOD_READALOUD_DUMMY_RECORDER .'_hidden',
+							array('id'=>MOD_READALOUD_DUMMY_RECORDER));
+		$instructionsrightdiv= html_writer::div('' ,MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT,
 							array('id'=>MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT));
-		$instructionsleftdiv= html_writer::div('<h4><center>Audio<br/>Instructions<center></h4>' ,MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT,
+		$instructionsleftdiv= html_writer::div('' ,MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT,
 							array('id'=>MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT));
-		$recordingdiv = html_writer::div($instructionsleftdiv . $recorderdiv . $instructionsrightdiv,MOD_READALOUD_RECORDING_CONTAINER);
+		$recordingdiv = html_writer::div($instructionsleftdiv . $recorderdiv . $dummyrecorderdiv . $instructionsrightdiv,MOD_READALOUD_RECORDING_CONTAINER);
 		
 		//prepare output
 		$ret = "";

@@ -13,6 +13,7 @@
 	display: block;
 	margin: auto;
 	text-align: center;
+	width: 720px;
 }
 
 .mod_readaloud_recorder_cont {
@@ -21,8 +22,41 @@
 .mod_readaloud_recorder_instr_right,
 .mod_readaloud_recorder_instr_left {
 	float: left;
+	width: 240px;
+	height: 100px; 
 }
-
+.mod_readaloud_dummyrecorder {
+	float: left;
+}
+.mod_readaloud_dummy_recorder_hidden {
+	display: none;
+}
+.mod_readaloud_dummy_recorder_recording {
+	display: block;
+	float: left;
+	width: 239px;
+	height: 100px;
+	background-image: url("/moodle/cr/mod/readaloud/pix/microphone.png");
+	background-size: 90px 90px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: red;
+}
+.mod_readaloud_dummy_recorder_stopped {
+	display: block;
+	width: 239px;
+	height: 100px;
+	float: left;
+	background-image: url("/moodle/cr/mod/readaloud/pix/microphone.png");
+	background-size: 90px 90px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: grey;
+}
+.mod_readaloud_getpermissionmode{
+	background-color: red;
+	height: 170px;
+}
 
 .mod_readaloud_start_button_cont,
 .mod_readaloud_record_button_cont,

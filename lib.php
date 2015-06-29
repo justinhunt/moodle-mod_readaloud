@@ -47,6 +47,7 @@ define('MOD_READALOUD_STOP_BUTTON_CONTAINER','mod_readaloud_stop_button_cont');
 define('MOD_READALOUD_RECORDERID','therecorderid');
 define('MOD_READALOUD_RECORDING_CONTAINER','mod_readaloud_recording_cont');
 define('MOD_READALOUD_RECORDER_CONTAINER','mod_readaloud_recorder_cont');
+define('MOD_READALOUD_DUMMY_RECORDER','mod_readaloud_dummy_recorder');
 define('MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT','mod_readaloud_recorder_instr_right');
 define('MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT','mod_readaloud_recorder_instr_left');
 define('MOD_READALOUD_INSTRUCTIONS_CONTAINER','mod_readaloud_instructions_cont');

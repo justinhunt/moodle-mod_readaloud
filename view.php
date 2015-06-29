@@ -113,6 +113,7 @@ $recopts['recordbutton'] = MOD_READALOUD_RECORD_BUTTON;
 $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
 $recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
 $recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
+$recopts['dummyrecorder'] = MOD_READALOUD_DUMMY_RECORDER;
 $recopts['instructionscontainer'] = MOD_READALOUD_INSTRUCTIONS_CONTAINER;
 $recopts['recinstructionscontainerright'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT;
 $recopts['recinstructionscontainerleft'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT;
