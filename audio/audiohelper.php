@@ -7,10 +7,7 @@
 * @license JustinsPlainEnglishLicense ( http://www.poodll.com/justinsplainenglishlicense.txt )
 *
 */
-define('POODLLURL', 'http://chipmunkyou.com/moodle/cr/mod/readaloud/audio');
-define('SAVEDIR','/home/chipmunkyou/public_html/moodle/cr/mod/readaloud/audio/out/');
-define('FFMPEGPATH','ffmpeg');
-define('CONVERTDIR','/home/chipmunkyou/public_html/moodle/cr/mod/readaloud/audio/out/');
+
 define('FANCYBUTTON',true);
 
 	
@@ -185,6 +182,8 @@ class audiohelper {
 	//Fetch the MP3 Recorder to be included on the page
 	function fetchMP3Recorder($updatecontrol="",$callbackjs="",$p1="",$p2="",$p3="",$p4="",$recorderid='',$autosubmit="true", $skinmode="noskin",$json=false,$timelimit=0){
 
+	global $CFG;
+	
 	//Set the microphone config params
 	$micrate = "44";
 	$micgain = "50";
@@ -222,7 +221,7 @@ class audiohelper {
 		*/
 	}
 
-	$posturl= POODLLURL . "/poodllfilelib.php";
+	$posturl= $CFG->wwwroot . "/mod/readaloud/audio/poodllfilelib.php";
 
 
 	//To send directly ('ajax') or via an html form('post') 
@@ -307,10 +306,10 @@ class audiohelper {
 
 	//fetch the HTML5 "recorder" to be included on the page
 	function fetchHTML5Recorder($updatecontrol="",$callbackjs="",$p1="",$p2="",$p3="",$p4="", $recorderid="",$autosubmit="true",$mediatype="audio", $fancystyle=true){
-		
+		global $CFG;
 
 		//get our upload file path
-		$posturl= POODLLURL . "/poodllfilelib.php";
+		$posturl= $CFG->wwwroot . "/mod/readaloud/audio/poodllfilelib.php";
 		
 		//get a seed to make sure each fileupload field set has unique ids
 		//also create a recorder id if we did not have one
@@ -376,6 +375,7 @@ class audiohelper {
 	
 	//This is use for assembling the html elements + javascript that will be swapped out and replaced with the MP3 recorder
 	function fetchSWFWidgetJSONParams($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF", $recorderid=''){
+		global $CFG;
 		
 		//build the parameter string out of the passed in array
 		$params="?";
@@ -391,7 +391,7 @@ class audiohelper {
 			$recorderid = 'lzapp_' . rand(100000, 999999);
 		}
 		$paramobj = new stdClass();
-		$paramobj->url = POODLLURL . '/' . $widget . $params;
+		$paramobj->url =$CFG->wwwroot . '/mod/readaloud/audio/' . $widget . $params;
 		$paramobj->bgcolor = $bgcolor;
 		$paramobj->cancelmousewheel = true;
 		$paramobj->allowfullscreen = true;
@@ -414,6 +414,7 @@ class audiohelper {
 
 	//This is use for assembling the html elements + javascript that will be swapped out and replaced with the MP3 recorder
 	function fetchSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF", $recorderid=''){
+		global $CFG;
 		
 		//build the parameter string out of the passed in array
 		$params="?";
@@ -436,7 +437,7 @@ class audiohelper {
 				lzOptions = { ServerRoot: \'\'};
 			</script> 
 			<script type=\"text/javascript\">
-	" . '	lz.embed.swf({url: \'' . POODLLURL . '/' . $widget . $params . 
+	" . '	lz.embed.swf({url: \'' . $CFG->wwwroot . '/mod/readaloud/audio/' . $widget . $params . 
 			 '\', bgcolor: \'' . $bgcolor . '\', cancelmousewheel: true, allowfullscreen: true, width: \'' .$width . '\', height: \'' . $height . '\', id: \'' . $recorderid . '\', accessible: true});	
 			
 	' . "
