@@ -32,6 +32,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 define('MOD_READALOUD_FRANKY','mod_readaloud');
+define('MOD_READALOUD_FILEAREA_SUBMISSIONS','submission');
 define('MOD_READALOUD_LANG','mod_readaloud');
 define('MOD_READALOUD_TABLE','readaloud');
 define('MOD_READALOUD_USERTABLE','readaloud_attempt');
@@ -40,6 +41,8 @@ define('MOD_READALOUD_URL','/mod/readaloud');
 define('MOD_READALOUD_CLASS','mod_readaloud');
 define('MOD_READALOUD_RECORD_BUTTON','mod_readaloud_record_button');
 define('MOD_READALOUD_START_BUTTON','mod_readaloud_start_button');
+define('MOD_READALOUD_PROGRESS_CONTAINER','mod_readaloud_progress_cont');
+define('MOD_READALOUD_HIDER','mod_readaloud_hider');
 define('MOD_READALOUD_STOP_BUTTON','mod_readaloud_stop_button');
 define('MOD_READALOUD_RECORD_BUTTON_CONTAINER','mod_readaloud_record_button_cont');
 define('MOD_READALOUD_START_BUTTON_CONTAINER','mod_readaloud_start_button_cont');
@@ -52,6 +55,8 @@ define('MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT','mod_readaloud_recorder_instr
 define('MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT','mod_readaloud_recorder_instr_left');
 define('MOD_READALOUD_INSTRUCTIONS_CONTAINER','mod_readaloud_instructions_cont');
 define('MOD_READALOUD_PASSAGE_CONTAINER','mod_readaloud_passage_cont');
+define('MOD_READALOUD_FEEDBACK_CONTAINER','mod_readaloud_feedback_cont');
+define('MOD_READALOUD_ERROR_CONTAINER','mod_readaloud_error_cont');
 
 define('MOD_READALOUD_GRADEHIGHEST', 0);
 define('MOD_READALOUD_GRADELOWEST', 1);
@@ -693,8 +698,8 @@ function readaloud_pluginfile($course, $cm, $context, $filearea, array $args, $f
         $fs = get_file_storage();
         $relativepath = implode('/', $args);
         $fullpath = "/$context->id/mod_readaloud/$filearea/$itemid/$relativepath";
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
 
+        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
           return false;
         }
 

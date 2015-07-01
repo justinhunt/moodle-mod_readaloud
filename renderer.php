@@ -109,7 +109,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
      */
 	public function show_passage($readaloud,$cm){
 		
-		$stop_button =  html_writer::tag('button','Stopo',
+		$stop_button =  html_writer::tag('button',get_string('done', MOD_READALOUD_LANG),
 				array('class'=>'btn btn-primary ' . MOD_READALOUD_STOP_BUTTON));
 		$stop_button_cont= html_writer::div($stop_button,MOD_READALOUD_STOP_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_STOP_BUTTON_CONTAINER));
 		$ret = "";
@@ -118,15 +118,52 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 		return $ret;
 	}
 	
+		 /**
+     *
+     */
+	public function show_progress($readaloud,$cm){
+		$hider =  html_writer::div('',MOD_READALOUD_HIDER,array('id'=>MOD_READALOUD_HIDER));
+		$message =  html_writer::tag('h4',get_string('processing',MOD_READALOUD_LANG),array());
+		$spinner =  html_writer::tag('i','',array('class'=>'fa fa-spinner fa-5x fa-spin'));
+		$progressdiv = html_writer::div($message . $spinner ,MOD_READALOUD_PROGRESS_CONTAINER,
+							array('id'=>MOD_READALOUD_PROGRESS_CONTAINER));
+		$ret = $hider . $progressdiv;
+		return $ret;
+	}
+	
+		 /**
+     *
+     */
+	public function show_feedback($readaloud,$cm){
+		$displaytext = $this->output->box_start();
+		$displaytext .= $this->output->heading(get_string('feedbackheader',MOD_READALOUD_LANG), 3, 'main');
+		$displaytext .=  html_writer::div($readaloud->feedback,'',array());
+		$displaytext .= $this->output->box_end();
+		$ret= html_writer::div($displaytext,MOD_READALOUD_FEEDBACK_CONTAINER,array('id'=>MOD_READALOUD_FEEDBACK_CONTAINER));
+        return $ret;
+	}
+	
+		 /**
+     *
+     */
+	public function show_error($readaloud,$cm){
+		$displaytext = $this->output->box_start();
+		$displaytext .= $this->output->heading(get_string('errorheader',MOD_READALOUD_LANG), 3, 'main');
+		$displaytext .=  html_writer::div(get_string('uploadconverterror',MOD_READALOUD_LANG),'',array());
+		$displaytext .= $this->output->box_end();
+		$ret= html_writer::div($displaytext,MOD_READALOUD_ERROR_CONTAINER,array('id'=>MOD_READALOUD_ERROR_CONTAINER));
+        return $ret;
+	}
+	
 	/**
      *
      */
 	public function show_button_recorder($readaloud,$cm){
 		
 		//buttons
-		$rec_button =  html_writer::tag('button','Recordo',
+		$rec_button =  html_writer::tag('button',get_string('recordnameschool',MOD_READALOUD_LANG),
 				array('class'=>'btn btn-primary ' . MOD_READALOUD_RECORD_BUTTON));
-		$start_button =  html_writer::tag('button','Starto',
+		$start_button =  html_writer::tag('button',get_string('beginreading',MOD_READALOUD_LANG),
 				array('class'=>'btn btn-primary ' . MOD_READALOUD_START_BUTTON, 'disabled'=>'true'));
 		
 		//recorder + instructions
@@ -162,7 +199,12 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 			new moodle_url(MOD_READALOUD_URL . '/reports.php',array('report'=>'basic','id'=>$cm->id,'n'=>$moduleinstance->id)), 
 			get_string('basicreport',MOD_READALOUD_LANG), 'get');
 
-		$ret = html_writer::div($this->render($basic) .'<br />'  ,MOD_READALOUD_CLASS  . '_listbuttons');
+		$attempts = new single_button(
+			new moodle_url(MOD_READALOUD_URL . '/reports.php',array('report'=>'attempts','id'=>$cm->id,'n'=>$moduleinstance->id)), 
+			get_string('attemptsreport',MOD_READALOUD_LANG), 'get');
+			
+			
+		$ret = html_writer::div($this->render($basic) .'<br />' .$this->render($attempts) .'<br />'  ,MOD_READALOUD_CLASS  . '_listbuttons');
 
 		return $ret;
 	}

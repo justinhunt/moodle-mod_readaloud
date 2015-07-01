@@ -142,7 +142,93 @@ abstract class mod_readaloud_base_report {
 }
 
 /*
-* Nasic Report
+* Basic Report
+*
+*
+*/
+class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
+	
+	protected $report="attempts";
+	protected $fields = array('id','username','audiofile','wpm','timecreated');	
+	protected $headingdata = null;
+	protected $qcache=array();
+	protected $ucache=array();
+	
+	
+	public function fetch_formatted_field($field,$record,$withlinks){
+				global $DB,$CFG;
+			switch($field){
+				case 'id':
+						$ret = $record->id;
+						break;
+				
+				case 'username':
+						$user = $this->fetch_cache('user',$record->userid);
+						$ret = fullname($user);
+					break;
+				
+				case 'audiofile':
+						if($withlinks){
+							
+							$ret = html_writer::tag('audio','',
+									array('controls'=>'','src'=>$record->audiourl));
+						}else{
+							$ret = get_string('submitted',MOD_READALOUD_LANG);
+						}
+					break;
+				
+				case 'wpm':
+						$ret = $record->sessionscore;
+					break;
+				
+				case 'timecreated':
+						$ret = date("Y-m-d H:i:s",$record->timecreated);
+					break;
+					
+				default:
+					if(property_exists($record,$field)){
+						$ret=$record->{$field};
+					}else{
+						$ret = '';
+					}
+			}
+			return $ret;
+	}
+	
+	public function fetch_formatted_heading(){
+		$record = $this->headingdata;
+		$ret='';
+		if(!$record){return $ret;}
+		//$ec = $this->fetch_cache(MOD_READALOUD_TABLE,$record->englishcentralid);
+		return get_string('basicheading',MOD_READALOUD_LANG);
+		
+	}
+	
+	public function process_raw_data($formdata){
+		global $DB;
+		
+		//heading data
+		$this->headingdata = new stdClass();
+		
+		$emptydata = array();
+		$alldata = $DB->get_records(MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid));
+		
+		if($alldata){
+			foreach($alldata as $thedata){
+				$thedata->audiourl = $url = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $formdata->readaloudid, '/' . $thedata->userid . '/', $thedata->filename);
+				$this->rawdata[] = $thedata;
+			}
+			$this->rawdata= $alldata;
+		}else{
+			$this->rawdata= $emptydata;
+		}
+		return true;
+	}
+}
+
+
+/*
+* Basic Report
 *
 *
 */

@@ -40,13 +40,20 @@ M.mod_readaloud.audiohelper = {
 	recordbutton: null,
 	startbutton: null,
 	stopbutton: null,
+	gotsound: false,
+	hider: null,
+	passagerecorded: false,
+	sounds: Array(),
 	awaitingpermission: false,
 	recorderallowed: false,
 	passagecontainer: null,
+	feedbackcontainer: null,
+	errorcontainer: null,
 	recordingcontainer: null,
 	recordercontainer: null,
 	dummyrecorder: null,
 	instructionscontainer: null,
+	progresscontainer: null,
 	recinstructionscontainerright: null,
 	recinstructionscontainerleft: null,
 	status: 'stopped',
@@ -58,6 +65,10 @@ M.mod_readaloud.audiohelper = {
 		this.recordbutton = opts['recordbutton'];
 		this.startbutton = opts['startbutton'];
 		this.stopbutton = opts['stopbutton'];
+		this.hider = opts['hider'];
+		this.progresscontainer = opts['progresscontainer'];
+		this.feedbackcontainer = opts['feedbackcontainer'];
+		this.errorcontainer= opts['errorcontainer'];
 		this.passagecontainer = opts['passagecontainer'];
 		this.recordingcontainer= opts['recordingcontainer'];
 		this.dummyrecorder= opts['dummyrecorder'];
@@ -72,12 +83,12 @@ M.mod_readaloud.audiohelper = {
 	beginall: function(){
 		var m = M.mod_readaloud.audiohelper;
 		m.dorecord();
+		m.passagerecorded = true;
 	},
 	stopbuttonclick: function(){
 		var m = M.mod_readaloud.audiohelper;
 		if(m.fetchrecstatus() !='stopped'){
 			m.dostop();
-			alert('All done');
 		}
 	},
 	startbuttonclick: function(){
@@ -96,46 +107,74 @@ M.mod_readaloud.audiohelper = {
 		$('.' + m.startbutton).hide();
 		$('.' + m.instructionscontainer).hide();
 	},
+	douploadlayout: function(){
+		var m = M.mod_readaloud.audiohelper;
+		$('.' + m.passagecontainer).addClass('mod_readaloud_passage_finished');
+		$('.' + m.stopbutton).prop('disabled',true);
+		$('.' + m.hider).fadeIn('slow');
+		$('.' + m.progresscontainer).fadeIn('slow');
+	},
+	dofinishedlayout: function(){
+		var m = M.mod_readaloud.audiohelper;
+		$('.' + m.hider).fadeOut('fast');
+		$('.' + m.progresscontainer).fadeOut('fast');
+		$('.' + m.passagecontainer).hide();
+		$('.' + m.recordingcontainer).hide();
+		$('.' + m.dummyrecorder).hide();
+		$('.' + m.feedbackcontainer).show();
+	},
+	doerrorlayout: function(){
+		var m = M.mod_readaloud.audiohelper;
+		$('.' + m.hider).fadeOut('fast');
+		$('.' + m.progresscontainer).fadeOut('fast');
+		$('.' + m.passagecontainer).hide();
+		$('.' + m.recordingcontainer).hide();
+		$('.' + m.dummyrecorder).hide();
+		$('.' + m.errorcontainer).show();
+	},
 	transformrecorder: function(){
 		//$('.' + m.recinstructionscontainerleft).hide();
 		//$('.' + m.recinstructionscontainerright).hide();
 		$('.' + this.recordercontainer).attr('style','width: 1px; height: 1px;');
 		$('.' + this.dummyrecorder).removeClass(this.dummyrecorder + '_hidden');
 		$('.' + this.dummyrecorder).addClass(this.dummyrecorder + '_stopped');
+		$('.' + this.dummyrecorder).css('background-image','url(' + M.cfg.wwwroot + '/mod/readaloud/pix/microphone.png)');
 	},
 	getpermissionmode: function(){
-	console.log('getmpermissionde');
 		this.awaitingpermission=true;
 		this.doshowsettings();
 		$('.' + this.recinstructionscontainerleft).addClass('mod_readaloud_getpermissionmode');
 		$('.' + this.recinstructionscontainerright).addClass('mod_readaloud_getpermissionmode');
 	},
 	clearpermissionmode: function(){
-		console.log('clearrecoderallowed1');
 		this.awaitingpermission=false;
 		$('.' + this.recinstructionscontainerleft).removeClass('mod_readaloud_getpermissionmode');
 		$('.' + this.recinstructionscontainerright).removeClass('mod_readaloud_getpermissionmode');
 	},
 	recordbuttonclick: function(){
 		var m = M.mod_readaloud.audiohelper;
-		$(this).text("Stopo");	
+		$(this).text(M.util.get_string('done','mod_readaloud'));	
 		if(M.mod_readaloud.audiohelper.awaitingpermission){
+			$(this).text(M.util.get_string('recordnameschool','mod_readaloud'));
 			M.mod_readaloud.audiohelper.clearpermissionmode();
 			return;
 		}
 		if(m.fetchrecstatus() =='stopped'){
 			if(!m.recorderallowed){
-				$(this).text("Stopppo");
 				M.mod_readaloud.audiohelper.getpermissionmode();
 				return;
 			}
 			m.dorecord();
 		}else{
 			//reset the text label
-			$(this).text("Recordo");
+			$(this).text(M.util.get_string('recordnameschool','mod_readaloud'));
 			m.dostop();
-			$('.' + m.recordbutton).hide();
-			$('.' + m.startbutton).prop('disabled',false);
+			if(m.gotsound){
+				$('.' + m.recordbutton).hide();
+				$('.' + m.startbutton).prop('disabled',false);
+			}else{
+				alert(M.util.get_string('gotnosound','mod_readaloud'));
+			}
 		}
 	},
 	fetchrecstatus: function(){
@@ -145,14 +184,13 @@ M.mod_readaloud.audiohelper = {
 		return lz.embed[this.recorderid].getCanvasAttribute(propertyname);
 	},
 	poodllcallback: function(args){
-		console.log ("poodllcallback:" + args[0] + ":" + args[1] + ":" + args[2] + ":" + args[3] + ":" + args[4] + ":" + args[5] + ":" + args[6]);
-		
+		if(args[1] !='timerevent'){
+			console.log ("poodllcallback:" + args[0] + ":" + args[1] + ":" + args[2] + ":" + args[3] + ":" + args[4] + ":" + args[5] + ":" + args[6]);
+		}
 		switch(args[1]){
 			case 'allowed':
 					this.recorderallowed = args[2]; 
-					console.log('recoderallowed1:' + this.recorderallowed );
 					if (this.recorderallowed){
-						console.log('recoderallowed2');
 						this.transformrecorder();
 						//if allowed was done after pressing record button
 						//commence recording
@@ -165,46 +203,26 @@ M.mod_readaloud.audiohelper = {
 					
 			case 'statuschanged':
 					this.status = args[2]; 
+					if(this.status=='haverecorded' && this.passagerecorded){
+						this.douploadlayout();
+						this.doexport();
+					}
 					break;
 			case 'filesubmitted':
-					//audio filename
-					var audlabel=document.createTextNode("filename: " + args[2]);
-					
-					//audio element
-					var aud=document.createElement('audio');
-					aud.controls="controls";
-					
-					//audio source
-					var dasrc = document.createElement('source');
-					dasrc.type= 'audio/mpeg';
-					dasrc.src="out/" + args[2];
-					dasrc.setAttribute("preload","auto");
-					
-					//set audio src
-					aud.appendChild(dasrc);
-					aud.load();	
-
-					//put it all on the page
-					var players = document.getElementById('players');
-					players.appendChild(audlabel);
-					players.appendChild(document.createElement('br'));
-					players.appendChild(aud);
-					players.appendChild(document.createElement('br'));
-					
-					//to disablerecorder after exporting
-					if(lz.embed[args[0]] != null){
-						lz.embed[args[0]].callMethod('poodllapi.mp3_disable()');
-					}
-					
-					
+					this.dofinishedlayout();
 					break;
+
 			case 'uploadstarted':
 								break;
+			case 'showerror':
+						//probably should have better error logic than this.
+						this.doerrorlayout();
+						break;
 			case 'actionerror':
 								break;
 			case 'timeouterror':
 								break;
-			case 'nosound':
+			case 'nosound':	alert(M.util.get_string('gotnosound','mod_readaloud'));
 								break;
 			case 'conversionerror':
 								break;
@@ -214,12 +232,86 @@ M.mod_readaloud.audiohelper = {
 								break;
 			case 'timerevent':
 				if(args[2]!='0'){
-					document.getElementById('displaytime').innerHTML= lz.embed[args[0]].getCanvasAttribute('displaytime');
+					//we rather lamely hijack this to run our volume events
+					//console.log(lz.embed[args[0]].getCanvasAttribute('displaytime'));
+					this.dogotsound(lz.embed[args[0]].getCanvasAttribute('currentvolume'));
 				}
-								break;
+				break;
+			case 'volumeevent':
+				if(args[2] > 0){
+					//we no longer use this cos its hard to make a graph when vol don't change
+					//console.log('volume:' + args[2]);
+					//this.dogotsound(args[2]);
+				}
+				break;
+			
+			case 'volume':
+				console.log('volume:' + args[2]);
+				break;
 		
+		}
+	},
+	makecanvas: function(div) {
+		var canvas = this.fetchcanvas(div);
+		if(!canvas){
+			canvas = document.createElement('canvas');
+		}
+        var thediv = document.getElementById(div); 
+        canvas.id     = div + '_canvas';
+		canvas.className = 'mod_readaloud_voicecanvas';
+        thediv.appendChild(canvas);
+		return canvas;
+    },
+	fetchcanvas: function(div) {
+		return document.getElementById(div + '_canvas');
+	},
+	drawvoicechart: function(div){
+		var canvas = this.fetchcanvas(div);
+		if(!canvas){return;}
+		var ctx = canvas.getContext("2d");
+		var xsteps = this.sounds.length * 2;
+		ctx.clearRect(0,0,canvas.width,canvas.height);
+		var cxzero = 0;
+		var cyzero = canvas.height / 2;
+		var cyratio = cyzero / canvas.height;
+		var cxratio = canvas.width / xsteps;
 		
+		//get y values by x steps (10 points each side)
+		var ys = Array();
+		for(var x=0; x< xsteps;x+=2){
+			ys[x] = (this.sounds[x] * cyratio) + cyzero;
+			ys[x+1] = (this.sounds[x] * cyratio * -1) + cyzero;
+		}
+		//reverse array to go out to in
+		// this got weird. so canned it
+		//ys.reverse();
 		
+		//draw from right to center
+		ctx.beginPath();
+		ctx.moveTo(canvas.width,cyzero);
+		for(var x=0; x< xsteps;x++){
+			ctx.lineTo(canvas.width - (x*cxratio),ys[x]);
+		}
+		ctx.stroke();
+		//draw from left to center
+		ctx.beginPath();
+		ctx.moveTo(0,cyzero);
+		for(var x=0; x< xsteps;x++){
+			ctx.lineTo(x*cxratio,ys[x]);
+		}
+		ctx.stroke();
+	},
+	dogotsound: function(level){
+		if(this.sounds.length > 10){
+			this.sounds.shift();
+		}
+		this.sounds.push(level);
+		if(level>0){
+			this.gotsound=true;
+		}
+		if(this.fetchrecstatus()!== 'stopped'){
+			//this.drawvoicechart(this.recinstructionscontainerleft);
+			this.drawvoicechart(this.dummyrecorder);
 		}
 	},
 	//handles calls into the recorder
@@ -258,6 +350,8 @@ M.mod_readaloud.audiohelper = {
 		this.dorecorderapi('dorecord');
 		$('.' + this.dummyrecorder).removeClass(this.dummyrecorder + '_stopped');
 		$('.' + this.dummyrecorder).addClass(this.dummyrecorder + '_recording');
+		//this.makecanvas(this.recinstructionscontainerleft);
+		this.makecanvas(this.dummyrecorder);
 	},
 
 	//this function shows how to call the MP3 recorder's API to playback the recording

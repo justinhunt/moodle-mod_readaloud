@@ -59,11 +59,11 @@ class backup_readaloud_activity_task extends backup_activity_task {
 
         // Link to the list of modules
         $search = "/(" . $base . "\/mod\/readaloud\/index.php\?id\=)([0-9]+)/";
-        $content = preg_replace($search, '$@ENGLISHCENTRALINDEX*$2@$', $content);
+        $content = preg_replace($search, '$@READALOUDINDEX*$2@$', $content);
 
         //Link to view.pphp by moduleid
         $search = "/(" . $base . "\/mod\/readaloud\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@readaloudVIEWBYID*$2@$', $content);
+        $content= preg_replace($search, '$@READALOUDVIEWBYID*$2@$', $content);
 
         return $content;
     }

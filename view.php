@@ -84,6 +84,11 @@ $PAGE->requires->jquery();
 //can skip this ... if bootstrap theme??
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
+
+//magnific popup
+//$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/magnific-popup/magnific-popup.css'));
+//$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/magnific-popup/jquery.magnific-popup.min.js'));
+
 //load swf loader
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/audio/embed-compressed.js'));
 
@@ -110,6 +115,7 @@ $recopts['recorderid'] = MOD_READALOUD_RECORDERID;
 $recopts['startbutton'] = MOD_READALOUD_START_BUTTON;
 $recopts['stopbutton'] = MOD_READALOUD_STOP_BUTTON;
 $recopts['recordbutton'] = MOD_READALOUD_RECORD_BUTTON;
+$recopts['hider']=MOD_READALOUD_HIDER;
 $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
 $recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
 $recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
@@ -119,16 +125,18 @@ $recopts['recinstructionscontainerright'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_
 $recopts['recinstructionscontainerleft'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT;
 $recopts['recordbuttoncontainer'] =MOD_READALOUD_RECORD_BUTTON_CONTAINER;
 $recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
+$recopts['progresscontainer'] = MOD_READALOUD_PROGRESS_CONTAINER;
+$recopts['feedbackcontainer'] = MOD_READALOUD_FEEDBACK_CONTAINER;
+$recopts['errorcontainer'] = MOD_READALOUD_ERROR_CONTAINER;
+$p1 = sesskey();
+$p2 = $cm->id;
 $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",
-						"p1","p2","p3","p4",MOD_READALOUD_RECORDERID,"false", "volume");
+						$p1,$p2,"p3","p4",MOD_READALOUD_RECORDERID,"false", "volume",$moduleinstance->timelimit);
 
 
 //this inits the M.mod_readaloud thingy, after the page has loaded.
 $PAGE->requires->js_init_call('M.mod_readaloud.audiohelper.init', array($recopts),false,$jsmodule);
-
-//this loads any external JS libraries we need to call
-//$PAGE->requires->js("/mod/readaloud/js/somejs.js");
-//$PAGE->requires->js(new moodle_url('http://www.somewhere.com/some.js'),true);
+$PAGE->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
 
 //This puts all our display logic into the renderer.php file in this plugin
 //theme developers can override classes there, so it makes it customizable for others
@@ -161,6 +169,9 @@ if($moduleinstance->maxattempts > 0){
 echo $renderer->show_welcome($moduleinstance->welcome);
 echo $renderer->show_button_recorder($moduleinstance,$cm);
 echo $renderer->show_passage($moduleinstance,$cm);
+echo $renderer->show_progress($moduleinstance,$cm);
+echo $renderer->show_feedback($moduleinstance,$cm);
+echo $renderer->show_error($moduleinstance,$cm);
 
 // Finish the page
 echo $renderer->footer();

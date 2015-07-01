@@ -7,6 +7,8 @@
 * @license JustinsPlainEnglishLicense ( http://www.poodll.com/justinsplainenglishlicense.txt )
 *
 */
+	require_once(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
+	require_once(dirname(dirname(__FILE__)).'/lib.php');
 	require_once(dirname(__FILE__).'/audiohelper.php');
 
 	$ah = new audiohelper();	
@@ -21,13 +23,22 @@
 	$fileext  = $ah->optional_param('fileext', '');  // the fileextension from direct upload recorders
 	$filename  = $ah->optional_param('filename', '');  // the filename from remote upload recorders
 
+	//check the sesskey, don't need any weirdness
+	if(!confirm_sesskey($p1)){
+	
+	}
 	
 	switch($datatype){
 		
 		case "uploadfile":
 			header("Content-type: text/xml");
 			echo "<?xml version=\"1.0\"?>\n";
-			$returnxml = $ah->uploadfile($filedata,$fileext, $requestid,$p1, $p2, $p3,$p4);
+			if(confirm_sesskey($p1)){
+				// p1 = sesskey, p2 = cmid
+				$returnxml = $ah->uploadfile($filedata,$fileext, $requestid,$p1, $p2, $p3,$p4);
+			}else{
+				$returnxml = 'Error<error>Invalid Session Key</error>';
+			}
 			break;
 
 		default:

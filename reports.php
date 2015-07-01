@@ -101,10 +101,17 @@ switch ($showreport){
 
 	case 'basic':
 		$report = new mod_readaloud_basic_report();
+		//formdata should only have simple values, not objects
+		//later it gets turned into urls for the export buttons
 		$formdata = new stdClass();
 		break;
-
 		
+	case 'attempts':
+		$report = new mod_readaloud_attempts_report();
+		$formdata = new stdClass();
+		$formdata->readaloudid = $moduleinstance->id;
+		$formdata->modulecontextid = $modulecontext->id;
+		break;
 		
 	default:
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', MOD_READALOUD_LANG));

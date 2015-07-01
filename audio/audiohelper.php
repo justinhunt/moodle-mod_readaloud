@@ -12,36 +12,7 @@ define('SAVEDIR','/home/chipmunkyou/public_html/moodle/cr/mod/readaloud/audio/ou
 define('FFMPEGPATH','ffmpeg');
 define('CONVERTDIR','/home/chipmunkyou/public_html/moodle/cr/mod/readaloud/audio/out/');
 define('FANCYBUTTON',true);
-	
-	$ah = new audiohelper();
-	
-	$datatype = $ah->optional_param('datatype', "");    // Type of action/data we are requesting
-	$p1  = $ah->optional_param('p1', '');  // parameter 1 for gen use 
-	$p2 = $ah->optional_param('p2', '');  // parameter 2 for gen use
-	$p3 = $ah->optional_param('p3', '');  // parameter 3 for gen use
-	$p4  = $ah->optional_param('p4', '');  // parameter 4 for gen use
-	$hash  = $ah->optional_param('hash', '');  // file or dir hash
-	$requestid  = $ah->optional_param('requestid', '');  // id of this request
-	$filedata  = $ah->optional_param('filedata', '');  // the bytestream from direct upload recorders
-	$fileext  = $ah->optional_param('fileext', '');  // the fileextension from direct upload recorders
-	$filename  = $ah->optional_param('filename', '');  // the filename from remote upload recorders
 
-	
-	switch($datatype){
-		
-		case "uploadfile":
-			header("Content-type: text/xml");
-			echo "<?xml version=\"1.0\"?>\n";
-			$returnxml = $ah->uploadfile($filedata,$fileext, $requestid,$p1, $p2, $p3,$p4);
-			break;
-
-		default:
-			return;
-
-	}
-
-	echo $returnxml;
-	return;
 	
 class audiohelper {
 
@@ -60,7 +31,8 @@ class audiohelper {
 
 
 	//For receiving an uploaded a file direct from an HTML5 or SWF widget
-	function uploadfile($filedata,  $fileextension, $actionid,$p1, $p2, $p3,$p4){
+	// $p2=cmid | $p1=sesskey
+	function uploadfile($filedata,  $fileextension, $actionid,$sesskey, $cmid, $p3,$p4){
 		global $CFG,$USER;
 
 		//setup our return object
@@ -97,22 +69,12 @@ class audiohelper {
 			$filedata = substr($filedata,$metapos+1);
 		
 		}
-
-		//actually make the file
-		$filecontents = base64_decode($filedata);
-		$ret = file_put_contents(SAVEDIR . $filename, $filecontents);
-		//if successful, run conversion and return filename
+		//actually make the file and save it
+		$xfiledata = base64_decode($filedata);
+		$ret = $this->save_to_moodle($xfiledata, $filename,$cmid);
+		
+		//if successful, return filename
 		if($ret){
-			
-			//if use ffmpeg, then attempt to convert mp3
-			if($fileextension!='mp3' && FFMPEGPATH!='' && CONVERTDIR !=''){
-				shell_exec(FFMPEGPATH . " -i " . SAVEDIR . $filename ." " . CONVERTDIR . $filenamebase . "mp3 >/dev/null 2>/dev/null &");
-				//we choose to send back the mp3 file name here
-				//though really we should check it was converted ok first.
-				//and actually it would be better to do the conversion in the background not here.
-				$filename = $filenamebase . "mp3";
-			}
-			
 			//return our recorded filename to the browser
 			array_push($return['messages'],$filename );
 		
@@ -120,8 +82,6 @@ class audiohelper {
 			$return['success']=false;
 			array_push($return['messages'],"unable to save file with filename:" . $filename );
 		}
-
-
 			
 		//we process the result for return to browser
 		$xml_output= $this->prepareXMLReturn($return, $actionid);	
@@ -129,6 +89,57 @@ class audiohelper {
 		//we return to widget/client the result of our file operation
 		return $xml_output;
 		
+	}
+	
+	
+	function save_to_moodle($filedata,$filename,$cmid){
+		global $USER,$DB,$CFG;
+		$cm         = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+		$readaloud  = $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
+		$context = context_module::instance($cm->id);
+		//init our fs object
+		$fs = get_file_storage();
+		//add userid to filepath
+		$filepath='/' . $USER->id . '/';
+		$component = MOD_READALOUD_FRANKY;
+		$filearea = MOD_READALOUD_FILEAREA_SUBMISSIONS;
+		$itemid = $readaloud->id;
+
+			
+		
+		//make our filerecord
+		 $record = new stdClass();
+		 $record->filename = $filename;
+		 $record->filearea = $filearea;
+		$record->component = $component;
+		$record->filepath = $filepath;
+		$record->itemid   = $itemid;
+		$record->license  = $CFG->sitedefaultlicense;
+		$record->author   = 'Moodle User';
+		$record->contextid = $context->id;
+		$record->userid    = $USER->id;
+		$record->source    = '';
+		$stored_file = $fs->create_file_from_string($record, $filedata);
+
+		
+		
+		//if unsuccessful return error
+		if(!$stored_file){
+			return false;
+		}
+		
+		//if successful write to attempts table
+		$newattempt = new stdClass();
+		$newattempt->courseid=$readaloud->course;
+		$newattempt->readaloudid=$readaloud->id;
+		$newattempt->userid=$USER->id;
+		$newattempt->status=0;
+		$newattempt->filename=$filename;
+		$newattempt->sessionscore=0;
+		$newattempt->timecreated=time();
+		$newattempt->timemodified=time();
+		$ret = $DB->insert_record(MOD_READALOUD_USERTABLE,$newattempt);
+		return $ret;
 	}
 
 	function fetchRecorder($updatecontrol="",$callbackjs="",$p1="",$p2="",$p3="",$p4="",$recorderid="", $autosubmit="true", $skin="noskin"){
@@ -165,14 +176,14 @@ class audiohelper {
 		return $ret; 
 	}
 	
-	function fetchRecorderJSON($updatecontrol="",$callbackjs="",$p1="",$p2="",$p3="",$p4="",$recorderid="", $autosubmit="true", $skin="noskin"){
-		$ret = $this->fetchMP3Recorder($updatecontrol,$callbackjs, $p1,$p2,$p3,$p4,$recorderid,$autosubmit,$skin,true);
+	function fetchRecorderJSON($updatecontrol="",$callbackjs="",$p1="",$p2="",$p3="",$p4="",$recorderid="", $autosubmit="true", $skin="noskin",$timelimit=0){
+		$ret = $this->fetchMP3Recorder($updatecontrol,$callbackjs, $p1,$p2,$p3,$p4,$recorderid,$autosubmit,$skin,true,$timelimit);
 		return $ret; 
 	}
 
 
 	//Fetch the MP3 Recorder to be included on the page
-	function fetchMP3Recorder($updatecontrol="",$callbackjs="",$p1="",$p2="",$p3="",$p4="",$recorderid='',$autosubmit="true", $skinmode="noskin",$json=false){
+	function fetchMP3Recorder($updatecontrol="",$callbackjs="",$p1="",$p2="",$p3="",$p4="",$recorderid='',$autosubmit="true", $skinmode="noskin",$json=false,$timelimit=0){
 
 	//Set the microphone config params
 	$micrate = "44";
@@ -186,7 +197,7 @@ class audiohelper {
 	$size="normal";  // "normal" or "small"
 
 	//set time limit in seconds
-	$timelimit="0"; //you could try "30" / "60" / "90"
+	$timelimit=$timelimit; //you could try "30" / "60" / "90"
 
 
 	//determine the size of the widget on the skinmode and player size(if not skinning)
