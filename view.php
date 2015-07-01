@@ -83,11 +83,9 @@ $PAGE->requires->jquery();
 //require bootstrap
 //can skip this ... if bootstrap theme??
 $PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
 
-//magnific popup
-//$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/magnific-popup/magnific-popup.css'));
-//$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/magnific-popup/jquery.magnific-popup.min.js'));
 
 //load swf loader
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/audio/embed-compressed.js'));
