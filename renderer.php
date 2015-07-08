@@ -105,7 +105,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 	
 	
 	 /**
-     *
+     
      */
 	public function show_passage($readaloud,$cm){
 		
@@ -113,7 +113,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 				array('class'=>'btn btn-primary ' . MOD_READALOUD_STOP_BUTTON));
 		$stop_button_cont= html_writer::div($stop_button,MOD_READALOUD_STOP_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_STOP_BUTTON_CONTAINER));
 		$ret = "";
-		$ret .= html_writer::div($readaloud->passage . $stop_button_cont,MOD_READALOUD_PASSAGE_CONTAINER,
+		$ret .= html_writer::div( $readaloud->passage . $stop_button_cont,MOD_READALOUD_PASSAGE_CONTAINER,
 							array('id'=>MOD_READALOUD_PASSAGE_CONTAINER));
 		return $ret;
 	}
@@ -329,3 +329,66 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 
 }
 
+class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
+	public function render_gradenow($gradenow) {
+		$ret = $this->render_header($gradenow->attemptdetails('userfullname'));
+		$ret = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
+		$ret .= $this->render_passage($gradenow->attemptdetails('passage'));
+		//$ret .=  $this->output->heading('somedetails:' . $gradenow->attemptdetails('somedetails') , 5);
+		return $ret;
+	}
+	
+	public function render_header($username) {
+		$ret = $this->output->heading(get_string('gradenowtitle',MOD_READALOUD_LANG,$username),3);
+		return $ret;
+	}
+	
+	public function render_passage($passage){
+		// load the HTML document
+		$doc = new DOMDocument;
+		// it will assume ISO-8859-1  encoding, so we need to hint it:
+		//see: http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
+		@$doc->loadHTML(mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8'));
+
+		// select all the text nodes
+		$xpath = new DOMXPath($doc);
+		$nodes = $xpath->query('//text()');
+		//init the text count
+		$wordcount=0;
+		foreach ($nodes as $node) {
+			if(empty(trim($node->nodeValue))){continue;}
+			//$words = preg_split('#\s+#', $node->nodeValue, null, PREG_SPLIT_NO_EMPTY);
+			$delim = ' ';
+			$words = explode($delim, $node->nodeValue);
+
+			foreach($words as $word){
+				$wordcount++;
+				$newnode = $doc->createElement('span',$word);
+				$spacenode = $doc->createElement('span',$delim);
+				//$newnode->appendChild($spacenode);
+				//print_r($newnode);
+				$newnode->setAttribute('id',MOD_READALOUD_CLASS . '_passageword_' . $wordcount);
+				$newnode->setAttribute('data-wordnumber',$wordcount);
+				$newnode->setAttribute('class',MOD_READALOUD_CLASS . '_passageword');
+				$spacenode->setAttribute('class',MOD_READALOUD_CLASS . '_passagespace');
+				$spacenode->setAttribute('id',MOD_READALOUD_CLASS . '_passagespace_' . $wordcount);
+				$node->parentNode->appendChild($newnode);
+				$node->parentNode->appendChild($spacenode);
+				$newnode = $doc->createElement('span',$word);
+			}
+			$node->nodeValue ="";	
+		}
+
+		$usepassage= $doc->saveHTML();
+
+		
+		$ret = html_writer::div($usepassage,'mod_readaloud_passagecontainer');
+		return $ret;
+	}
+	
+	public function render_audioplayer($audiourl){
+		$ret = html_writer::tag('audio','',
+									array('controls'=>'','src'=>$audiourl));
+		return $ret;
+	}
+}

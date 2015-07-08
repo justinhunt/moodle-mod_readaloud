@@ -33,7 +33,7 @@ require_once(dirname(__FILE__).'/reportclasses.php');
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // readaloud instance ID 
 $format = optional_param('format', 'html', PARAM_TEXT); //export format csv or html
-$showreport = optional_param('report', 'menu', PARAM_TEXT); // report type
+$action = optional_param('action', 'grading', PARAM_TEXT); // report type
 $questionid = optional_param('questionid', 0, PARAM_INT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // report type
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // report type
@@ -51,7 +51,7 @@ if ($id) {
     error('You must specify a course_module ID or an instance ID');
 }
 
-$PAGE->set_url(MOD_READALOUD_URL . '/reports.php', array('id' => $cm->id));
+$PAGE->set_url(MOD_READALOUD_URL . '/grading.php', array('id' => $cm->id));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -76,46 +76,46 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
+$PAGE->requires->jquery();
+//require bootstrap
+//can skip this ... if bootstrap theme??
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
 
-	//Get an admin settings 
-	$config = get_config(MOD_READALOUD_FRANKY);
+//Get an admin settings 
+$config = get_config(MOD_READALOUD_FRANKY);
 
 
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY);
 $reportrenderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY,'report');
+$gradenowrenderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY,'gradenow');
 
 //From here we actually display the page.
-//this is core renderer stuff
-$mode = "reports";
+$mode = "grading";
 $extraheader="";
-switch ($showreport){
-
-	//not a true report, separate implementation in renderer
-	case 'menu':
-		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', MOD_READALOUD_LANG));
-		echo $reportrenderer->render_reportmenu($moduleinstance,$cm);
-		// Finish the page
+switch ($action){
+	case 'gradenow':
+		$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+		$gradenow->prepare_javascript();
+		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
+		echo $gradenowrenderer->render_gradenow($gradenow);
 		echo $renderer->footer();
 		return;
-
-	case 'basic':
-		$report = new mod_readaloud_basic_report();
+	case 'grading':
+		$report = new mod_readaloud_grading_report();
 		//formdata should only have simple values, not objects
 		//later it gets turned into urls for the export buttons
-		$formdata = new stdClass();
-		break;
-		
-	case 'attempts':
-		$report = new mod_readaloud_attempts_report();
 		$formdata = new stdClass();
 		$formdata->readaloudid = $moduleinstance->id;
 		$formdata->modulecontextid = $modulecontext->id;
 		break;
+
 		
 	default:
-		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', MOD_READALOUD_LANG));
-		echo "unknown report type.";
+		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
+		echo "unknown action.";
 		echo $renderer->footer();
 		return;
 }
@@ -131,16 +131,13 @@ $report->process_raw_data($formdata, $moduleinstance);
 $reportheading = $report->fetch_formatted_heading();
 
 switch($format){
-	case 'csv':
-		$reportrows = $report->fetch_formatted_rows(false);
-		$reportrenderer->render_section_csv($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows, $report->fetch_fields());
-		exit;
+	case 'html':
 	default:
 		
 		$reportrows = $report->fetch_formatted_rows(true);
-		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', MOD_READALOUD_LANG));
+		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
 		echo $extraheader;
 		echo $reportrenderer->render_section_html($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows, $report->fetch_fields());
-		echo $reportrenderer->show_reports_footer($moduleinstance,$cm,$formdata,$showreport);
+		//echo $reportrenderer->show_reports_footer($moduleinstance,$cm,$formdata,$showreport);
 		echo $renderer->footer();
 }

@@ -35,6 +35,90 @@ M.mod_readaloud.helper = {
     }
 };
 
+M.mod_readaloud.gradinghelper = {
+	wordclass: 'mod_readaloud_passageword',
+	errorwords: [],
+	activityid: null,
+	attemptid: null,
+	sesskey: null,
+	passagecontainer: 'mod_readaloud_passagecontainer',
+
+	init: function(Y,opts){
+		//stash important info
+		this.activityid = opts['activityid'];
+		this.attemptid = opts['attemptid'];
+		this.sesskey = opts['sesskey'];
+		
+		//setup  a word counter
+		String.prototype.countwords = function(){
+			return this.split(/\s+\b/).length;
+		};
+		$('.' + this.wordclass).click(this.processword);
+
+	},
+	adderrorword: function(wordnumber,word) {
+		this.errorwords[wordnumber] = {word: word, wordnumber: wordnumber};
+		console.log(this.errorwords);
+		return;
+	},
+	processword: function() {
+		var m = M.mod_readaloud.gradinghelper;
+		var wordnumber = $(this).attr('data-wordnumber');
+		var theword = $(this).text();
+		m.adderrorword(wordnumber,theword);
+		alert(theword);
+		return;
+		
+		// Gets clicked on word (or selected text if text is selected)
+		var theword = '';
+		//by caret
+		if (window.getSelection && (sel = window.getSelection()).modify) {
+			// Webkit, Gecko
+			var s = window.getSelection();
+			if (s.isCollapsed) {
+				//move carat to word start and extend to end
+				s.modify('move', 'forward', 'character');
+				s.modify('move', 'backward', 'word');
+				s.modify('extend', 'forward', 'word');
+				//save index of start
+				var wordStart = s.anchorOffset;
+				//get word itself
+				theword = s.toString();
+				
+				//here we should decorate word
+				
+				
+				//get word position ... NEED an IE version of this below
+				s.extend(s.anchorNode,0);
+				var wordnumber = s.toString().countwords() + 1;
+				
+				//stash data for display, storage and analysis
+				m.adderrorword(s.anchorOffset,theword,wordnumber);
+				
+				//clear selection
+				s.modify('move', 'forward', 'character'); //clear selection
+			}
+			else {
+				theword = s.toString();
+			}
+		//by selection ..we probably dont need to consider this else if .... delete?
+		} else if ((sel = document.selection) && sel.type != "Control") {
+			// IE 4+
+			var textRange = sel.createRange();
+			if (!textRange.text) {
+				textRange.expand("word");
+			}
+			// Remove trailing spaces
+			while (/\s$/.test(textRange.text)) {
+				textRange.moveEnd("character", -1);
+			}
+			theword = textRange.text;
+		}
+		alert(theword);
+	}
+	
+};
+
 M.mod_readaloud.audiohelper = {	
 	recorderid: null,
 	recordbutton: null,
