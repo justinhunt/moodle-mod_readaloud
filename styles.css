@@ -81,6 +81,52 @@
 .mod_readaloud_passage_cont {
 	display: none;
 }
+
+.mod_readaloud_grading_passagecont {
+	line-height: 2em;
+	font-size: 1.5em;
+    border-style: double;
+    padding: 3px;
+    border-color: gold;
+   margin-top: 15px;
+
+}
+.mod_readaloud_grading_badword {
+	color:red; 
+	/* font-size: 12px; */
+	background-color: #ffcaca;
+	padding: 5px;
+	border-radius: 5px 5px 5px;
+	border: 1px solid red;
+	position:relative;
+}
+.mod_readaloud_grading_endspace {
+	color: blue; 
+	background-color: #cacaff;
+	padding: 5px;
+	border-radius: 5px 5px 5px;
+	border: 1px solid blue;
+	position:relative;
+	/*
+	background-image:url(/moodle/cr/mod/readaloud/pix/endmarker.png);
+	background-size: 39px 39px;
+	background-repeat:no-repeat;
+	background-position:2px;
+	*/
+}
+.mod_readaloud_grading_passagespace{
+	padding: 2px;
+	/*
+	background-image:url(/moodle/cr/mod/readaloud/pix/spacemarker.png);
+	background-size: 10px 10px;
+	background-repeat:no-repeat;
+	background-position:0px;
+	*/
+}
+.mod_readaloud_grading_unreadword {
+	font-style: italic;
+	text-decoration: line-through;
+}
 .mod_readaloud_passage_finished {
 	background-color: #CCCCCC;
 	padding: 2px;
@@ -93,6 +139,41 @@
 }
 .mod_readaloud_error_cont h3{
 	color: red;
+}
+.mod_readaloud_grading_player_cont {
+	color: blue;
+}
+.mod_readaloud_grading_wpm_cont {
+	color: blue;
+	display: flex;
+	margin-left: 50px;
+}
+
+.mod_readaloud_grading_wpm_img {
+	color: blue;
+}
+.mod_readaloud_grading_error_cont {
+	color: blue;
+	display: flex;
+	margin-left: 50px;
+}
+.mod_readaloud_grading_score {
+	color: blue;
+	border-radius: 5px 5px 5px;
+	border: 1px solid blue;
+	margin-left: 5px;
+	line-height: 35px;
+	text-align: center;
+	font-size: 2em;
+	height: 35px;
+	width: 70px;
+}
+.mod_readaloud_grading_error_img {
+	color: blue;
+}
+.mod_readaloud_grading_action_cont {
+	color: blue;
+	display: flex;
 }
 
 #mod_readaloud_hider

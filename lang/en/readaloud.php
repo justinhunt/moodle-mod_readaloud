@@ -107,3 +107,4 @@ $string['username'] = 'User';
 $string['audiofile'] = 'Audio';
 $string['wpm'] = 'WPM';
 $string['timecreated'] = 'Time Created';
+$string['nodataavailable'] = 'No Data Available Yet';

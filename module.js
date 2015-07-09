@@ -36,87 +36,112 @@ M.mod_readaloud.helper = {
 };
 
 M.mod_readaloud.gradinghelper = {
-	wordclass: 'mod_readaloud_passageword',
-	errorwords: [],
+	wordclass: 'mod_readaloud_grading_passageword',
+	spaceclass: 'mod_readaloud_grading_passagespace',
+	badwordclass: 'mod_readaloud_grading_badword',
+	endspaceclass: 'mod_readaloud_grading_endspace',
+	unreadwordclass:  'mod_readaloud_grading_unreadword',
+	wpmscoreid: 'mod_readaloud_grading_wpm_score',
+	errorscoreid: 'mod_readaloud_grading_error_score',
+	totalseconds: 60,
+	enforcemarker: true,
+	totalwordcount: 0,
+	endwordnumber: 0,
+	errorwords: {},
 	activityid: null,
 	attemptid: null,
 	sesskey: null,
-	passagecontainer: 'mod_readaloud_passagecontainer',
+	passagecontainer: 'mod_readaloud_grading_passagecont',
 
 	init: function(Y,opts){
 		//stash important info
 		this.activityid = opts['activityid'];
 		this.attemptid = opts['attemptid'];
 		this.sesskey = opts['sesskey'];
+		this.totalwordcount = $('.' + this.wordclass).length ;
+		this.totalseconds = 60;
 		
-		//setup  a word counter
-		String.prototype.countwords = function(){
-			return this.split(/\s+\b/).length;
-		};
+		//set up our end passage marker
+		this.endwordnumber = this.totalwordcount;
+		$('#' + this.spaceclass + '_' + this.totalwordcount).addClass(this.endspaceclass);
+		
+		//set up event handlers
 		$('.' + this.wordclass).click(this.processword);
+		$('.' + this.wordclass).dblclick(this.processspace);
+		$('.' + this.spaceclass).click(this.processspace);
+		
+		//initialise our scores
+		this.processscores();
 
 	},
 	adderrorword: function(wordnumber,word) {
 		this.errorwords[wordnumber] = {word: word, wordnumber: wordnumber};
-		console.log(this.errorwords);
+		//console.log(this.errorwords);
 		return;
 	},
 	processword: function() {
 		var m = M.mod_readaloud.gradinghelper;
 		var wordnumber = $(this).attr('data-wordnumber');
 		var theword = $(this).text();
-		m.adderrorword(wordnumber,theword);
-		alert(theword);
-		return;
-		
-		// Gets clicked on word (or selected text if text is selected)
-		var theword = '';
-		//by caret
-		if (window.getSelection && (sel = window.getSelection()).modify) {
-			// Webkit, Gecko
-			var s = window.getSelection();
-			if (s.isCollapsed) {
-				//move carat to word start and extend to end
-				s.modify('move', 'forward', 'character');
-				s.modify('move', 'backward', 'word');
-				s.modify('extend', 'forward', 'word');
-				//save index of start
-				var wordStart = s.anchorOffset;
-				//get word itself
-				theword = s.toString();
-				
-				//here we should decorate word
-				
-				
-				//get word position ... NEED an IE version of this below
-				s.extend(s.anchorNode,0);
-				var wordnumber = s.toString().countwords() + 1;
-				
-				//stash data for display, storage and analysis
-				m.adderrorword(s.anchorOffset,theword,wordnumber);
-				
-				//clear selection
-				s.modify('move', 'forward', 'character'); //clear selection
-			}
-			else {
-				theword = s.toString();
-			}
-		//by selection ..we probably dont need to consider this else if .... delete?
-		} else if ((sel = document.selection) && sel.type != "Control") {
-			// IE 4+
-			var textRange = sel.createRange();
-			if (!textRange.text) {
-				textRange.expand("word");
-			}
-			// Remove trailing spaces
-			while (/\s$/.test(textRange.text)) {
-				textRange.moveEnd("character", -1);
-			}
-			theword = textRange.text;
+		//this will disallow badwords after the endmarker
+		if(m.enforcemarker && Number(wordnumber)>Number(m.endwordnumber)){
+			return;
 		}
-		alert(theword);
+				
+		if(wordnumber in m.errorwords){
+			delete m.errorwords[wordnumber];
+			$(this).removeClass(m.badwordclass);
+		}else{
+			m.adderrorword(wordnumber,theword);
+			$(this).addClass(m.badwordclass);
+		}
+		m.processscores();
+	},
+	processspace: function() {
+		//this event is entered by  click on space
+		//it relies on attr data-wordnumber being set correctly
+		var m = M.mod_readaloud.gradinghelper;
+		var wordnumber = $(this).attr('data-wordnumber');
+		var thespace = $('#' + m.spaceclass + '_' + wordnumber);
+		
+		if(wordnumber == m.endwordnumber){
+			m.endwordnumber = m.totalwordcount;
+			thespace.removeClass(m.endspaceclass);
+			$('#' + m.spaceclass + '_' + m.totalwordcount).addClass(m.endspaceclass);
+		}else{
+			$('#' + m.spaceclass + '_' + m.endwordnumber).removeClass(m.endspaceclass);
+			m.endwordnumber = wordnumber;
+			thespace.addClass(m.endspaceclass);
+		}
+		m.processunread();
+		m.processscores();
+	},
+	processunread: function(){
+		var m = M.mod_readaloud.gradinghelper;
+		$('.' + m.wordclass).each(function(index){
+			var wordnumber = $(this).attr('data-wordnumber');
+			if(Number(wordnumber)>Number(m.endwordnumber)){
+				$(this).addClass(m.unreadwordclass);
+				//this will clear badwords after the endmarker
+				if(m.enforcemarker && wordnumber in m.errorwords){
+					delete m.errorwords[wordnumber];
+					$(this).removeClass(m.badwordclass);
+				}
+			}else{
+				$(this).removeClass(m.unreadwordclass);
+			}
+		})
+	},
+	processscores: function(){
+		debugger;
+		var m = M.mod_readaloud.gradinghelper;
+		var wpmscorebox = $('#' + m.wpmscoreid);
+		var errorscorebox = $('#' + m.errorscoreid);
+		var errorscore = Object.keys(m.errorwords).length;
+		errorscorebox.text(errorscore);
+		var wpmscore = Math.round((m.endwordnumber - errorscore) * 60 / m.totalseconds);
+		wpmscorebox.text(wpmscore);
 	}
-	
 };
 
 M.mod_readaloud.audiohelper = {	

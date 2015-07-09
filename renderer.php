@@ -331,8 +331,14 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 
 class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 	public function render_gradenow($gradenow) {
+		$audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
+		$wpm = $this->render_wpmdetails();
+		$error = $this->render_errordetails();
+		$actionheader = html_writer::div($audio . $error . $wpm,MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ACTION_CONTAINER));
+		
+		
 		$ret = $this->render_header($gradenow->attemptdetails('userfullname'));
-		$ret = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
+		$ret .= $actionheader;
 		$ret .= $this->render_passage($gradenow->attemptdetails('passage'));
 		//$ret .=  $this->output->heading('somedetails:' . $gradenow->attemptdetails('somedetails') , 5);
 		return $ret;
@@ -367,11 +373,12 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 				$spacenode = $doc->createElement('span',$delim);
 				//$newnode->appendChild($spacenode);
 				//print_r($newnode);
-				$newnode->setAttribute('id',MOD_READALOUD_CLASS . '_passageword_' . $wordcount);
+				$newnode->setAttribute('id',MOD_READALOUD_CLASS . '_grading_passageword_' . $wordcount);
 				$newnode->setAttribute('data-wordnumber',$wordcount);
-				$newnode->setAttribute('class',MOD_READALOUD_CLASS . '_passageword');
-				$spacenode->setAttribute('class',MOD_READALOUD_CLASS . '_passagespace');
-				$spacenode->setAttribute('id',MOD_READALOUD_CLASS . '_passagespace_' . $wordcount);
+				$newnode->setAttribute('class',MOD_READALOUD_CLASS . '_grading_passageword');
+				$spacenode->setAttribute('class',MOD_READALOUD_CLASS . '_grading_passagespace');
+				$spacenode->setAttribute('data-wordnumber',$wordcount);
+				$spacenode->setAttribute('id',MOD_READALOUD_CLASS . '_grading_passagespace_' . $wordcount);
 				$node->parentNode->appendChild($newnode);
 				$node->parentNode->appendChild($spacenode);
 				$newnode = $doc->createElement('span',$word);
@@ -382,13 +389,31 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 		$usepassage= $doc->saveHTML();
 
 		
-		$ret = html_writer::div($usepassage,'mod_readaloud_passagecontainer');
+		$ret = html_writer::div($usepassage,MOD_READALOUD_CLASS . '_grading_passagecont');
 		return $ret;
 	}
 	
 	public function render_audioplayer($audiourl){
-		$ret = html_writer::tag('audio','',
+		
+		$audioplayer = html_writer::tag('audio','',
 									array('controls'=>'','src'=>$audiourl));
+		$ret = html_writer::div($audioplayer,MOD_READALOUD_GRADING_PLAYER_CONTAINER,array('id'=>MOD_READALOUD_GRADING_PLAYER_CONTAINER));
+		return $ret;
+	}
+	
+	public function render_wpmdetails(){
+		global $CFG;
+		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/wpm.png','class'=>MOD_READALOUD_GRADING_WPM_IMG));
+		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE,array('id'=>MOD_READALOUD_GRADING_WPM_SCORE));
+		$ret = html_writer::div($img . $score ,MOD_READALOUD_GRADING_WPM_CONTAINER,array('id'=>MOD_READALOUD_GRADING_WPM_CONTAINER));
+		return $ret;
+	}
+	public function render_errordetails(){
+		global $CFG;
+		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/cross.png','class'=>MOD_READALOUD_GRADING_ERROR_IMG));
+		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE,array('id'=>MOD_READALOUD_GRADING_ERROR_SCORE));
+
+		$ret = html_writer::div($img.$score,MOD_READALOUD_GRADING_ERROR_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ERROR_CONTAINER));
 		return $ret;
 	}
 }

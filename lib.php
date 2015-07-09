@@ -57,6 +57,15 @@ define('MOD_READALOUD_INSTRUCTIONS_CONTAINER','mod_readaloud_instructions_cont')
 define('MOD_READALOUD_PASSAGE_CONTAINER','mod_readaloud_passage_cont');
 define('MOD_READALOUD_FEEDBACK_CONTAINER','mod_readaloud_feedback_cont');
 define('MOD_READALOUD_ERROR_CONTAINER','mod_readaloud_error_cont');
+define('MOD_READALOUD_GRADING_ERROR_CONTAINER','mod_readaloud_grading_error_cont');
+define('MOD_READALOUD_GRADING_ERROR_IMG','mod_readaloud_grading_error_img');
+define('MOD_READALOUD_GRADING_ERROR_SCORE','mod_readaloud_grading_error_score'); 
+define('MOD_READALOUD_GRADING_WPM_CONTAINER','mod_readaloud_grading_wpm_cont');
+define('MOD_READALOUD_GRADING_WPM_IMG','mod_readaloud_grading_wpm_img');
+define('MOD_READALOUD_GRADING_WPM_SCORE','mod_readaloud_grading_wpm_score');
+define('MOD_READALOUD_GRADING_SCORE','mod_readaloud_grading_score');
+define('MOD_READALOUD_GRADING_PLAYER_CONTAINER','mod_readaloud_grading_player_cont');
+define('MOD_READALOUD_GRADING_ACTION_CONTAINER','mod_readaloud_grading_action_cont');
 
 define('MOD_READALOUD_GRADEHIGHEST', 0);
 define('MOD_READALOUD_GRADELOWEST', 1);
