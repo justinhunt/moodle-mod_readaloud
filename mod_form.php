@@ -68,7 +68,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		
 		//time target
 		$mform->addElement('duration', 'timelimit', get_string('timelimit',MOD_READALOUD_LANG));
-		$mform->addDefault('timelimit',60);
+		$mform->setDefault('timelimit',60);
 		
 		//add other editors
 		//could add files but need the context/mod info. So for now just rich text
