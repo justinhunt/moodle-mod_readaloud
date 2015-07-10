@@ -89,8 +89,9 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 	  
 	  public function show_ungradedyet(){
 		$displaytext = $this->output->box_start();
-		$displaytext .= $this->output->heading(get_string("notgradedyet",MOD_READALOUD_LANG),5);
+		$displaytext .= '<center>' . $this->output->heading(get_string("notgradedyet",MOD_READALOUD_LANG),5) . '</center>';
 		$displaytext .= $this->output->box_end();
+		return $displaytext;
 	  }
 
     /**
