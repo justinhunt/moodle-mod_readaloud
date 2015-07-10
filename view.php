@@ -33,6 +33,7 @@ require_once(dirname(__FILE__).'/audio/audiohelper.php');
 
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
+$retake = optional_param('retake', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // readaloud instance ID - it should be named as the first character of the module
 
 if ($id) {
@@ -93,7 +94,61 @@ $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/audio/embed-c
 //Get an admin settings 
 $config = get_config(MOD_READALOUD_FRANKY);
 
+//Get our renderers
+$renderer = $PAGE->get_renderer('mod_readaloud');
+$gradenowrenderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY,'gradenow');
 
+//if we are in review mode, lets review
+$attempts = $DB->get_records(MOD_READALOUD_USERTABLE,array('userid'=>$USER->id,'readaloudid'=>$moduleinstance->id),'id DESC');
+
+//can attempt ?
+$canattempt = has_capability('mod/readaloud:preview',$modulecontext);
+if(!$canattempt && $moduleinstance->maxattempts > 0){
+	$canattempt=true;
+	$attempts =  $DB->get_records(MOD_READALOUD_USERTABLE,array('userid'=>$USER->id, MOD_READALOUD_MODNAME.'id'=>$moduleinstance->id));
+	if($attempts && count($attempts)<$moduleinstance->maxattempts){
+		$canattempt=false;
+	}
+}
+
+//reset our retake flag if we cant reatempt
+if(!$canattempt){$retake=0;}
+
+//display previous attempts if we have them
+if($attempts && $retake==0){
+		//if we are teacher we see tabs. If student we just see the quiz
+		if(has_capability('mod/readaloud:preview',$modulecontext)){
+			echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', MOD_READALOUD_LANG));
+		}else{
+			echo $renderer->notabsheader();
+		}
+
+
+		$latestattempt = array_shift($attempts);
+		
+		// show results if graded
+		if($latestattempt->sessiontime==null){
+			echo $renderer->show_welcome($moduleinstance->welcome);
+			echo $renderer->show_ungradedyet();
+		}else{	
+			$gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
+			$reviewmode =true;
+			$gradenow->prepare_javascript($reviewmode);
+			echo $gradenowrenderer->render_gradenow($gradenow);
+		}
+		
+		//show  button or a label depending on of can retake
+		if($canattempt){
+			echo $renderer->reattemptbutton($moduleinstance);
+		}else{
+			echo get_string("exceededattempts",MOD_READALOUD_LANG,$moduleinstance->maxattempts);
+		}
+		echo $renderer->footer();
+		return;
+}
+
+
+//if not in review mode, lets start up the test mode
 //get our module javascript all ready to go
 $jsmodule = array(
 	'name'     => 'mod_readaloud',
@@ -136,11 +191,6 @@ $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelpe
 $PAGE->requires->js_init_call('M.mod_readaloud.audiohelper.init', array($recopts),false,$jsmodule);
 $PAGE->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
 
-//This puts all our display logic into the renderer.php file in this plugin
-//theme developers can override classes there, so it makes it customizable for others
-//to do it this way.
-$renderer = $PAGE->get_renderer('mod_readaloud');
-
 //From here we actually display the page.
 //this is core renderer stuff
 
@@ -150,17 +200,6 @@ if(has_capability('mod/readaloud:preview',$modulecontext)){
 	echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', MOD_READALOUD_LANG));
 }else{
 	echo $renderer->notabsheader();
-}
-
-//There is no need to show the Intrduction
-//echo $renderer->show_intro($moduleinstance,$cm);
-
-//if we have too many attempts, lets report that.
-if($moduleinstance->maxattempts > 0){
-	$attempts =  $DB->get_records(MOD_READALOUD_USERTABLE,array('userid'=>$USER->id, MOD_READALOUD_MODNAME.'id'=>$moduleinstance->id));
-	if($attempts && count($attempts)<$moduleinstance->maxattempts){
-		echo get_string("exceededattempts",MOD_READALOUD_LANG,$moduleinstance->maxattempts);
-	}
 }
 
 //just for now show something

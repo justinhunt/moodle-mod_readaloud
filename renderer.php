@@ -77,6 +77,19 @@ class mod_readaloud_renderer extends plugin_renderer_base {
       	return $this->output->header();
       }
 
+	  
+	  /**
+     * Return HTML to display limited header
+     */
+      public function reattemptbutton($moduleinstance){
+		$button = $this->output->single_button(new moodle_url(MOD_READALOUD_URL . '/view.php',
+				array('n'=>$moduleinstance->id,'retake'=>1)),get_string('reattempt',MOD_READALOUD_FRANKY));
+      	return '<center>' . $button . '</center>';
+      }
+	  
+	  public function show_ungradedyet(){
+		return $this->output->heading(get_string("notgradedyet",MOD_READALOUD_LANG),4);
+	  }
 
     /**
      *
@@ -396,7 +409,7 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 	public function render_audioplayer($audiourl){
 		
 		$audioplayer = html_writer::tag('audio','',
-									array('controls'=>'','src'=>$audiourl));
+									array('controls'=>'','src'=>$audiourl,'id'=>MOD_READALOUD_GRADING_PLAYER));
 		$ret = html_writer::div($audioplayer,MOD_READALOUD_GRADING_PLAYER_CONTAINER,array('id'=>MOD_READALOUD_GRADING_PLAYER_CONTAINER));
 		return $ret;
 	}

@@ -36,6 +36,7 @@ M.mod_readaloud.helper = {
 };
 
 M.mod_readaloud.gradinghelper = {
+	audioplayerclass: 'mod_readaloud_grading_player',
 	wordclass: 'mod_readaloud_grading_passageword',
 	spaceclass: 'mod_readaloud_grading_passagespace',
 	badwordclass: 'mod_readaloud_grading_badword',
@@ -43,9 +44,14 @@ M.mod_readaloud.gradinghelper = {
 	unreadwordclass:  'mod_readaloud_grading_unreadword',
 	wpmscoreid: 'mod_readaloud_grading_wpm_score',
 	errorscoreid: 'mod_readaloud_grading_error_score',
+	formelementscore: 'mod_readaloud_grading_form_sessionscore',
+	formelementendword: 'mod_readaloud_grading_form_sessionendword',
+	formelementtime: 'mod_readaloud_grading_form_sessiontime',
+	formelementerrors: 'mod_readaloud_grading_form_sessionerrors',
 	totalseconds: 60,
 	enforcemarker: true,
 	totalwordcount: 0,
+	wpm: 0,
 	endwordnumber: 0,
 	errorwords: {},
 	activityid: null,
@@ -59,20 +65,54 @@ M.mod_readaloud.gradinghelper = {
 		this.attemptid = opts['attemptid'];
 		this.sesskey = opts['sesskey'];
 		this.totalwordcount = $('.' + this.wordclass).length ;
-		this.totalseconds = 60;
 		
-		//set up our end passage marker
-		this.endwordnumber = this.totalwordcount;
-		$('#' + this.spaceclass + '_' + this.totalwordcount).addClass(this.endspaceclass);
+		if(opts['sessiontime']>0){
+		debugger;
+			this.errorwords=JSON.parse(opts['sessionerrors']);
+			this.totalseconds=opts['sessiontime'];
+			this.endwordnumber=opts['sessionendword'];
+			this.wpm=opts['sessionscore'];
+			//if this has been graded, draw the gradestate
+			this.redrawgradestate();
+		}else{
+			//set up our end passage marker
+			this.endwordnumber = this.totalwordcount;	
+		}
+		
+		//add the endword marker
+		$('#' + this.spaceclass + '_' + this.endwordnumber).addClass(this.endspaceclass);
 		
 		//set up event handlers
-		$('.' + this.wordclass).click(this.processword);
-		$('.' + this.wordclass).dblclick(this.processspace);
-		$('.' + this.spaceclass).click(this.processspace);
+		//in review mode, do nuffink though ... thats for the student
+		if(opts['reviewmode']){
+			$('.' + this.wordclass).click(this.playword);
+		}else{
+			$('.' + this.wordclass).click(this.processword);
+			$('.' + this.spaceclass).click(this.processspace);
+		}
+		//initialise our audio duration. 
+		//After that we call processscores to init score boxe
+		//TODO: really should get audio duration at recording time.
+		var audioplayer = $('#' + this.audioplayerclass);
+		if(audioplayer.prop('readyState')<1){
+			audioplayer.on('loadedmetadata',this.processloadedaudio);
+		}else{
+			this.processloadedaudio();
+		}
+	},
+	playword: function(){
+		//for now do nothing;
 		
-		//initialise our scores
-		this.processscores();
-
+	},
+	redrawgradestate: function(){
+		var m = M.mod_readaloud.gradinghelper;
+		this.processunread();
+		debugger;
+		$.each(m.errorwords,function(index){
+				$('#' + m.wordclass + '_' + this.wordnumber).addClass(m.badwordclass);
+			}
+		);
+		
 	},
 	adderrorword: function(wordnumber,word) {
 		this.errorwords[wordnumber] = {word: word, wordnumber: wordnumber};
@@ -133,14 +173,27 @@ M.mod_readaloud.gradinghelper = {
 		})
 	},
 	processscores: function(){
-		debugger;
 		var m = M.mod_readaloud.gradinghelper;
 		var wpmscorebox = $('#' + m.wpmscoreid);
 		var errorscorebox = $('#' + m.errorscoreid);
 		var errorscore = Object.keys(m.errorwords).length;
 		errorscorebox.text(errorscore);
 		var wpmscore = Math.round((m.endwordnumber - errorscore) * 60 / m.totalseconds);
+		m.wpm = wpmscore;
 		wpmscorebox.text(wpmscore);
+		//update form field
+		debugger;
+		$("#" + m.formelementscore).val(wpmscore);
+		$("#" + m.formelementendword).val(m.endwordnumber);
+		$("#" + m.formelementerrors).val(JSON.stringify(m.errorwords));
+		
+	},
+	processloadedaudio: function(){
+		var m = M.mod_readaloud.gradinghelper;
+		m.totalseconds = Math.round($('#' + m.audioplayerclass).prop('duration'));
+		//update form field
+		$("#" + m.formelementtime).val(m.totalseconds);
+		m.processscores();
 	}
 };
 

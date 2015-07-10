@@ -70,6 +70,32 @@ if($CFG->version<2014051200){
 	$event->trigger();
 } 
 
+//process form submission
+switch($action){
+	case 'gradenowsubmit':
+		$mform = new \mod_readaloud\gradenowform();
+		if($mform->is_cancelled()) {
+			$action='grading';
+			break;
+		}else{
+			$data = $mform->get_data();
+			$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+			$gradenow->update($data);
+			if(property_exists($data,'submit2')){
+				$attemptid = $gradenow->get_next_ungraded_id();
+				if($attemptid){
+					$action='gradenow';
+				}else{
+					$action='grading';
+				}
+			}else{
+				$action='grading';
+			}
+		}
+		break;
+}
+
+
 
 /// Set up the page header
 $PAGE->set_title(format_string($moduleinstance->name));
@@ -96,11 +122,24 @@ $gradenowrenderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY,'gradenow');
 $mode = "grading";
 $extraheader="";
 switch ($action){
+
 	case 'gradenow':
 		$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+		$data=array(
+			'action'=>'gradenowsubmit',
+			'attemptid'=>$attemptid,
+			'n'=>$moduleinstance->id,
+			'sessiontime'=>$gradenow->attemptdetails('sessiontime'),
+			'sessionscore'=>$gradenow->attemptdetails('sessionscore'),
+			'sessionendword'=>$gradenow->attemptdetails('sessionendword'),
+			'sessionerrors'=>$gradenow->attemptdetails('sessionerrors'));
+		$nextid = $gradenow->get_next_ungraded_id();
+		$gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
+		$gradenowform->set_data($data);
 		$gradenow->prepare_javascript();
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
 		echo $gradenowrenderer->render_gradenow($gradenow);
+		$gradenowform->display();
 		echo $renderer->footer();
 		return;
 	case 'grading':

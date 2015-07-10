@@ -108,3 +108,6 @@ $string['audiofile'] = 'Audio';
 $string['wpm'] = 'WPM';
 $string['timecreated'] = 'Time Created';
 $string['nodataavailable'] = 'No Data Available Yet';
+$string['saveandnext'] = 'Save .... and next';
+$string['reattempt'] = 'Reattempt';
+$string['notgradedyet'] = 'Your submission has not been graded yet';

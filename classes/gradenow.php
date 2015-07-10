@@ -51,6 +51,29 @@ class gradenow{
 		}
    }
    
+   public function get_next_ungraded_id(){
+		global $DB;
+		$where = "id > " .$this->attemptid . " AND sessionscore = 0 AND readaloudid = " . $this->attemptdata->readaloudid;
+		$records = $DB->get_records_select(MOD_READALOUD_USERTABLE,$where,array(),' id ASC');
+		if($records){
+			$rec = array_shift($records);
+			return $rec->id;
+		}else{
+			return false;
+		}
+   }
+   
+   public function update($formdata){
+		global $DB;
+		$updatedattempt = new \stdClass();
+		$updatedattempt->id=$this->attemptid;
+		$updatedattempt->sessiontime = $formdata->sessiontime;
+		$updatedattempt->sessionscore = $formdata->sessionscore;
+		$updatedattempt->sessionerrors = $formdata->sessionerrors;
+		$updatedattempt->sessionendword = $formdata->sessionendword;
+		$DB->update_record(MOD_READALOUD_USERTABLE,$updatedattempt);
+   }
+   
    public function attemptdetails($property){
 		global $DB;
 		switch($property){
@@ -71,19 +94,19 @@ class gradenow{
 				$ret= $this->attemptdata->id . ' ' . $this->activitydata->passage; 
 				break;
 			default: 
-				$ret = false;
+				$ret = $this->attemptdata->{$property};
 		}
 		return $ret;
    }
    
-   public function prepare_javascript(){
+   public function prepare_javascript($reviewmode=false){
 		global $PAGE;
 		
 		//get our module javascript all ready to go
 		$jsmodule = array(
 			'name'     => 'mod_readaloud',
 			'fullpath' => '/mod/readaloud/module.js',
-			'requires' => array()
+			'requires' => array('json')
 		);
 		//here we set up any info we need to pass into javascript
 		$opts =Array();
@@ -92,11 +115,15 @@ class gradenow{
 
 
 		//here we set up any info we need to pass into javascript
-
 		$gradingopts =Array();
+		$gradingopts['reviewmode'] = $reviewmode;
 		$gradingopts['activityid'] = $this->activitydata->id;
 		$gradingopts['sesskey'] = sesskey();
 		$gradingopts['attemptid'] = $this->attemptdata->id;
+		$gradingopts['sessiontime'] = $this->attemptdata->sessiontime;
+		$gradingopts['sessionerrors'] = $this->attemptdata->sessionerrors;
+		$gradingopts['sessionendword'] = $this->attemptdata->sessionendword;
+		$gradingopts['sessionscore'] = $this->attemptdata->sessionscore;
 
 		//this inits the M.mod_readaloud thingy, after the page has loaded.
 		$PAGE->requires->js_init_call('M.mod_readaloud.gradinghelper.init', array($gradingopts),false,$jsmodule);
