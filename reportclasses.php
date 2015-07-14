@@ -149,15 +149,15 @@ abstract class mod_readaloud_base_report {
 */
 class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 	
-	protected $report="attempts";
-	protected $fields = array('id','username','audiofile','wpm','gradenow','timecreated');	
+	protected $report="grading";
+	protected $fields = array('id','username','audiofile','totalattempts','wpm','gradenow','timecreated','deletenow');	
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
 	
 	
 	public function fetch_formatted_field($field,$record,$withlinks){
-				global $DB,$CFG;
+				global $DB,$CFG,$OUTPUT;
 			switch($field){
 				case 'id':
 						$ret = $record->id;
@@ -166,6 +166,20 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 				case 'username':
 						$user = $this->fetch_cache('user',$record->userid);
 						$ret = fullname($user);
+						if($withlinks){
+							$link = new moodle_url(MOD_READALOUD_URL . '/grading.php',
+								array('action'=>'gradingbyuser','n'=>$record->readaloudid, 'userid'=>$record->userid));
+							$ret = html_writer::link($link,$ret);
+						}
+					break;
+				
+				case 'totalattempts':
+						$ret = $record->totalattempts;
+						if($withlinks){
+							$link = new moodle_url(MOD_READALOUD_URL . '/grading.php',
+								array('action'=>'gradingbyuser','n'=>$record->readaloudid, 'userid'=>$record->userid));
+							$ret = html_writer::link($link,$ret);
+						}
 					break;
 				
 				case 'audiofile':
@@ -194,10 +208,18 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 				case 'timecreated':
 						$ret = date("Y-m-d H:i:s",$record->timecreated);
 					break;
+				
+				case 'deletenow':
+						$url = new moodle_url(MOD_READALOUD_URL . '/manageattempts.php',
+							array('action'=>'delete','n'=>$record->readaloudid, 'attemptid'=>$record->id, 'source'=>$this->report));
+						$btn = new single_button($url, get_string('delete'), 'post');
+						$btn->add_confirm_action(get_string('deleteattemptconfirm',MOD_READALOUD_LANG));
+						$ret =$OUTPUT->render($btn);
+						break;
 					
 				default:
 					if(property_exists($record,$field)){
-						$ret=$record->{$field};
+						$ret=$record->{$field}; 
 					}else{
 						$ret = '';
 					}
@@ -221,19 +243,78 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 		$this->headingdata = new stdClass();
 		
 		$emptydata = array();
-		$alldata = $DB->get_records(MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid));
+		$user_attempt_totals= array();
+		$alldata = $DB->get_records(MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid),'id DESC, userid');
 		
 		if($alldata){
+			
 			foreach($alldata as $thedata){
-				$thedata->audiourl = $url = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $formdata->readaloudid, '/' . $thedata->userid . '/', $thedata->filename);
+			
+				//we ony take the most recent attempt
+				if(array_key_exists($thedata->userid,$user_attempt_totals)){
+					$user_attempt_totals[$thedata->userid] = $user_attempt_totals[$thedata->userid] + 1;
+					continue;
+				}
+				$user_attempt_totals[$thedata->userid]=1;
+				
+				$thedata->audiourl = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $formdata->readaloudid, '/' . $thedata->userid . '/', $thedata->filename);
 				$this->rawdata[] = $thedata;
 			}
-			$this->rawdata= $alldata;
+			foreach($this->rawdata as $thedata){
+				$thedata->totalattempts = $user_attempt_totals[$thedata->userid];
+			}
 		}else{
 			$this->rawdata= $emptydata;
 		}
 		return true;
 	}
+}
+
+/*
+* Grading Report
+*
+*
+*/
+class mod_readaloud_grading_byuser_report extends  mod_readaloud_grading_report {
+	protected $report="gradingbyuser";
+	protected $fields = array('id','username','audiofile','wpm','gradenow','timecreated','deletenow');	
+	protected $headingdata = null;
+	protected $qcache=array();
+	protected $ucache=array();
+	
+	
+	
+	public function fetch_formatted_heading(){
+		$record = $this->headingdata;
+		$ret='';
+		if(!$record){return $ret;}
+		$user = $this->fetch_cache('user',$record->userid);
+		return get_string('gradingbyuserheading',MOD_READALOUD_LANG,fullname($user));
+		
+	}
+	
+	public function process_raw_data($formdata){
+		global $DB;
+		
+		//heading data
+		$this->headingdata = new stdClass();
+		$this->headingdata->userid = $formdata->userid;
+		
+		$emptydata = array();
+		$alldata = $DB->get_records(MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid,'userid'=>$formdata->userid),'id DESC');
+		
+		if($alldata){
+			
+			foreach($alldata as $thedata){
+				$thedata->audiourl = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $formdata->readaloudid, '/' . $thedata->userid . '/', $thedata->filename);
+				$this->rawdata[] = $thedata;
+			}
+		}else{
+			$this->rawdata= $emptydata;
+		}
+		return true;
+	}
+	
 }
 
 
@@ -246,14 +327,14 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 	
 	protected $report="attempts";
-	protected $fields = array('id','username','audiofile','wpm','timecreated');	
+	protected $fields = array('id','username','audiofile','wpm','timecreated','deletenow');	
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
 	
 	
 	public function fetch_formatted_field($field,$record,$withlinks){
-				global $DB,$CFG;
+				global $DB,$CFG,$OUTPUT;
 			switch($field){
 				case 'id':
 						$ret = $record->id;
@@ -280,6 +361,14 @@ class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 				
 				case 'timecreated':
 						$ret = date("Y-m-d H:i:s",$record->timecreated);
+					break;
+					
+				case 'deletenow':
+					$url = new moodle_url(MOD_READALOUD_URL . '/manageattempts.php',
+						array('action'=>'delete','n'=>$record->readaloudid, 'attemptid'=>$record->id, 'source'=>$this->report));
+					$btn = new single_button($url, get_string('delete'), 'post');
+					$btn->add_confirm_action(get_string('deleteattemptconfirm',MOD_READALOUD_LANG));
+					$ret =$OUTPUT->render($btn);
 					break;
 					
 				default:

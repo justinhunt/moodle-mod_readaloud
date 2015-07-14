@@ -37,6 +37,7 @@ M.mod_readaloud.helper = {
 
 M.mod_readaloud.gradinghelper = {
 	audioplayerclass: 'mod_readaloud_grading_player',
+	wordplayerclass: 'mod_readaloud_grading_word_player',
 	wordclass: 'mod_readaloud_grading_passageword',
 	spaceclass: 'mod_readaloud_grading_passagespace',
 	badwordclass: 'mod_readaloud_grading_badword',
@@ -48,6 +49,8 @@ M.mod_readaloud.gradinghelper = {
 	formelementendword: 'mod_readaloud_grading_form_sessionendword',
 	formelementtime: 'mod_readaloud_grading_form_sessiontime',
 	formelementerrors: 'mod_readaloud_grading_form_sessionerrors',
+	enabletts: false,
+	ttslanguage: 'en',
 	totalseconds: 60,
 	enforcemarker: true,
 	totalwordcount: 0,
@@ -64,10 +67,11 @@ M.mod_readaloud.gradinghelper = {
 		this.activityid = opts['activityid'];
 		this.attemptid = opts['attemptid'];
 		this.sesskey = opts['sesskey'];
+		this.enabletts = opts['enabletts'];
+		this.ttslanguage = opts['ttslanguage'];
 		this.totalwordcount = $('.' + this.wordclass).length ;
 		
 		if(opts['sessiontime']>0){
-		debugger;
 			this.errorwords=JSON.parse(opts['sessionerrors']);
 			this.totalseconds=opts['sessiontime'];
 			this.endwordnumber=opts['sessionendword'];
@@ -85,7 +89,9 @@ M.mod_readaloud.gradinghelper = {
 		//set up event handlers
 		//in review mode, do nuffink though ... thats for the student
 		if(opts['reviewmode']){
-			$('.' + this.wordclass).click(this.playword);
+			if(this.enabletts && this.ttslanguage != 'none'){
+				$('.' + this.wordclass).click(this.playword);
+			}
 		}else{
 			$('.' + this.wordclass).click(this.processword);
 			$('.' + this.spaceclass).click(this.processspace);
@@ -101,8 +107,13 @@ M.mod_readaloud.gradinghelper = {
 		}
 	},
 	playword: function(){
-		//for now do nothing;
-		
+		var m = M.mod_readaloud.gradinghelper;
+		var audioplayer = $('.' + m.wordplayerclass);
+		audioplayer.attr('src',M.cfg.wwwroot + '/mod/readaloud/tts.php?txt=' + encodeURIComponent($(this).text()) 
+				+ '&lang=' + m.ttslanguage + '&n=' + m.activityid); 
+		audioplayer[0].pause();
+		audioplayer[0].load();
+		audioplayer[0].play();
 	},
 	redrawgradestate: function(){
 		var m = M.mod_readaloud.gradinghelper;

@@ -66,6 +66,7 @@ define('MOD_READALOUD_GRADING_WPM_SCORE','mod_readaloud_grading_wpm_score');
 define('MOD_READALOUD_GRADING_SCORE','mod_readaloud_grading_score');
 define('MOD_READALOUD_GRADING_PLAYER_CONTAINER','mod_readaloud_grading_player_cont');
 define('MOD_READALOUD_GRADING_PLAYER','mod_readaloud_grading_player');
+define('MOD_READALOUD_GRADING_WORDPLAYER','mod_readaloud_grading_word_player');
 define('MOD_READALOUD_GRADING_ACTION_CONTAINER','mod_readaloud_grading_action_cont');
 define('MOD_READALOUD_GRADING_FORM_SESSIONTIME','mod_readaloud_grading_form_sessiontime');
 define('MOD_READALOUD_GRADING_FORM_SESSIONSCORE','mod_readaloud_grading_form_sessionscore');

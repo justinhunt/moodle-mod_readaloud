@@ -151,6 +151,15 @@ switch ($action){
 		$formdata->modulecontextid = $modulecontext->id;
 		break;
 
+	case 'gradingbyuser':
+		$report = new mod_readaloud_grading_byuser_report();
+		//formdata should only have simple values, not objects
+		//later it gets turned into urls for the export buttons
+		$formdata = new stdClass();
+		$formdata->readaloudid = $moduleinstance->id;
+		$formdata->userid = $userid;
+		$formdata->modulecontextid = $modulecontext->id;
+		break;
 		
 	default:
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
@@ -177,6 +186,6 @@ switch($format){
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
 		echo $extraheader;
 		echo $reportrenderer->render_section_html($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows, $report->fetch_fields());
-		//echo $reportrenderer->show_reports_footer($moduleinstance,$cm,$formdata,$showreport);
+		echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$formdata);
 		echo $renderer->footer();
 }

@@ -80,6 +80,12 @@
 }
 .mod_readaloud_passage_cont {
 	display: none;
+	line-height: 2em;
+	font-size: 1.5em;
+    border-style: double;
+    padding: 3px;
+    border-color: gold;
+	margin-top: 15px;
 }
 
 .mod_readaloud_grading_passagecont {
@@ -142,6 +148,9 @@
 }
 .mod_readaloud_grading_player_cont {
 	color: blue;
+}
+.mod_readaloud_grading_word_player {
+	display: none;
 }
 .mod_readaloud_grading_wpm_cont {
 	color: blue;

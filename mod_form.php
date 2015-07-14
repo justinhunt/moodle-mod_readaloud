@@ -107,6 +107,16 @@ class mod_readaloud_mod_form extends moodleform_mod {
                             MOD_READALOUD_GRADEAVERAGE => get_string('gradeaverage', MOD_READALOUD_LANG),
 							MOD_READALOUD_GRADENONE => get_string('gradenone', MOD_READALOUD_LANG));
         $mform->addElement('select', 'gradeoptions', get_string('gradeoptions', MOD_READALOUD_LANG), $gradeoptions);
+		
+		//tts options
+		if(get_config(MOD_READALOUD_FRANKY,'enabletts')){
+			$langoptions = \mod_readaloud\utils::get_lang_options();
+			$mform->addElement('select', 'ttslanguage', get_string('ttslanguage', MOD_READALOUD_LANG), $langoptions);
+			$mform->setDefault('ttslanguage',get_config(MOD_READALOUD_FRANKY,'ttslanguage'));
+		}else{
+			$mform->addElement('hidden', 'ttslanguage', 'none');
+		}
+		$mform->setType('feedback_editor',PARAM_TEXT);
 
         //-------------------------------------------------------------------------------
         // add standard elements, common to all modules

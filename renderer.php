@@ -93,14 +93,16 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 		$displaytext .= $this->output->box_end();
 		return $displaytext;
 	  }
+	  
+
 
     /**
      *
      */
-    public function show_welcome($showtext) {
-	
-		$displaytext = $this->output->box_start();
-		$displaytext .= $this->output->heading($showtext, 4, 'main');
+    public function show_welcome($showtext, $showtitle) {
+		$displaytext =  '<center>' . $this->output->heading($showtitle, 3, 'main') . '</center>'; 
+		$displaytext .= $this->output->box_start();
+		$displaytext .= $showtext;
 		$displaytext .= $this->output->box_end();
 		$ret= html_writer::div($displaytext,MOD_READALOUD_INSTRUCTIONS_CONTAINER,array('id'=>MOD_READALOUD_INSTRUCTIONS_CONTAINER));
         return $ret;
@@ -150,9 +152,9 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 		 /**
      *
      */
-	public function show_feedback($readaloud,$cm){
-		$displaytext = $this->output->box_start();
-		$displaytext .= $this->output->heading(get_string('feedbackheader',MOD_READALOUD_LANG), 3, 'main');
+	public function show_feedback($readaloud,$cm,$showtitle){
+		$displaytext =  '<center>' . $this->output->heading($showtitle, 3, 'main') . '</center>'; 
+		$displaytext .= $this->output->box_start();
 		$displaytext .=  html_writer::div($readaloud->feedback,'',array());
 		$displaytext .= $this->output->box_end();
 		$ret= html_writer::div($displaytext,MOD_READALOUD_FEEDBACK_CONTAINER,array('id'=>MOD_READALOUD_FEEDBACK_CONTAINER));
@@ -342,6 +344,13 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 		$ret .= $this->render_exportbuttons_html($cm,$formdata,$showreport);
 		return $ret;
 	}
+	
+	function show_grading_footer($moduleinstance,$cm,$formdata){
+		// print's a popup link to your custom page
+		$link = new moodle_url(MOD_READALOUD_URL . '/grading.php',array('id'=>$cm->id,'n'=>$moduleinstance->id));
+		$ret =  html_writer::link($link, get_string('returntogradinghome',MOD_READALOUD_LANG));
+		return $ret;
+	}
 
 }
 
@@ -361,7 +370,7 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 	}
 	
 	public function render_header($username) {
-		$ret = $this->output->heading(get_string('gradenowtitle',MOD_READALOUD_LANG,$username),3);
+		$ret = $this->output->heading(get_string('showingattempt',MOD_READALOUD_LANG,$username),3);
 		return $ret;
 	}
 	
@@ -415,6 +424,12 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 									array('controls'=>'','src'=>$audiourl,'id'=>MOD_READALOUD_GRADING_PLAYER));
 		$ret = html_writer::div($audioplayer,MOD_READALOUD_GRADING_PLAYER_CONTAINER,array('id'=>MOD_READALOUD_GRADING_PLAYER_CONTAINER));
 		return $ret;
+	}
+	
+		  
+	public function render_hiddenaudioplayer(){
+		$audioplayer = html_writer::tag('audio','',array('src'=>'','id'=>MOD_READALOUD_GRADING_WORDPLAYER,'class'=>MOD_READALOUD_GRADING_WORDPLAYER));
+		return $audioplayer;
 	}
 	
 	public function render_wpmdetails(){

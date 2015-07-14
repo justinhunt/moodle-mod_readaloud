@@ -128,12 +128,13 @@ if($attempts && $retake==0){
 		
 		// show results if graded
 		if($latestattempt->sessiontime==null){
-			echo $renderer->show_welcome($moduleinstance->welcome);
+			echo $renderer->show_welcome($moduleinstance->welcome,$moduleinstance->name);
 			echo $renderer->show_ungradedyet();
 		}else{	
 			$gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
 			$reviewmode =true;
 			$gradenow->prepare_javascript($reviewmode);
+			echo $gradenowrenderer->render_hiddenaudioplayer();
 			echo $gradenowrenderer->render_gradenow($gradenow);
 		}
 		
@@ -202,12 +203,12 @@ if(has_capability('mod/readaloud:preview',$modulecontext)){
 	echo $renderer->notabsheader();
 }
 
-//just for now show something
-echo $renderer->show_welcome($moduleinstance->welcome);
+//show all the main parts. Many will be hidden and displayed by JS
+echo $renderer->show_welcome($moduleinstance->welcome,$moduleinstance->name);
 echo $renderer->show_button_recorder($moduleinstance,$cm);
 echo $renderer->show_passage($moduleinstance,$cm);
 echo $renderer->show_progress($moduleinstance,$cm);
-echo $renderer->show_feedback($moduleinstance,$cm);
+echo $renderer->show_feedback($moduleinstance,$cm,$moduleinstance->name);
 echo $renderer->show_error($moduleinstance,$cm);
 
 // Finish the page

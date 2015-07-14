@@ -71,6 +71,18 @@ $capabilities = array(
 			'clonepermissionsfrom' => 'moodle/course:manageactivities'
 	),
 	
+	'mod/readaloud:manageattempts' => array(
+			'riskbitmask' => RISK_XSS,
+			'captype' => 'write',
+			'contextlevel' => CONTEXT_COURSE,
+			'archetypes' => array(
+					'teacher' => CAP_ALLOW,
+					'editingteacher' => CAP_ALLOW,
+					'manager' => CAP_ALLOW
+			),
+			'clonepermissionsfrom' => 'moodle/course:manageactivities'
+	),
+	
 	'mod/readaloud:itemedit' => array(
 			'riskbitmask' => RISK_XSS,
 			'captype' => 'write',
@@ -103,8 +115,17 @@ $capabilities = array(
 					'manager' => CAP_ALLOW
 			),
 			'clonepermissionsfrom' => 'moodle/course:manageactivities'
-	),
-
+	), 
+	'mod/readaloud:tts' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'legacy' => array(
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    ),
     'mod/readaloud:view' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,

@@ -117,6 +117,8 @@ class gradenow{
 		//here we set up any info we need to pass into javascript
 		$gradingopts =Array();
 		$gradingopts['reviewmode'] = $reviewmode;
+		$gradingopts['enabletts'] = get_config(MOD_READALOUD_FRANKY,'enabletts');
+ 		$gradingopts['ttslanguage'] = $this->activitydata->ttslanguage;
 		$gradingopts['activityid'] = $this->activitydata->id;
 		$gradingopts['sesskey'] = sesskey();
 		$gradingopts['attemptid'] = $this->attemptdata->id;
