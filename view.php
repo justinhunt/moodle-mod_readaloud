@@ -182,6 +182,7 @@ $recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
 $recopts['progresscontainer'] = MOD_READALOUD_PROGRESS_CONTAINER;
 $recopts['feedbackcontainer'] = MOD_READALOUD_FEEDBACK_CONTAINER;
 $recopts['errorcontainer'] = MOD_READALOUD_ERROR_CONTAINER;
+$recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
 $p1 = sesskey();
 $p2 = $cm->id;
 $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",

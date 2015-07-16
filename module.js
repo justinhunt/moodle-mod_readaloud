@@ -52,6 +52,8 @@ M.mod_readaloud.gradinghelper = {
 	enabletts: false,
 	ttslanguage: 'en',
 	totalseconds: 60,
+	allowearlyexit: false,
+	timelimit: 60,
 	enforcemarker: true,
 	totalwordcount: 0,
 	wpm: 0,
@@ -69,6 +71,8 @@ M.mod_readaloud.gradinghelper = {
 		this.sesskey = opts['sesskey'];
 		this.enabletts = opts['enabletts'];
 		this.ttslanguage = opts['ttslanguage'];
+		this.allowearlyexit = opts['allowearlyexit'];
+		this.timelimit = opts['timelimit'];
 		this.totalwordcount = $('.' + this.wordclass).length ;
 		
 		if(opts['sessiontime']>0){
@@ -201,7 +205,11 @@ M.mod_readaloud.gradinghelper = {
 	},
 	processloadedaudio: function(){
 		var m = M.mod_readaloud.gradinghelper;
-		m.totalseconds = Math.round($('#' + m.audioplayerclass).prop('duration'));
+		if(m.allowearlyexit){
+			m.totalseconds = Math.round($('#' + m.audioplayerclass).prop('duration'));
+		}else{
+			m.totalseconds = m.timelimit;
+		}
 		//update form field
 		$("#" + m.formelementtime).val(m.totalseconds);
 		m.processscores();
@@ -229,6 +237,7 @@ M.mod_readaloud.audiohelper = {
 	progresscontainer: null,
 	recinstructionscontainerright: null,
 	recinstructionscontainerleft: null,
+	allowearlyexit: false,
 	status: 'stopped',
 
 	init: function(Y,opts){
@@ -249,6 +258,7 @@ M.mod_readaloud.audiohelper = {
 		this.instructionscontainer= opts['instructionscontainer'];
 		this.recinstructionscontainerright= opts['recinstructionscontainerright'];
 		this.recinstructionscontainerleft= opts['recinstructionscontainerleft'];
+		this.allowearlyexit = opts['allowearlyexit'];
 		$('.' + this.recordbutton).click(this.recordbuttonclick);
 		$('.' + this.startbutton).click(this.startbuttonclick);
 		$('.' + this.stopbutton).click(this.stopbuttonclick);
@@ -279,13 +289,16 @@ M.mod_readaloud.audiohelper = {
 		$('.' + m.recordbutton).hide();
 		$('.' + m.startbutton).hide();
 		$('.' + m.instructionscontainer).hide();
+		if(!m.allowearlyexit){
+			$('.' + m.stopbutton).hide();
+		}
 	},
 	douploadlayout: function(){
 		var m = M.mod_readaloud.audiohelper;
 		$('.' + m.passagecontainer).addClass('mod_readaloud_passage_finished');
 		$('.' + m.stopbutton).prop('disabled',true);
-		$('.' + m.hider).fadeIn('slow');
-		$('.' + m.progresscontainer).fadeIn('slow');
+		$('.' + m.hider).fadeIn('fast');
+		$('.' + m.progresscontainer).fadeIn('fast');
 	},
 	dofinishedlayout: function(){
 		var m = M.mod_readaloud.audiohelper;
@@ -326,6 +339,7 @@ M.mod_readaloud.audiohelper = {
 	},
 	recordbuttonclick: function(){
 		var m = M.mod_readaloud.audiohelper;
+		
 		$(this).text(M.util.get_string('done','mod_readaloud'));	
 		if(M.mod_readaloud.audiohelper.awaitingpermission){
 			$(this).text(M.util.get_string('recordnameschool','mod_readaloud'));
@@ -419,7 +433,7 @@ M.mod_readaloud.audiohelper = {
 				break;
 			
 			case 'volume':
-				console.log('volume:' + args[2]);
+				//console.log('volume:' + args[2]);
 				break;
 		
 		}

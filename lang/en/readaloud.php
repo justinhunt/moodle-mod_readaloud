@@ -123,3 +123,6 @@ $string['enabletts_details'] = 'Words marked as errors, when clicked will play b
 $string['ttslanguage'] = 'TTS Language';
 $string['deleteattemptconfirm'] = "Are you sure that you want to delete this attempt?";
 $string['deletenow']='';
+$string['allowearlyexit']='Can exit early';
+$string['allowearlyexit_details']='If checked students can finish before the time limit, by pressing a finish button. The WPM is calculated using their recording time.';
+$string['allowearlyexit_defaultdetails']='Sets the default setting for allow_early_exit. Can be overriden at the activity level. If true, allow_early_exit means that students can finish before the time limit, by pressing a finish button. The WPM is calculated using their recording time.';

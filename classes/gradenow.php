@@ -118,6 +118,8 @@ class gradenow{
 		$gradingopts =Array();
 		$gradingopts['reviewmode'] = $reviewmode;
 		$gradingopts['enabletts'] = get_config(MOD_READALOUD_FRANKY,'enabletts');
+		$gradingopts['allowearlyexit'] = $this->activitydata->allowearlyexit ? true :false;
+		$gradingopts['timelimit'] = $this->activitydata->timelimit;
  		$gradingopts['ttslanguage'] = $this->activitydata->ttslanguage;
 		$gradingopts['activityid'] = $this->activitydata->id;
 		$gradingopts['sesskey'] = sesskey();

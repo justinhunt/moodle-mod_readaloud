@@ -95,6 +95,10 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$mform->setType('welcome_editor',PARAM_RAW);
 		$mform->setType('feedback_editor',PARAM_RAW);
 		
+		//allow early exit
+		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_details', MOD_READALOUD_LANG));
+		$mform->setDefault('allowearlyexit',$config->allowearlyexit);
+		
 		//attempts
         $attemptoptions = array(0 => get_string('unlimited', MOD_READALOUD_LANG),
                             1 => '1',2 => '2',3 => '3',4 => '4',5 => '5',);
@@ -109,10 +113,10 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addElement('select', 'gradeoptions', get_string('gradeoptions', MOD_READALOUD_LANG), $gradeoptions);
 		
 		//tts options
-		if(get_config(MOD_READALOUD_FRANKY,'enabletts')){
+		if($config->enabletts){
 			$langoptions = \mod_readaloud\utils::get_lang_options();
 			$mform->addElement('select', 'ttslanguage', get_string('ttslanguage', MOD_READALOUD_LANG), $langoptions);
-			$mform->setDefault('ttslanguage',get_config(MOD_READALOUD_FRANKY,'ttslanguage'));
+			$mform->setDefault('ttslanguage',$config->ttslanguage);
 		}else{
 			$mform->addElement('hidden', 'ttslanguage', 'none');
 		}
