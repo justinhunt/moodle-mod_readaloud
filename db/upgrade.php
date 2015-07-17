@@ -58,6 +58,19 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015071501, 'readaloud');
     }
 
+	// Add allowearlyexit field
+    if ($oldversion < 2015071502) {
+
+        // Define field introformat to be added to readaloud
+        $table = new xmldb_table('readaloud');
+        $field = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '3', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // Add field introformat
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2015071502, 'readaloud');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

@@ -103,15 +103,6 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $attemptoptions = array(0 => get_string('unlimited', MOD_READALOUD_LANG),
                             1 => '1',2 => '2',3 => '3',4 => '4',5 => '5',);
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', MOD_READALOUD_LANG), $attemptoptions);
-        
-        //grade options
-        $gradeoptions = array(MOD_READALOUD_GRADEHIGHEST => get_string('gradehighest',MOD_READALOUD_LANG),
-                            MOD_READALOUD_GRADELOWEST => get_string('gradelowest', MOD_READALOUD_LANG),
-                            MOD_READALOUD_GRADELATEST => get_string('gradelatest', MOD_READALOUD_LANG),
-                            MOD_READALOUD_GRADEAVERAGE => get_string('gradeaverage', MOD_READALOUD_LANG),
-							MOD_READALOUD_GRADENONE => get_string('gradenone', MOD_READALOUD_LANG));
-        $mform->addElement('select', 'gradeoptions', get_string('gradeoptions', MOD_READALOUD_LANG), $gradeoptions);
-		$mform->setDefault('gradeoptions',MOD_READALOUD_GRADELATEST);
 		
 		//tts options
 		if($config->enabletts){
@@ -122,6 +113,20 @@ class mod_readaloud_mod_form extends moodleform_mod {
 			$mform->addElement('hidden', 'ttslanguage', 'none');
 		}
 		$mform->setType('feedback_editor',PARAM_TEXT);
+		
+		 // Grade.
+        $this->standard_grading_coursemodule_elements();
+        
+        //grade options
+        $gradeoptions = array(MOD_READALOUD_GRADEHIGHEST => get_string('gradehighest',MOD_READALOUD_LANG),
+                            MOD_READALOUD_GRADELOWEST => get_string('gradelowest', MOD_READALOUD_LANG),
+                            MOD_READALOUD_GRADELATEST => get_string('gradelatest', MOD_READALOUD_LANG),
+                            MOD_READALOUD_GRADEAVERAGE => get_string('gradeaverage', MOD_READALOUD_LANG),
+							MOD_READALOUD_GRADENONE => get_string('gradenone', MOD_READALOUD_LANG));
+        $mform->addElement('select', 'gradeoptions', get_string('gradeoptions', MOD_READALOUD_LANG), $gradeoptions);
+		$mform->setDefault('gradeoptions',MOD_READALOUD_GRADELATEST);
+		
+		
 
         //-------------------------------------------------------------------------------
         // add standard elements, common to all modules

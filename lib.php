@@ -107,7 +107,7 @@ function readaloud_supports($feature) {
 
 /**
  * Implementation of the function for printing the form elements that control
- * whether the course reset functionality affects the englishcentral.
+ * whether the course reset functionality affects the readaloud.
  *
  * @param $mform form passed by reference
  */
@@ -182,7 +182,7 @@ function readaloud_reset_userdata($data) {
 
         // remove all grades from gradebook
         if (empty($data->reset_gradebook_grades)) {
-            englishcentral_reset_gradebook($data->courseid);
+            readaloud_reset_gradebook($data->courseid);
         }
 
         $status[] = array('component'=>$componentstr, 'item'=>get_string('deletealluserdata', MOD_READALOUD_LANG), 'error'=>false);
@@ -332,13 +332,20 @@ function readaloud_get_user_grades($moduleinstance, $userid=0) {
     }
 
 	$idfield = 'a.' . MOD_READALOUD_MODNAME . 'id';
-    if ($moduleinstance->maxattempts==1 || $moduleinstance->gradeoptions == MOD_ENGLISHCENTRAL_GRADELATEST) {
-
+    if ($moduleinstance->maxattempts==1 || $moduleinstance->gradeoptions == MOD_READALOUD_GRADELATEST) {
+/*
         $sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
                   FROM {user} u,  {". MOD_READALOUD_USERTABLE ."} a
                  WHERE u.id = a.userid AND $idfield = :moduleid
                        AND a.status = 1
                        $user";
+*/
+$sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
+                      FROM {user} u, {". MOD_READALOUD_USERTABLE ."} a
+                     WHERE a.id= (SELECT max(id) FROM {". MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND  AND $idfield = :moduleid
+                           $user )  AND u.id = a.userid AND $idfield = :moduleid
+                           $user
+                  GROUP BY u.id";
 	
 	}else{
 		switch($moduleinstance->gradeoptions){
