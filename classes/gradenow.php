@@ -87,7 +87,7 @@ class gradenow{
 			case 'audiourl':
 				$ret = \moodle_url::make_pluginfile_url($this->modulecontextid, MOD_READALOUD_FRANKY, 
 					MOD_READALOUD_FILEAREA_SUBMISSIONS, 
-					$this->attemptdata->readaloudid, '/' . $this->attemptdata->userid . '/', 
+					$this->attemptdata->id, '/', 
 					$this->attemptdata->filename);
 				break;
 			case 'somedetails': 

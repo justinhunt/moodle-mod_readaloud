@@ -55,6 +55,12 @@ class restore_readaloud_activity_task extends restore_activity_task {
 
         $contents[] = new restore_decode_content(MOD_READALOUD_MODNAME,
                           array('intro'), MOD_READALOUD_MODNAME);
+		$contents[] = new restore_decode_content(MOD_READALOUD_MODNAME,
+                          array('welcome'), MOD_READALOUD_MODNAME);
+		$contents[] = new restore_decode_content(MOD_READALOUD_MODNAME,
+                          array('passage'), MOD_READALOUD_MODNAME);
+		$contents[] = new restore_decode_content(MOD_READALOUD_MODNAME,
+                          array('feedback'), MOD_READALOUD_MODNAME);
 
         return $contents;
     }

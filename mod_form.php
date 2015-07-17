@@ -111,6 +111,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
                             MOD_READALOUD_GRADEAVERAGE => get_string('gradeaverage', MOD_READALOUD_LANG),
 							MOD_READALOUD_GRADENONE => get_string('gradenone', MOD_READALOUD_LANG));
         $mform->addElement('select', 'gradeoptions', get_string('gradeoptions', MOD_READALOUD_LANG), $gradeoptions);
+		$mform->setDefault('gradeoptions',MOD_READALOUD_GRADELATEST);
 		
 		//tts options
 		if($config->enabletts){

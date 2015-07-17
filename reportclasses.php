@@ -257,7 +257,7 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 				}
 				$user_attempt_totals[$thedata->userid]=1;
 				
-				$thedata->audiourl = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $formdata->readaloudid, '/' . $thedata->userid . '/', $thedata->filename);
+				$thedata->audiourl = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id, '/' , $thedata->filename);
 				$this->rawdata[] = $thedata;
 			}
 			foreach($this->rawdata as $thedata){
@@ -306,7 +306,7 @@ class mod_readaloud_grading_byuser_report extends  mod_readaloud_grading_report 
 		if($alldata){
 			
 			foreach($alldata as $thedata){
-				$thedata->audiourl = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $formdata->readaloudid, '/' . $thedata->userid . '/', $thedata->filename);
+				$thedata->audiourl = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id, '/' , $thedata->filename);
 				$this->rawdata[] = $thedata;
 			}
 		}else{
@@ -401,7 +401,7 @@ class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 		
 		if($alldata){
 			foreach($alldata as $thedata){
-				$thedata->audiourl = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $formdata->readaloudid, '/' . $thedata->userid . '/', $thedata->filename);
+				$thedata->audiourl = moodle_url::make_pluginfile_url($formdata->modulecontextid, MOD_READALOUD_FRANKY, 			MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id, '/' , $thedata->filename);
 				$this->rawdata[] = $thedata;
 			}
 			$this->rawdata= $alldata;

@@ -142,7 +142,7 @@ if($attempts && $retake==0){
 		if($canattempt){
 			echo $renderer->reattemptbutton($moduleinstance);
 		}else{
-			echo get_string("exceededattempts",MOD_READALOUD_LANG,$moduleinstance->maxattempts);
+			echo $renderer->exceededattempts($moduleinstance);
 		}
 		echo $renderer->footer();
 		return;

@@ -79,19 +79,32 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 
 	  
 	  /**
-     * Return HTML to display limited header
+     *
      */
       public function reattemptbutton($moduleinstance){
+      
 		$button = $this->output->single_button(new moodle_url(MOD_READALOUD_URL . '/view.php',
 				array('n'=>$moduleinstance->id,'retake'=>1)),get_string('reattempt',MOD_READALOUD_FRANKY));
-      	return '<center>' . $button . '</center>';
+      	
+      	$ret = html_writer::div($button ,MOD_READALOUD_CLASS  . '_afterattempt_cont');
+      	return $ret;
+
+      }
+      
+    /**
+     *
+     */
+      public function exceededattempts($moduleinstance){
+		$message = get_string("exceededattempts",MOD_READALOUD_LANG,$moduleinstance->maxattempts);
+      	$ret = html_writer::div($message ,MOD_READALOUD_CLASS  . '_afterattempt_cont');
+      	return $ret;
+
       }
 	  
 	  public function show_ungradedyet(){
-		$displaytext = $this->output->box_start();
-		$displaytext .= '<center>' . $this->output->heading(get_string("notgradedyet",MOD_READALOUD_LANG),5) . '</center>';
-		$displaytext .= $this->output->box_end();
-		return $displaytext;
+		$message = get_string("notgradedyet",MOD_READALOUD_LANG);
+      	$ret = html_writer::div($message ,MOD_READALOUD_CLASS  . '_ungraded_cont');
+      	return $ret;
 	  }
 	  
 

@@ -122,7 +122,6 @@ M.mod_readaloud.gradinghelper = {
 	redrawgradestate: function(){
 		var m = M.mod_readaloud.gradinghelper;
 		this.processunread();
-		debugger;
 		$.each(m.errorwords,function(index){
 				$('#' + m.wordclass + '_' + this.wordnumber).addClass(m.badwordclass);
 			}
@@ -197,7 +196,6 @@ M.mod_readaloud.gradinghelper = {
 		m.wpm = wpmscore;
 		wpmscorebox.text(wpmscore);
 		//update form field
-		debugger;
 		$("#" + m.formelementscore).val(wpmscore);
 		$("#" + m.formelementendword).val(m.endwordnumber);
 		$("#" + m.formelementerrors).val(JSON.stringify(m.errorwords));

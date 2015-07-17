@@ -100,12 +100,20 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 		// Mapping without files
 		//here we set the table name as the "key" to the mapping, but its actually arbitrary
 		//'we would need to use the "key" later when calling add_related_files for the itemid in the moodle files area
-		//IF we had files for this set of data. Actually attempts won't hvwhowever)
-       $this->set_mapping(MOD_READALOUD_USERTABLE, $oldid, $newitemid, false); 
+		//IF we had files for this set of data. )
+       $this->set_mapping(MOD_READALOUD_USERTABLE, $oldid, $newitemid, true); 
     }
 	
     protected function after_execute() {
         // Add module related files, no need to match by itemname (just internally handled context)
         $this->add_related_files(MOD_READALOUD_FRANKY, 'intro', null);
+		$this->add_related_files(MOD_READALOUD_FRANKY, 'welcome', null);
+		$this->add_related_files(MOD_READALOUD_FRANKY, 'passage', null);
+		$this->add_related_files(MOD_READALOUD_FRANKY, 'feedback', null);
+		
+		 $userinfo = $this->get_setting_value('userinfo'); // are we including userinfo?
+		 if($userinfo){
+			$this->add_related_files(MOD_READALOUD_FRANKY, MOD_READALOUD_FILEAREA_SUBMISSIONS, MOD_READALOUD_USERTABLE);
+		 }		 
     }
 }

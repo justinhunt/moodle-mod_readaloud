@@ -50,14 +50,13 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
         // root element describing readaloud instance
         $oneactivity = new backup_nested_element(MOD_READALOUD_MODNAME, array('id'), array(
-            'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat','feedback','feedbackformat','gradeoptions','maxattempts','mingrade',
-			'timecreated','timemodified'
+            'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat','feedback','feedbackformat','gradeoptions','maxattempts','mingrade','ttslanguage','allowearlyexit','timecreated','timemodified'
 			));
 		
 		//attempts
         $attempts = new backup_nested_element('attempts');
         $attempt = new backup_nested_element('attempt', array('id'),array(
-			MOD_READALOUD_MODNAME ."id","course","userid","status","sessionscore","audiofile","timecreated","timemodified"
+			MOD_READALOUD_MODNAME ."id","courseid","userid","status","filename","sessionscore","sessiontime","sessionerrors","sessionendword","timecreated","timemodified"
 		));
 
 		
@@ -83,8 +82,16 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
         // Define file annotations.
         // intro file area has 0 itemid.
         $oneactivity->annotate_files(MOD_READALOUD_FRANKY, 'intro', null);
-
-        // Return the root element (choice), wrapped into standard activity structure.
+		$oneactivity->annotate_files(MOD_READALOUD_FRANKY, 'welcome', null);
+		$oneactivity->annotate_files(MOD_READALOUD_FRANKY, 'passage', null);
+		$oneactivity->annotate_files(MOD_READALOUD_FRANKY, 'feedback', null);
+		
+		//file annotation if including user info
+        if ($userinfo) {
+			$attempt->annotate_files(MOD_READALOUD_FRANKY, MOD_READALOUD_FILEAREA_SUBMISSIONS, 'id');
+        }
+		
+        // Return the root element, wrapped into standard activity structure.
         return $this->prepare_activity_structure($oneactivity);
 		
 

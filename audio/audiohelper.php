@@ -94,13 +94,29 @@ class audiohelper {
 		$cm         = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
 		$readaloud  = $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
 		$context = context_module::instance($cm->id);
+		
+		//first create an attempt and then we will come back and save the file
+		$newattempt = new stdClass();
+		$newattempt->courseid=$readaloud->course;
+		$newattempt->readaloudid=$readaloud->id;
+		$newattempt->userid=$USER->id;
+		$newattempt->status=0;
+		$newattempt->filename=$filename;
+		$newattempt->sessionscore=0;
+		$newattempt->timecreated=time();
+		$newattempt->timemodified=time();
+		$attemptid = $DB->insert_record(MOD_READALOUD_USERTABLE,$newattempt);
+		if(!$attemptid){
+			return false;
+		}
+		
 		//init our fs object
 		$fs = get_file_storage();
 		//add userid to filepath
-		$filepath='/' . $USER->id . '/';
+		$filepath='/';
 		$component = MOD_READALOUD_FRANKY;
 		$filearea = MOD_READALOUD_FILEAREA_SUBMISSIONS;
-		$itemid = $readaloud->id;
+		$itemid = $attemptid;
 
 			
 		
@@ -125,18 +141,7 @@ class audiohelper {
 			return false;
 		}
 		
-		//if successful write to attempts table
-		$newattempt = new stdClass();
-		$newattempt->courseid=$readaloud->course;
-		$newattempt->readaloudid=$readaloud->id;
-		$newattempt->userid=$USER->id;
-		$newattempt->status=0;
-		$newattempt->filename=$filename;
-		$newattempt->sessionscore=0;
-		$newattempt->timecreated=time();
-		$newattempt->timemodified=time();
-		$ret = $DB->insert_record(MOD_READALOUD_USERTABLE,$newattempt);
-		return $ret;
+		return true;
 	}
 
 	function fetchRecorder($updatecontrol="",$callbackjs="",$p1="",$p2="",$p3="",$p4="",$recorderid="", $autosubmit="true", $skin="noskin"){

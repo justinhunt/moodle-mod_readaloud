@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines {@link backup_englishcentral_activity_task} class
+ * Defines {@link backup_readaloud_activity_task} class
  *
  * @package     mod_readaloud
  * @category    backup
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot . '/mod/readaloud/backup/moodle2/backup_readaloud_stepslib.php');
 
 /**
- * Provides all the settings and steps to perform one complete backup of englishcentral activity
+ * Provides all the settings and steps to perform one complete backup of readaloud activity
  */
 class backup_readaloud_activity_task extends backup_activity_task {
 
