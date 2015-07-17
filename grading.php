@@ -81,6 +81,11 @@ switch($action){
 			$data = $mform->get_data();
 			$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
 			$gradenow->update($data);
+			
+			//update gradebook
+			readaloud_update_grades($moduleinstance, $gradenow->attemptdetails('userid'));
+			
+			//move on or return to grading
 			if(property_exists($data,'submit2')){
 				$attemptid = $gradenow->get_next_ungraded_id();
 				if($attemptid){

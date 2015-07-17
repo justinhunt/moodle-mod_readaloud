@@ -342,8 +342,7 @@ function readaloud_get_user_grades($moduleinstance, $userid=0) {
 */
 $sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
                       FROM {user} u, {". MOD_READALOUD_USERTABLE ."} a
-                     WHERE a.id= (SELECT max(id) FROM {". MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND  AND $idfield = :moduleid
-                           $user )  AND u.id = a.userid AND $idfield = :moduleid
+                     WHERE a.id= (SELECT max(id) FROM {". MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = $idfield)  AND u.id = a.userid AND $idfield = :moduleid
                            $user
                   GROUP BY u.id";
 	
