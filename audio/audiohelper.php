@@ -103,6 +103,7 @@ class audiohelper {
 		$newattempt->status=0;
 		$newattempt->filename=$filename;
 		$newattempt->sessionscore=0;
+		$newattempt->wpm=0;
 		$newattempt->timecreated=time();
 		$newattempt->timemodified=time();
 		$attemptid = $DB->insert_record(MOD_READALOUD_USERTABLE,$newattempt);

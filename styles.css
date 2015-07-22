@@ -149,29 +149,52 @@
 .mod_readaloud_grading_player_cont {
 	color: blue;
 }
-.mod_readaloud_grading_word_player {
+.mod_readaloud_hidden_player {
 	display: none;
 }
-.mod_readaloud_grading_wpm_cont {
+.mod_readaloud_hidden_player_button {
+  color: white;
+  border-color: cadetblue;
+  background-color: cadetblue;
+  border-style: solid;
+  border: 1px;
+  padding: 3px;
+  text-align: center;
+}
+.mod_readaloud_hidden_player_button_active {
+	 color: white;
+	 border-color: tomato;
+	 background-color: tomato;
+}
+.mod_readaloud_hidden_player_button_paused {
+	color: white;
+}
+.mod_readaloud_hidden_player_button_playing{
+	color: white;
+}
+
+
+.mod_readaloud_grading_accuracy_cont, 
+.mod_readaloud_grading_wpm_cont, 
+.mod_readaloud_grading_error_cont{
 	color: blue;
 	display: flex;
-	margin-left: 50px;
+	margin-left: 25px;
 }
 
 .mod_readaloud_grading_wpm_img {
 	color: blue;
 }
-.mod_readaloud_grading_error_cont {
-	color: blue;
-	display: flex;
-	margin-left: 50px;
-}
+
 .mod_readaloud_grading_score {
 	color: blue;
+	/* old style
 	border-radius: 5px 5px 5px;
 	border: 1px solid blue;
-	margin-left: 5px;
 	line-height: 35px;
+	*/
+	line-height: 18px;
+	margin-left: 5px;
 	text-align: center;
 	font-size: 2em;
 	height: 35px;

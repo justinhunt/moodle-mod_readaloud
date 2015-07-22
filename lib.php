@@ -63,15 +63,23 @@ define('MOD_READALOUD_GRADING_ERROR_SCORE','mod_readaloud_grading_error_score');
 define('MOD_READALOUD_GRADING_WPM_CONTAINER','mod_readaloud_grading_wpm_cont');
 define('MOD_READALOUD_GRADING_WPM_IMG','mod_readaloud_grading_wpm_img');
 define('MOD_READALOUD_GRADING_WPM_SCORE','mod_readaloud_grading_wpm_score');
+define('MOD_READALOUD_GRADING_ACCURACY_CONTAINER','mod_readaloud_grading_accuracy_cont');
+define('MOD_READALOUD_GRADING_ACCURACY_IMG','mod_readaloud_grading_accuracy_img');
+define('MOD_READALOUD_GRADING_ACCURACY_SCORE','mod_readaloud_grading_accuracy_score');
 define('MOD_READALOUD_GRADING_SCORE','mod_readaloud_grading_score');
 define('MOD_READALOUD_GRADING_PLAYER_CONTAINER','mod_readaloud_grading_player_cont');
 define('MOD_READALOUD_GRADING_PLAYER','mod_readaloud_grading_player');
-define('MOD_READALOUD_GRADING_WORDPLAYER','mod_readaloud_grading_word_player');
 define('MOD_READALOUD_GRADING_ACTION_CONTAINER','mod_readaloud_grading_action_cont');
 define('MOD_READALOUD_GRADING_FORM_SESSIONTIME','mod_readaloud_grading_form_sessiontime');
 define('MOD_READALOUD_GRADING_FORM_SESSIONSCORE','mod_readaloud_grading_form_sessionscore');
+define('MOD_READALOUD_GRADING_FORM_WPM','mod_readaloud_grading_form_wpm');
 define('MOD_READALOUD_GRADING_FORM_SESSIONENDWORD','mod_readaloud_grading_form_sessionendword');
 define('MOD_READALOUD_GRADING_FORM_SESSIONERRORS','mod_readaloud_grading_form_sessionerrors');
+define('MOD_READALOUD_HIDDEN_PLAYER','mod_readaloud_hidden_player');
+define('MOD_READALOUD_HIDDEN_PLAYER_BUTTON','mod_readaloud_hidden_player_button');
+define('MOD_READALOUD_HIDDEN_PLAYER_BUTTON_ACTIVE','mod_readaloud_hidden_player_button_active');
+define('MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PAUSED','mod_readaloud_hidden_player_button_paused');
+define('MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PLAYING','mod_readaloud_hidden_player_button_playing');
 
 
 define('MOD_READALOUD_GRADEHIGHEST', 0);

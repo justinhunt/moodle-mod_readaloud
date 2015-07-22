@@ -61,7 +61,7 @@ function xmldb_readaloud_upgrade($oldversion) {
 	// Add allowearlyexit field
     if ($oldversion < 2015071502) {
 
-        // Define field introformat to be added to readaloud
+        // Define field grade to be added to readaloud
         $table = new xmldb_table('readaloud');
         $field = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '3', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
@@ -70,6 +70,20 @@ function xmldb_readaloud_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
         upgrade_mod_savepoint(true, 2015071502, 'readaloud');
+    }
+	
+	// Add wcpm field
+    if ($oldversion < 2015072201) {
+
+        // Define field wpcm to be added to readaloud_attempt
+        $table = new xmldb_table('readaloud_attempt');
+        $field = new xmldb_field('wpm', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // Add field introformat
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2015072201, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

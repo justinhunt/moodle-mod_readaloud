@@ -44,4 +44,7 @@ if ($ADMIN->fulltree) {
 
 	$settings->add(new admin_setting_configcheckbox('mod_readaloud/allowearlyexit', 
 	 get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_defaultdetails',MOD_READALOUD_LANG), 0));
+	 
+	 $settings->add(new admin_setting_configtext('mod_readaloud/itemsperpage',
+        get_string('itemsperpage', MOD_READALOUD_LANG), get_string('itemsperpage_details', MOD_READALOUD_LANG), 40, PARAM_INT));
 }

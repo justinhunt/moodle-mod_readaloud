@@ -36,16 +36,83 @@ M.mod_readaloud.helper = {
 };
 
 M.mod_readaloud.gradinghelper = {
+	hiddenplayerclass: 'mod_readaloud_hidden_player',
+	hiddenplayerbuttonclass: 'mod_readaloud_hidden_player_button',
+	activebuttonclass: 'mod_readaloud_hidden_player_button_active',
+	activebuttonpausedclass: 'mod_readaloud_hidden_player_button_paused',
+	activebuttonplayingclass:'mod_readaloud_hidden_player_button_playing',
+	
+	init: function(Y,opts){
+		this.hiddenplayerclass = opts['hiddenplayerclass'];
+		this.hiddenplayerbuttonclass = opts['hiddenplayerbuttonclass'];
+		$('.' + this.hiddenplayerbuttonclass).click(this.dohiddenplayerbuttonclick);
+	},
+	
+	dohiddenplayerbuttonclick: function(){
+		var m = M.mod_readaloud.gradinghelper;
+		var audioplayer = $('.' + m.hiddenplayerclass);
+		var audiosrc=$(this).attr('data-audiosource');
+		if(audiosrc == audioplayer.attr('src') && !(audioplayer.prop('paused'))){
+			m.dohiddenstop();
+		}else{
+			m.dohiddenplay(audiosrc);
+		}		
+	},
+	dohiddenplay: function(audiosrc){
+		var m = M.mod_readaloud.gradinghelper;
+		var audioplayer = $('.' + m.hiddenplayerclass);
+		audioplayer.attr('src',audiosrc); 
+		audioplayer[0].pause();
+		audioplayer[0].load();
+		audioplayer[0].play();
+		m.dobuttonicons();
+	},
+	dohiddenstop: function(){
+		var m = M.mod_readaloud.gradinghelper;
+		var audioplayer = $('.' + m.hiddenplayerclass);
+		audioplayer[0].pause();
+		m.dobuttonicons();
+	},
+	dobuttonicons: function(theaudiosrc){
+		var m = M.mod_readaloud.gradinghelper;
+		var audioplayer = $('.' + m.hiddenplayerclass);
+		if(!theaudiosrc){theaudiosrc = audioplayer.attr('src');}
+		$('.' + m.hiddenplayerbuttonclass).each(function(index){
+			var audiosrc = $(this).attr('data-audiosource');
+			if(audiosrc==theaudiosrc){
+				$(this).addClass(m.activebuttonclass);
+				if(audioplayer.prop('paused')){
+					$(this).removeClass(m.activebuttonplayingclass);
+					$(this).addClass(m.activebuttonpausedclass);
+					//for now we make it look like no button is selected
+					//later we can implement better controls
+					$(this).removeClass(m.activebuttonclass);
+				}else{
+					$(this).removeClass(m.activebuttonpausedclass);
+					$(this).addClass(m.activebuttonplayingclass);
+				}
+			}else{
+				$(this).removeClass(m.activebuttonclass);
+				$(this).removeClass(m.activebuttonplayingclass);
+				$(this).removeClass(m.activebuttonpausedclass);
+			}
+		})
+	
+	}
+};
+M.mod_readaloud.gradenowhelper = {
 	audioplayerclass: 'mod_readaloud_grading_player',
-	wordplayerclass: 'mod_readaloud_grading_word_player',
+	wordplayerclass: 'mod_readaloud_hidden_player',
 	wordclass: 'mod_readaloud_grading_passageword',
 	spaceclass: 'mod_readaloud_grading_passagespace',
 	badwordclass: 'mod_readaloud_grading_badword',
 	endspaceclass: 'mod_readaloud_grading_endspace',
 	unreadwordclass:  'mod_readaloud_grading_unreadword',
 	wpmscoreid: 'mod_readaloud_grading_wpm_score',
+	accuracyscoreid: 'mod_readaloud_grading_accuracy_score',
 	errorscoreid: 'mod_readaloud_grading_error_score',
-	formelementscore: 'mod_readaloud_grading_form_sessionscore',
+	formelementwpmscore: 'mod_readaloud_grading_form_wpm',
+	formelementaccuracyscore: 'mod_readaloud_grading_form_sessionscore',
 	formelementendword: 'mod_readaloud_grading_form_sessionendword',
 	formelementtime: 'mod_readaloud_grading_form_sessiontime',
 	formelementerrors: 'mod_readaloud_grading_form_sessionerrors',
@@ -57,6 +124,7 @@ M.mod_readaloud.gradinghelper = {
 	enforcemarker: true,
 	totalwordcount: 0,
 	wpm: 0,
+	accuracy: 0,
 	endwordnumber: 0,
 	errorwords: {},
 	activityid: null,
@@ -79,7 +147,8 @@ M.mod_readaloud.gradinghelper = {
 			this.errorwords=JSON.parse(opts['sessionerrors']);
 			this.totalseconds=opts['sessiontime'];
 			this.endwordnumber=opts['sessionendword'];
-			this.wpm=opts['sessionscore'];
+			this.accuracy=opts['sessionscore'];
+			this.wpm=opts['wpm'];
 			//if this has been graded, draw the gradestate
 			this.redrawgradestate();
 		}else{
@@ -111,7 +180,7 @@ M.mod_readaloud.gradinghelper = {
 		}
 	},
 	playword: function(){
-		var m = M.mod_readaloud.gradinghelper;
+		var m = M.mod_readaloud.gradenowhelper;
 		var audioplayer = $('.' + m.wordplayerclass);
 		audioplayer.attr('src',M.cfg.wwwroot + '/mod/readaloud/tts.php?txt=' + encodeURIComponent($(this).text()) 
 				+ '&lang=' + m.ttslanguage + '&n=' + m.activityid); 
@@ -120,7 +189,7 @@ M.mod_readaloud.gradinghelper = {
 		audioplayer[0].play();
 	},
 	redrawgradestate: function(){
-		var m = M.mod_readaloud.gradinghelper;
+		var m = M.mod_readaloud.gradenowhelper;
 		this.processunread();
 		$.each(m.errorwords,function(index){
 				$('#' + m.wordclass + '_' + this.wordnumber).addClass(m.badwordclass);
@@ -134,7 +203,7 @@ M.mod_readaloud.gradinghelper = {
 		return;
 	},
 	processword: function() {
-		var m = M.mod_readaloud.gradinghelper;
+		var m = M.mod_readaloud.gradenowhelper;
 		var wordnumber = $(this).attr('data-wordnumber');
 		var theword = $(this).text();
 		//this will disallow badwords after the endmarker
@@ -154,7 +223,7 @@ M.mod_readaloud.gradinghelper = {
 	processspace: function() {
 		//this event is entered by  click on space
 		//it relies on attr data-wordnumber being set correctly
-		var m = M.mod_readaloud.gradinghelper;
+		var m = M.mod_readaloud.gradenowhelper;
 		var wordnumber = $(this).attr('data-wordnumber');
 		var thespace = $('#' + m.spaceclass + '_' + wordnumber);
 		
@@ -171,7 +240,7 @@ M.mod_readaloud.gradinghelper = {
 		m.processscores();
 	},
 	processunread: function(){
-		var m = M.mod_readaloud.gradinghelper;
+		var m = M.mod_readaloud.gradenowhelper;
 		$('.' + m.wordclass).each(function(index){
 			var wordnumber = $(this).attr('data-wordnumber');
 			if(Number(wordnumber)>Number(m.endwordnumber)){
@@ -187,22 +256,32 @@ M.mod_readaloud.gradinghelper = {
 		})
 	},
 	processscores: function(){
-		var m = M.mod_readaloud.gradinghelper;
+		var m = M.mod_readaloud.gradenowhelper;
 		var wpmscorebox = $('#' + m.wpmscoreid);
+		var accuracyscorebox = $('#' + m.accuracyscoreid);
 		var errorscorebox = $('#' + m.errorscoreid);
 		var errorscore = Object.keys(m.errorwords).length;
 		errorscorebox.text(errorscore);
+		
+		//wpm score
 		var wpmscore = Math.round((m.endwordnumber - errorscore) * 60 / m.totalseconds);
 		m.wpm = wpmscore;
 		wpmscorebox.text(wpmscore);
+		
+		//accuracy score
+		var accuracyscore = Math.round(wpmscore / m.totalwordcount * 100);
+		m.accuracy = accuracyscore;
+		accuracyscorebox.text(accuracyscore);
+		
 		//update form field
-		$("#" + m.formelementscore).val(wpmscore);
+		$("#" + m.formelementwpmscore).val(wpmscore);
+		$("#" + m.formelementaccuracyscore).val(accuracyscore);
 		$("#" + m.formelementendword).val(m.endwordnumber);
 		$("#" + m.formelementerrors).val(JSON.stringify(m.errorwords));
 		
 	},
 	processloadedaudio: function(){
-		var m = M.mod_readaloud.gradinghelper;
+		var m = M.mod_readaloud.gradenowhelper;
 		if(m.allowearlyexit){
 			m.totalseconds = Math.round($('#' + m.audioplayerclass).prop('duration'));
 		}else{
@@ -370,7 +449,7 @@ M.mod_readaloud.audiohelper = {
 	},
 	poodllcallback: function(args){
 		if(args[1] !='timerevent'){
-			console.log ("poodllcallback:" + args[0] + ":" + args[1] + ":" + args[2] + ":" + args[3] + ":" + args[4] + ":" + args[5] + ":" + args[6]);
+			//console.log ("poodllcallback:" + args[0] + ":" + args[1] + ":" + args[2] + ":" + args[3] + ":" + args[4] + ":" + args[5] + ":" + args[6]);
 		}
 		switch(args[1]){
 			case 'allowed':

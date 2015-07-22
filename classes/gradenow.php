@@ -68,6 +68,7 @@ class gradenow{
 		$updatedattempt = new \stdClass();
 		$updatedattempt->id=$this->attemptid;
 		$updatedattempt->sessiontime = $formdata->sessiontime;
+		$updatedattempt->wpm = $formdata->wpm;
 		$updatedattempt->sessionscore = $formdata->sessionscore;
 		$updatedattempt->sessionerrors = $formdata->sessionerrors;
 		$updatedattempt->sessionendword = $formdata->sessionendword;
@@ -127,10 +128,11 @@ class gradenow{
 		$gradingopts['sessiontime'] = $this->attemptdata->sessiontime;
 		$gradingopts['sessionerrors'] = $this->attemptdata->sessionerrors;
 		$gradingopts['sessionendword'] = $this->attemptdata->sessionendword;
-		$gradingopts['sessionscore'] = $this->attemptdata->sessionscore;
+		$gradingopts['wpm'] = $this->attemptdata->wpm;
+		$gradingopts['accuracy'] = $this->attemptdata->sessionscore;
 
 		//this inits the M.mod_readaloud thingy, after the page has loaded.
-		$PAGE->requires->js_init_call('M.mod_readaloud.gradinghelper.init', array($gradingopts),false,$jsmodule);
+		$PAGE->requires->js_init_call('M.mod_readaloud.gradenowhelper.init', array($gradingopts),false,$jsmodule);
 		//$PAGE->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
 
    }

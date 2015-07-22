@@ -358,6 +358,20 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 		return $ret;
 	}
 	
+	  /**
+       * Returns HTML to display a single paging bar to provide access to other pages  (usually in a search)
+       * @param int $totalcount The total number of entries available to be paged through
+       * @param stdclass $paging an object containting sort/perpage/pageno fields. Created in reports.php and grading.php
+       * @param string|moodle_url $baseurl url of the current page, the $pagevar parameter is added
+       * @return string the HTML to output.
+       */
+    function show_paging_bar($totalcount,$paging,$baseurl){
+		$pagevar="pageno";
+		//add paging params to url (NOT pageno)
+		$baseurl->params(array('perpage'=>$paging->perpage,'sort'=>$paging->sort));
+    	return $this->output->paging_bar($totalcount,$paging->pageno,$paging->perpage,$baseurl,$pagevar);
+    }
+	
 	function show_grading_footer($moduleinstance,$cm,$formdata){
 		// print's a popup link to your custom page
 		$link = new moodle_url(MOD_READALOUD_URL . '/grading.php',array('id'=>$cm->id,'n'=>$moduleinstance->id));
@@ -371,8 +385,10 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 	public function render_gradenow($gradenow) {
 		$audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
 		$wpm = $this->render_wpmdetails();
-		$error = $this->render_errordetails();
-		$actionheader = html_writer::div($audio . $error . $wpm,MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ACTION_CONTAINER));
+		$accuracy = $this->render_accuracydetails();
+		$mistakes = $this->render_mistakedetails();
+		$actionheader = html_writer::div($audio . $mistakes . $wpm . $accuracy,
+				MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ACTION_CONTAINER));
 		
 		
 		$ret = $this->render_header($gradenow->attemptdetails('userfullname'));
@@ -441,18 +457,48 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 	
 		  
 	public function render_hiddenaudioplayer(){
-		$audioplayer = html_writer::tag('audio','',array('src'=>'','id'=>MOD_READALOUD_GRADING_WORDPLAYER,'class'=>MOD_READALOUD_GRADING_WORDPLAYER));
+		$audioplayer = html_writer::tag('audio','',array('src'=>'','id'=>MOD_READALOUD_HIDDEN_PLAYER,'class'=>MOD_READALOUD_HIDDEN_PLAYER));
 		return $audioplayer;
 	}
-	
 	public function render_wpmdetails(){
+		global $CFG;
+		$title = html_writer::div(get_string('wpm',MOD_READALOUD_LANG),'panel-heading');
+		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_WPM_SCORE));
+		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_WPM_CONTAINER . ' panel panel-success',
+			array('id'=>MOD_READALOUD_GRADING_WPM_CONTAINER));
+		return $ret;
+	}
+	public function render_accuracydetails(){
+		global $CFG;
+		$title = html_writer::div(get_string('accuracy',MOD_READALOUD_LANG),'panel-heading');
+		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_ACCURACY_SCORE));
+		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_ACCURACY_CONTAINER . ' panel panel-primary',
+			array('id'=>MOD_READALOUD_GRADING_ACCURACY_CONTAINER));
+		return $ret;
+	}
+	public function render_mistakedetails(){
+		global $CFG;
+		$title = html_writer::div(get_string('mistakes',MOD_READALOUD_LANG),'panel-heading');
+		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_ERROR_SCORE));
+		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_ERROR_CONTAINER . ' panel panel-danger',
+			array('id'=>MOD_READALOUD_GRADING_ERROR_CONTAINER));
+		return $ret;
+	}
+	public function render_wpmdetails_old(){
 		global $CFG;
 		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/wpm.png','class'=>MOD_READALOUD_GRADING_WPM_IMG));
 		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE,array('id'=>MOD_READALOUD_GRADING_WPM_SCORE));
 		$ret = html_writer::div($img . $score ,MOD_READALOUD_GRADING_WPM_CONTAINER,array('id'=>MOD_READALOUD_GRADING_WPM_CONTAINER));
 		return $ret;
 	}
-	public function render_errordetails(){
+	public function render_accuracydetails_old(){
+		global $CFG;
+		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/accuracy.png','class'=>MOD_READALOUD_GRADING_ACCURACY_IMG));
+		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE,array('id'=>MOD_READALOUD_GRADING_ACCURACY_SCORE));
+		$ret = html_writer::div($img . $score ,MOD_READALOUD_GRADING_ACCURACY_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ACCURACY_CONTAINER));
+		return $ret;
+	}
+	public function render_mistakedetails_old(){
 		global $CFG;
 		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/cross.png','class'=>MOD_READALOUD_GRADING_ERROR_IMG));
 		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE,array('id'=>MOD_READALOUD_GRADING_ERROR_SCORE));

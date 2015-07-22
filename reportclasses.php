@@ -63,6 +63,10 @@ abstract class mod_readaloud_base_report {
 		return $this->report;
 	}
 
+	public function fetch_all_rows_count(){
+		return $this->rawdata ? count($this->rawdata) : 0;
+	}
+	
 	public function truncate($string, $maxlength){
 		if(strlen($string)>$maxlength){
 			$string=substr($string,0,$maxlength - 2) . '..';
@@ -105,11 +109,21 @@ abstract class mod_readaloud_base_report {
 			return $ret;
 	}
 	
-	public function fetch_formatted_rows($withlinks=true){
+	public function fetch_formatted_rows($withlinks=true,$paging=false){
 		$records = $this->rawdata;
 		$fields = $this->fields;
 		$returndata = array();
+		if($paging){
+			$startrecord = ($paging->perpage * $paging->pageno) + 1;
+			$endrecord = $startrecord + $paging->perpage - 1;
+		}
+		$reccount = 0;
 		foreach($records as $record){
+			$reccount++;
+			if($paging && ($reccount < $startrecord || $reccount > $endrecord)){
+				continue;
+			}
+			
 			$data = new stdClass();
 			foreach($fields as $field){
 				$data->{$field}=$this->fetch_formatted_field($field,$record,$withlinks);
@@ -150,7 +164,7 @@ abstract class mod_readaloud_base_report {
 class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 	
 	protected $report="grading";
-	protected $fields = array('id','username','audiofile','totalattempts','wpm','gradenow','timecreated','deletenow');	
+	protected $fields = array('id','username','audiofile','totalattempts','wpm','accuracy','gradenow','timecreated','deletenow');	
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
@@ -184,15 +198,22 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 				
 				case 'audiofile':
 						if($withlinks){
-							
+							/*
 							$ret = html_writer::tag('audio','',
 									array('controls'=>'','src'=>$record->audiourl));
+								*/	
+							$ret = html_writer::div('<i class="fa fa-play-circle"></i>',MOD_READALOUD_HIDDEN_PLAYER_BUTTON,array('data-audiosource'=>$record->audiourl));		
+									
 						}else{
 							$ret = get_string('submitted',MOD_READALOUD_LANG);
 						}
 					break;
 				
 				case 'wpm':
+						$ret = $record->wpm;
+					break;
+				
+				case 'accuracy':
 						$ret = $record->sessionscore;
 					break;
 					
@@ -277,7 +298,7 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 */
 class mod_readaloud_grading_byuser_report extends  mod_readaloud_grading_report {
 	protected $report="gradingbyuser";
-	protected $fields = array('id','username','audiofile','wpm','gradenow','timecreated','deletenow');	
+	protected $fields = array('id','username','audiofile','wpm','accuracy','gradenow','timecreated','deletenow');	
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
@@ -327,7 +348,7 @@ class mod_readaloud_grading_byuser_report extends  mod_readaloud_grading_report 
 class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 	
 	protected $report="attempts";
-	protected $fields = array('id','username','audiofile','wpm','timecreated','deletenow');	
+	protected $fields = array('id','username','audiofile','wpm','accuracy','timecreated','deletenow');	
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
@@ -347,15 +368,24 @@ class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 				
 				case 'audiofile':
 						if($withlinks){
-							
+							/*
 							$ret = html_writer::tag('audio','',
 									array('controls'=>'','src'=>$record->audiourl));
+								*/	
+							$ret = html_writer::div('<i class="fa fa-play-circle"></i>',
+								MOD_READALOUD_HIDDEN_PLAYER_BUTTON,array('data-audiosource'=>$record->audiourl));		
+									
 						}else{
 							$ret = get_string('submitted',MOD_READALOUD_LANG);
 						}
 					break;
+					break;
 				
 				case 'wpm':
+						$ret = $record->wpm;
+					break;
+				
+				case 'accuracy':
 						$ret = $record->sessionscore;
 					break;
 				

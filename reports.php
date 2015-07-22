@@ -34,9 +34,14 @@ $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // readaloud instance ID 
 $format = optional_param('format', 'html', PARAM_TEXT); //export format csv or html
 $showreport = optional_param('report', 'menu', PARAM_TEXT); // report type
-$questionid = optional_param('questionid', 0, PARAM_INT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // report type
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // report type
+
+//paging details
+$paging = new stdClass();
+$paging->perpage = optional_param('perpage',-1, PARAM_INT);
+$paging->pageno = optional_param('pageno',0, PARAM_INT);
+$paging->sort  = optional_param('sort','iddsc', PARAM_TEXT);
 
 
 if ($id) {
@@ -51,9 +56,19 @@ if ($id) {
     error('You must specify a course_module ID or an instance ID');
 }
 
-$PAGE->set_url(MOD_READALOUD_URL . '/reports.php', array('id' => $cm->id));
+$PAGE->set_url(MOD_READALOUD_URL . '/reports.php', 
+	array('id' => $cm->id,'report'=>$showreport,'format'=>$format,'userid'=>$userid,'attemptid'=>$attemptid));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
+
+//Get an admin settings 
+$config = get_config(MOD_READALOUD_FRANKY);
+
+//set per page according to admin setting
+if($paging->perpage==-1){
+		$paging->perpage = $config->itemsperpage;
+}
+
 
 //Diverge logging logic at Moodle 2.7
 if($CFG->version<2014051200){
@@ -76,14 +91,37 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
+$PAGE->requires->jquery();
 
-	//Get an admin settings 
-	$config = get_config(MOD_READALOUD_FRANKY);
+	
+//require bootstrap
+//can skip this ... if bootstrap theme??
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
+$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
+$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
 
+	
+// we need our audio player loaded
+//here we set up any info we need to pass into javascript
+$jsmodule = array(
+			'name'     => 'mod_readaloud',
+			'fullpath' => '/mod/readaloud/module.js',
+			'requires' => array('json')
+		);
+$aph_opts =Array();
+$aph_opts['hiddenplayerclass'] = MOD_READALOUD_HIDDEN_PLAYER;
+$aph_opts['hiddenplayerbuttonclass'] = MOD_READALOUD_HIDDEN_PLAYER_BUTTON;
+$aph_opts['hiddenplayerbuttonactiveclass'] =MOD_READALOUD_HIDDEN_PLAYER_BUTTON_ACTIVE;
+$aph_opts['hiddenplayerbuttonplayingclass'] =MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PLAYING;
+$aph_opts['hiddenplayerbuttonpausedclass'] =MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PAUSED;
+
+//this inits the M.mod_readaloud thingy, after the page has loaded.
+$PAGE->requires->js_init_call('M.mod_readaloud.gradinghelper.init', array($aph_opts),false,$jsmodule);
 
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY);
 $reportrenderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY,'report');
+$gradenowrenderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY,'gradenow');
 
 //From here we actually display the page.
 //this is core renderer stuff
@@ -108,6 +146,7 @@ switch ($showreport){
 		
 	case 'attempts':
 		$report = new mod_readaloud_attempts_report();
+		echo $gradenowrenderer->render_hiddenaudioplayer();
 		$formdata = new stdClass();
 		$formdata->readaloudid = $moduleinstance->id;
 		$formdata->modulecontextid = $modulecontext->id;
@@ -127,7 +166,7 @@ switch ($showreport){
 5) call $reportrenderer->render_section_html($sectiontitle, $report->name, $report->get_head, $rows, $report->fields);
 */
 
-$report->process_raw_data($formdata, $moduleinstance);
+$report->process_raw_data($formdata);
 $reportheading = $report->fetch_formatted_heading();
 
 switch($format){
@@ -137,10 +176,14 @@ switch($format){
 		exit;
 	default:
 		
-		$reportrows = $report->fetch_formatted_rows(true);
+		$reportrows = $report->fetch_formatted_rows(true,$paging);
+		$allrowscount = $report->fetch_all_rows_count();
+		$pagingbar = $reportrenderer->show_paging_bar($allrowscount, $paging,$PAGE->url);
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', MOD_READALOUD_LANG));
 		echo $extraheader;
+		echo $pagingbar;
 		echo $reportrenderer->render_section_html($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows, $report->fetch_fields());
+		echo $pagingbar;
 		echo $reportrenderer->show_reports_footer($moduleinstance,$cm,$formdata,$showreport);
 		echo $renderer->footer();
 }

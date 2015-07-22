@@ -126,3 +126,7 @@ $string['deletenow']='';
 $string['allowearlyexit']='Can exit early';
 $string['allowearlyexit_details']='If checked students can finish before the time limit, by pressing a finish button. The WPM is calculated using their recording time.';
 $string['allowearlyexit_defaultdetails']='Sets the default setting for allow_early_exit. Can be overriden at the activity level. If true, allow_early_exit means that students can finish before the time limit, by pressing a finish button. The WPM is calculated using their recording time.';
+$string['itemsperpage']='Items per page';
+$string['itemsperpage_details']='This sets the number of rows to be shown on reports or lists of attempts.';
+$string['accuracy']='Accuracy';
+$string['mistakes']='Mistakes';

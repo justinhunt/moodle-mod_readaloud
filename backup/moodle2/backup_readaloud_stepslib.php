@@ -56,7 +56,8 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 		//attempts
         $attempts = new backup_nested_element('attempts');
         $attempt = new backup_nested_element('attempt', array('id'),array(
-			MOD_READALOUD_MODNAME ."id","courseid","userid","status","filename","sessionscore","sessiontime","sessionerrors","sessionendword","timecreated","timemodified"
+			MOD_READALOUD_MODNAME ."id","courseid","userid","status","filename","wcpm",
+			"sessionscore","sessiontime","sessionerrors","sessionendword","timecreated","timemodified"
 		));
 
 		
