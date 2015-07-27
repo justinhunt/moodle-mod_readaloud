@@ -386,8 +386,9 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 		$audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
 		$wpm = $this->render_wpmdetails();
 		$accuracy = $this->render_accuracydetails();
+		$sessionscore = $this->render_sessionscoredetails();
 		$mistakes = $this->render_mistakedetails();
-		$actionheader = html_writer::div($audio . $mistakes . $wpm . $accuracy,
+		$actionheader = html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
 				MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ACTION_CONTAINER));
 		
 		
@@ -464,13 +465,21 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 		global $CFG;
 		$title = html_writer::div(get_string('wpm',MOD_READALOUD_LANG),'panel-heading');
 		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_WPM_SCORE));
-		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_WPM_CONTAINER . ' panel panel-success',
+		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_WPM_CONTAINER . ' panel panel-primary',
 			array('id'=>MOD_READALOUD_GRADING_WPM_CONTAINER));
+		return $ret;
+	}
+	public function render_sessionscoredetails(){
+		global $CFG;
+		$title = html_writer::div(get_string('grade_p',MOD_READALOUD_LANG),'panel-heading');
+		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_SESSION_SCORE));
+		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_SESSIONSCORE_CONTAINER . ' panel panel-primary',
+			array('id'=>MOD_READALOUD_GRADING_SESSIONSCORE_CONTAINER));
 		return $ret;
 	}
 	public function render_accuracydetails(){
 		global $CFG;
-		$title = html_writer::div(get_string('accuracy',MOD_READALOUD_LANG),'panel-heading');
+		$title = html_writer::div(get_string('accuracy_p',MOD_READALOUD_LANG),'panel-heading');
 		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_ACCURACY_SCORE));
 		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_ACCURACY_CONTAINER . ' panel panel-primary',
 			array('id'=>MOD_READALOUD_GRADING_ACCURACY_CONTAINER));

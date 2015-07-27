@@ -70,6 +70,8 @@ class gradenowform extends \moodleform{
 				array('class'=>MOD_READALOUD_GRADING_FORM_SESSIONERRORS,'id'=>MOD_READALOUD_GRADING_FORM_SESSIONERRORS));
 		$mform->addElement('hidden', 'wpm',null,
 				array('class'=>MOD_READALOUD_GRADING_FORM_WPM,'id'=>MOD_READALOUD_GRADING_FORM_WPM));
+		$mform->addElement('hidden', 'accuracy',null,
+				array('class'=>MOD_READALOUD_GRADING_FORM_ACCURACY,'id'=>MOD_READALOUD_GRADING_FORM_ACCURACY));
 		$mform->addElement('hidden', 'sessionscore',null,
 				array('class'=>MOD_READALOUD_GRADING_FORM_SESSIONSCORE,'id'=>MOD_READALOUD_GRADING_FORM_SESSIONSCORE));
 		$mform->addElement('hidden', 'sessionendword',null,
@@ -80,6 +82,7 @@ class gradenowform extends \moodleform{
 		$mform->setType('sessiontime',PARAM_INT);
 		$mform->setType('sessionerrors',PARAM_TEXT);
 		$mform->setType('sessionscore',PARAM_INT);
+		$mform->setType('accuracy',PARAM_INT);
 		$mform->setType('wpm',PARAM_INT);
 		$mform->setType('sessionendword',PARAM_INT);
         //-------------------------------------------------------------------------------

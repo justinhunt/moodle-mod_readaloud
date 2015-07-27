@@ -85,6 +85,29 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
         upgrade_mod_savepoint(true, 2015072201, 'readaloud');
     }
+	
+	// Add accuracy and targetwpm fields
+    if ($oldversion < 2015072701) {
+
+        // Define field wpcm to be added to readaloud_attempt
+        $table = new xmldb_table('readaloud_attempt');
+        $field = new xmldb_field('accuracy', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // Add field introformat
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+		
+		// Define field wpcm to be added to readaloud_attempt
+        $table = new xmldb_table('readaloud');
+        $field = new xmldb_field('targetwpm', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '100');
+
+        // Add field introformat
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2015072701, 'readaloud');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

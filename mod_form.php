@@ -95,6 +95,11 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$mform->setType('welcome_editor',PARAM_RAW);
 		$mform->setType('feedback_editor',PARAM_RAW);
 		
+		// Adding targetwpm field
+        $mform->addElement('text', 'targetwpm', get_string('targetwpm', MOD_READALOUD_LANG), array('size'=>'8'));
+        $mform->setType('targetwpm', PARAM_INT);
+		$mform->setDefault('targetwpm',$config->targetwpm);
+		
 		//allow early exit
 		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_details', MOD_READALOUD_LANG));
 		$mform->setDefault('allowearlyexit',$config->allowearlyexit);

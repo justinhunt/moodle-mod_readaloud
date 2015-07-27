@@ -69,6 +69,7 @@ class gradenow{
 		$updatedattempt->id=$this->attemptid;
 		$updatedattempt->sessiontime = $formdata->sessiontime;
 		$updatedattempt->wpm = $formdata->wpm;
+		$updatedattempt->accuracy = $formdata->accuracy;
 		$updatedattempt->sessionscore = $formdata->sessionscore;
 		$updatedattempt->sessionerrors = $formdata->sessionerrors;
 		$updatedattempt->sessionendword = $formdata->sessionendword;
@@ -123,13 +124,15 @@ class gradenow{
 		$gradingopts['timelimit'] = $this->activitydata->timelimit;
  		$gradingopts['ttslanguage'] = $this->activitydata->ttslanguage;
 		$gradingopts['activityid'] = $this->activitydata->id;
+		$gradingopts['targetwpm'] = $this->activitydata->targetwpm;
 		$gradingopts['sesskey'] = sesskey();
 		$gradingopts['attemptid'] = $this->attemptdata->id;
 		$gradingopts['sessiontime'] = $this->attemptdata->sessiontime;
 		$gradingopts['sessionerrors'] = $this->attemptdata->sessionerrors;
 		$gradingopts['sessionendword'] = $this->attemptdata->sessionendword;
 		$gradingopts['wpm'] = $this->attemptdata->wpm;
-		$gradingopts['accuracy'] = $this->attemptdata->sessionscore;
+		$gradingopts['accuracy'] = $this->attemptdata->accuracy;
+		$gradingopts['sessionscore'] = $this->attemptdata->sessionscore;
 
 		//this inits the M.mod_readaloud thingy, after the page has loaded.
 		$PAGE->requires->js_init_call('M.mod_readaloud.gradenowhelper.init', array($gradingopts),false,$jsmodule);

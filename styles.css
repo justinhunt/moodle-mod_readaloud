@@ -176,10 +176,11 @@
 
 .mod_readaloud_grading_accuracy_cont, 
 .mod_readaloud_grading_wpm_cont, 
-.mod_readaloud_grading_error_cont{
+.mod_readaloud_grading_error_cont,
+.mod_readaloud_grading_sessionscore_cont {
 	color: blue;
 	display: flex;
-	margin-left: 25px;
+	margin-left: 15px;
 }
 
 .mod_readaloud_grading_wpm_img {

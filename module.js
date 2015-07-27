@@ -110,13 +110,16 @@ M.mod_readaloud.gradenowhelper = {
 	unreadwordclass:  'mod_readaloud_grading_unreadword',
 	wpmscoreid: 'mod_readaloud_grading_wpm_score',
 	accuracyscoreid: 'mod_readaloud_grading_accuracy_score',
+	sessionscoreid: 'mod_readaloud_grading_session_score',
 	errorscoreid: 'mod_readaloud_grading_error_score',
 	formelementwpmscore: 'mod_readaloud_grading_form_wpm',
-	formelementaccuracyscore: 'mod_readaloud_grading_form_sessionscore',
+	formelementaccuracy: 'mod_readaloud_grading_form_accuracy',
+	formelementsessionscore: 'mod_readaloud_grading_form_sessionscore',
 	formelementendword: 'mod_readaloud_grading_form_sessionendword',
 	formelementtime: 'mod_readaloud_grading_form_sessiontime',
 	formelementerrors: 'mod_readaloud_grading_form_sessionerrors',
 	enabletts: false,
+	targetwpm: 100,
 	ttslanguage: 'en',
 	totalseconds: 60,
 	allowearlyexit: false,
@@ -125,6 +128,7 @@ M.mod_readaloud.gradenowhelper = {
 	totalwordcount: 0,
 	wpm: 0,
 	accuracy: 0,
+	sessionscore: 0,
 	endwordnumber: 0,
 	errorwords: {},
 	activityid: null,
@@ -139,6 +143,7 @@ M.mod_readaloud.gradenowhelper = {
 		this.sesskey = opts['sesskey'];
 		this.enabletts = opts['enabletts'];
 		this.ttslanguage = opts['ttslanguage'];
+		this.targetwpm = opts['targetwpm'];
 		this.allowearlyexit = opts['allowearlyexit'];
 		this.timelimit = opts['timelimit'];
 		this.totalwordcount = $('.' + this.wordclass).length ;
@@ -147,7 +152,8 @@ M.mod_readaloud.gradenowhelper = {
 			this.errorwords=JSON.parse(opts['sessionerrors']);
 			this.totalseconds=opts['sessiontime'];
 			this.endwordnumber=opts['sessionendword'];
-			this.accuracy=opts['sessionscore'];
+			this.sessionscore=opts['sessionscore'];
+			this.accuracy=opts['accuracy'];
 			this.wpm=opts['wpm'];
 			//if this has been graded, draw the gradestate
 			this.redrawgradestate();
@@ -169,11 +175,12 @@ M.mod_readaloud.gradenowhelper = {
 			$('.' + this.wordclass).click(this.processword);
 			$('.' + this.spaceclass).click(this.processspace);
 		}
-		//initialise our audio duration. 
-		//After that we call processscores to init score boxe
+		//initialise our audio duration. We need this to calc. wpm
+		//but if allowearlyexit is false, actually we can skip waiting for audio.
+		//After audio loaded(if nec.) we call processscores to init score boxe
 		//TODO: really should get audio duration at recording time.
 		var audioplayer = $('#' + this.audioplayerclass);
-		if(audioplayer.prop('readyState')<1){
+		if(audioplayer.prop('readyState')<1 && this.allowearlyexit){
 			audioplayer.on('loadedmetadata',this.processloadedaudio);
 		}else{
 			this.processloadedaudio();
@@ -259,6 +266,7 @@ M.mod_readaloud.gradenowhelper = {
 		var m = M.mod_readaloud.gradenowhelper;
 		var wpmscorebox = $('#' + m.wpmscoreid);
 		var accuracyscorebox = $('#' + m.accuracyscoreid);
+		var sessionscorebox = $('#' + m.sessionscoreid);
 		var errorscorebox = $('#' + m.errorscoreid);
 		var errorscore = Object.keys(m.errorwords).length;
 		errorscorebox.text(errorscore);
@@ -269,13 +277,22 @@ M.mod_readaloud.gradenowhelper = {
 		wpmscorebox.text(wpmscore);
 		
 		//accuracy score
-		var accuracyscore = Math.round(wpmscore / m.totalwordcount * 100);
+		var accuracyscore = Math.round((m.endwordnumber - errorscore)/m.endwordnumber * 100);
 		m.accuracy = accuracyscore;
 		accuracyscorebox.text(accuracyscore);
 		
+		//sessionscore
+		var usewpmscore = wpmscore;
+		if(usewpmscore > m.targetwpm){
+			usewpmscore = m.targetwpm;
+		}
+		var sessionscore = Math.round(usewpmscore/m.targetwpm * 100);
+		sessionscorebox.text(sessionscore);
+		
 		//update form field
 		$("#" + m.formelementwpmscore).val(wpmscore);
-		$("#" + m.formelementaccuracyscore).val(accuracyscore);
+		$("#" + m.formelementsessionscore).val(sessionscore);
+		$("#" + m.formelementaccuracy).val(accuracyscore);	
 		$("#" + m.formelementendword).val(m.endwordnumber);
 		$("#" + m.formelementerrors).val(JSON.stringify(m.errorwords));
 		

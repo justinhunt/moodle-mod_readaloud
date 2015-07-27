@@ -164,7 +164,7 @@ abstract class mod_readaloud_base_report {
 class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 	
 	protected $report="grading";
-	protected $fields = array('id','username','audiofile','totalattempts','wpm','accuracy','gradenow','timecreated','deletenow');	
+	protected $fields = array('id','username','audiofile','totalattempts','wpm','accuracy_p','grade_p','gradenow','timecreated','deletenow');	
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
@@ -213,7 +213,11 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 						$ret = $record->wpm;
 					break;
 				
-				case 'accuracy':
+				case 'accuracy_p':
+						$ret = $record->accuracy;
+					break;
+					
+				case 'grade_p':
 						$ret = $record->sessionscore;
 					break;
 					
@@ -298,7 +302,7 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 */
 class mod_readaloud_grading_byuser_report extends  mod_readaloud_grading_report {
 	protected $report="gradingbyuser";
-	protected $fields = array('id','username','audiofile','wpm','accuracy','gradenow','timecreated','deletenow');	
+	protected $fields = array('id','username','audiofile','wpm','accuracy_p','grade_p','gradenow','timecreated','deletenow');	
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
@@ -348,7 +352,7 @@ class mod_readaloud_grading_byuser_report extends  mod_readaloud_grading_report 
 class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 	
 	protected $report="attempts";
-	protected $fields = array('id','username','audiofile','wpm','accuracy','timecreated','deletenow');	
+	protected $fields = array('id','username','audiofile','wpm','accuracy_p','grade_p','timecreated','deletenow');	
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
@@ -385,7 +389,11 @@ class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 						$ret = $record->wpm;
 					break;
 				
-				case 'accuracy':
+				case 'accuracy_p':
+						$ret = $record->accuracy;
+					break;
+					
+				case 'grade_p':
 						$ret = $record->sessionscore;
 					break;
 				
