@@ -34,4 +34,4 @@ $plugin->requires  = 2010031900;      // Requires this Moodle version
 $plugin->cron      = 0;               // Period for cron to check this module (secs)
 $plugin->component = 'mod_readaloud'; // To check on upgrade, that module sits in correct place
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.0(Build 2015091801)
+$plugin->release = '1.0.0(Build 2015091801)';
