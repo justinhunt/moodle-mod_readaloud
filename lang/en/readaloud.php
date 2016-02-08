@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Read Aloud';
 $string['modulenameplural'] = 'Read Alouds';
-$string['modulename_help'] = 'readaloud help';
+$string['modulename_help'] = 'ReadAloud is an activity designed to assist teachers in evaluating their students reading fluency. Students read a passage, set by the teacher, into a microphone. Later the teacher can mark words as incorrect and get the student WCPM(Words Correct Per Minute) scores.';
 $string['readaloudfieldset'] = 'Custom example fieldset';
 $string['readaloudname'] = 'Read Aloud';
 $string['readaloudname_help'] = 'This is the content of the help tooltip associated with the readaloudname field. Markdown syntax is supported.';
