@@ -344,18 +344,12 @@ function readaloud_get_user_grades($moduleinstance, $userid=0) {
 
 	$idfield = 'a.' . MOD_READALOUD_MODNAME . 'id';
     if ($moduleinstance->maxattempts==1 || $moduleinstance->gradeoptions == MOD_READALOUD_GRADELATEST) {
-/*
-        $sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
-                  FROM {user} u,  {". MOD_READALOUD_USERTABLE ."} a
-                 WHERE u.id = a.userid AND $idfield = :moduleid
-                       AND a.status = 1
-                       $user";
-*/
-$sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
+
+		$sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
                       FROM {user} u, {". MOD_READALOUD_USERTABLE ."} a
                      WHERE a.id= (SELECT max(id) FROM {". MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = $idfield)  AND u.id = a.userid AND $idfield = :moduleid
                            $user
-                  GROUP BY u.id";
+                  GROUP BY u.id, a.sessionscore";
 	
 	}else{
 		switch($moduleinstance->gradeoptions){
