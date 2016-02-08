@@ -43,7 +43,7 @@ if ($ADMIN->fulltree) {
 	 get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_defaultdetails',MOD_READALOUD_LANG), 0));	
 		
 	 $settings->add(new admin_setting_configcheckbox('mod_readaloud/enabletts', 
-	 get_string('enabletts', MOD_READALOUD_LANG), get_string('enabletts_details',MOD_READALOUD_LANG), 1));
+	 get_string('enabletts', MOD_READALOUD_LANG), get_string('enabletts_details',MOD_READALOUD_LANG), 0));
 	 
 	 $langoptions = \mod_readaloud\utils::get_lang_options();
 	 $settings->add(new admin_setting_configselect('mod_readaloud/ttslanguage', get_string('ttslanguage', MOD_READALOUD_LANG), '', 'en', $langoptions));
