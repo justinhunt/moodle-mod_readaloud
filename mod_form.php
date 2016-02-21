@@ -118,7 +118,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
 			$mform->addElement('hidden', 'ttslanguage', 'none');
 		}
 		$mform->setType('ttslanguage', PARAM_TEXT);
-		$mform->setType('feedback_editor',PARAM_TEXT);
+
 		
 		 // Grade.
         $this->standard_grading_coursemodule_elements();

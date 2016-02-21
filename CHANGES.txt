@@ -1,4 +1,8 @@
 
+Version 1.0.2(Build 2016022102)
+Added fix for incorrectly named field fedbackformat
+
+
 Version 1.0.1(Build 2016022101)
 Added fix for failure to set form TTSLANGUAGE field type
 (https://github.com/justinhunt/moodle-mod_readaloud/issues/6)

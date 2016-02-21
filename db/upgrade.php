@@ -108,6 +108,20 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
         upgrade_mod_savepoint(true, 2015072701, 'readaloud');
     }
+    	// Rename fedbackformat to feedbackformat
+    if ($oldversion < 2016022102) {
+
+        // Define field wpcm to be added to readaloud_attempt
+        $table = new xmldb_table('readaloud');
+        $field = new xmldb_field('fedbackformat', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // Rename field to feedbackformat
+        if ($dbman->field_exists($table, $field)) {
+            $dbman->rename_field($table, $field,'feedbackformat');
+        }
+
+        upgrade_mod_savepoint(true, 2016022102, 'readaloud');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
