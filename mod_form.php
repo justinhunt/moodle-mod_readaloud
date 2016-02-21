@@ -101,7 +101,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$mform->setDefault('targetwpm',$config->targetwpm);
 		
 		//allow early exit
-		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_details', MOD_READALOUD_LANG));
+		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', MOD_READALOUD_LANG), 		get_string('allowearlyexit_details', MOD_READALOUD_LANG));
 		$mform->setDefault('allowearlyexit',$config->allowearlyexit);
 		
 		//attempts
@@ -117,6 +117,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		}else{
 			$mform->addElement('hidden', 'ttslanguage', 'none');
 		}
+		$mform->setType('ttslanguage', PARAM_TEXT);
 		$mform->setType('feedback_editor',PARAM_TEXT);
 		
 		 // Grade.
