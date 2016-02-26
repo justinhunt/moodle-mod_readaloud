@@ -417,7 +417,8 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 		//init the text count
 		$wordcount=0;
 		foreach ($nodes as $node) {
-			if(empty(trim($node->nodeValue))){continue;}
+			$trimmednode = trim($node->nodeValue);
+			if(empty($trimmednode)){continue;}
 			//$words = preg_split('#\s+#', $node->nodeValue, null, PREG_SPLIT_NO_EMPTY);
 			$delim = ' ';
 			$words = explode($delim, $node->nodeValue);
