@@ -81,18 +81,24 @@ $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
 //require jquery
 $PAGE->requires->jquery();
-//require bootstrap
-//can skip this ... if bootstrap theme??
-$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
-$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
+
+
+//Get an admin settings 
+$config = get_config(MOD_READALOUD_FRANKY);
+
+//require bootstrap and fontawesome ... maybe
+if($config->loadfontawesome){
+	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
+}
+if($config->loadbootstrap){
+	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
+	$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
+}
 
 
 //load swf loader
 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/audio/embed-compressed.js'));
 
-//Get an admin settings 
-$config = get_config(MOD_READALOUD_FRANKY);
 
 //Get our renderers
 $renderer = $PAGE->get_renderer('mod_readaloud');

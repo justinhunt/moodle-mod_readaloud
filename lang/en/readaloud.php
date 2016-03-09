@@ -139,3 +139,8 @@ $string['grade_p']='Grade(%)';
 $string['targetwpm']='Target WPM';
 $string['targetwpm_details']='The default target WPM. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%. The target WPM can also be set at the activity instance level. ';
 $string['targetwpm_help']='The target WPM score. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%.';
+
+$string['loadbootstrap']='Load Bootstrap';
+$string['loadbootstrap_details']='Bootstrap is a set of CSS and javascript often used to make big colorful buttons and user interfaces that work well on PC and mobile devices. ReadAloud will load it independently if this is checked. If your theme already loads it, and it causes things to look weird then uncheck this.';
+$string['loadfontawesome']='Load FontAwesome';
+$string['loadfontawesome_details']='FontAwesome provides bland icons that represent arrows and circles and various common symbols you see on toolbars and buttons. ReadAloud loads this for you if this is checked. Should this cause problems, uncheck it.';

@@ -1,3 +1,6 @@
+Version 1.0.4(Build 2016031000)
+Added a settings to turn off the loading of bootstrap and fontawesom. Where a theme already has it, this can cause issues.
+
 Version 1.0.3(Build 2016022500)
 This fixes an issue with the renderer on later PHP versions where the trim function
 can't be used to return a value to another function. It caused a white page/500 error when viewing the assignment
