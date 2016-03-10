@@ -1,3 +1,6 @@
+Version 1.0.5(Build 2016031001)
+The logic to determine the number of completed attempts by a student was wrong. fixed it
+
 Version 1.0.4(Build 2016031000)
 Added a settings to turn off the loading of bootstrap and fontawesom. Where a theme already has it, this can cause issues.
 
