@@ -1,3 +1,6 @@
+Version 1.0.6(Build 2016090201)
+unnecessary break statement caused error on php7
+
 Version 1.0.5(Build 2016031001)
 The logic to determine the number of completed attempts by a student was wrong. fixed it
 
