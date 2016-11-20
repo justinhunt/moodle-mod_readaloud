@@ -12,16 +12,16 @@
 	require_once(dirname(__FILE__).'/audiohelper.php');
 
 	$ah = new audiohelper();	
-	$datatype = $ah->optional_param('datatype', "");    // Type of action/data we are requesting
-	$p1  = $ah->optional_param('p1', '');  // parameter 1 for gen use 
-	$p2 = $ah->optional_param('p2', '');  // parameter 2 for gen use
-	$p3 = $ah->optional_param('p3', '');  // parameter 3 for gen use
-	$p4  = $ah->optional_param('p4', '');  // parameter 4 for gen use
-	$hash  = $ah->optional_param('hash', '');  // file or dir hash
-	$requestid  = $ah->optional_param('requestid', '');  // id of this request
-	$filedata  = $ah->optional_param('filedata', '');  // the bytestream from direct upload recorders
-	$fileext  = $ah->optional_param('fileext', '');  // the fileextension from direct upload recorders
-	$filename  = $ah->optional_param('filename', '');  // the filename from remote upload recorders
+	$datatype = optional_param('datatype', "", PARAM_RAW);    // Type of action/data we are requesting
+	$p1  = optional_param('p1', '', PARAM_RAW);  // parameter 1 for gen use 
+	$p2 = optional_param('p2', '', PARAM_RAW);  // parameter 2 for gen use
+	$p3 = optional_param('p3', '', PARAM_RAW);  // parameter 3 for gen use
+	$p4  = optional_param('p4', '', PARAM_RAW);  // parameter 4 for gen use
+	$hash  = optional_param('hash', '', PARAM_RAW);  // file or dir hash
+	$requestid  = optional_param('requestid', '', PARAM_RAW);  // id of this request
+	$filedata  = optional_param('filedata', '', PARAM_RAW);  // the bytestream from direct upload recorders
+	$fileext  = optional_param('fileext', '', PARAM_RAW);  // the fileextension from direct upload recorders
+	$filename  = optional_param('filename', '', PARAM_RAW);  // the filename from remote upload recorders
 
 	//check the sesskey, don't need any weirdness
 	if(!confirm_sesskey($p1)){

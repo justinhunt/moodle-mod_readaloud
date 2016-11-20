@@ -7,24 +7,12 @@
 * @license JustinsPlainEnglishLicense ( http://www.poodll.com/justinsplainenglishlicense.txt )
 *
 */
-
+require_once(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
 define('FANCYBUTTON',true);
 
 	
 class audiohelper {
 
-	//This function just makes sure that a param set as get or post will make it through
-	 function optional_param($parname, $default=NULL) {
-		if (isset($_POST[$parname])) {       // POST has precedence
-			   $param = $_POST[$parname];
-		} else if (isset($_GET[$parname])) {
-			 $param = $_GET[$parname];
-		   } else {
-			  return $default;
-		   }
-	   
-		 return $param;
-	  }
 
 
 	//For receiving an uploaded a file direct from an HTML5 or SWF widget

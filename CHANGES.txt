@@ -1,3 +1,7 @@
+Version 1.0.7(Build 2016111901)
+tightened up some non-moodle code in audiohelper.php and poodllfilelib.php to use Moodle APIs.
+More secure etc.
+
 Version 1.0.6(Build 2016090201)
 unnecessary break statement caused error on php7
 
