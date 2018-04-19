@@ -1,3 +1,6 @@
+Version 1.1.0(Build 2018041000)
+-Implemented new Moodle Privacy API
+
 Version 1.0.7(Build 2016111901)
 tightened up some non-moodle code in audiohelper.php and poodllfilelib.php to use Moodle APIs.
 More secure etc.

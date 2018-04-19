@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Privacy Subsystem implementation for Portfolio Blogexport.
+ * Privacy Subsystem implementation for mod_readaloud.
  *
- * @package    portfolio_blogexport
+ * @package    mod_readaloud
  * @copyright  2018 Justin Hunt https://poodll.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace portfolio_blogexport\privacy;
+namespace mod_readaloud\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Privacy Subsystem for portfolio_blogexport implementing null_provider.
+ * Privacy Subsystem for mod_readaloud implementing null_provider.
  *
  * @copyright  2018 Justin Hunt https://poodll.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

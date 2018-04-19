@@ -218,6 +218,95 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 		//return it
 		return $ret;
 	}
+
+
+    function prepare_amd_audiorecorder($cm, $moduleinstance){
+
+//here we set up any info we need to pass into javascript
+        $ah = new audiohelper();
+        $recopts =Array();
+        $recopts['recorderid'] = MOD_READALOUD_RECORDERID;
+        $recopts['startbutton'] = MOD_READALOUD_START_BUTTON;
+        $recopts['stopbutton'] = MOD_READALOUD_STOP_BUTTON;
+        $recopts['recordbutton'] = MOD_READALOUD_RECORD_BUTTON;
+        $recopts['hider']=MOD_READALOUD_HIDER;
+        $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
+        $recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
+        $recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
+        $recopts['dummyrecorder'] = MOD_READALOUD_DUMMY_RECORDER;
+        $recopts['instructionscontainer'] = MOD_READALOUD_INSTRUCTIONS_CONTAINER;
+        $recopts['recinstructionscontainerright'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT;
+        $recopts['recinstructionscontainerleft'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT;
+        $recopts['recordbuttoncontainer'] =MOD_READALOUD_RECORD_BUTTON_CONTAINER;
+        $recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
+        $recopts['progresscontainer'] = MOD_READALOUD_PROGRESS_CONTAINER;
+        $recopts['feedbackcontainer'] = MOD_READALOUD_FEEDBACK_CONTAINER;
+        $recopts['errorcontainer'] = MOD_READALOUD_ERROR_CONTAINER;
+        $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
+        $p1 = sesskey();
+        $p2 = $cm->id;
+        $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",
+            $p1,$p2,"p3","p4",MOD_READALOUD_RECORDERID,"false", "volume",$moduleinstance->timelimit);
+
+
+        //this inits the M.mod_readaloud thingy, after the page has loaded.
+        //we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
+        //convert opts to json
+        $jsonstring = json_encode($recopts);
+        $opts_html = html_writer::tag('input', '', array('id' => 'mod_readaloud_recopts', 'type' => 'hidden', 'value' => $jsonstring));
+
+        $this->page->requires->js_call_amd("mod_readaloud/audiohelper", 'init', array($recopts));
+        $this->page->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
+
+    }
+
+
+	function prepare_yui_audiorecorder($cm, $moduleinstance){
+        //if not in review mode, lets start up the test mode
+//get our module javascript all ready to go
+        $jsmodule = array(
+            'name'     => 'mod_readaloud',
+            'fullpath' => '/mod/readaloud/module.js',
+            'requires' => array()
+        );
+//here we set up any info we need to pass into javascript
+        $opts =Array();
+//this inits the M.mod_readaloud thingy, after the page has loaded.
+        $this->page->requires->js_init_call('M.mod_readaloud.helper.init', array($opts),false,$jsmodule);
+
+
+//here we set up any info we need to pass into javascript
+        $ah = new audiohelper();
+        $recopts =Array();
+        $recopts['recorderid'] = MOD_READALOUD_RECORDERID;
+        $recopts['startbutton'] = MOD_READALOUD_START_BUTTON;
+        $recopts['stopbutton'] = MOD_READALOUD_STOP_BUTTON;
+        $recopts['recordbutton'] = MOD_READALOUD_RECORD_BUTTON;
+        $recopts['hider']=MOD_READALOUD_HIDER;
+        $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
+        $recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
+        $recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
+        $recopts['dummyrecorder'] = MOD_READALOUD_DUMMY_RECORDER;
+        $recopts['instructionscontainer'] = MOD_READALOUD_INSTRUCTIONS_CONTAINER;
+        $recopts['recinstructionscontainerright'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT;
+        $recopts['recinstructionscontainerleft'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT;
+        $recopts['recordbuttoncontainer'] =MOD_READALOUD_RECORD_BUTTON_CONTAINER;
+        $recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
+        $recopts['progresscontainer'] = MOD_READALOUD_PROGRESS_CONTAINER;
+        $recopts['feedbackcontainer'] = MOD_READALOUD_FEEDBACK_CONTAINER;
+        $recopts['errorcontainer'] = MOD_READALOUD_ERROR_CONTAINER;
+        $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
+        $p1 = sesskey();
+        $p2 = $cm->id;
+        $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",
+            $p1,$p2,"p3","p4",MOD_READALOUD_RECORDERID,"false", "volume",$moduleinstance->timelimit);
+
+
+//this inits the M.mod_readaloud thingy, after the page has loaded.
+        $this->page->requires->js_init_call('M.mod_readaloud.audiohelper.init', array($recopts),false,$jsmodule);
+        $this->page->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
+
+    }
   
 }
 
