@@ -49,10 +49,13 @@ $string['readaloud:view'] = 'Preview Read Aloud';
 $string['readaloud:itemview'] = 'View items';
 $string['readaloud:itemedit'] = 'Edit items';
 $string['readaloud:tts'] = 'Can use Text To Speech(tts)';
-$string['readaloud:manageattempts'] = 'Can manage ReadAloud attempts';
-$string['readaloud:manage'] = 'Can manage ReadAloud instances';
-$string['readaloud:preview'] = 'Can preview ReadAloud activities';
-$string['readaloud:submit'] = 'Can submit ReadAloud attempts';
+$string['readaloud:manageattempts'] = 'Can manage Read Aloud attempts';
+$string['readaloud:manage'] = 'Can manage Read Aloud instances';
+$string['readaloud:preview'] = 'Can preview Read Aloud activities';
+$string['readaloud:submit'] = 'Can submit Read Aloud attempts';
+$string['privacy:metadata'] = 'The Poodll Read Aloud plugin does store personal data.';
+
+
 $string['id']='ID';
 $string['name']='Name';
 $string['timecreated']='Time Created';
