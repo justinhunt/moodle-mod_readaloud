@@ -41,6 +41,8 @@ define('MOD_READALOUD_URL','/mod/readaloud');
 define('MOD_READALOUD_CLASS','mod_readaloud');
 define('MOD_READALOUD_RECORD_BUTTON','mod_readaloud_record_button');
 define('MOD_READALOUD_START_BUTTON','mod_readaloud_start_button');
+define('MOD_READALOUD_UPDATE_CONTROL','mod_readaloud_update_control');
+define('MOD_READALOUD_DRAFT_CONTROL','mod_readaloud_draft_control');
 define('MOD_READALOUD_PROGRESS_CONTAINER','mod_readaloud_progress_cont');
 define('MOD_READALOUD_HIDER','mod_readaloud_hider');
 define('MOD_READALOUD_STOP_BUTTON','mod_readaloud_stop_button');

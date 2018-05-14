@@ -355,5 +355,5 @@ define(['jquery','core/log'], function($,log) {
         }
 
 
-    }//end of return value
+    };//end of return value
 });

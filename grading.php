@@ -157,8 +157,8 @@ switch ($action){
 		$nextid = $gradenow->get_next_ungraded_id();
 		$gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
 		$gradenowform->set_data($data);
-		$gradenow->prepare_javascript();
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
+        echo $gradenow->prepare_javascript();
 		echo $gradenowrenderer->render_gradenow($gradenow);
 		$gradenowform->display();
 		echo $renderer->footer();
@@ -204,8 +204,8 @@ $aph_opts['hiddenplayerbuttonactiveclass'] =MOD_READALOUD_HIDDEN_PLAYER_BUTTON_A
 $aph_opts['hiddenplayerbuttonplayingclass'] =MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PLAYING;
 $aph_opts['hiddenplayerbuttonpausedclass'] =MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PAUSED;
 
-//this inits the M.mod_readaloud thingy, after the page has loaded.
-$PAGE->requires->js_init_call('M.mod_readaloud.gradinghelper.init', array($aph_opts),false,$jsmodule);
+//this inits the js for the audio players on the list of submissions
+$PAGE->requires->js_call_amd("mod_readaloud/gradinghelper", 'init', array($aph_opts));
 
 
 /*

@@ -4,7 +4,11 @@ define(['jquery','core/log'], function($,log) {
     log.debug('Readaloud Gradenow helper: initialising');
 
     return{
-        classdef: {
+        //controls
+        controls: {},
+
+        //class definitions
+        cd: {
 
             audioplayerclass: 'mod_readaloud_grading_player',
             wordplayerclass: 'mod_readaloud_hidden_player',
@@ -46,7 +50,20 @@ define(['jquery','core/log'], function($,log) {
         },
 
 
-        init: function(opts){
+        init: function(config){
+
+            //pick up opts from html
+            var theid='#' + config['id'];
+            var configcontrol = $(theid).get(0);
+            if(configcontrol){
+                var opts = JSON.parse(configcontrol.value);
+                $(theid).remove();
+            }else{
+                //if there is no config we might as well give up
+                log.debug('Gradenow helper js: No config found on page. Giving up.');
+                return;
+            }
+
             //stash important info
             this.options.activityid = opts['activityid'];
             this.options.attemptid = opts['attemptid'];
@@ -56,7 +73,8 @@ define(['jquery','core/log'], function($,log) {
             this.options.targetwpm = opts['targetwpm'];
             this.options.allowearlyexit = opts['allowearlyexit'];
             this.options.timelimit = opts['timelimit'];
-            this.options.totalwordcount = $('.' + this.classdef.wordclass).length ;
+            this.options.reviewmode = opts['reviewmode'];
+            this.options.totalwordcount = $('.' + this.cd.wordclass).length ;
 
             if(opts['sessiontime']>0){
                 this.options.errorwords=JSON.parse(opts['sessionerrors']);
@@ -72,24 +90,20 @@ define(['jquery','core/log'], function($,log) {
                 this.options.endwordnumber = this.options.totalwordcount;
             }
 
-            //add the endword marker
-            $('#' + this.classdef.spaceclass + '_' + this.options.endwordnumber).addClass(this.classdef.endspaceclass);
+            //register the controls
+            this.register_controls();
 
-            //set up event handlers
-            //in review mode, do nuffink though ... thats for the student
-            if(opts['reviewmode']){
-                if(this.enabletts && this.options.ttslanguage != 'none'){
-                    $('.' + this.classdef.wordclass).click(this.playword);
-                }
-            }else{
-                $('.' + this.classdef.wordclass).click(this.processword);
-                $('.' + this.classdef.spaceclass).click(this.processspace);
-            }
+            //add the endword marker
+            this.controls.endwordmarker.addClass(this.cd.endspaceclass);
+
+            //register events
+           this.register_events();
+
             //initialise our audio duration. We need this to calc. wpm
             //but if allowearlyexit is false, actually we can skip waiting for audio.
             //After audio loaded(if nec.) we call processscores to init score boxe
             //TODO: really should get audio duration at recording time.
-            var audioplayer = $('#' + this.classdef.audioplayerclass);
+            var audioplayer = $('#' + this.cd.audioplayerclass);
             if(audioplayer.prop('readyState')<1 && this.options.allowearlyexit){
                 audioplayer.on('loadedmetadata',this.processloadedaudio);
             }else{
@@ -97,20 +111,96 @@ define(['jquery','core/log'], function($,log) {
             }
         },
 
+        register_controls: function(){
+            this.controls.wordplayer = $('#' + this.cd.wordplayerclass);
+            this.controls.audioplayer = $('#' + this.cd.audioplayerclass);
+            this.controls.eachword = $('.' + this.cd.wordclass);
+            this.controls.eachspace = $('.' + this.cd.spaceclass);
+            this.controls.endwordmarker =  $('#' + this.cd.spaceclass + '_' + this.options.endwordnumber);
+
+            this.controls.wpmscorebox = $('#' + this.cd.wpmscoreid);
+            this.controls.accuracyscorebox = $('#' + this.cd.accuracyscoreid);
+            this.controls.sessionscorebox = $('#' + this.cd.sessionscoreid);
+            this.controls.errorscorebox = $('#' + this.cd.errorscoreid);
+
+            this.controls.formelementwpmscore = $("#" + this.cd.formelementwpmscore);
+            this.controls.formelementsessionscore = $("#" + this.cd.formelementsessionscore);
+            this.controls.formelementaccuracy = $("#" + this.cd.formelementaccuracy);
+            this.controls.formelementendword = $("#" + this.cd.formelementendword);
+            this.controls.formelementerrors = $("#" + this.cd.formelementerrors);
+            this.controls.formelementtime = $("#" + this.cd.formelementtime);
+
+        },
+
+        register_events: function(){
+            var that = this;
+            //set up event handlers
+            //in review mode, do nuffink though ... thats for the student
+            if(this.options.reviewmode){
+                if(this.enabletts && this.options.ttslanguage != 'none'){
+                    this.controls.eachword.click(this.playword);
+                }
+            }else{
+
+                //process word clicks
+                this.controls.eachword.click(
+                    function() {
+                        var wordnumber = $(this).attr('data-wordnumber');
+                        var theword = $(this).text();
+                        //this will disallow badwords after the endmarker
+                        if(that.options.enforcemarker && Number(wordnumber)>Number(that.options.endwordnumber)){
+                            return;
+                        }
+
+                        if(wordnumber in that.options.errorwords){
+                            delete that.options.errorwords[wordnumber];
+                            $(this).removeClass(that.cd.badwordclass);
+                        }else{
+                            that.adderrorword(wordnumber,theword);
+                            $(this).addClass(that.cd.badwordclass);
+                        }
+                        that.processscores();
+                    }
+                ); //end of each word click
+
+                //process space clicks
+                this.controls.eachspace.click(
+                    function() {
+                        //this event is entered by  click on space
+                        //it relies on attr data-wordnumber being set correctly
+                        var wordnumber = $(this).attr('data-wordnumber');
+                        var thespace = $('#' + that.cd.spaceclass + '_' + wordnumber);
+
+                        if(wordnumber == that.options.endwordnumber){
+                            that.options.endwordnumber = that.options.totalwordcount;
+                            thespace.removeClass(that.cd.endspaceclass);
+                            $('#' + that.cd.spaceclass + '_' + that.options.totalwordcount).addClass(that.cd.endspaceclass);
+                        }else{
+                            $('#' + that.cd.spaceclass + '_' + that.options.endwordnumber).removeClass(that.cd.endspaceclass);
+                            that.options.endwordnumber = wordnumber;
+                            thespace.addClass(that.cd.endspaceclass);
+                        }
+                        that.processunread();
+                        that.processscores();
+                    }
+                );//end of each space click
+            }//end of if/else reviewmode
+
+        },
+
         playword: function(){
-            var m = this;// M.mod_readaloud.gradenowhelper;
-            var audioplayer = $('.' + m.classdef.wordplayerclass);
-            audioplayer.attr('src',M.cfg.wwwroot + '/mod/readaloud/tts.php?txt=' + encodeURIComponent($(this).text())
+            var m = this;//M.mod_readaloud.gradenowhelper;
+            m.controls.wordplayer.attr('src',M.cfg.wwwroot + '/mod/readaloud/tts.php?txt=' + encodeURIComponent($(this).text())
                 + '&lang=' + m.options.ttslanguage + '&n=' + m.options.activityid);
-            audioplayer[0].pause();
-            audioplayer[0].load();
-            audioplayer[0].play();
+            m.controls.wordplayer[0].pause();
+            m.controls.wordplayer[0].load();
+            m.controls.wordplayer[0].play();
         },
         redrawgradestate: function(){
             var m = this;//M.mod_readaloud.gradenowhelper;
             this.processunread();
             $.each(m.options.errorwords,function(index){
-                    $('#' + m.classdef.wordclass + '_' + m.options.wordnumber).addClass(m.classdef.badwordclass);
+                    $('#' + m.cd.wordclass + '_' + m.options.wordnumber).addClass(m.cd.badwordclass);
                 }
             );
 
@@ -131,10 +221,10 @@ define(['jquery','core/log'], function($,log) {
 
             if(wordnumber in m.options.errorwords){
                 delete m.options.errorwords[wordnumber];
-                $(this).removeClass(m.classdef.badwordclass);
+                $(this).removeClass(m.cd.badwordclass);
             }else{
                 m.adderrorword(wordnumber,theword);
-                $(this).addClass(m.classdef.badwordclass);
+                $(this).addClass(m.cd.badwordclass);
             }
             m.processscores();
         },
@@ -143,54 +233,50 @@ define(['jquery','core/log'], function($,log) {
             //it relies on attr data-wordnumber being set correctly
             var m = this;// M.mod_readaloud.gradenowhelper;
             var wordnumber = $(this).attr('data-wordnumber');
-            var thespace = $('#' + m.classdef.spaceclass + '_' + wordnumber);
+            var thespace = $('#' + m.cd.spaceclass + '_' + wordnumber);
 
             if(wordnumber == m.options.endwordnumber){
                 m.options.endwordnumber = m.options.totalwordcount;
-                thespace.removeClass(m.classdef.endspaceclass);
-                $('#' + m.classdef.spaceclass + '_' + m.options.totalwordcount).addClass(m.classdef.endspaceclass);
+                thespace.removeClass(m.cd.endspaceclass);
+                $('#' + m.cd.spaceclass + '_' + m.options.totalwordcount).addClass(m.cd.endspaceclass);
             }else{
-                $('#' + m.classdef.spaceclass + '_' + m.options.endwordnumber).removeClass(m.classdef.endspaceclass);
+                $('#' + m.cd.spaceclass + '_' + m.options.endwordnumber).removeClass(m.cd.endspaceclass);
                 m.options.endwordnumber = wordnumber;
-                thespace.addClass(m.classdef.endspaceclass);
+                thespace.addClass(m.cd.endspaceclass);
             }
             m.processunread();
             m.processscores();
         },
         processunread: function(){
             var m = this;// M.mod_readaloud.gradenowhelper;
-            $('.' + m.classdef.wordclass).each(function(index){
+            m.controls.eachword.each(function(index){
                 var wordnumber = $(this).attr('data-wordnumber');
                 if(Number(wordnumber)>Number(m.options.endwordnumber)){
-                    $(this).addClass(m.classdef.unreadwordclass);
+                    $(this).addClass(m.cd.unreadwordclass);
                     //this will clear badwords after the endmarker
                     if(m.options.enforcemarker && wordnumber in m.options.errorwords){
                         delete m.options.errorwords[wordnumber];
-                        $(this).removeClass(m.classdef.badwordclass);
+                        $(this).removeClass(m.cd.badwordclass);
                     }
                 }else{
-                    $(this).removeClass(m.classdef.unreadwordclass);
+                    $(this).removeClass(m.cd.unreadwordclass);
                 }
-            })
+            });
         },
         processscores: function(){
             var m = this;//M.mod_readaloud.gradenowhelper;
-            var wpmscorebox = $('#' + m.classdef.wpmscoreid);
-            var accuracyscorebox = $('#' + m.classdef.accuracyscoreid);
-            var sessionscorebox = $('#' + m.classdef.sessionscoreid);
-            var errorscorebox = $('#' + m.classdef.errorscoreid);
             var errorscore = Object.keys(m.options.errorwords).length;
-            errorscorebox.text(errorscore);
+            m.controls.errorscorebox.text(errorscore);
 
             //wpm score
             var wpmscore = Math.round((m.options.endwordnumber - errorscore) * 60 / m.options.totalseconds);
             m.options.wpm = wpmscore;
-            wpmscorebox.text(wpmscore);
+            m.controls.wpmscorebox.text(wpmscore);
 
             //accuracy score
             var accuracyscore = Math.round((m.options.endwordnumber - errorscore)/m.options.endwordnumber * 100);
             m.options.accuracy = accuracyscore;
-            accuracyscorebox.text(accuracyscore);
+            m.controls.accuracyscorebox.text(accuracyscore);
 
             //sessionscore
             var usewpmscore = wpmscore;
@@ -198,26 +284,26 @@ define(['jquery','core/log'], function($,log) {
                 usewpmscore = m.options.targetwpm;
             }
             var sessionscore = Math.round(usewpmscore/m.options.targetwpm * 100);
-            sessionscorebox.text(sessionscore);
+            m.controls.sessionscorebox.text(sessionscore);
 
             //update form field
-            $("#" + m.classdef.formelementwpmscore).val(wpmscore);
-            $("#" + m.classdef.formelementsessionscore).val(sessionscore);
-            $("#" + m.classdef.formelementaccuracy).val(accuracyscore);
-            $("#" + m.classdef.formelementendword).val(m.options.endwordnumber);
-            $("#" + m.classdef.formelementerrors).val(JSON.stringify(m.options.errorwords));
+            m.controls.formelementwpmscore.val(wpmscore);
+            m.controls.formelementsessionscore.val(sessionscore);
+            m.controls.formelementaccuracy.val(accuracyscore);
+            m.controls.formelementendword.val(m.options.endwordnumber);
+            m.controls.formelementerrors.val(JSON.stringify(m.options.errorwords));
 
         },
         processloadedaudio: function(){
             var m = this;//M.mod_readaloud.gradenowhelper;
             if(m.options.allowearlyexit){
-                m.options.totalseconds = Math.round($('#' + m.classdef.audioplayerclass).prop('duration'));
+                m.options.totalseconds = Math.round($('#' + m.cd.audioplayerclass).prop('duration'));
             }else{
                 m.options.totalseconds = m.options.timelimit;
             }
             //update form field
-            $("#" + m.classdef.formelementtime).val(m.options.totalseconds);
+            m.controls.formelementtime.val(m.options.totalseconds);
             m.processscores();
         }
-    }
+    };
 });

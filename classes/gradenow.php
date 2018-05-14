@@ -103,18 +103,6 @@ class gradenow{
    
    public function prepare_javascript($reviewmode=false){
 		global $PAGE;
-		
-		//get our module javascript all ready to go
-		$jsmodule = array(
-			'name'     => 'mod_readaloud',
-			'fullpath' => '/mod/readaloud/module.js',
-			'requires' => array('json')
-		);
-		//here we set up any info we need to pass into javascript
-		$opts =Array();
-		//this inits the M.mod_readaloud thingy, after the page has loaded.
-		$PAGE->requires->js_init_call('M.mod_readaloud.helper.init', array($opts),false,$jsmodule);
-
 
 		//here we set up any info we need to pass into javascript
 		$gradingopts =Array();
@@ -133,10 +121,14 @@ class gradenow{
 		$gradingopts['wpm'] = $this->attemptdata->wpm;
 		$gradingopts['accuracy'] = $this->attemptdata->accuracy;
 		$gradingopts['sessionscore'] = $this->attemptdata->sessionscore;
+       $gradingopts['opts_id'] = 'mod_readaloud_gradenowopts';
 
-		//this inits the M.mod_readaloud thingy, after the page has loaded.
-		$PAGE->requires->js_init_call('M.mod_readaloud.gradenowhelper.init', array($gradingopts),false,$jsmodule);
-		//$PAGE->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
+
+       $jsonstring = json_encode($gradingopts);
+       $opts_html = \html_writer::tag('input', '', array('id' => $gradingopts['opts_id'], 'type' => 'hidden', 'value' => $jsonstring));
+       $PAGE->requires->js_call_amd("mod_readaloud/gradenowhelper", 'init', array(array('id'=>$gradingopts['opts_id'])));
+       //these need to be returned and echo'ed to the page
+       return $opts_html;
 
    }
 }

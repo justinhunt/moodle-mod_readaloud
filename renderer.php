@@ -221,11 +221,16 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 
 
     function prepare_amd_audiorecorder($cm, $moduleinstance){
+        global $USER;
+	    //any html we want to return to be sent to the page
+	    $ret_html = '';
 
-//here we set up any info we need to pass into javascript
+        //here we set up any info we need to pass into javascript
         $ah = new audiohelper();
         $recopts =Array();
         $recopts['recorderid'] = MOD_READALOUD_RECORDERID;
+        $recopts['updatecontrol'] = MOD_READALOUD_UPDATE_CONTROL;
+        $recopts['draftcontrol'] = MOD_READALOUD_DRAFT_CONTROL;
         $recopts['startbutton'] = MOD_READALOUD_START_BUTTON;
         $recopts['stopbutton'] = MOD_READALOUD_STOP_BUTTON;
         $recopts['recordbutton'] = MOD_READALOUD_RECORD_BUTTON;
@@ -243,20 +248,54 @@ class mod_readaloud_renderer extends plugin_renderer_base {
         $recopts['feedbackcontainer'] = MOD_READALOUD_FEEDBACK_CONTAINER;
         $recopts['errorcontainer'] = MOD_READALOUD_ERROR_CONTAINER;
         $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
-        $p1 = sesskey();
-        $p2 = $cm->id;
-        $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",
-            $p1,$p2,"p3","p4",MOD_READALOUD_RECORDERID,"false", "volume",$moduleinstance->timelimit);
+
+
+
+
+
+
+
+
+        //We prepare the draft area and id here
+         $modulecontextid= context_module::instance($cm->id)->id;
+         $draftitemid = 0;
+         $attemptid=0;
+         file_prepare_draft_area($draftitemid, $modulecontextid, MOD_READALOUD_FRANKY, MOD_READALOUD_FILEAREA_SUBMISSIONS, $attemptid, null,null);
+
+        //we need an update control tp hold the recorded filename, and one for draft item id
+        $ret_html = $ret_html . html_writer::tag('input', '', array('id' => MOD_READALOUD_UPDATE_CONTROL, 'type' => 'hidden'));
+        $ret_html = $ret_html . html_writer::tag('input', '', array('id' => MOD_READALOUD_DRAFT_CONTROL, 'type' => 'hidden','value'=>$draftitemid));
+
+        //we prepare the recorder using those draft credentials here
+        $contextid = context_user::instance($USER->id)->id;
+        $component='user';
+        $filearea='draft';
+        $callbackjs='';
+        $updatecontrol= MOD_READALOUD_UPDATE_CONTROL;
+        //recorder settings
+        $hints=array();
+        $hints['mediaskin']='readaloud';
+        $timelimit = $moduleinstance->timelimit;
+        $recorder = \filter_poodll\poodlltools::fetchAMDRecorderCode('audio', $updatecontrol, $contextid, $component, $filearea, $draftitemid, $timelimit, $callbackjs,$hints);
+        $ret_html = $ret_html . $recorder;
 
 
         //this inits the M.mod_readaloud thingy, after the page has loaded.
         //we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
         //convert opts to json
         $jsonstring = json_encode($recopts);
-        $opts_html = html_writer::tag('input', '', array('id' => 'mod_readaloud_recopts', 'type' => 'hidden', 'value' => $jsonstring));
+        $widgetid = MOD_READALOUD_RECORDERID . '_opts_9999';
+        $opts_html = html_writer::tag('input', '', array('id' => 'amdopts_' . $widgetid, 'type' => 'hidden', 'value' => $jsonstring));
 
-        $this->page->requires->js_call_amd("mod_readaloud/audiohelper", 'init', array($recopts));
+        //the recorder div
+        $ret_html = $ret_html . $opts_html;
+
+        $opts=array('cmid'=>$cm->id,'widgetid'=>$widgetid);
+       // $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', array($opts));
         $this->page->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
+
+        //these need to be returned and echo'ed to the page
+        return $ret_html;
 
     }
 
@@ -272,7 +311,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 //here we set up any info we need to pass into javascript
         $opts =Array();
 //this inits the M.mod_readaloud thingy, after the page has loaded.
-        $this->page->requires->js_init_call('M.mod_readaloud.helper.init', array($opts),false,$jsmodule);
+        //$this->page->requires->js_init_call('M.mod_readaloud.helper.init', array($opts),false,$jsmodule);
 
 
 //here we set up any info we need to pass into javascript

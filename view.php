@@ -154,12 +154,6 @@ if($attempts && $retake==0){
 		return;
 }
 
-//Prepare our audio recorder
-$renderer->prepare_yui_audiorecorder($cm, $moduleinstance);
-
-//$recopts= $renderer->prepare_amd_audiorecorder($cm, $moduleinstance);
-//echo $recopts;
-
 
 //From here we actually display the page.
 //this is core renderer stuff
@@ -170,6 +164,10 @@ if(has_capability('mod/readaloud:preview',$modulecontext)){
 }else{
 	echo $renderer->notabsheader();
 }
+
+//Prepare our audio recorder
+//$renderer->prepare_yui_audiorecorder($cm, $moduleinstance);
+echo $renderer->prepare_amd_audiorecorder($cm, $moduleinstance);
 
 //show all the main parts. Many will be hidden and displayed by JS
 echo $renderer->show_welcome($moduleinstance->welcome,$moduleinstance->name);

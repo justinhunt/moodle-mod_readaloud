@@ -35,8 +35,74 @@ require_once($CFG->dirroot .'/mod/readaloud/lib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class utils{
+    function shift_draft_file($cmid, $draftitemid,$filename,$submissionid) {
+        global $USER;
 
-   
+        $usercontext = \context_user::instance($USER->id);
+        $usercontextid = \context_user::instance($USER->id)->id;
+        $modulecontextid= \context_module::instance($cmid)->id;
+
+        //Don't do anything in the case that the filename is empty
+        //possibly the user is just updating something else on the page(eg an online text submission)
+        //if we overwrite here, we might trash their existing poodll submission file
+        if($filename==''){return false;}
+
+        //fetch the file info object for our original file
+        $browser = get_file_browser();
+        $draft_fileinfo = $browser->get_file_info($usercontext, 'user','draft', $draftitemid, '/', $filename);
+
+        //perform the copy
+        if($draft_fileinfo){
+            //create the file record for our new file
+            $file_record = array(
+                'userid' => $USER->id,
+                'contextid'=>$modulecontextid,
+                'component'=>MOD_READALOUD_FRANKY,
+                'filearea'=>MOD_READALOUD_FILEAREA_SUBMISSIONS ,
+                'itemid'=>$submissionid,
+                'filepath'=>'/',
+                'filename'=>$filename,
+                'author'=>'moodle user',
+                'license'=>'allrighttsreserved',
+                'timecreated'=>time(),
+                'timemodified'=>time()
+            );
+            $draft_fileinfo->copy_to_storage($file_record);
+
+        }//end of if $draft_fileinfo
+        return $filename;
+    }//end of shift_draft_file
+
+   public static function save_to_moodle($filename,$cmid){
+		global $USER,$DB;
+
+		$cm         = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+		$readaloud  = $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
+
+		//first create an attempt and then we will come back and save the file
+		$newattempt = new \stdClass();
+		$newattempt->courseid=$readaloud->course;
+		$newattempt->readaloudid=$readaloud->id;
+		$newattempt->userid=$USER->id;
+		$newattempt->status=0;
+		$newattempt->filename=$filename;
+		$newattempt->sessionscore=0;
+		$newattempt->wpm=0;
+		$newattempt->timecreated=time();
+		$newattempt->timemodified=time();
+		$attemptid = $DB->insert_record(MOD_READALOUD_USERTABLE,$newattempt);
+		if(!$attemptid){
+			return false;
+		}
+
+        //Save our audio file
+         self::shift_draft_file($cmid,$filename,$attemptid);
+
+        return true;
+}
+
+
+
    public static function get_lang_options(){
 		return array(
 			"none"=>"No TTS",
