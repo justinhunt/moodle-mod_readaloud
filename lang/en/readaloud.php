@@ -147,3 +147,10 @@ $string['loadbootstrap']='Load Bootstrap';
 $string['loadbootstrap_details']='Bootstrap is a set of CSS and javascript often used to make big colorful buttons and user interfaces that work well on PC and mobile devices. ReadAloud will load it independently if this is checked. If your theme already loads it, and it causes things to look weird then uncheck this.';
 $string['loadfontawesome']='Load FontAwesome';
 $string['loadfontawesome_details']='FontAwesome provides bland icons that represent arrows and circles and various common symbols you see on toolbars and buttons. ReadAloud loads this for you if this is checked. Should this cause problems, uncheck it.';
+
+$string['apiuser']='Poodll API User ';
+$string['apiuser_details']='The Poodll account username that authorises Poodll on this site.';
+$string['apisecret']='Poodll API Secret ';
+$string['apisecret_details']='The Poodll API secret. See <a href= "https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret">here</a> for more details';
+$string['enableai']='Enable AI';
+$string['enableai_details']='Using AI Read Aloud can estimate the results from a student attempt';

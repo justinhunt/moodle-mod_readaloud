@@ -29,8 +29,6 @@ require_once($CFG->dirroot.'/mod/readaloud/lib.php');
 
 if ($ADMIN->fulltree) {
 
-
-
 	 $settings->add(new admin_setting_configtextarea('mod_readaloud/defaultwelcome',
         get_string('welcomelabel', 'readaloud'), get_string('welcomelabel_details', MOD_READALOUD_LANG), get_string('defaultwelcome',MOD_READALOUD_LANG), PARAM_TEXT));
 	 $settings->add(new admin_setting_configtextarea('mod_readaloud/defaultfeedback',
@@ -38,7 +36,16 @@ if ($ADMIN->fulltree) {
 		
 	 $settings->add(new admin_setting_configtext('mod_readaloud/targetwpm',
         get_string('targetwpm', MOD_READALOUD_LANG), get_string('targetwpm_details', MOD_READALOUD_LANG), 100, PARAM_INT));
-		
+
+    $settings->add(new admin_setting_configtext('mod_readaloud/apiuser',
+        get_string('apiuser', MOD_READALOUD_LANG), get_string('apiuser_details', MOD_READALOUD_LANG), '', PARAM_TEXT));
+
+    $settings->add(new admin_setting_configtext('mod_readaloud/apisecret',
+        get_string('apisecret', MOD_READALOUD_LANG), get_string('apisecret_details', MOD_READALOUD_LANG), '', PARAM_TEXT));
+
+    $settings->add(new admin_setting_configcheckbox('mod_readaloud/enableai',
+        get_string('enableai', MOD_READALOUD_LANG), get_string('enableai_details',MOD_READALOUD_LANG), 0));
+
 	$settings->add(new admin_setting_configcheckbox('mod_readaloud/allowearlyexit', 
 	 get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_defaultdetails',MOD_READALOUD_LANG), 0));	
 		

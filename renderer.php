@@ -110,19 +110,20 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 
 
     /**
-     *
+     *  Show instructions/welcome
      */
     public function show_welcome($showtext, $showtitle) {
-		$displaytext =  '<center>' . $this->output->heading($showtitle, 3, 'main') . '</center>'; 
+        $thetitle =  $this->output->heading($showtitle, 3, 'main');
+		$displaytext =  html_writer::div($thetitle ,MOD_READALOUD_CLASS  . '_center');
 		$displaytext .= $this->output->box_start();
-		$displaytext .= $showtext;
+		$displaytext .= html_writer::div($showtext ,MOD_READALOUD_CLASS  . '_center');
 		$displaytext .= $this->output->box_end();
 		$ret= html_writer::div($displaytext,MOD_READALOUD_INSTRUCTIONS_CONTAINER,array('id'=>MOD_READALOUD_INSTRUCTIONS_CONTAINER));
         return $ret;
     }
 
 	 /**
-     *
+     * Show the introduction text is as set in the activity description
      */
 	public function show_intro($readaloud,$cm){
 		$ret = "";
@@ -136,7 +137,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 	
 	
 	 /**
-     
+     * Show the reading passage
      */
 	public function show_passage($readaloud,$cm){
 		
@@ -149,8 +150,8 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 		return $ret;
 	}
 	
-		 /**
-     *
+	/**
+     *  Show a progress circle overlay while uploading
      */
 	public function show_progress($readaloud,$cm){
 		$hider =  html_writer::div('',MOD_READALOUD_HIDER,array('id'=>MOD_READALOUD_HIDER));
@@ -162,20 +163,21 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 		return $ret;
 	}
 	
-		 /**
-     *
+	/**
+     * Show the feedback set in the activity settings
      */
 	public function show_feedback($readaloud,$cm,$showtitle){
-		$displaytext =  '<center>' . $this->output->heading($showtitle, 3, 'main') . '</center>'; 
+        $thetitle =  $this->output->heading($showtitle, 3, 'main');
+        $displaytext =  html_writer::div($thetitle ,MOD_READALOUD_CLASS  . '_center');
 		$displaytext .= $this->output->box_start();
-		$displaytext .=  html_writer::div($readaloud->feedback,'',array());
+		$displaytext .=  html_writer::div($readaloud->feedback,MOD_READALOUD_CLASS  . '_center');
 		$displaytext .= $this->output->box_end();
 		$ret= html_writer::div($displaytext,MOD_READALOUD_FEEDBACK_CONTAINER,array('id'=>MOD_READALOUD_FEEDBACK_CONTAINER));
         return $ret;
 	}
 	
-		 /**
-     *
+	/**
+     * Show error (but when?)
      */
 	public function show_error($readaloud,$cm){
 		$displaytext = $this->output->box_start();
@@ -187,97 +189,83 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 	}
 	
 	/**
-     *
+     * The html part of the recorder (js is in the fetch_activity_amd)
      */
-	public function show_button_recorder($readaloud,$cm){
-		
-		//buttons
-		$rec_button =  html_writer::tag('button',get_string('recordnameschool',MOD_READALOUD_LANG),
-				array('class'=>'btn btn-primary ' . MOD_READALOUD_RECORD_BUTTON));
-		$start_button =  html_writer::tag('button',get_string('beginreading',MOD_READALOUD_LANG),
-				array('class'=>'btn btn-primary ' . MOD_READALOUD_START_BUTTON, 'disabled'=>'true'));
-		
-		//recorder + instructions
-		$recorderdiv= html_writer::div('',MOD_READALOUD_RECORDER_CONTAINER,
-							array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
-		$dummyrecorderdiv= html_writer::div('',MOD_READALOUD_DUMMY_RECORDER . " " . MOD_READALOUD_DUMMY_RECORDER .'_hidden',
-							array('id'=>MOD_READALOUD_DUMMY_RECORDER));
-		$instructionsrightdiv= html_writer::div('' ,MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT,
-							array('id'=>MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT));
-		$instructionsleftdiv= html_writer::div('' ,MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT,
-							array('id'=>MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT));
-		$recordingdiv = html_writer::div($instructionsleftdiv . $recorderdiv . $dummyrecorderdiv . $instructionsrightdiv,MOD_READALOUD_RECORDING_CONTAINER);
-		
-		//prepare output
-		$ret = "";
-		$ret .=$recordingdiv;
-		$ret .= html_writer::div($rec_button,MOD_READALOUD_RECORD_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_RECORD_BUTTON_CONTAINER));
-		$ret .= html_writer::div($start_button,MOD_READALOUD_START_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_START_BUTTON_CONTAINER));
+	public function show_recorder($moduleinstance){
+	    global $CFG;
 
+        //recorder
+        //=======================================
+		$recorderdiv= html_writer::div('','',
+							array('id'=>MOD_READALOUD_RECORDERID,
+                                'data-id'=>'therecorder',
+                                'data-parent'=>$CFG->wwwroot,
+                                'data-media'=>"audio",
+                                'data-type'=>"readaloud",
+                                'data-width'=>"450",
+                                'data-height'=>"250",
+                                //'data-iframeclass'=>"letsberesponsive",
+                                'data-updatecontrol'=>MOD_READALOUD_UPDATE_CONTROL,
+                                'data-timelimit'=> $moduleinstance->timelimit,
+                                'data-transcode'=>"1",
+                                'data-transcribe'=>"1",
+                                'data-transcribelanguage'=>"en",
+                                'data-expiredays'=>"365",
+                                'data-region'=>"tokyo",
+                                'data-token'=>"643eba92a1447ac0c6a882c85051461a"
+                                )
+        );
+        $containerdiv= html_writer::div($recorderdiv,MOD_READALOUD_RECORDER_CONTAINER,
+            array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
+        //=======================================
+
+
+        $rec_button =  html_writer::tag('button',get_string('recordnameschool',MOD_READALOUD_LANG),
+            array('class'=>'btn btn-primary ' . MOD_READALOUD_RECORD_BUTTON));
+        $start_button =  html_writer::tag('button',get_string('beginreading',MOD_READALOUD_LANG),
+            array('class'=>'btn btn-primary ' . MOD_READALOUD_START_BUTTON, 'disabled'=>'true'));
+
+
+        $recordingdiv = html_writer::div($containerdiv ,MOD_READALOUD_RECORDING_CONTAINER);
+
+        //prepare output
+        $ret = "";
+        $ret .=$recordingdiv;
+        $ret .= html_writer::div($rec_button,MOD_READALOUD_RECORD_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_RECORD_BUTTON_CONTAINER));
+        $ret .= html_writer::div($start_button,MOD_READALOUD_START_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_START_BUTTON_CONTAINER));
 		
 		//return it
 		return $ret;
 	}
 
 
-    function prepare_amd_audiorecorder($cm, $moduleinstance){
+    function fetch_activity_amd($cm, $moduleinstance){
         global $USER;
 	    //any html we want to return to be sent to the page
 	    $ret_html = '';
 
         //here we set up any info we need to pass into javascript
-        $ah = new audiohelper();
+
         $recopts =Array();
+        //recorder html ids
         $recopts['recorderid'] = MOD_READALOUD_RECORDERID;
-        $recopts['updatecontrol'] = MOD_READALOUD_UPDATE_CONTROL;
-        $recopts['draftcontrol'] = MOD_READALOUD_DRAFT_CONTROL;
-        $recopts['startbutton'] = MOD_READALOUD_START_BUTTON;
-        $recopts['stopbutton'] = MOD_READALOUD_STOP_BUTTON;
-        $recopts['recordbutton'] = MOD_READALOUD_RECORD_BUTTON;
-        $recopts['hider']=MOD_READALOUD_HIDER;
-        $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
         $recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
         $recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
-        $recopts['dummyrecorder'] = MOD_READALOUD_DUMMY_RECORDER;
+
+        //activity html ids
+        $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
         $recopts['instructionscontainer'] = MOD_READALOUD_INSTRUCTIONS_CONTAINER;
-        $recopts['recinstructionscontainerright'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT;
-        $recopts['recinstructionscontainerleft'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT;
         $recopts['recordbuttoncontainer'] =MOD_READALOUD_RECORD_BUTTON_CONTAINER;
         $recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
+        $recopts['hider']=MOD_READALOUD_HIDER;
         $recopts['progresscontainer'] = MOD_READALOUD_PROGRESS_CONTAINER;
         $recopts['feedbackcontainer'] = MOD_READALOUD_FEEDBACK_CONTAINER;
         $recopts['errorcontainer'] = MOD_READALOUD_ERROR_CONTAINER;
         $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
 
 
-
-
-
-
-
-
-        //We prepare the draft area and id here
-         $modulecontextid= context_module::instance($cm->id)->id;
-         $draftitemid = 0;
-         $attemptid=0;
-         file_prepare_draft_area($draftitemid, $modulecontextid, MOD_READALOUD_FRANKY, MOD_READALOUD_FILEAREA_SUBMISSIONS, $attemptid, null,null);
-
         //we need an update control tp hold the recorded filename, and one for draft item id
         $ret_html = $ret_html . html_writer::tag('input', '', array('id' => MOD_READALOUD_UPDATE_CONTROL, 'type' => 'hidden'));
-        $ret_html = $ret_html . html_writer::tag('input', '', array('id' => MOD_READALOUD_DRAFT_CONTROL, 'type' => 'hidden','value'=>$draftitemid));
-
-        //we prepare the recorder using those draft credentials here
-        $contextid = context_user::instance($USER->id)->id;
-        $component='user';
-        $filearea='draft';
-        $callbackjs='';
-        $updatecontrol= MOD_READALOUD_UPDATE_CONTROL;
-        //recorder settings
-        $hints=array();
-        $hints['mediaskin']='readaloud';
-        $timelimit = $moduleinstance->timelimit;
-        $recorder = \filter_poodll\poodlltools::fetchAMDRecorderCode('audio', $updatecontrol, $contextid, $component, $filearea, $draftitemid, $timelimit, $callbackjs,$hints);
-        $ret_html = $ret_html . $recorder;
 
 
         //this inits the M.mod_readaloud thingy, after the page has loaded.
@@ -291,60 +279,11 @@ class mod_readaloud_renderer extends plugin_renderer_base {
         $ret_html = $ret_html . $opts_html;
 
         $opts=array('cmid'=>$cm->id,'widgetid'=>$widgetid);
-       // $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', array($opts));
+        $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', array($opts));
         $this->page->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
 
         //these need to be returned and echo'ed to the page
         return $ret_html;
-
-    }
-
-
-	function prepare_yui_audiorecorder($cm, $moduleinstance){
-        //if not in review mode, lets start up the test mode
-//get our module javascript all ready to go
-        $jsmodule = array(
-            'name'     => 'mod_readaloud',
-            'fullpath' => '/mod/readaloud/module.js',
-            'requires' => array()
-        );
-//here we set up any info we need to pass into javascript
-        $opts =Array();
-//this inits the M.mod_readaloud thingy, after the page has loaded.
-        //$this->page->requires->js_init_call('M.mod_readaloud.helper.init', array($opts),false,$jsmodule);
-
-
-//here we set up any info we need to pass into javascript
-        $ah = new audiohelper();
-        $recopts =Array();
-        $recopts['recorderid'] = MOD_READALOUD_RECORDERID;
-        $recopts['startbutton'] = MOD_READALOUD_START_BUTTON;
-        $recopts['stopbutton'] = MOD_READALOUD_STOP_BUTTON;
-        $recopts['recordbutton'] = MOD_READALOUD_RECORD_BUTTON;
-        $recopts['hider']=MOD_READALOUD_HIDER;
-        $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
-        $recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
-        $recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
-        $recopts['dummyrecorder'] = MOD_READALOUD_DUMMY_RECORDER;
-        $recopts['instructionscontainer'] = MOD_READALOUD_INSTRUCTIONS_CONTAINER;
-        $recopts['recinstructionscontainerright'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT;
-        $recopts['recinstructionscontainerleft'] = MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT;
-        $recopts['recordbuttoncontainer'] =MOD_READALOUD_RECORD_BUTTON_CONTAINER;
-        $recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
-        $recopts['progresscontainer'] = MOD_READALOUD_PROGRESS_CONTAINER;
-        $recopts['feedbackcontainer'] = MOD_READALOUD_FEEDBACK_CONTAINER;
-        $recopts['errorcontainer'] = MOD_READALOUD_ERROR_CONTAINER;
-        $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
-        $p1 = sesskey();
-        $p2 = $cm->id;
-        $recopts['recorderjson'] = $ah->fetchRecorderJSON("","M.mod_readaloud.audiohelper.poodllcallback",
-            $p1,$p2,"p3","p4",MOD_READALOUD_RECORDERID,"false", "volume",$moduleinstance->timelimit);
-
-
-//this inits the M.mod_readaloud thingy, after the page has loaded.
-        $this->page->requires->js_init_call('M.mod_readaloud.audiohelper.init', array($recopts),false,$jsmodule);
-        $this->page->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
-
     }
   
 }
@@ -577,7 +516,6 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 	}
 	
 	public function render_audioplayer($audiourl){
-		
 		$audioplayer = html_writer::tag('audio','',
 									array('controls'=>'','src'=>$audiourl,'id'=>MOD_READALOUD_GRADING_PLAYER));
 		$ret = html_writer::div($audioplayer,MOD_READALOUD_GRADING_PLAYER_CONTAINER,array('id'=>MOD_READALOUD_GRADING_PLAYER_CONTAINER));

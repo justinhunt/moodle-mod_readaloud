@@ -29,7 +29,7 @@
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 require_once(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/audio/audiohelper.php');
+
 
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
@@ -52,20 +52,16 @@ $PAGE->set_url('/mod/readaloud/view.php', array('id' => $cm->id));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
-//Diverge logging logic at Moodle 2.7
-if($CFG->version<2014051200){
-	add_to_log($course->id, 'readaloud', 'view', "view.php?id={$cm->id}", $moduleinstance->name, $cm->id);
-}else{
-	// Trigger module viewed event.
-	$event = \mod_readaloud\event\course_module_viewed::create(array(
-	   'objectid' => $moduleinstance->id,
-	   'context' => $modulecontext
-	));
-	$event->add_record_snapshot('course_modules', $cm);
-	$event->add_record_snapshot('course', $course);
-	$event->add_record_snapshot('readaloud', $moduleinstance);
-	$event->trigger();
-} 
+// Trigger module viewed event.
+$event = \mod_readaloud\event\course_module_viewed::create(array(
+   'objectid' => $moduleinstance->id,
+   'context' => $modulecontext
+));
+$event->add_record_snapshot('course_modules', $cm);
+$event->add_record_snapshot('course', $course);
+$event->add_record_snapshot('readaloud', $moduleinstance);
+$event->trigger();
+
 
 //if we got this far, we can consider the activity "viewed"
 $completion = new completion_info($course);
@@ -79,8 +75,7 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
-//require jquery
-$PAGE->requires->jquery();
+
 
 
 //Get an admin settings 
@@ -90,15 +85,6 @@ $config = get_config(MOD_READALOUD_FRANKY);
 if($config->loadfontawesome){
 	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
 }
-if($config->loadbootstrap){
-	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
-	$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
-}
-
-
-//load swf loader
-$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/audio/embed-compressed.js'));
-
 
 //Get our renderers
 $renderer = $PAGE->get_renderer('mod_readaloud');
@@ -128,8 +114,6 @@ if($attempts && $retake==0){
 		}else{
 			echo $renderer->notabsheader();
 		}
-
-
 		$latestattempt = array_shift($attempts);
 		
 		// show results if graded
@@ -165,17 +149,17 @@ if(has_capability('mod/readaloud:preview',$modulecontext)){
 	echo $renderer->notabsheader();
 }
 
-//Prepare our audio recorder
-//$renderer->prepare_yui_audiorecorder($cm, $moduleinstance);
-echo $renderer->prepare_amd_audiorecorder($cm, $moduleinstance);
 
 //show all the main parts. Many will be hidden and displayed by JS
 echo $renderer->show_welcome($moduleinstance->welcome,$moduleinstance->name);
-echo $renderer->show_button_recorder($moduleinstance,$cm);
+echo $renderer->show_recorder($moduleinstance);
 echo $renderer->show_passage($moduleinstance,$cm);
 echo $renderer->show_progress($moduleinstance,$cm);
 echo $renderer->show_feedback($moduleinstance,$cm,$moduleinstance->name);
 echo $renderer->show_error($moduleinstance,$cm);
+
+//the module AMD code
+echo $renderer->fetch_activity_amd($cm, $moduleinstance);
 
 // Finish the page
 echo $renderer->footer();

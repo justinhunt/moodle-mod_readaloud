@@ -87,10 +87,15 @@ class gradenow{
 				$ret = $this->activitydata->passage;
 				break;
 			case 'audiourl':
-				$ret = \moodle_url::make_pluginfile_url($this->modulecontextid, MOD_READALOUD_FRANKY, 
-					MOD_READALOUD_FILEAREA_SUBMISSIONS, 
-					$this->attemptdata->id, '/', 
-					$this->attemptdata->filename);
+			    //we need to consider legacy client side URLs and cloud hosted ones
+			    if(strpos($this->attemptdata->filename,'http')===0){
+			        $ret = $this->attemptdata->filename;
+                }else {
+                    $ret = \moodle_url::make_pluginfile_url($this->modulecontextid, MOD_READALOUD_FRANKY,
+                        MOD_READALOUD_FILEAREA_SUBMISSIONS,
+                        $this->attemptdata->id, '/',
+                        $this->attemptdata->filename);
+                }
 				break;
 			case 'somedetails': 
 				$ret= $this->attemptdata->id . ' ' . $this->activitydata->passage; 

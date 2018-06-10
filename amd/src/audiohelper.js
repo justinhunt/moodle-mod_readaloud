@@ -1,120 +1,64 @@
-define(['jquery','core/log'], function($,log) {
+define(['jquery','core/log','mod_readaloud/cloudpoodllloader'], function($,log, cloudpoodll) {
     "use strict"; // jshint ;_;
+/*
+This file is largely to handle recorder specific tasks, configuring it , loading it, its appearance
+It should not be concerned with anything non recorder'ish like elements on the page around
+Relationships between the recorder and the surrounding elements should be managed via event handlers in activity controller
+ */
 
     log.debug('Readaloud helper: initialising');
 
     return{
-        recorderid: null,
-        recordbutton: null,
-        startbutton: null,
-        stopbutton: null,
-        gotsound: false,
-        hider: null,
-        passagerecorded: false,
-        sounds: Array(),
-        awaitingpermission: false,
-        recorderallowed: false,
-        passagecontainer: null,
-        feedbackcontainer: null,
-        errorcontainer: null,
-        recordingcontainer: null,
-        recordercontainer: null,
-        dummyrecorder: null,
-        instructionscontainer: null,
-        progresscontainer: null,
-        recinstructionscontainerright: null,
-        recinstructionscontainerleft: null,
-        allowearlyexit: false,
+
         status: 'stopped',
 
+        init: function(opts,on_recording_start,
+            on_recording_end,
+            on_audio_processing){
 
-        init: function(opts){
-            var lzOptions = {ServerRoot: '\\'};
-            lz.embed.swf(JSON.parse(opts['recorderjson']));
-            this.recorderid = opts['recorderid'];
-            this.recordbutton = opts['recordbutton'];
-            this.startbutton = opts['startbutton'];
-            this.stopbutton = opts['stopbutton'];
-            this.hider = opts['hider'];
-            this.progresscontainer = opts['progresscontainer'];
-            this.feedbackcontainer = opts['feedbackcontainer'];
-            this.errorcontainer= opts['errorcontainer'];
-            this.passagecontainer = opts['passagecontainer'];
-            this.recordingcontainer= opts['recordingcontainer'];
-            this.dummyrecorder= opts['dummyrecorder'];
-            this.recordercontainer= opts['recordercontainer'];
-            this.instructionscontainer= opts['instructionscontainer'];
-            this.recinstructionscontainerright= opts['recinstructionscontainerright'];
-            this.recinstructionscontainerleft= opts['recinstructionscontainerleft'];
-            this.allowearlyexit = opts['allowearlyexit'];
-            $('.' + this.recordbutton).click(this.recordbuttonclick);
-            $('.' + this.startbutton).click(this.startbuttonclick);
-            $('.' + this.stopbutton).click(this.stopbuttonclick);
+            var that = this;
+            cloudpoodll.init(opts['recorderid'],
 
-        },
+                function(message){
+                    console.log(message);
+                    switch(message.type){
+                        case 'recording':
+                            if(message.action==='started'){
+                                that.startbuttonclick();
+                                on_recording_start(message);
 
-
-        beginall: function(){
-            var m = M.mod_readaloud.audiohelper;
-            m.dorecord();
-            m.passagerecorded = true;
+                            }else if(message.action==='stopped'){
+                                that.stopbuttonclick();
+                                on_recording_end(message);
+                            }
+                            break;
+                        case 'awaitingprocessing':
+                            //awaitingprocessing fires often, but we only want to post once
+                            if(that.status!='posted') {
+                                on_audio_processing(message);
+                            }
+                            that.status='posted';
+                            break;
+                    }
+                }
+            );
         },
         stopbuttonclick: function(){
-            var m = M.mod_readaloud.audiohelper;
-            if(m.fetchrecstatus() !='stopped'){
-                m.dostop();
-            }
+            var m = this;
+            this.status='stopped';
+            //do something
         },
         startbuttonclick: function(){
-            var m = M.mod_readaloud.audiohelper;
-            if(m.fetchrecstatus() !='stopped'){
-                m.dostop();
-            }
-            m.dopassagelayout();
-            $('.' + m.passagecontainer).show(1000,m.beginall);
+            var m = this;
+            this.status='started';
+           //do something
+        },
 
-        },
-        dopassagelayout: function(){
-            var m = M.mod_readaloud.audiohelper;
-            $('.mod_intro_box').hide();
-            $('.' + m.recordbutton).hide();
-            $('.' + m.startbutton).hide();
-            $('.' + m.instructionscontainer).hide();
-            if(!m.allowearlyexit){
-                $('.' + m.stopbutton).hide();
-            }
-        },
-        douploadlayout: function(){
-            var m = M.mod_readaloud.audiohelper;
-            $('.' + m.passagecontainer).addClass('mod_readaloud_passage_finished');
-            $('.' + m.stopbutton).prop('disabled',true);
-            $('.' + m.hider).fadeIn('fast');
-            $('.' + m.progresscontainer).fadeIn('fast');
-        },
-        dofinishedlayout: function(){
-            var m = M.mod_readaloud.audiohelper;
-            $('.' + m.hider).fadeOut('fast');
-            $('.' + m.progresscontainer).fadeOut('fast');
-            $('.' + m.passagecontainer).hide();
-            $('.' + m.recordingcontainer).hide();
-            $('.' + m.dummyrecorder).hide();
-            $('.' + m.feedbackcontainer).show();
-        },
-        doerrorlayout: function(){
-            var m = M.mod_readaloud.audiohelper;
-            $('.' + m.hider).fadeOut('fast');
-            $('.' + m.progresscontainer).fadeOut('fast');
-            $('.' + m.passagecontainer).hide();
-            $('.' + m.recordingcontainer).hide();
-            $('.' + m.dummyrecorder).hide();
-            $('.' + m.errorcontainer).show();
-        },
+        // EVERYTHING FROM HERE IS FOR REFERENCE ONLY
         transformrecorder: function(){
             //$('.' + m.recinstructionscontainerleft).hide();
             //$('.' + m.recinstructionscontainerright).hide();
             $('.' + this.recordercontainer).attr('style','width: 1px; height: 1px;');
-            $('.' + this.dummyrecorder).removeClass(this.dummyrecorder + '_hidden');
-            $('.' + this.dummyrecorder).addClass(this.dummyrecorder + '_stopped');
             $('.' + this.dummyrecorder).css('background-image','url(' + M.cfg.wwwroot + '/mod/readaloud/pix/microphone.png)');
         },
         getpermissionmode: function(){
@@ -155,12 +99,7 @@ define(['jquery','core/log'], function($,log) {
                 }
             }
         },
-        fetchrecstatus: function(){
-            return this.fetchrecproperty('recorderstatus');
-        },
-        fetchrecproperty: function(propertyname){
-            return lz.embed[this.recorderid].getCanvasAttribute(propertyname);
-        },
+
         poodllcallback: function(args){
             if(args[1] !='timerevent'){
                 //console.log ("poodllcallback:" + args[0] + ":" + args[1] + ":" + args[2] + ":" + args[3] + ":" + args[4] + ":" + args[5] + ":" + args[6]);
@@ -292,66 +231,14 @@ define(['jquery','core/log'], function($,log) {
                 this.drawvoicechart(this.dummyrecorder);
             }
         },
-        //handles calls into the recorder
-        dorecorderapi: function(callingfunction){
-            if(lz.embed[this.recorderid] != null){
-                var apicall = '';
-                switch(callingfunction){
-                    case 'dorecord': apicall = 'poodllapi.mp3_record()';break;
-                    case 'dostop': apicall = 'poodllapi.mp3_stop()';break;
-                    case 'dopause': apicall = 'poodllapi.mp3_pause()';break;
-                    case 'doshowsettings': apicall = 'poodllapi.mp3_show_settings()';break;
-                    case 'doplay': apicall = 'poodllapi.mp3_play()';break;
-                    case 'dodisable': apicall = 'poodllapi.mp3_disable()';break;
-                    case 'doenable': apicall = 'poodllapi.mp3_enable()';break;
-                }
-                lz.embed[this.recorderid].callMethod(apicall);
-            }
 
-        },
-        //this function shows how to call the MP3 recorder's API to export the recording to the server
-        doexport: function(){
-            if(lz.embed[this.recorderid] != null){
-                lz.embed[this.recorderid].callMethod('poodllapi.mp3_export()');
-            }else{
-                deferredexport(this.recorderid);
-            }
-        },
 
-        //this function shows how to call the MP3 recorder's API to commence recording
-        doshowsettings: function(){
-            this.dorecorderapi('doshowsettings');
-        },
 
         //this function shows how to call the MP3 recorder's API to commence recording
         dorecord: function(){
-            this.dorecorderapi('dorecord');
             $('.' + this.dummyrecorder).removeClass(this.dummyrecorder + '_stopped');
             $('.' + this.dummyrecorder).addClass(this.dummyrecorder + '_recording');
-            //this.makecanvas(this.recinstructionscontainerleft);
             this.makecanvas(this.dummyrecorder);
-        },
-
-        //this function shows how to call the MP3 recorder's API to playback the recording
-        doplay: function(){
-            this.dorecorderapi('doplay');
-        },
-
-        //this function shows how to call the MP3 recorder's API to playback the recording
-        dopause: function(){
-            this.dorecorderapi('dopause');
-        },
-
-        //this function shows how to call the MP3 recorder's API to stop the recording or playback
-        dostop: function(){
-            this.dorecorderapi('dostop');
-            $('.' + this.dummyrecorder).removeClass(this.dummyrecorder + '_recording');
-            $('.' + this.dummyrecorder).addClass(this.dummyrecorder + '_stopped');
-        },
-
-        //this function shows how to call the MP3 recorder's API to stop the recording or playback
-        dodisable: function(){
-            this.dorecorderapi('dodisable');
         }
 
 

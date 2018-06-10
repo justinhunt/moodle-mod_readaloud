@@ -101,9 +101,13 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$mform->setDefault('targetwpm',$config->targetwpm);
 		
 		//allow early exit
-		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', MOD_READALOUD_LANG), 		get_string('allowearlyexit_details', MOD_READALOUD_LANG));
+		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_details', MOD_READALOUD_LANG));
 		$mform->setDefault('allowearlyexit',$config->allowearlyexit);
-		
+
+        //Enable AI
+        $mform->addElement('advcheckbox', 'enableai', get_string('enableai', MOD_READALOUD_LANG), get_string('enableai_details', MOD_READALOUD_LANG));
+        $mform->setDefault('enableai',$config->enableai);
+
 		//attempts
         $attemptoptions = array(0 => get_string('unlimited', MOD_READALOUD_LANG),
                             1 => '1',2 => '2',3 => '3',4 => '4',5 => '5',);
