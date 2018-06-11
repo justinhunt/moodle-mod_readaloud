@@ -60,8 +60,36 @@ class utils{
             return $token;
     }
 
+  public static function get_region_options(){
+      return array(
+        "useast1" => get_string("useast1",'mod_readaloud'),
+          "tokyo" => get_string("tokyo",'mod_readaloud'),
+          "sydney" => get_string("sydney",'mod_readaloud'),
+          "dublin" => get_string("dublin",'mod_readaloud')
+      );
+  }
+
+  public static function get_expiredays_options(){
+      return array(
+          "1"=>"1",
+          "3"=>"3",
+          "7"=>"7",
+          "30"=>"30",
+          "90"=>"90",
+          "180"=>"180",
+          "365"=>"365",
+          "730"=>"730",
+          "9999"=>get_string('forever','mod_readaloud')
+      );
+  }
+
    public static function get_lang_options(){
-		return array(
+       return array(
+            'en-US'=>get_string('en-us','mod_readaloud'),
+           'es-US'=>get_string('es-us','mod_readaloud')
+       );
+	/*
+      return array(
 			"none"=>"No TTS",
 			"af"=>"Afrikaans", 
 			"sq"=>"Albanian", 
@@ -186,5 +214,6 @@ class utils{
 			"yo"=>"Yoruba", 
 			"zu"=>"Zulu"
 		);
+	*/
    }
 }

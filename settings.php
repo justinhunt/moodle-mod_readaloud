@@ -46,12 +46,21 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/enableai',
         get_string('enableai', MOD_READALOUD_LANG), get_string('enableai_details',MOD_READALOUD_LANG), 0));
 
-	$settings->add(new admin_setting_configcheckbox('mod_readaloud/allowearlyexit', 
+    $regions = \mod_readaloud\utils::get_region_options();
+    $settings->add(new admin_setting_configselect('mod_readaloud/awsregion', get_string('awsregion', MOD_READALOUD_LANG), '', 'useast1', $regions));
+
+    $expiredays = \mod_readaloud\utils::get_expiredays_options();
+    $settings->add(new admin_setting_configselect('mod_readaloud/expiredays', get_string('expiredays', MOD_READALOUD_LANG), '', '365', $expiredays));
+
+
+    $settings->add(new admin_setting_configcheckbox('mod_readaloud/allowearlyexit',
 	 get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_defaultdetails',MOD_READALOUD_LANG), 0));	
-		
+
+    /*
 	 $settings->add(new admin_setting_configcheckbox('mod_readaloud/enabletts', 
 	 get_string('enabletts', MOD_READALOUD_LANG), get_string('enabletts_details',MOD_READALOUD_LANG), 0));
-	 
+	 */
+
 	 $langoptions = \mod_readaloud\utils::get_lang_options();
 	 $settings->add(new admin_setting_configselect('mod_readaloud/ttslanguage', get_string('ttslanguage', MOD_READALOUD_LANG), '', 'en', $langoptions));
 	 
@@ -63,6 +72,4 @@ if ($ADMIN->fulltree) {
 	 
 	$settings->add(new admin_setting_configcheckbox('mod_readaloud/loadfontawesome', 
 	 get_string('loadfontawesome', MOD_READALOUD_LANG), get_string('loadfontawesome_details',MOD_READALOUD_LANG), 1));
-
-        
 }

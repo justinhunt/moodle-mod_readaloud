@@ -154,3 +154,15 @@ $string['apisecret']='Poodll API Secret ';
 $string['apisecret_details']='The Poodll API secret. See <a href= "https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret">here</a> for more details';
 $string['enableai']='Enable AI';
 $string['enableai_details']='Using AI Read Aloud can estimate the results from a student attempt';
+
+
+$string['useast1']='US East';
+$string['tokyo']='Tokyo, Japan';
+$string['sydney']='Sydney, Australia';
+$string['dublin']='Dublin, Ireland';
+$string['forever']='Never expire';
+$string['en-us']='English (US)';
+$string['es-us']='Spanish (US)';
+$string['awsregion']='AWS Region';
+$string['region']='AWS Region';
+$string['expiredays']='Days to keep file';

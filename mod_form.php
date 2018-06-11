@@ -114,15 +114,20 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', MOD_READALOUD_LANG), $attemptoptions);
 		
 		//tts options
-		if($config->enabletts){
-			$langoptions = \mod_readaloud\utils::get_lang_options();
-			$mform->addElement('select', 'ttslanguage', get_string('ttslanguage', MOD_READALOUD_LANG), $langoptions);
-			$mform->setDefault('ttslanguage',$config->ttslanguage);
-		}else{
-			$mform->addElement('hidden', 'ttslanguage', 'none');
-		}
-		$mform->setType('ttslanguage', PARAM_TEXT);
+        $langoptions = \mod_readaloud\utils::get_lang_options();
+        $mform->addElement('select', 'ttslanguage', get_string('ttslanguage', MOD_READALOUD_LANG), $langoptions);
+        $mform->setDefault('ttslanguage',$config->ttslanguage);
 
+
+        //region
+        $regionoptions = \mod_readaloud\utils::get_region_options();
+        $mform->addElement('select', 'region', get_string('region', MOD_READALOUD_LANG), $regionoptions);
+        $mform->setDefault('region',$config->awsregion);
+
+        //expiredays
+        $expiredaysoptions = \mod_readaloud\utils::get_expiredays_options();
+        $mform->addElement('select', 'expiredays', get_string('expiredays', MOD_READALOUD_LANG), $expiredaysoptions);
+        $mform->setDefault('expiredays',$config->expiredays);
 		
 		 // Grade.
         $this->standard_grading_coursemodule_elements();

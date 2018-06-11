@@ -200,6 +200,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 							array('id'=>MOD_READALOUD_RECORDERID,
                                 'data-id'=>'therecorder',
                                 'data-parent'=>$CFG->wwwroot,
+                                'data-localloader'=>'/mod/readaloud/poodllloader.html',
                                 'data-media'=>"audio",
                                 'data-type'=>"readaloud",
                                 'data-width'=>"360",
@@ -209,9 +210,9 @@ class mod_readaloud_renderer extends plugin_renderer_base {
                                 'data-timelimit'=> $moduleinstance->timelimit,
                                 'data-transcode'=>"1",
                                 'data-transcribe'=>"1",
-                                'data-transcribelanguage'=>"en",
-                                'data-expiredays'=>"365",
-                                'data-region'=>"tokyo",
+                                'data-transcribelanguage'=>$moduleinstance->ttslanguage,
+                                'data-expiredays'=>$moduleinstance->expiredays,
+                                'data-region'=>$moduleinstance->region,
                                 'data-hints'=>$string_hints,
                                 'data-token'=>$token //localhost
                                 //'data-token'=>"643eba92a1447ac0c6a882c85051461a" //cloudpoodll

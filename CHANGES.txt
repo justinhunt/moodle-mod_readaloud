@@ -1,3 +1,6 @@
+Version 1.1.1(Build 2018060902)
+-HTML5 version of ReadAloud
+
 Version 1.1.0(Build 2018041000)
 -Implemented new Moodle Privacy API
 
