@@ -64,6 +64,9 @@ define(['jquery','core/log'], function($,log) {
                 return;
             }
 
+            //register the controls
+            this.register_controls();
+
             //stash important info
             this.options.activityid = opts['activityid'];
             this.options.attemptid = opts['attemptid'];
@@ -90,8 +93,7 @@ define(['jquery','core/log'], function($,log) {
                 this.options.endwordnumber = this.options.totalwordcount;
             }
 
-            //register the controls
-            this.register_controls();
+
 
             //add the endword marker
             this.controls.endwordmarker.addClass(this.cd.endspaceclass);
@@ -103,15 +105,29 @@ define(['jquery','core/log'], function($,log) {
             //but if allowearlyexit is false, actually we can skip waiting for audio.
             //After audio loaded(if nec.) we call processscores to init score boxe
             //TODO: really should get audio duration at recording time.
+            var m = this;
+            var processloadedaudio= function(){
+                if(m.options.allowearlyexit){
+                    m.options.totalseconds = Math.round($('#' + m.cd.audioplayerclass).prop('duration'));
+                }else{
+                    m.options.totalseconds = m.options.timelimit;
+                }
+                //update form field
+                m.controls.formelementtime.val(m.options.totalseconds);
+                m.processscores();
+            }
+
+
             var audioplayer = $('#' + this.cd.audioplayerclass);
             if(audioplayer.prop('readyState')<1 && this.options.allowearlyexit){
-                audioplayer.on('loadedmetadata',this.processloadedaudio);
+                audioplayer.on('loadedmetadata',processloadedaudio);
             }else{
-                this.processloadedaudio();
+                processloadedaudio();
             }
         },
 
         register_controls: function(){
+
             this.controls.wordplayer = $('#' + this.cd.wordplayerclass);
             this.controls.audioplayer = $('#' + this.cd.audioplayerclass);
             this.controls.eachword = $('.' + this.cd.wordclass);
@@ -293,17 +309,7 @@ define(['jquery','core/log'], function($,log) {
             m.controls.formelementendword.val(m.options.endwordnumber);
             m.controls.formelementerrors.val(JSON.stringify(m.options.errorwords));
 
-        },
-        processloadedaudio: function(){
-            var m = this;//M.mod_readaloud.gradenowhelper;
-            if(m.options.allowearlyexit){
-                m.options.totalseconds = Math.round($('#' + m.cd.audioplayerclass).prop('duration'));
-            }else{
-                m.options.totalseconds = m.options.timelimit;
-            }
-            //update form field
-            m.controls.formelementtime.val(m.options.totalseconds);
-            m.processscores();
         }
+
     };
 });

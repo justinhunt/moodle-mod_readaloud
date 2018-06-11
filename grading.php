@@ -151,8 +151,6 @@ switch ($action){
 		$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
 
 
-		$aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
-
 		$data=array(
 			'action'=>'gradenowsubmit',
 			'attemptid'=>$attemptid,
@@ -170,6 +168,31 @@ switch ($action){
 		$gradenowform->display();
 		echo $renderer->footer();
 		return;
+
+    case 'aigradenow':
+
+        $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+
+        $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
+
+        $data=array(
+            'action'=>'gradenowsubmit',
+            'attemptid'=>$attemptid,
+            'n'=>$moduleinstance->id,
+            'sessiontime'=>$gradenow->attemptdetails('sessiontime'),
+            'sessionscore'=>$aigrade->aidetails('sessionscore'),
+            'sessionendword'=>$aigrade->aidetails('sessionendword'),
+            'sessionerrors'=>$aigrade->aidetails('sessionerrors'));
+        $nextid = $gradenow->get_next_ungraded_id();
+        $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
+        $gradenowform->set_data($data);
+        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
+        echo $aigrade->prepare_javascript();
+        echo $gradenowrenderer->render_gradenow($gradenow);
+        $gradenowform->display();
+        echo $renderer->footer();
+        return;
+
 	case 'grading':
 		$report = new mod_readaloud_grading_report();
 		//formdata should only have simple values, not objects

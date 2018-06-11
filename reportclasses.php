@@ -164,7 +164,7 @@ abstract class mod_readaloud_base_report {
 class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 	
 	protected $report="grading";
-	protected $fields = array('id','username','audiofile','totalattempts','wpm','accuracy_p','grade_p','gradenow','timecreated','deletenow');	
+	protected $fields = array('id','username','audiofile','totalattempts','wpm','accuracy_p','grade_p','gradenow','aigradenow','timecreated','deletenow');
 	protected $headingdata = null;
 	protected $qcache=array();
 	protected $ucache=array();
@@ -229,8 +229,18 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 							$ret = get_string('cannotgradenow',MOD_READALOUD_LANG);
 						}
 					break;
-				
-				case 'timecreated':
+
+                case 'aigradenow':
+                    if($withlinks){
+                        $link = new moodle_url(MOD_READALOUD_URL . '/grading.php',array('action'=>'aigradenow','n'=>$record->readaloudid, 'attemptid'=>$record->id));
+                        $ret =  html_writer::link($link, get_string('aigradenow',MOD_READALOUD_LANG));
+                    }else{
+                        $ret = get_string('cannotgradenow',MOD_READALOUD_LANG);
+                    }
+                    break;
+
+
+                case 'timecreated':
 						$ret = date("Y-m-d H:i:s",$record->timecreated);
 					break;
 				

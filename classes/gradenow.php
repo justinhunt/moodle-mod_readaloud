@@ -102,7 +102,7 @@ class gradenow{
 		return $ret;
    }
    
-   public function prepare_javascript($reviewmode=false){
+   public function prepare_javascript($reviewmode=false,$aimode=false){
 		global $PAGE;
 
 		//here we set up any info we need to pass into javascript

@@ -166,3 +166,4 @@ $string['es-us']='Spanish (US)';
 $string['awsregion']='AWS Region';
 $string['region']='AWS Region';
 $string['expiredays']='Days to keep file';
+$string['aigradenow']='AI Grade';
