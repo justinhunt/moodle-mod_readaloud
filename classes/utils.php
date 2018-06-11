@@ -48,7 +48,11 @@ class utils{
             $token="";
             if ($resp) {
                 $resp_object = json_decode($resp);
-                $token = $resp_object->token;
+                if($resp_object) {
+                    $token = $resp_object->token;
+                }else{
+                    $token = '';
+                }
             }
 
          // Close request and tidy up
