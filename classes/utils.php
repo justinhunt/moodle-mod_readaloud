@@ -36,7 +36,21 @@ require_once($CFG->dirroot .'/mod/readaloud/lib.php');
  */
 class utils{
 
-    public static function fetchToken($apiuser, $apisecret)
+    //we need to consider legacy client side URLs and cloud hosted ones
+    public static function make_audio_URL($filename, $contextid, $component, $filearea, $itemid){
+        //we need to consider legacy client side URLs and cloud hosted ones
+        if(strpos($filename,'http')===0){
+            $ret = $filename;
+        }else {
+            $ret = \moodle_url::make_pluginfile_url($contextid, $component,
+                $filearea,
+                $itemid, '/',
+                $filename);
+        }
+        return $ret;
+    }
+
+    public static function fetch_token($apiuser, $apisecret)
     {
             $curl = curl_init();
             curl_setopt_array($curl, array(

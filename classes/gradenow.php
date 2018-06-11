@@ -28,7 +28,7 @@ require_once($CFG->dirroot .'/mod/readaloud/lib.php');
 
 
 /**
- * Event observer for mod_readaloud
+ * Grade Now class for mod_readaloud
  *
  * @package    mod_readaloud
  * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)
@@ -88,14 +88,10 @@ class gradenow{
 				break;
 			case 'audiourl':
 			    //we need to consider legacy client side URLs and cloud hosted ones
-			    if(strpos($this->attemptdata->filename,'http')===0){
-			        $ret = $this->attemptdata->filename;
-                }else {
-                    $ret = \moodle_url::make_pluginfile_url($this->modulecontextid, MOD_READALOUD_FRANKY,
+                $ret = \mod_readaloud\utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, MOD_READALOUD_FRANKY,
                         MOD_READALOUD_FILEAREA_SUBMISSIONS,
-                        $this->attemptdata->id, '/',
-                        $this->attemptdata->filename);
-                }
+                        $this->attemptdata->id);
+
 				break;
 			case 'somedetails': 
 				$ret= $this->attemptdata->id . ' ' . $this->activitydata->passage; 

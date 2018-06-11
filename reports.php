@@ -93,23 +93,8 @@ $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
 $PAGE->requires->jquery();
 
-//require bootstrap and fontawesome ... maybe
-if($config->loadfontawesome){
-	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
-}
-if($config->loadbootstrap){
-	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
-	$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
-}
-
 	
-// we need our audio player loaded
-//here we set up any info we need to pass into javascript
-$jsmodule = array(
-			'name'     => 'mod_readaloud',
-			'fullpath' => '/mod/readaloud/module.js',
-			'requires' => array('json')
-		);
+
 $aph_opts =Array();
 $aph_opts['hiddenplayerclass'] = MOD_READALOUD_HIDDEN_PLAYER;
 $aph_opts['hiddenplayerbuttonclass'] = MOD_READALOUD_HIDDEN_PLAYER_BUTTON;
@@ -118,7 +103,8 @@ $aph_opts['hiddenplayerbuttonplayingclass'] =MOD_READALOUD_HIDDEN_PLAYER_BUTTON_
 $aph_opts['hiddenplayerbuttonpausedclass'] =MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PAUSED;
 
 //this inits the M.mod_readaloud thingy, after the page has loaded.
-$PAGE->requires->js_init_call('M.mod_readaloud.gradinghelper.init', array($aph_opts),false,$jsmodule);
+//$PAGE->requires->js_init_call('M.mod_readaloud.gradinghelper.init', array($aph_opts),false,$jsmodule);
+$PAGE->requires->js_call_amd("mod_readaloud/gradinghelper", 'init', array($aph_opts));
 
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY);

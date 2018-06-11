@@ -145,7 +145,14 @@ $extraheader="";
 switch ($action){
 
 	case 'gradenow':
+
+
+
 		$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+
+
+		$aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
+
 		$data=array(
 			'action'=>'gradenowsubmit',
 			'attemptid'=>$attemptid,
@@ -192,11 +199,6 @@ switch ($action){
 //if we got to here we are loading the report on screen
 //so we need our audio player loaded
 //here we set up any info we need to pass into javascript
-$jsmodule = array(
-			'name'     => 'mod_readaloud',
-			'fullpath' => '/mod/readaloud/module.js',
-			'requires' => array('json')
-		);
 $aph_opts =Array();
 $aph_opts['hiddenplayerclass'] = MOD_READALOUD_HIDDEN_PLAYER;
 $aph_opts['hiddenplayerbuttonclass'] = MOD_READALOUD_HIDDEN_PLAYER_BUTTON;

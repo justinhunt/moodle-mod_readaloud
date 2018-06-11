@@ -150,7 +150,7 @@ if(has_capability('mod/readaloud:preview',$modulecontext)){
 }
 
 //fetch token
-$token = \mod_readaloud\utils::fetchToken($config->apiuser,$config->apisecret);
+$token = \mod_readaloud\utils::fetch_token($config->apiuser,$config->apisecret);
 
 
 //show all the main parts. Many will be hidden and displayed by JS

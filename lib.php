@@ -36,6 +36,7 @@ define('MOD_READALOUD_FILEAREA_SUBMISSIONS','submission');
 define('MOD_READALOUD_LANG','mod_readaloud');
 define('MOD_READALOUD_TABLE','readaloud');
 define('MOD_READALOUD_USERTABLE','readaloud_attempt');
+define('MOD_READALOUD_AITABLE','readaloud_ai_result');
 define('MOD_READALOUD_MODNAME','readaloud');
 define('MOD_READALOUD_URL','/mod/readaloud');
 define('MOD_READALOUD_CLASS','mod_readaloud');
