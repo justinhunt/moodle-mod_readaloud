@@ -74,6 +74,7 @@ class aigrade
         $data->attemptid=$attemptdata->id;
         $data->courseid=$attemptdata->courseid;
         $data->readaloudid=$attemptdata->readaloudid;
+        $data->sessiontime=$attemptdata->sessiontime;
         $data->transcript='';
         $data->sessionerrors='';
         $data->fulltranscript='';
@@ -166,7 +167,9 @@ class aigrade
 
 
         ////wpm score
-        $wpmscore = round(($sessionendword - $errorcount) * 60 / $this->attemptdata->sessiontime);
+        $sessiontime = $this->attemptdata->sessiontime;
+        if(!$sessiontime){$sessiontime=60;}
+        $wpmscore = round(($sessionendword - $errorcount) * 60 / $sessiontime);
 
         //accuracy score
         $accuracyscore = round(($sessionendword - $errorcount)/$sessionendword * 100);
