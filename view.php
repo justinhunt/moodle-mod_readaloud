@@ -149,14 +149,17 @@ if(has_capability('mod/readaloud:preview',$modulecontext)){
 	echo $renderer->notabsheader();
 }
 
+//fetch token
+$token = \mod_readaloud\utils::fetchToken($config->apiuser,$config->secret);
+
 
 //show all the main parts. Many will be hidden and displayed by JS
 echo $renderer->show_welcome($moduleinstance->welcome,$moduleinstance->name);
-echo $renderer->show_recorder($moduleinstance);
-echo $renderer->show_passage($moduleinstance,$cm);
-echo $renderer->show_progress($moduleinstance,$cm);
 echo $renderer->show_feedback($moduleinstance,$cm,$moduleinstance->name);
 echo $renderer->show_error($moduleinstance,$cm);
+echo $renderer->show_passage($moduleinstance,$cm);
+echo $renderer->show_recorder($moduleinstance,$token);
+echo $renderer->show_progress($moduleinstance,$cm);
 
 //the module AMD code
 echo $renderer->fetch_activity_amd($cm, $moduleinstance);

@@ -131,13 +131,13 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('readaloudid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('attemptid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('transcript', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, '');
-        $table->add_field('fulltranscript', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, '');
+        $table->add_field('transcript', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_field('fulltranscript', XMLDB_TYPE_TEXT, null, null, null, null);
         $table->add_field('wpm', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('accuracy', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('sessionscore', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('sessiontime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('sessionerrors', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, '');
+        $table->add_field('sessionerrors', XMLDB_TYPE_TEXT, null, null, null, null);
         $table->add_field('sessionendword', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
@@ -149,6 +149,15 @@ function xmldb_readaloud_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
+
+        $table = new xmldb_table('readaloud');
+        $field = new xmldb_field('enableai', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // Add field introformat
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2018060900, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

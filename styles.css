@@ -20,12 +20,9 @@
 	display: block;
 	margin: auto;
 	text-align: center;
-	width: 720px;
+	width: 100%;
 }
 
-.mod_readaloud_recorder_cont {
-	float: left;
-}
 .mod_readaloud_recorder_instr_right,
 .mod_readaloud_recorder_instr_left {
 	float: left;

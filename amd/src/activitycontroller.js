@@ -7,15 +7,11 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
 
     return {
 
-        currentitemid: 0,
-        currentitem: 0,
-        itemcount: null,
         cmid: null,
         activitydata: null,
         holderid: null,
         recorderid: null,
         playerid: null,
-        startbuttonid: null,
         sorryboxid: null,
         controls: null,
         ra_recorder: null,
@@ -45,9 +41,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             dd.holderid = props.widgetid + '_holder';
             dd.recorderid = props.widgetid + '_recorder';
             dd.playerid = props.widgetid + '_player';
-            dd.startbuttonid = props.widgetid + '_startbutton';
             dd.sorryboxid = props.widgetid + '_sorrybox';
-            dd.itemcount = dd.activitydata.length;
 
             //if the browser doesn't support html5 recording.
             //then warn and do not go any further
@@ -114,7 +108,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             var on_recording_end= function(eventdata){
                 //ultimately this is good
                 //but its jama till the true recorder is ready
-               // dd.douploadlayout();
+                dd.douploadlayout();
             };
 
             //data sent here originates from the awaiting_processing event
@@ -190,9 +184,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
         dopassagelayout: function(){
             var m = this;
             m.controls.introbox.hide();
-           // m.controls.recordbutton.hide();
-           // m.controls.startbutton.hide();
-            m.controls.instructionscontainer.hide();
+            //m.controls.instructionscontainer.hide();
             if(m.controls.allowearlyexit){
               //  m.controls.stopbutton.hide();
             }
@@ -200,7 +192,6 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
         douploadlayout: function(){
             var m = this;
             m.controls.passagecontainer.addClass('mod_readaloud_passage_finished');
-            //m.controls.stopbutton.prop('disabled',true);
             m.controls.hider.fadeIn('fast');
             m.controls.progresscontainer.fadeIn('fast');
         },
@@ -209,7 +200,8 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             var m = this;
             m.controls.hider.fadeOut('fast');
             m.controls.progresscontainer.fadeOut('fast');
-            m.controls.passagecontainer.hide();
+            m.controls.instructionscontainer.hide();
+           // m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.show();
         },

@@ -140,12 +140,9 @@ class mod_readaloud_renderer extends plugin_renderer_base {
      * Show the reading passage
      */
 	public function show_passage($readaloud,$cm){
-		
-		$stop_button =  html_writer::tag('button',get_string('done', MOD_READALOUD_LANG),
-				array('class'=>'btn btn-primary ' . MOD_READALOUD_STOP_BUTTON));
-		$stop_button_cont= html_writer::div($stop_button,MOD_READALOUD_STOP_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_STOP_BUTTON_CONTAINER));
+
 		$ret = "";
-		$ret .= html_writer::div( $readaloud->passage . $stop_button_cont,MOD_READALOUD_PASSAGE_CONTAINER,
+		$ret .= html_writer::div( $readaloud->passage ,MOD_READALOUD_PASSAGE_CONTAINER,
 							array('id'=>MOD_READALOUD_PASSAGE_CONTAINER));
 		return $ret;
 	}
@@ -191,19 +188,22 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 	/**
      * The html part of the recorder (js is in the fetch_activity_amd)
      */
-	public function show_recorder($moduleinstance){
+	public function show_recorder($moduleinstance, $token){
 	    global $CFG;
 
         //recorder
         //=======================================
-		$recorderdiv= html_writer::div('','',
+        $hints = new stdClass();
+        $hints->allowearlyexit = $moduleinstance->allowearlyexit;
+        $string_hints = base64_encode (json_encode($hints));
+		$recorderdiv= html_writer::div('', MOD_READALOUD_CLASS  . '_center',
 							array('id'=>MOD_READALOUD_RECORDERID,
                                 'data-id'=>'therecorder',
                                 'data-parent'=>$CFG->wwwroot,
                                 'data-media'=>"audio",
                                 'data-type'=>"readaloud",
-                                'data-width'=>"450",
-                                'data-height'=>"250",
+                                'data-width'=>"360",
+                                'data-height'=>"210",
                                 //'data-iframeclass'=>"letsberesponsive",
                                 'data-updatecontrol'=>MOD_READALOUD_UPDATE_CONTROL,
                                 'data-timelimit'=> $moduleinstance->timelimit,
@@ -212,18 +212,14 @@ class mod_readaloud_renderer extends plugin_renderer_base {
                                 'data-transcribelanguage'=>"en",
                                 'data-expiredays'=>"365",
                                 'data-region'=>"tokyo",
-                                'data-token'=>"643eba92a1447ac0c6a882c85051461a"
+                                'data-hints'=>$string_hints,
+                                'data-token'=>$token //localhost
+                                //'data-token'=>"643eba92a1447ac0c6a882c85051461a" //cloudpoodll
                                 )
         );
-        $containerdiv= html_writer::div($recorderdiv,MOD_READALOUD_RECORDER_CONTAINER,
+        $containerdiv= html_writer::div($recorderdiv,MOD_READALOUD_RECORDER_CONTAINER . " " . MOD_READALOUD_CLASS  . '_center',
             array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
         //=======================================
-
-
-        $rec_button =  html_writer::tag('button',get_string('recordnameschool',MOD_READALOUD_LANG),
-            array('class'=>'btn btn-primary ' . MOD_READALOUD_RECORD_BUTTON));
-        $start_button =  html_writer::tag('button',get_string('beginreading',MOD_READALOUD_LANG),
-            array('class'=>'btn btn-primary ' . MOD_READALOUD_START_BUTTON, 'disabled'=>'true'));
 
 
         $recordingdiv = html_writer::div($containerdiv ,MOD_READALOUD_RECORDING_CONTAINER);
@@ -231,9 +227,6 @@ class mod_readaloud_renderer extends plugin_renderer_base {
         //prepare output
         $ret = "";
         $ret .=$recordingdiv;
-        $ret .= html_writer::div($rec_button,MOD_READALOUD_RECORD_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_RECORD_BUTTON_CONTAINER));
-        $ret .= html_writer::div($start_button,MOD_READALOUD_START_BUTTON_CONTAINER,array('id'=>MOD_READALOUD_START_BUTTON_CONTAINER));
-		
 		//return it
 		return $ret;
 	}
