@@ -171,7 +171,6 @@ switch ($action){
 
     case 'aigradenow':
 
-        $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
 
         $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
 
@@ -179,16 +178,16 @@ switch ($action){
             'action'=>'gradenowsubmit',
             'attemptid'=>$attemptid,
             'n'=>$moduleinstance->id,
-            'sessiontime'=>$gradenow->attemptdetails('sessiontime'),
+            'sessiontime'=>$aigrade->aidetails('sessiontime'),
             'sessionscore'=>$aigrade->aidetails('sessionscore'),
             'sessionendword'=>$aigrade->aidetails('sessionendword'),
             'sessionerrors'=>$aigrade->aidetails('sessionerrors'));
-        $nextid = $gradenow->get_next_ungraded_id();
+        $nextid = $aigrade->get_next_ungraded_id();
         $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
         $gradenowform->set_data($data);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', MOD_READALOUD_LANG));
         echo $aigrade->prepare_javascript();
-        echo $gradenowrenderer->render_gradenow($gradenow);
+        echo $gradenowrenderer->render_gradenow($aigrade);
         $gradenowform->display();
         echo $renderer->footer();
         return;

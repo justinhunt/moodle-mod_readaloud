@@ -58,6 +58,10 @@ class aigrade
             case 'wpm':
                 $ret = $this->aidata->wpm;
                 break;
+
+            case 'sessiontime':
+                $ret = $this->aidata->sessiontime;
+                break;
         }
         return $ret;
     }
@@ -74,7 +78,7 @@ class aigrade
         $data->attemptid=$attemptdata->id;
         $data->courseid=$attemptdata->courseid;
         $data->readaloudid=$attemptdata->readaloudid;
-        $data->sessiontime=$attemptdata->sessiontime;
+        $data->sessiontime=$attemptdata->sessiontime ? $attemptdata->sessiontime:$this->activitydata->timelimit;
         $data->transcript='';
         $data->sessionerrors='';
         $data->fulltranscript='';
@@ -127,22 +131,21 @@ class aigrade
         $passage = strip_tags($passage);
 
         //replace all line ends with spaces
-        $passage = preg_replace('#\R+#', '</p><p>', $passage);
-        $transcript = preg_replace('#\R+#', '</p><p>', $transcript);
+        $passage = preg_replace('#\R+#', ' ', $passage);
+        $transcript = preg_replace('#\R+#', ' ', $transcript);
 
         //remove punctuation
         //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
-        $passage = preg_replace("/(?![.=$'€%-])\p{P}/u", "", $passage);
-        $transcript=preg_replace("/(?![.=$'€%-])\p{P}/u", "", $transcript);
+        $passage = preg_replace("#[[:punct:]]#", "", $passage);
+        $transcript=preg_replace("#[[:punct:]]#", "", $transcript);
 
         //split $passage and $transcript
         $passagebits = explode(' ',$passage);
         $transcriptbits = explode(' ',$transcript);
-        if(count($transcriptbits)<count($passagebits)){
-            $sessionendword = count($transcriptbits);
-        }else{
-            $sessionendword = count($passagebits);
-        }
+
+        //remove any empty elements
+        $passagebits = array_filter($passagebits, function($value) { return $value !== ''; });
+        $transcriptbits= array_filter($transcriptbits, function($value) { return $value !== ''; });
 
         //turn them into lines
         $line_passage = implode(' ',$passagebits);
@@ -152,19 +155,41 @@ class aigrade
         $diffs = diff::compare($line_passage,$line_transcript);
         $errors = new \stdClass();
         $currentword=0;
-        $errorcount = 0;
+        $lastunmodified=0;
         foreach($diffs as $diff){
-            $currentword++;
-            if($diff[1] == Diff::DELETED){
-                $errorcount++;
-                $error = new \stdClass();
-                $error->word=$diff[0];
-                $error->wordnumber=$currentword;
-                $errors->{$currentword}=$error;
+
+            switch($diff[1]){
+                case Diff::DELETED:
+                    $currentword++;
+                    $error = new \stdClass();
+                    $error->word=$diff[0];
+                    $error->wordnumber=$currentword;
+                    $errors->{$currentword}=$error;
+                    break;
+                case Diff::UNMODIFIED:
+                    //we need to track which word in the passage is the error
+                    //currentword increments on deleted or good, so we keep on sync with passage
+                    //but must not add inserted (that would take us out of sync
+                    $currentword++;
+                    $lastunmodified = $currentword;
+                    break;
+                case Diff::INSERTED:
+                    //do nothing
+
             }
         }
-        $sessionerrors = json_encode($errors);
+        $sessionendword = $lastunmodified;
 
+        //discard errors after session end word.
+        $errorcount = 0;
+        $finalerrors = new \stdClass();
+        foreach($errors as $key=>$error) {
+            if ($key < $sessionendword) {
+                $finalerrors->{$key} = $error;
+                $errorcount++;
+            }
+        }
+        $sessionerrors = json_encode($finalerrors);
 
         ////wpm score
         $sessiontime = $this->attemptdata->sessiontime;
@@ -182,10 +207,6 @@ class aigrade
         }
         $sessionscore = round($usewpmscore/$this->activitydata->targetwpm * 100);
 
-
-
-
-
         $record = new \stdClass();
         $record->id = $this->recordid;
         $record->sessionerrors = $sessionerrors;
@@ -194,8 +215,6 @@ class aigrade
         $record->sessionscore = $sessionscore;
         $record->wpm = $wpmscore;
         $DB->update_record(MOD_READALOUD_AITABLE, $record);
-
-
     }
 
 
@@ -213,7 +232,7 @@ class aigrade
         $gradingopts['targetwpm'] = $this->activitydata->targetwpm;
         $gradingopts['sesskey'] = sesskey();
         $gradingopts['attemptid'] = $this->attemptdata->id;
-        $gradingopts['sessiontime'] = $this->attemptdata->sessiontime;
+        $gradingopts['sessiontime'] = $this->aidata->sessiontime;
         $gradingopts['sessionerrors'] = $this->aidata->sessionerrors;
         $gradingopts['sessionendword'] = $this->aidata->sessionendword;
         $gradingopts['wpm'] = $this->aidata->wpm;
@@ -228,6 +247,44 @@ class aigrade
         //these need to be returned and echo'ed to the page
         return $opts_html;
 
+    }
+
+    public function attemptdetails($property){
+        global $DB;
+        switch($property){
+            case 'userfullname':
+                $user = $DB->get_record('user',array('id'=>$this->attemptdata->userid));
+                $ret = fullname($user);
+                break;
+            case 'passage':
+                $ret = $this->activitydata->passage;
+                break;
+            case 'audiourl':
+                //we need to consider legacy client side URLs and cloud hosted ones
+                $ret = \mod_readaloud\utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, MOD_READALOUD_FRANKY,
+                    MOD_READALOUD_FILEAREA_SUBMISSIONS,
+                    $this->attemptdata->id);
+
+                break;
+            case 'somedetails':
+                $ret= $this->attemptdata->id . ' ' . $this->activitydata->passage;
+                break;
+            default:
+                $ret = $this->attemptdata->{$property};
+        }
+        return $ret;
+    }
+
+    public function get_next_ungraded_id(){
+        global $DB;
+        $where = "id > " .$this->attemptid . " AND sessionscore = 0 AND readaloudid = " . $this->attemptdata->readaloudid;
+        $records = $DB->get_records_select(MOD_READALOUD_USERTABLE,$where,array(),' id ASC');
+        if($records){
+            $rec = array_shift($records);
+            return $rec->id;
+        }else{
+            return false;
+        }
     }
 
 }

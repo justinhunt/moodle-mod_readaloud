@@ -213,10 +213,10 @@ define(['jquery','core/log'], function($,log) {
             m.controls.wordplayer[0].play();
         },
         redrawgradestate: function(){
-            var m = this;//M.mod_readaloud.gradenowhelper;
+            var m = this;
             this.processunread();
             $.each(m.options.errorwords,function(index){
-                    $('#' + m.cd.wordclass + '_' + m.options.wordnumber).addClass(m.cd.badwordclass);
+                    $('#' + m.cd.wordclass + '_' + m.options.errorwords[index].wordnumber).addClass(m.cd.badwordclass);
                 }
             );
 
