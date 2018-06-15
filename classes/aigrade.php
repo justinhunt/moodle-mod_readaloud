@@ -93,7 +93,7 @@ class aigrade
     function update_transcripts(){
         global $DB;
         if($this->attemptdata->filename && strpos($this->attemptdata->filename,'https')===0){
-            $transcript = $this->curl_fetch($this->attemptdata->filename . '.txt');
+            $transcript = utils::curl_fetch($this->attemptdata->filename . '.txt');
             if(strpos(transcript,"<Error><Code>AccessDenied</Code>")>0){
                 return false;
             }
