@@ -105,7 +105,7 @@ class utils{
             $token_response = self::curl_fetch($token_url);
             if ($token_response) {
                 $resp_object = json_decode($token_response);
-                if($resp_object) {
+                if($resp_object && property_exists($resp_object,'token')) {
                     $token = $resp_object->token;
                     //store the expiry timestamp and adjust it for diffs between our server times
                     if($resp_object->validuntil) {
@@ -122,6 +122,9 @@ class utils{
 
                 }else{
                     $token = '';
+                    if($resp_object && property_exists($resp_object,'error')) {
+                        //ERROR = $resp_object->error
+                    }
                 }
             }
             return $token;
