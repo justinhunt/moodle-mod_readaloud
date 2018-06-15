@@ -50,27 +50,80 @@ class utils{
         return $ret;
     }
 
+    //are we willing and able to transcribe submissions?
+    public static function can_transcribe($instance)
+    {
+        //we default to true
+        //but it only takes one no ....
+        $ret = true;
+
+        //currently only useast1 can transcribe
+        switch($instance->region){
+            case "useast1":
+                break;
+            default:
+                $ret = false;
+        }
+
+        //if user disables ai, we do not transcribe
+        if(!$instance->enableai){
+            $ret =false;
+        }
+
+        return $ret;
+    }
+
+    //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
+    //this is our helper
+   public static function curl_fetch($url){
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        $data = curl_exec($curl);
+        curl_close($curl);
+        return $data;
+    }
+
+    //We need a Poodll token to make this happen
     public static function fetch_token($apiuser, $apisecret)
     {
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_URL => "https://cloud.poodll.com/login/token.php?username=$apiuser&password=$apisecret&service=cloud_poodll",
-            ));
+
+            $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, 'mod_readaloud', 'token');
+            $tokenobject = $cache->get('recenttoken');
+
+            //if we got a token and its less than expiry time
+            // use the cached one
+            if($tokenobject){
+                if($tokenobject->validuntil == 0 || $tokenobject->validuntil > time()){
+                    return $tokenobject->token;
+                }
+            }
+
             // Send the request & save response to $resp
-            $resp = curl_exec($curl);
-            $token="";
-            if ($resp) {
-                $resp_object = json_decode($resp);
+            $token_url ="https://cloud.poodll.com/local/cpapi/poodlltoken.php?username=$apiuser&password=$apisecret&service=cloud_poodll";
+            $token_response = self::curl_fetch($token_url);
+            if ($token_response) {
+                $resp_object = json_decode($token_response);
                 if($resp_object) {
                     $token = $resp_object->token;
+                    //store the expiry timestamp and adjust it for diffs between our server times
+                    if($resp_object->validuntil) {
+                        $validuntil = $resp_object->validuntil - ($resp_object->poodlltime - time());
+                    }else{
+                        $validuntil = 0;
+                    }
+
+                    //cache the token
+                    $tokenobject = new \stdClass();
+                    $tokenobject->token = $token;
+                    $tokenobject->validuntil = $validuntil;
+                    $cache->set('recenttoken', $tokenobject);
+
                 }else{
                     $token = '';
                 }
             }
-
-         // Close request and tidy up
-            curl_close($curl);
             return $token;
     }
 

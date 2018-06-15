@@ -196,6 +196,8 @@ class mod_readaloud_renderer extends plugin_renderer_base {
         $hints = new stdClass();
         $hints->allowearlyexit = $moduleinstance->allowearlyexit;
         $string_hints = base64_encode (json_encode($hints));
+        $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
+        $transcribe = $can_transcribe  ? "1" : "0";
 		$recorderdiv= html_writer::div('', MOD_READALOUD_CLASS  . '_center',
 							array('id'=>MOD_READALOUD_RECORDERID,
                                 'data-id'=>'therecorder',
@@ -209,7 +211,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
                                 'data-updatecontrol'=>MOD_READALOUD_UPDATE_CONTROL,
                                 'data-timelimit'=> $moduleinstance->timelimit,
                                 'data-transcode'=>"1",
-                                'data-transcribe'=>"1",
+                                'data-transcribe'=>$transcribe,
                                 'data-transcribelanguage'=>$moduleinstance->ttslanguage,
                                 'data-expiredays'=>$moduleinstance->expiredays,
                                 'data-region'=>$moduleinstance->region,

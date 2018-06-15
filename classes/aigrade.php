@@ -33,11 +33,11 @@ class aigrade
             }
             if(!property_exists($record,'transcript') || empty($record->transcript)){
                 if( $this->activitydata->region=='useast1') {
-                    $this->update_transcripts();
+                    $success = $this->update_transcripts();
+                    if($success){
+                        $this->do_diff();
+                    }
                 }
-            }
-            if(!$this->aidata->sessionendword){
-                $this->do_diff();
             }
         }
     }
@@ -94,28 +94,21 @@ class aigrade
         global $DB;
         if($this->attemptdata->filename && strpos($this->attemptdata->filename,'https')===0){
             $transcript = $this->curl_fetch($this->attemptdata->filename . '.txt');
-            //$full_transcript = $this->curl_fetch($this->attemptdata->filename . '.json');
+            if(strpos(transcript,"<Error><Code>AccessDenied</Code>")>0){
+                return false;
+            }
+            $full_transcript = utils::curl_fetch($this->attemptdata->filename . '.json');
         }
         if($transcript ) {
             $record = new \stdClass();
             $record->id = $this->recordid;
             $record->transcript = $transcript;
-            $record->full_transcript = '';
+            $record->full_transcript = $full_transcript;
             $DB->update_record(MOD_READALOUD_AITABLE, $record);
 
             $this->aidata->transcript = $transcript;
             $this->aidata->fulltranscript = '';
         }
-    }
-
-    function curl_fetch($url){
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        $data = curl_exec($curl);
-        curl_close($curl);
-        return $data;
     }
 
     function do_diff(){
@@ -169,7 +162,7 @@ class aigrade
                 case Diff::UNMODIFIED:
                     //we need to track which word in the passage is the error
                     //currentword increments on deleted or good, so we keep on sync with passage
-                    //but must not add inserted (that would take us out of sync
+                    //but must not add "diff:inserted" (that would take us out of sync)
                     $currentword++;
                     $lastunmodified = $currentword;
                     break;
@@ -180,7 +173,7 @@ class aigrade
         }
         $sessionendword = $lastunmodified;
 
-        //discard errors after session end word.
+        //discard errors that happen after session end word.
         $errorcount = 0;
         $finalerrors = new \stdClass();
         foreach($errors as $key=>$error) {
