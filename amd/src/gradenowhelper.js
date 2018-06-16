@@ -80,7 +80,11 @@ define(['jquery','core/log'], function($,log) {
             this.options.totalwordcount = $('.' + this.cd.wordclass).length ;
 
             if(opts['sessiontime']>0){
-                this.options.errorwords=JSON.parse(opts['sessionerrors']);
+                if(opts['sessionerrors']!=='') {
+                    this.options.errorwords = JSON.parse(opts['sessionerrors']);
+                }else{
+                    this.options.errorwords = {};
+                }
                 this.options.totalseconds=opts['sessiontime'];
                 this.options.endwordnumber=opts['sessionendword'];
                 this.options.sessionscore=opts['sessionscore'];

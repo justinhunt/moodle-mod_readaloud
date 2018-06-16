@@ -24,7 +24,7 @@
  namespace mod_readaloud;
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot .'/mod/readaloud/lib.php');
+use \mod_readaloud\constants;
 
 
 /**
@@ -44,17 +44,17 @@ class gradenow{
 		global $DB;
        $this->attemptid = $attemptid;
 	   $this->modulecontextid = $modulecontextid;
-	   $attemptdata = $DB->get_record(MOD_READALOUD_USERTABLE,array('id'=>$attemptid));
+	   $attemptdata = $DB->get_record(constants::MOD_READALOUD_USERTABLE,array('id'=>$attemptid));
 	   if($attemptdata){
 			$this->attemptdata = $attemptdata;
-			$this->activitydata = $DB->get_record(MOD_READALOUD_TABLE,array('id'=>$attemptdata->readaloudid));
+			$this->activitydata = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$attemptdata->readaloudid));
 		}
    }
    
    public function get_next_ungraded_id(){
 		global $DB;
 		$where = "id > " .$this->attemptid . " AND sessionscore = 0 AND readaloudid = " . $this->attemptdata->readaloudid;
-		$records = $DB->get_records_select(MOD_READALOUD_USERTABLE,$where,array(),' id ASC');
+		$records = $DB->get_records_select(constants::MOD_READALOUD_USERTABLE,$where,array(),' id ASC');
 		if($records){
 			$rec = array_shift($records);
 			return $rec->id;
@@ -73,7 +73,7 @@ class gradenow{
 		$updatedattempt->sessionscore = $formdata->sessionscore;
 		$updatedattempt->sessionerrors = $formdata->sessionerrors;
 		$updatedattempt->sessionendword = $formdata->sessionendword;
-		$DB->update_record(MOD_READALOUD_USERTABLE,$updatedattempt);
+		$DB->update_record(constants::MOD_READALOUD_USERTABLE,$updatedattempt);
    }
    
    public function attemptdetails($property){
@@ -88,8 +88,8 @@ class gradenow{
 				break;
 			case 'audiourl':
 			    //we need to consider legacy client side URLs and cloud hosted ones
-                $ret = \mod_readaloud\utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, MOD_READALOUD_FRANKY,
-                        MOD_READALOUD_FILEAREA_SUBMISSIONS,
+                $ret = utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, constants::MOD_READALOUD_FRANKY,
+                        constants::MOD_READALOUD_FILEAREA_SUBMISSIONS,
                         $this->attemptdata->id);
 
 				break;
@@ -108,7 +108,7 @@ class gradenow{
 		//here we set up any info we need to pass into javascript
 		$gradingopts =Array();
 		$gradingopts['reviewmode'] = $reviewmode;
-		$gradingopts['enabletts'] = get_config(MOD_READALOUD_FRANKY,'enabletts');
+		$gradingopts['enabletts'] = get_config(constants::MOD_READALOUD_FRANKY,'enabletts');
 		$gradingopts['allowearlyexit'] = $this->activitydata->allowearlyexit ? true :false;
 		$gradingopts['timelimit'] = $this->activitydata->timelimit;
  		$gradingopts['ttslanguage'] = $this->activitydata->ttslanguage;

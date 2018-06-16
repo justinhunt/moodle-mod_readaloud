@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \mod_readaloud\constants;
+
 
 /**
  * Classes for Reports 
@@ -55,7 +57,7 @@ abstract class mod_readaloud_base_report {
 	public function fetch_head(){
 		$head=array();
 		foreach($this->fields as $field){
-			$head[]=get_string($field,MOD_READALOUD_LANG);
+			$head[]=get_string($field,constants::MOD_READALOUD_LANG);
 		}
 		return $head;
 	}
@@ -181,7 +183,7 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 						$user = $this->fetch_cache('user',$record->userid);
 						$ret = fullname($user);
 						if($withlinks){
-							$link = new moodle_url(MOD_READALOUD_URL . '/grading.php',
+							$link = new moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
 								array('action'=>'gradingbyuser','n'=>$record->readaloudid, 'userid'=>$record->userid));
 							$ret = html_writer::link($link,$ret);
 						}
@@ -190,7 +192,7 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 				case 'totalattempts':
 						$ret = $record->totalattempts;
 						if($withlinks){
-							$link = new moodle_url(MOD_READALOUD_URL . '/grading.php',
+							$link = new moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
 								array('action'=>'gradingbyuser','n'=>$record->readaloudid, 'userid'=>$record->userid));
 							$ret = html_writer::link($link,$ret);
 						}
@@ -202,10 +204,10 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 							$ret = html_writer::tag('audio','',
 									array('controls'=>'','src'=>$record->audiourl));
 								*/	
-							$ret = html_writer::div('<i class="fa fa-play-circle"></i>',MOD_READALOUD_HIDDEN_PLAYER_BUTTON,array('data-audiosource'=>$record->audiourl));		
+							$ret = html_writer::div('<i class="fa fa-play-circle"></i>',constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON,array('data-audiosource'=>$record->audiourl));
 									
 						}else{
-							$ret = get_string('submitted',MOD_READALOUD_LANG);
+							$ret = get_string('submitted',constants::MOD_READALOUD_LANG);
 						}
 					break;
 				
@@ -223,19 +225,19 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 					
 				case 'gradenow':
 						if($withlinks){
-							$link = new moodle_url(MOD_READALOUD_URL . '/grading.php',array('action'=>'gradenow','n'=>$record->readaloudid, 'attemptid'=>$record->id));
-							$ret =  html_writer::link($link, get_string('gradenow',MOD_READALOUD_LANG));
+							$link = new moodle_url(constants::MOD_READALOUD_URL . '/grading.php',array('action'=>'gradenow','n'=>$record->readaloudid, 'attemptid'=>$record->id));
+							$ret =  html_writer::link($link, get_string('gradenow',constants::MOD_READALOUD_LANG));
 						}else{
-							$ret = get_string('cannotgradenow',MOD_READALOUD_LANG);
+							$ret = get_string('cannotgradenow',constants::MOD_READALOUD_LANG);
 						}
 					break;
 
                 case 'aigradenow':
                     if($withlinks){
-                        $link = new moodle_url(MOD_READALOUD_URL . '/grading.php',array('action'=>'aigradenow','n'=>$record->readaloudid, 'attemptid'=>$record->id));
-                        $ret =  html_writer::link($link, get_string('aigradenow',MOD_READALOUD_LANG));
+                        $link = new moodle_url(constants::MOD_READALOUD_URL . '/grading.php',array('action'=>'aigradenow','n'=>$record->readaloudid, 'attemptid'=>$record->id));
+                        $ret =  html_writer::link($link, get_string('aigradenow',constants::MOD_READALOUD_LANG));
                     }else{
-                        $ret = get_string('cannotgradenow',MOD_READALOUD_LANG);
+                        $ret = get_string('cannotgradenow',constants::MOD_READALOUD_LANG);
                     }
                     break;
 
@@ -245,10 +247,10 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 					break;
 				
 				case 'deletenow':
-						$url = new moodle_url(MOD_READALOUD_URL . '/manageattempts.php',
+						$url = new moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
 							array('action'=>'delete','n'=>$record->readaloudid, 'attemptid'=>$record->id, 'source'=>$this->report));
 						$btn = new single_button($url, get_string('delete'), 'post');
-						$btn->add_confirm_action(get_string('deleteattemptconfirm',MOD_READALOUD_LANG));
+						$btn->add_confirm_action(get_string('deleteattemptconfirm',constants::MOD_READALOUD_LANG));
 						$ret =$OUTPUT->render($btn);
 						break;
 					
@@ -266,8 +268,8 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 		$record = $this->headingdata;
 		$ret='';
 		if(!$record){return $ret;}
-		//$ec = $this->fetch_cache(MOD_READALOUD_TABLE,$record->englishcentralid);
-		return get_string('gradingheading',MOD_READALOUD_LANG);
+		//$ec = $this->fetch_cache(constants::MOD_READALOUD_TABLE,$record->englishcentralid);
+		return get_string('gradingheading',constants::MOD_READALOUD_LANG);
 		
 	}
 	
@@ -279,7 +281,7 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 		
 		$emptydata = array();
 		$user_attempt_totals= array();
-		$alldata = $DB->get_records(MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid),'id DESC, userid');
+		$alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid),'id DESC, userid');
 		
 		if($alldata){
 			
@@ -292,8 +294,8 @@ class mod_readaloud_grading_report extends  mod_readaloud_base_report {
 				}
 				$user_attempt_totals[$thedata->userid]=1;
 				
-				$thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename,$formdata->modulecontextid, MOD_READALOUD_FRANKY,
-                    MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+				$thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename,$formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
+                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
 				$this->rawdata[] = $thedata;
 			}
 			foreach($this->rawdata as $thedata){
@@ -325,7 +327,7 @@ class mod_readaloud_grading_byuser_report extends  mod_readaloud_grading_report 
 		$ret='';
 		if(!$record){return $ret;}
 		$user = $this->fetch_cache('user',$record->userid);
-		return get_string('gradingbyuserheading',MOD_READALOUD_LANG,fullname($user));
+		return get_string('gradingbyuserheading',constants::MOD_READALOUD_LANG,fullname($user));
 		
 	}
 	
@@ -337,13 +339,13 @@ class mod_readaloud_grading_byuser_report extends  mod_readaloud_grading_report 
 		$this->headingdata->userid = $formdata->userid;
 		
 		$emptydata = array();
-		$alldata = $DB->get_records(MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid,'userid'=>$formdata->userid),'id DESC');
+		$alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid,'userid'=>$formdata->userid),'id DESC');
 		
 		if($alldata){
 			
 			foreach($alldata as $thedata){
-				$thedata->audiourl =  \mod_readaloud\utils::make_audio_URL($thedata->filename,$formdata->modulecontextid, MOD_READALOUD_FRANKY,
-                    MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+				$thedata->audiourl =  \mod_readaloud\utils::make_audio_URL($thedata->filename,$formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
+                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
 				$this->rawdata[] = $thedata;
 			}
 		}else{
@@ -389,10 +391,10 @@ class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 									array('controls'=>'','src'=>$record->audiourl));
 								*/	
 							$ret = html_writer::div('<i class="fa fa-play-circle"></i>',
-								MOD_READALOUD_HIDDEN_PLAYER_BUTTON,array('data-audiosource'=>$record->audiourl));		
+								constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON,array('data-audiosource'=>$record->audiourl));
 									
 						}else{
-							$ret = get_string('submitted',MOD_READALOUD_LANG);
+							$ret = get_string('submitted',constants::MOD_READALOUD_LANG);
 						}
 					break;
 					break;
@@ -414,10 +416,10 @@ class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 					break;
 					
 				case 'deletenow':
-					$url = new moodle_url(MOD_READALOUD_URL . '/manageattempts.php',
+					$url = new moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
 						array('action'=>'delete','n'=>$record->readaloudid, 'attemptid'=>$record->id, 'source'=>$this->report));
 					$btn = new single_button($url, get_string('delete'), 'post');
-					$btn->add_confirm_action(get_string('deleteattemptconfirm',MOD_READALOUD_LANG));
+					$btn->add_confirm_action(get_string('deleteattemptconfirm',constants::MOD_READALOUD_LANG));
 					$ret =$OUTPUT->render($btn);
 					break;
 					
@@ -435,8 +437,8 @@ class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 		$record = $this->headingdata;
 		$ret='';
 		if(!$record){return $ret;}
-		//$ec = $this->fetch_cache(MOD_READALOUD_TABLE,$record->englishcentralid);
-		return get_string('attemptsheading',MOD_READALOUD_LANG);
+		//$ec = $this->fetch_cache(constants::MOD_READALOUD_TABLE,$record->englishcentralid);
+		return get_string('attemptsheading',constants::MOD_READALOUD_LANG);
 		
 	}
 	
@@ -447,12 +449,12 @@ class mod_readaloud_attempts_report extends  mod_readaloud_base_report {
 		$this->headingdata = new stdClass();
 		
 		$emptydata = array();
-		$alldata = $DB->get_records(MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid));
+		$alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid));
 		
 		if($alldata){
 			foreach($alldata as $thedata){
-                $thedata->audiourl  = \mod_readaloud\utils::make_audio_URL($thedata->filename,$formdata->modulecontextid, MOD_READALOUD_FRANKY,
-                    MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+                $thedata->audiourl  = \mod_readaloud\utils::make_audio_URL($thedata->filename,$formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
+                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
 				$this->rawdata[] = $thedata;
 			}
 			$this->rawdata= $alldata;
@@ -506,8 +508,8 @@ class mod_readaloud_basic_report extends  mod_readaloud_base_report {
 		$record = $this->headingdata;
 		$ret='';
 		if(!$record){return $ret;}
-		//$ec = $this->fetch_cache(MOD_READALOUD_TABLE,$record->englishcentralid);
-		return get_string('basicheading',MOD_READALOUD_LANG);
+		//$ec = $this->fetch_cache(constants::MOD_READALOUD_TABLE,$record->englishcentralid);
+		return get_string('basicheading',constants::MOD_READALOUD_LANG);
 		
 	}
 	
@@ -518,7 +520,7 @@ class mod_readaloud_basic_report extends  mod_readaloud_base_report {
 		$this->headingdata = new stdClass();
 		
 		$emptydata = array();
-		$alldata = $DB->get_records(MOD_READALOUD_TABLE,array());
+		$alldata = $DB->get_records(constants::MOD_READALOUD_TABLE,array());
 		if($alldata){
 			$this->rawdata= $alldata;
 		}else{

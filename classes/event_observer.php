@@ -24,7 +24,7 @@
  namespace mod_readaloud;
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot .'/mod/readaloud/lib.php');
+use \mod_readaloud\constants;
 
 
 /**
@@ -44,10 +44,10 @@ class event_observer{
      */
     public static function course_deleted(\core\event\course_deleted $event) {
        global $DB;
-		//MOD_READALOUD_TABLE should be deleted elsewhere
+		//constants::MOD_READALOUD_TABLE should be deleted elsewhere
 		//this is just to demonstrate how to handle an event. 
 		//It is probably not even necessary to clear data from here when a course is deleted.
-		$ret = $DB->delete_records(MOD_READALOUD_USERTABLE,array('courseid'=>$event->objectid));
+		$ret = $DB->delete_records(constants::MOD_READALOUD_USERTABLE,array('courseid'=>$event->objectid));
 		return $ret;
 	}
 }

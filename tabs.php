@@ -27,6 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \mod_readaloud\constants;
+
 /// This file to be included so we can assume config.php has already been included.
 global $DB;
 if (empty($moduleinstance)) {
@@ -36,7 +38,7 @@ if (!isset($currenttab)) {
     $currenttab = '';
 }
 if (!isset($cm)) {
-    $cm = get_coursemodule_from_instance(MOD_READALOUD_MODNAME, $moduleinstance->id);
+    $cm = get_coursemodule_from_instance(constants::MOD_READALOUD_MODNAME, $moduleinstance->id);
     $context = context_module::instance($cm->id);
 }
 if (!isset($course)) {
@@ -46,9 +48,9 @@ if (!isset($course)) {
 $tabs = $row = $inactive = $activated = array();
 
 
-$row[] = new tabobject('view', "$CFG->wwwroot/mod/readaloud/view.php?id=$cm->id", get_string('view', MOD_READALOUD_LANG), get_string('preview', MOD_READALOUD_LANG, format_string($moduleinstance->name)));
-$row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', MOD_READALOUD_LANG), get_string('viewreports', MOD_READALOUD_LANG));
-$row[] = new tabobject('grading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id", get_string('grading', MOD_READALOUD_LANG), get_string('viewgrading', MOD_READALOUD_LANG));
+$row[] = new tabobject('view', "$CFG->wwwroot/mod/readaloud/view.php?id=$cm->id", get_string('view', constants::MOD_READALOUD_LANG), get_string('preview', constants::MOD_READALOUD_LANG, format_string($moduleinstance->name)));
+$row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', constants::MOD_READALOUD_LANG), get_string('viewreports', constants::MOD_READALOUD_LANG));
+$row[] = new tabobject('grading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id", get_string('grading', constants::MOD_READALOUD_LANG), get_string('viewgrading', constants::MOD_READALOUD_LANG));
 
 $tabs[] = $row;
 

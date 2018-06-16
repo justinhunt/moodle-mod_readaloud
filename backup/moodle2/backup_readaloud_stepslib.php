@@ -49,14 +49,14 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
         ////////////////////////////////////////////////////////////////////////
 
         // root element describing readaloud instance
-        $oneactivity = new backup_nested_element(MOD_READALOUD_MODNAME, array('id'), array(
+        $oneactivity = new backup_nested_element(constants::MOD_READALOUD_MODNAME, array('id'), array(
             'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat','feedback','feedbackformat','targetwpm','grade','gradeoptions','maxattempts','mingrade','ttslanguage','allowearlyexit','timecreated','timemodified'
 			));
 		
 		//attempts
         $attempts = new backup_nested_element('attempts');
         $attempt = new backup_nested_element('attempt', array('id'),array(
-			MOD_READALOUD_MODNAME ."id","courseid","userid","status","filename","wpm","accuracy",
+			constants::MOD_READALOUD_MODNAME ."id","courseid","userid","status","filename","wpm","accuracy",
 			"sessionscore","sessiontime","sessionerrors","sessionendword","timecreated","timemodified"
 		));
 
@@ -68,12 +68,12 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
 
         // Define sources.
-        $oneactivity->set_source_table(MOD_READALOUD_TABLE, array('id' => backup::VAR_ACTIVITYID));
+        $oneactivity->set_source_table(constants::MOD_READALOUD_TABLE, array('id' => backup::VAR_ACTIVITYID));
 
         //sources if including user info
         if ($userinfo) {
-			$attempt->set_source_table(MOD_READALOUD_USERTABLE,
-											array(MOD_READALOUD_MODNAME . 'id' => backup::VAR_PARENTID));
+			$attempt->set_source_table(constants::MOD_READALOUD_USERTABLE,
+											array(constants::MOD_READALOUD_MODNAME . 'id' => backup::VAR_PARENTID));
         }
 
         // Define id annotations.
@@ -82,14 +82,14 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
         // Define file annotations.
         // intro file area has 0 itemid.
-        $oneactivity->annotate_files(MOD_READALOUD_FRANKY, 'intro', null);
-		$oneactivity->annotate_files(MOD_READALOUD_FRANKY, 'welcome', null);
-		$oneactivity->annotate_files(MOD_READALOUD_FRANKY, 'passage', null);
-		$oneactivity->annotate_files(MOD_READALOUD_FRANKY, 'feedback', null);
+        $oneactivity->annotate_files(constants::MOD_READALOUD_FRANKY, 'intro', null);
+		$oneactivity->annotate_files(constants::MOD_READALOUD_FRANKY, 'welcome', null);
+		$oneactivity->annotate_files(constants::MOD_READALOUD_FRANKY, 'passage', null);
+		$oneactivity->annotate_files(constants::MOD_READALOUD_FRANKY, 'feedback', null);
 		
 		//file annotation if including user info
         if ($userinfo) {
-			$attempt->annotate_files(MOD_READALOUD_FRANKY, MOD_READALOUD_FILEAREA_SUBMISSIONS, 'id');
+			$attempt->annotate_files(constants::MOD_READALOUD_FRANKY, constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, 'id');
         }
 		
         // Return the root element, wrapped into standard activity structure.

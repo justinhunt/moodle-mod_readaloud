@@ -8,7 +8,7 @@
 
 namespace mod_readaloud;
 
-
+use \mod_readaloud\constants;
 
 class aigrade
 {
@@ -16,34 +16,35 @@ class aigrade
         global $DB;
         $this->attemptid = $attemptid;
         $this->modulecontextid = $modulecontextid;
-        $attemptdata = $DB->get_record(MOD_READALOUD_USERTABLE,array('id'=>$attemptid));
-        if($attemptdata) {
-            $this->attemptdata = $attemptdata;
-            $this->activitydata = $DB->get_record(MOD_READALOUD_TABLE, array('id' => $attemptdata->readaloudid));
-            $record = $DB->get_record(MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
+        $this->attemptdata = $DB->get_record(constants::MOD_READALOUD_USERTABLE,array('id'=>$attemptid));
+        if($this->attemptdata) {
+            $this->activitydata = $DB->get_record(constants::MOD_READALOUD_TABLE, array('id' => $this->attemptdata->readaloudid));
+            $record = $DB->get_record(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
             if ($record) {
                 $this->recordid = $record->id;
                 $this->aidata = $record;
             } else {
-                $this->recordid = $this->create_record($attemptdata);
+                $this->recordid = $this->create_record($this->attemptdata);
                 if ($this->recordid) {
-                    $record = $DB->get_record(MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
+                    $record = $DB->get_record(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
                     $this->aidata = $record;
                 }
             }
-            if(!property_exists($record,'transcript') || empty($record->transcript)){
+            if(!$this->has_transcripts()){
                 if( $this->activitydata->region=='useast1') {
-                    $success = $this->update_transcripts();
+                    $success = $this->fetch_transcripts();
                     if($success){
                         $this->do_diff();
                     }
                 }
             }
+        }else{
+            //if there is no attempt we should not even be here
         }
     }
+
     
     public function aidetails($property){
-        global $DB;
         switch($property) {
             case 'sessionscore':
                 $ret = $this->aidata->sessionscore;
@@ -66,13 +67,22 @@ class aigrade
         return $ret;
     }
 
-     function does_exist($attemptid){
-        global $DB;
-        $exists = $DB->record_exists(MOD_READALOUD_AITABLE,array('attemptid'=>$attemptid));
-        return $exists;
+    //has attempt data. If not we really can not do much. Perhaps the attempt was deleted?
+    public function has_attempt(){
+        return $this->attemptdata ? true : false;
     }
 
-    function create_record($attemptdata){
+    //do we have the AI transcripts
+   public function has_transcripts(){
+        return property_exists($this->aidata,'transcript') && !empty($this->aidata->transcript);
+    }
+
+    //do we have the AI at all
+    public static function is_ai_enabled($moduleinstance){
+       return utils::can_transcribe($moduleinstance);
+    }
+
+   protected function create_record($attemptdata){
         global $DB;
         $data = new \stdClass();
         $data->attemptid=$attemptdata->id;
@@ -84,37 +94,37 @@ class aigrade
         $data->fulltranscript='';
         $data->timecreated=time();
         $data->timemodified=time();
-        $recordid = $DB->insert_record(MOD_READALOUD_AITABLE,$data);
+        $recordid = $DB->insert_record(constants::MOD_READALOUD_AITABLE,$data);
         $this->recordid=$recordid;
         return $recordid;
     }
 
 
-    function update_transcripts(){
+   public function fetch_transcripts(){
         global $DB;
+        $success = false;
         if($this->attemptdata->filename && strpos($this->attemptdata->filename,'https')===0){
             $transcript = utils::curl_fetch($this->attemptdata->filename . '.txt');
-            if(strpos(transcript,"<Error><Code>AccessDenied</Code>")>0){
+            if(strpos($transcript,"<Error><Code>AccessDenied</Code>")>0){
                 return false;
             }
-            $full_transcript = utils::curl_fetch($this->attemptdata->filename . '.json');
+            $fulltranscript = utils::curl_fetch($this->attemptdata->filename . '.json');
         }
         if($transcript ) {
             $record = new \stdClass();
             $record->id = $this->recordid;
             $record->transcript = $transcript;
-            $record->full_transcript = $full_transcript;
-            $DB->update_record(MOD_READALOUD_AITABLE, $record);
+            $record->fulltranscript = $fulltranscript;
+            $success = $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
 
             $this->aidata->transcript = $transcript;
             $this->aidata->fulltranscript = '';
         }
+        return $success;
     }
 
-    function do_diff(){
+   protected function do_diff(){
         global $DB;
-
-
 
         //lowercase both
         $passage =strtolower($this->activitydata->passage);
@@ -182,11 +192,22 @@ class aigrade
                 $errorcount++;
             }
         }
+        //finalise and serialise session errors
         $sessionerrors = json_encode($finalerrors);
 
-        ////wpm score
+       //session time
         $sessiontime = $this->attemptdata->sessiontime;
-        if(!$sessiontime){$sessiontime=60;}
+        if(!$sessiontime){
+            if($this->activitydata->timelimit > 0){
+                $sessiontime=$this->activitydata->timelimit;
+            }else {
+                //this is a guess, but really we need the audio duration. We just don't know it.
+                //well .. we COULD get it from the end_time attribute of the final recognised word in the fulltranscript
+                $sessiontime = 60;
+            }
+        }
+
+       ////wpm score
         $wpmscore = round(($sessionendword - $errorcount) * 60 / $sessiontime);
 
         //accuracy score
@@ -207,7 +228,7 @@ class aigrade
         $record->accuracy = $accuracyscore;
         $record->sessionscore = $sessionscore;
         $record->wpm = $wpmscore;
-        $DB->update_record(MOD_READALOUD_AITABLE, $record);
+        $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
     }
 
 
@@ -217,7 +238,7 @@ class aigrade
         //here we set up any info we need to pass into javascript
         $gradingopts =Array();
         $gradingopts['reviewmode'] = false;
-        $gradingopts['enabletts'] = get_config(MOD_READALOUD_FRANKY,'enabletts');
+        $gradingopts['enabletts'] = get_config(constants::MOD_READALOUD_FRANKY,'enabletts');
         $gradingopts['allowearlyexit'] = $this->activitydata->allowearlyexit ? true :false;
         $gradingopts['timelimit'] = $this->activitydata->timelimit;
         $gradingopts['ttslanguage'] = $this->activitydata->ttslanguage;
@@ -254,8 +275,8 @@ class aigrade
                 break;
             case 'audiourl':
                 //we need to consider legacy client side URLs and cloud hosted ones
-                $ret = \mod_readaloud\utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, MOD_READALOUD_FRANKY,
-                    MOD_READALOUD_FILEAREA_SUBMISSIONS,
+                $ret = \mod_readaloud\utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, constants::MOD_READALOUD_FRANKY,
+                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS,
                     $this->attemptdata->id);
 
                 break;
@@ -271,7 +292,7 @@ class aigrade
     public function get_next_ungraded_id(){
         global $DB;
         $where = "id > " .$this->attemptid . " AND sessionscore = 0 AND readaloudid = " . $this->attemptdata->readaloudid;
-        $records = $DB->get_records_select(MOD_READALOUD_USERTABLE,$where,array(),' id ASC');
+        $records = $DB->get_records_select(constants::MOD_READALOUD_USERTABLE,$where,array(),' id ASC');
         if($records){
             $rec = array_shift($records);
             return $rec->id;

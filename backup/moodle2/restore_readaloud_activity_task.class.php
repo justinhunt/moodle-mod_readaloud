@@ -53,14 +53,14 @@ class restore_readaloud_activity_task extends restore_activity_task {
     static public function define_decode_contents() {
         $contents = array();
 
-        $contents[] = new restore_decode_content(MOD_READALOUD_MODNAME,
-                          array('intro'), MOD_READALOUD_MODNAME);
-		$contents[] = new restore_decode_content(MOD_READALOUD_MODNAME,
-                          array('welcome'), MOD_READALOUD_MODNAME);
-		$contents[] = new restore_decode_content(MOD_READALOUD_MODNAME,
-                          array('passage'), MOD_READALOUD_MODNAME);
-		$contents[] = new restore_decode_content(MOD_READALOUD_MODNAME,
-                          array('feedback'), MOD_READALOUD_MODNAME);
+        $contents[] = new restore_decode_content(constants::MOD_READALOUD_MODNAME,
+                          array('intro'), constants::MOD_READALOUD_MODNAME);
+		$contents[] = new restore_decode_content(constants::MOD_READALOUD_MODNAME,
+                          array('welcome'), constants::MOD_READALOUD_MODNAME);
+		$contents[] = new restore_decode_content(constants::MOD_READALOUD_MODNAME,
+                          array('passage'), constants::MOD_READALOUD_MODNAME);
+		$contents[] = new restore_decode_content(constants::MOD_READALOUD_MODNAME,
+                          array('feedback'), constants::MOD_READALOUD_MODNAME);
 
         return $contents;
     }
@@ -88,9 +88,9 @@ class restore_readaloud_activity_task extends restore_activity_task {
     static public function define_restore_log_rules() {
         $rules = array();
 
-        $rules[] = new restore_log_rule(MOD_READALOUD_MODNAME, 'add', 'view.php?id={course_module}', '{'. MOD_READALOUD_TABLE .'}');
-        $rules[] = new restore_log_rule(MOD_READALOUD_MODNAME, 'update', 'view.php?id={course_module}', '{'. MOD_READALOUD_TABLE .'}');
-        $rules[] = new restore_log_rule(MOD_READALOUD_MODNAME, 'view', 'view.php?id={course_module}', '{'. MOD_READALOUD_TABLE .'}');
+        $rules[] = new restore_log_rule(constants::MOD_READALOUD_MODNAME, 'add', 'view.php?id={course_module}', '{'. constants::MOD_READALOUD_TABLE .'}');
+        $rules[] = new restore_log_rule(constants::MOD_READALOUD_MODNAME, 'update', 'view.php?id={course_module}', '{'. constants::MOD_READALOUD_TABLE .'}');
+        $rules[] = new restore_log_rule(constants::MOD_READALOUD_MODNAME, 'view', 'view.php?id={course_module}', '{'. constants::MOD_READALOUD_TABLE .'}');
 
         return $rules;
     }
@@ -108,7 +108,7 @@ class restore_readaloud_activity_task extends restore_activity_task {
     static public function define_restore_log_rules_for_course() {
         $rules = array();
 
-        $rules[] = new restore_log_rule(MOD_READALOUD_MODNAME, 'view all', 'index.php?id={course}', null);
+        $rules[] = new restore_log_rule(constants::MOD_READALOUD_MODNAME, 'view all', 'index.php?id={course}', null);
 
         return $rules;
     }

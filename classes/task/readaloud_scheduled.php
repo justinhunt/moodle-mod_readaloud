@@ -25,7 +25,7 @@
 namespace mod_readaloud\task;
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/readaloud/lib.php');
+use \mod_readaloud\constants;
 
 /**
  * The mod_readaloud scheduled task.
@@ -39,7 +39,7 @@ class readaloud_scheduled extends \core\task\scheduled_task {
 		
 	public function get_name() {
         // Shown in admin screens
-        return get_string('readaloudtask', MOD_READALOUD_LANG);
+        return get_string('readaloudtask', constants::MOD_READALOUD_LANG);
     }
 	
 	 /**
@@ -47,7 +47,7 @@ class readaloud_scheduled extends \core\task\scheduled_task {
      */
 	 public function execute(){
 		$trace = new \text_progress_trace();
-        	readaloud_dotask($trace);
+        	//readaloud_dotask($trace);
 	}
 
 }

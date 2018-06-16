@@ -26,7 +26,8 @@
 
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+
+use \mod_readaloud\constants;
 
 $cmid = required_param('cmid',  PARAM_INT); // course_module ID, or
 //$sessionid = required_param('sessionid',  PARAM_INT); // course_module ID, or
@@ -44,17 +45,32 @@ if ($cmid) {
 }
 
 require_login($course, false, $cm);
-
 $modulecontext = context_module::instance($cm->id);
 $PAGE->set_context($modulecontext);
 
-$success = save_to_moodle($filename, $readaloud);
+//make database items and adhoc tasks
+$success = false;
+$attemptid = save_to_moodle($filename, $readaloud);
+if($attemptid){
+    if(\mod_readaloud\utils::can_transcribe($readaloud)) {
+        $success = register_aws_task($readaloud->id, $attemptid, $modulecontext->id);
+        if(!$success){
+            $message = "Unable to create adhoc task to fetch transcriptions";
+        }
+    }else{
+        $success = true;
+    }
+}else{
+    $message = "Unable to add update database with submission";
+}
+
+//handle return to Moodle
 $ret =new stdClass();
 if($success){
     $ret->success=true;
 }else{
     $ret->success=false;
-    $ret->message="Unable to add update database with submission";
+    $ret->message=$message;
 }
 echo json_encode($ret);
 return;
@@ -62,7 +78,6 @@ return;
 //save the data to Moodle.
 function save_to_moodle($filename,$readaloud){
     global $USER,$DB;
-
 
     //Add a blank attempt with just the filename  and essential details
     $newattempt = new stdClass();
@@ -75,9 +90,24 @@ function save_to_moodle($filename,$readaloud){
     $newattempt->wpm=0;
     $newattempt->timecreated=time();
     $newattempt->timemodified=time();
-    $attemptid = $DB->insert_record(MOD_READALOUD_USERTABLE,$newattempt);
+    $attemptid = $DB->insert_record(constants::MOD_READALOUD_USERTABLE,$newattempt);
     if(!$attemptid){
         return false;
     }
-    return true;
+    return $attemptid;
+}
+
+//register an adhoc task to pick up transcripts
+function register_aws_task($activityid, $attemptid,$modulecontextid){
+    $s3_task = new \mod_readaloud\task\readaloud_s3_adhoc();
+    $s3_task->set_component('mod_readaloud');
+
+    $customdata = new \stdClass();
+    $customdata->activityid = $activityid;
+    $customdata->attemptid = $attemptid;
+    $customdata->modulecontextid = $modulecontextid;
+
+    $s3_task->set_custom_data($customdata);
+    // queue it
+    \core\task\manager::queue_adhoc_task($s3_task);
 }

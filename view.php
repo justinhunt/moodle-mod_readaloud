@@ -28,7 +28,8 @@
 
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+use \mod_readaloud\constants;
+
 
 
 
@@ -79,7 +80,7 @@ $PAGE->set_pagelayout('course');
 
 
 //Get an admin settings 
-$config = get_config(MOD_READALOUD_FRANKY);
+$config = get_config(constants::MOD_READALOUD_FRANKY);
 
 //require bootstrap and fontawesome ... maybe
 if($config->loadfontawesome){
@@ -88,16 +89,16 @@ if($config->loadfontawesome){
 
 //Get our renderers
 $renderer = $PAGE->get_renderer('mod_readaloud');
-$gradenowrenderer = $PAGE->get_renderer(MOD_READALOUD_FRANKY,'gradenow');
+$gradenowrenderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY,'gradenow');
 
 //if we are in review mode, lets review
-$attempts = $DB->get_records(MOD_READALOUD_USERTABLE,array('userid'=>$USER->id,'readaloudid'=>$moduleinstance->id),'id DESC');
+$attempts = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>$USER->id,'readaloudid'=>$moduleinstance->id),'id DESC');
 
 //can attempt ?
 $canattempt = has_capability('mod/readaloud:preview',$modulecontext);
 if(!$canattempt && $moduleinstance->maxattempts > 0){
 	$canattempt=true;
-	$attempts =  $DB->get_records(MOD_READALOUD_USERTABLE,array('userid'=>$USER->id, MOD_READALOUD_MODNAME.'id'=>$moduleinstance->id));
+	$attempts =  $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>$USER->id, constants::MOD_READALOUD_MODNAME.'id'=>$moduleinstance->id));
 	if($attempts && count($attempts)>=$moduleinstance->maxattempts){
 		$canattempt=false;
 	}
@@ -110,7 +111,7 @@ if(!$canattempt){$retake=0;}
 if($attempts && $retake==0){
 		//if we are teacher we see tabs. If student we just see the quiz
 		if(has_capability('mod/readaloud:preview',$modulecontext)){
-			echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', MOD_READALOUD_LANG));
+			echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::MOD_READALOUD_LANG));
 		}else{
 			echo $renderer->notabsheader();
 		}
@@ -144,7 +145,7 @@ if($attempts && $retake==0){
 
 //if we are teacher we see tabs. If student we just see the quiz
 if(has_capability('mod/readaloud:preview',$modulecontext)){
-	echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', MOD_READALOUD_LANG));
+	echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::MOD_READALOUD_LANG));
 }else{
 	echo $renderer->notabsheader();
 }

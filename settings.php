@@ -27,49 +27,51 @@
 defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/mod/readaloud/lib.php');
 
+use \mod_readaloud\constants;
+
 if ($ADMIN->fulltree) {
 
 	 $settings->add(new admin_setting_configtextarea('mod_readaloud/defaultwelcome',
-        get_string('welcomelabel', 'readaloud'), get_string('welcomelabel_details', MOD_READALOUD_LANG), get_string('defaultwelcome',MOD_READALOUD_LANG), PARAM_TEXT));
+        get_string('welcomelabel', 'readaloud'), get_string('welcomelabel_details', constants::MOD_READALOUD_LANG), get_string('defaultwelcome',constants::MOD_READALOUD_LANG), PARAM_TEXT));
 	 $settings->add(new admin_setting_configtextarea('mod_readaloud/defaultfeedback',
-        get_string('feedbacklabel', 'readaloud'), get_string('feedbacklabel_details', MOD_READALOUD_LANG), get_string('defaultfeedback',MOD_READALOUD_LANG), PARAM_TEXT));
+        get_string('feedbacklabel', 'readaloud'), get_string('feedbacklabel_details', constants::MOD_READALOUD_LANG), get_string('defaultfeedback',constants::MOD_READALOUD_LANG), PARAM_TEXT));
 		
 	 $settings->add(new admin_setting_configtext('mod_readaloud/targetwpm',
-        get_string('targetwpm', MOD_READALOUD_LANG), get_string('targetwpm_details', MOD_READALOUD_LANG), 100, PARAM_INT));
+        get_string('targetwpm', constants::MOD_READALOUD_LANG), get_string('targetwpm_details', constants::MOD_READALOUD_LANG), 100, PARAM_INT));
 
     $settings->add(new admin_setting_configtext('mod_readaloud/apiuser',
-        get_string('apiuser', MOD_READALOUD_LANG), get_string('apiuser_details', MOD_READALOUD_LANG), '', PARAM_TEXT));
+        get_string('apiuser', constants::MOD_READALOUD_LANG), get_string('apiuser_details', constants::MOD_READALOUD_LANG), '', PARAM_TEXT));
 
     $settings->add(new admin_setting_configtext('mod_readaloud/apisecret',
-        get_string('apisecret', MOD_READALOUD_LANG), get_string('apisecret_details', MOD_READALOUD_LANG), '', PARAM_TEXT));
+        get_string('apisecret', constants::MOD_READALOUD_LANG), get_string('apisecret_details', constants::MOD_READALOUD_LANG), '', PARAM_TEXT));
 
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/enableai',
-        get_string('enableai', MOD_READALOUD_LANG), get_string('enableai_details',MOD_READALOUD_LANG), 0));
+        get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details',constants::MOD_READALOUD_LANG), 0));
 
     $regions = \mod_readaloud\utils::get_region_options();
-    $settings->add(new admin_setting_configselect('mod_readaloud/awsregion', get_string('awsregion', MOD_READALOUD_LANG), '', 'useast1', $regions));
+    $settings->add(new admin_setting_configselect('mod_readaloud/awsregion', get_string('awsregion', constants::MOD_READALOUD_LANG), '', 'useast1', $regions));
 
     $expiredays = \mod_readaloud\utils::get_expiredays_options();
-    $settings->add(new admin_setting_configselect('mod_readaloud/expiredays', get_string('expiredays', MOD_READALOUD_LANG), '', '365', $expiredays));
+    $settings->add(new admin_setting_configselect('mod_readaloud/expiredays', get_string('expiredays', constants::MOD_READALOUD_LANG), '', '365', $expiredays));
 
 
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/allowearlyexit',
-	 get_string('allowearlyexit', MOD_READALOUD_LANG), get_string('allowearlyexit_defaultdetails',MOD_READALOUD_LANG), 0));	
+	 get_string('allowearlyexit', constants::MOD_READALOUD_LANG), get_string('allowearlyexit_defaultdetails',constants::MOD_READALOUD_LANG), 0));
 
     /*
 	 $settings->add(new admin_setting_configcheckbox('mod_readaloud/enabletts', 
-	 get_string('enabletts', MOD_READALOUD_LANG), get_string('enabletts_details',MOD_READALOUD_LANG), 0));
+	 get_string('enabletts', constants::MOD_READALOUD_LANG), get_string('enabletts_details',constants::MOD_READALOUD_LANG), 0));
 	 */
 
 	 $langoptions = \mod_readaloud\utils::get_lang_options();
-	 $settings->add(new admin_setting_configselect('mod_readaloud/ttslanguage', get_string('ttslanguage', MOD_READALOUD_LANG), '', 'en', $langoptions));
+	 $settings->add(new admin_setting_configselect('mod_readaloud/ttslanguage', get_string('ttslanguage', constants::MOD_READALOUD_LANG), '', 'en', $langoptions));
 	 
 	 $settings->add(new admin_setting_configtext('mod_readaloud/itemsperpage',
-        get_string('itemsperpage', MOD_READALOUD_LANG), get_string('itemsperpage_details', MOD_READALOUD_LANG), 40, PARAM_INT));
+        get_string('itemsperpage', constants::MOD_READALOUD_LANG), get_string('itemsperpage_details', constants::MOD_READALOUD_LANG), 40, PARAM_INT));
         
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/loadbootstrap', 
-	 get_string('loadbootstrap', MOD_READALOUD_LANG), get_string('loadbootstrap_details',MOD_READALOUD_LANG), 1));
+	 get_string('loadbootstrap', constants::MOD_READALOUD_LANG), get_string('loadbootstrap_details',constants::MOD_READALOUD_LANG), 1));
 	 
 	$settings->add(new admin_setting_configcheckbox('mod_readaloud/loadfontawesome', 
-	 get_string('loadfontawesome', MOD_READALOUD_LANG), get_string('loadfontawesome_details',MOD_READALOUD_LANG), 1));
+	 get_string('loadfontawesome', constants::MOD_READALOUD_LANG), get_string('loadfontawesome_details',constants::MOD_READALOUD_LANG), 1));
 }

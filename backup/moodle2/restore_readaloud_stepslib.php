@@ -43,7 +43,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         ////////////////////////////////////////////////////////////////////////
 
         // root element describing readaloud instance
-        $oneactivity = new restore_path_element(MOD_READALOUD_MODNAME, '/activity/readaloud');
+        $oneactivity = new restore_path_element(constants::MOD_READALOUD_MODNAME, '/activity/readaloud');
         $paths[] = $oneactivity;
 
 		
@@ -57,7 +57,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         // XML interesting paths - user data
         ////////////////////////////////////////////////////////////////////////
 		//attempts
-		 $attempts= new restore_path_element(MOD_READALOUD_USERTABLE,
+		 $attempts= new restore_path_element(constants::MOD_READALOUD_USERTABLE,
                                             '/activity/readaloud/attempts/attempt');
 		$paths[] = $attempts;
 		 
@@ -79,7 +79,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 
 
         // insert the activity record
-        $newitemid = $DB->insert_record(MOD_READALOUD_TABLE, $data);
+        $newitemid = $DB->insert_record(constants::MOD_READALOUD_TABLE, $data);
         // immediately after inserting "activity" record, call this
         $this->apply_activity_instance($newitemid);
     }
@@ -94,26 +94,26 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $data->timecreated = $this->apply_date_offset($data->timecreated);
 
 		
-        $data->{MOD_READALOUD_MODNAME . 'id'} = $this->get_new_parentid(MOD_READALOUD_MODNAME);
-        $newitemid = $DB->insert_record(MOD_READALOUD_USERTABLE, $data);
+        $data->{constants::MOD_READALOUD_MODNAME . 'id'} = $this->get_new_parentid(constants::MOD_READALOUD_MODNAME);
+        $newitemid = $DB->insert_record(constants::MOD_READALOUD_USERTABLE, $data);
 		
 		// Mapping without files
 		//here we set the table name as the "key" to the mapping, but its actually arbitrary
 		//'we would need to use the "key" later when calling add_related_files for the itemid in the moodle files area
 		//IF we had files for this set of data. )
-       $this->set_mapping(MOD_READALOUD_USERTABLE, $oldid, $newitemid, true); 
+       $this->set_mapping(constants::MOD_READALOUD_USERTABLE, $oldid, $newitemid, true);
     }
 	
     protected function after_execute() {
         // Add module related files, no need to match by itemname (just internally handled context)
-        $this->add_related_files(MOD_READALOUD_FRANKY, 'intro', null);
-		$this->add_related_files(MOD_READALOUD_FRANKY, 'welcome', null);
-		$this->add_related_files(MOD_READALOUD_FRANKY, 'passage', null);
-		$this->add_related_files(MOD_READALOUD_FRANKY, 'feedback', null);
+        $this->add_related_files(constants::MOD_READALOUD_FRANKY, 'intro', null);
+		$this->add_related_files(constants::MOD_READALOUD_FRANKY, 'welcome', null);
+		$this->add_related_files(constants::MOD_READALOUD_FRANKY, 'passage', null);
+		$this->add_related_files(constants::MOD_READALOUD_FRANKY, 'feedback', null);
 		
 		 $userinfo = $this->get_setting_value('userinfo'); // are we including userinfo?
 		 if($userinfo){
-			$this->add_related_files(MOD_READALOUD_FRANKY, MOD_READALOUD_FILEAREA_SUBMISSIONS, MOD_READALOUD_USERTABLE);
+			$this->add_related_files(constants::MOD_READALOUD_FRANKY, constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, constants::MOD_READALOUD_USERTABLE);
 		 }		 
     }
 }

@@ -24,7 +24,7 @@
  namespace mod_readaloud;
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot .'/mod/readaloud/lib.php');
+use \mod_readaloud\constants;
 
 
 /**

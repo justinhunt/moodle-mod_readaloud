@@ -16,7 +16,9 @@
 
 
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__).'/lib.php');
+
+use \mod_readaloud\constants;
+
 /**
  * A custom renderer class that extends the plugin_renderer_base.
  *
@@ -54,7 +56,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
         $output = $this->output->header();
 
         if (has_capability('mod/readaloud:manage', $context)) {
-         //   $output .= $this->output->heading_with_help($activityname, 'overview', MOD_READALOUD_LANG);
+         //   $output .= $this->output->heading_with_help($activityname, 'overview', constants::MOD_READALOUD_LANG);
 
             if (!empty($currenttab)) {
                 ob_start();
@@ -83,10 +85,10 @@ class mod_readaloud_renderer extends plugin_renderer_base {
      */
       public function reattemptbutton($moduleinstance){
       
-		$button = $this->output->single_button(new moodle_url(MOD_READALOUD_URL . '/view.php',
-				array('n'=>$moduleinstance->id,'retake'=>1)),get_string('reattempt',MOD_READALOUD_FRANKY));
+		$button = $this->output->single_button(new moodle_url(constants::MOD_READALOUD_URL . '/view.php',
+				array('n'=>$moduleinstance->id,'retake'=>1)),get_string('reattempt',constants::MOD_READALOUD_FRANKY));
       	
-      	$ret = html_writer::div($button ,MOD_READALOUD_CLASS  . '_afterattempt_cont');
+      	$ret = html_writer::div($button ,constants::MOD_READALOUD_CLASS  . '_afterattempt_cont');
       	return $ret;
 
       }
@@ -95,15 +97,15 @@ class mod_readaloud_renderer extends plugin_renderer_base {
      *
      */
       public function exceededattempts($moduleinstance){
-		$message = get_string("exceededattempts",MOD_READALOUD_LANG,$moduleinstance->maxattempts);
-      	$ret = html_writer::div($message ,MOD_READALOUD_CLASS  . '_afterattempt_cont');
+		$message = get_string("exceededattempts",constants::MOD_READALOUD_LANG,$moduleinstance->maxattempts);
+      	$ret = html_writer::div($message ,constants::MOD_READALOUD_CLASS  . '_afterattempt_cont');
       	return $ret;
 
       }
 	  
 	  public function show_ungradedyet(){
-		$message = get_string("notgradedyet",MOD_READALOUD_LANG);
-      	$ret = html_writer::div($message ,MOD_READALOUD_CLASS  . '_ungraded_cont');
+		$message = get_string("notgradedyet",constants::MOD_READALOUD_LANG);
+      	$ret = html_writer::div($message ,constants::MOD_READALOUD_CLASS  . '_ungraded_cont');
       	return $ret;
 	  }
 	  
@@ -114,11 +116,11 @@ class mod_readaloud_renderer extends plugin_renderer_base {
      */
     public function show_welcome($showtext, $showtitle) {
         $thetitle =  $this->output->heading($showtitle, 3, 'main');
-		$displaytext =  html_writer::div($thetitle ,MOD_READALOUD_CLASS  . '_center');
+		$displaytext =  html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
 		$displaytext .= $this->output->box_start();
-		$displaytext .= html_writer::div($showtext ,MOD_READALOUD_CLASS  . '_center');
+		$displaytext .= html_writer::div($showtext ,constants::MOD_READALOUD_CLASS  . '_center');
 		$displaytext .= $this->output->box_end();
-		$ret= html_writer::div($displaytext,MOD_READALOUD_INSTRUCTIONS_CONTAINER,array('id'=>MOD_READALOUD_INSTRUCTIONS_CONTAINER));
+		$ret= html_writer::div($displaytext,constants::MOD_READALOUD_INSTRUCTIONS_CONTAINER,array('id'=>constants::MOD_READALOUD_INSTRUCTIONS_CONTAINER));
         return $ret;
     }
 
@@ -142,8 +144,8 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 	public function show_passage($readaloud,$cm){
 
 		$ret = "";
-		$ret .= html_writer::div( $readaloud->passage ,MOD_READALOUD_PASSAGE_CONTAINER,
-							array('id'=>MOD_READALOUD_PASSAGE_CONTAINER));
+		$ret .= html_writer::div( $readaloud->passage ,constants::MOD_READALOUD_PASSAGE_CONTAINER,
+							array('id'=>constants::MOD_READALOUD_PASSAGE_CONTAINER));
 		return $ret;
 	}
 	
@@ -151,11 +153,11 @@ class mod_readaloud_renderer extends plugin_renderer_base {
      *  Show a progress circle overlay while uploading
      */
 	public function show_progress($readaloud,$cm){
-		$hider =  html_writer::div('',MOD_READALOUD_HIDER,array('id'=>MOD_READALOUD_HIDER));
-		$message =  html_writer::tag('h4',get_string('processing',MOD_READALOUD_LANG),array());
+		$hider =  html_writer::div('',constants::MOD_READALOUD_HIDER,array('id'=>constants::MOD_READALOUD_HIDER));
+		$message =  html_writer::tag('h4',get_string('processing',constants::MOD_READALOUD_LANG),array());
 		$spinner =  html_writer::tag('i','',array('class'=>'fa fa-spinner fa-5x fa-spin'));
-		$progressdiv = html_writer::div($message . $spinner ,MOD_READALOUD_PROGRESS_CONTAINER,
-							array('id'=>MOD_READALOUD_PROGRESS_CONTAINER));
+		$progressdiv = html_writer::div($message . $spinner ,constants::MOD_READALOUD_PROGRESS_CONTAINER,
+							array('id'=>constants::MOD_READALOUD_PROGRESS_CONTAINER));
 		$ret = $hider . $progressdiv;
 		return $ret;
 	}
@@ -165,11 +167,11 @@ class mod_readaloud_renderer extends plugin_renderer_base {
      */
 	public function show_feedback($readaloud,$cm,$showtitle){
         $thetitle =  $this->output->heading($showtitle, 3, 'main');
-        $displaytext =  html_writer::div($thetitle ,MOD_READALOUD_CLASS  . '_center');
+        $displaytext =  html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
 		$displaytext .= $this->output->box_start();
-		$displaytext .=  html_writer::div($readaloud->feedback,MOD_READALOUD_CLASS  . '_center');
+		$displaytext .=  html_writer::div($readaloud->feedback,constants::MOD_READALOUD_CLASS  . '_center');
 		$displaytext .= $this->output->box_end();
-		$ret= html_writer::div($displaytext,MOD_READALOUD_FEEDBACK_CONTAINER,array('id'=>MOD_READALOUD_FEEDBACK_CONTAINER));
+		$ret= html_writer::div($displaytext,constants::MOD_READALOUD_FEEDBACK_CONTAINER,array('id'=>constants::MOD_READALOUD_FEEDBACK_CONTAINER));
         return $ret;
 	}
 	
@@ -178,10 +180,10 @@ class mod_readaloud_renderer extends plugin_renderer_base {
      */
 	public function show_error($readaloud,$cm){
 		$displaytext = $this->output->box_start();
-		$displaytext .= $this->output->heading(get_string('errorheader',MOD_READALOUD_LANG), 3, 'main');
-		$displaytext .=  html_writer::div(get_string('uploadconverterror',MOD_READALOUD_LANG),'',array());
+		$displaytext .= $this->output->heading(get_string('errorheader',constants::MOD_READALOUD_LANG), 3, 'main');
+		$displaytext .=  html_writer::div(get_string('uploadconverterror',constants::MOD_READALOUD_LANG),'',array());
 		$displaytext .= $this->output->box_end();
-		$ret= html_writer::div($displaytext,MOD_READALOUD_ERROR_CONTAINER,array('id'=>MOD_READALOUD_ERROR_CONTAINER));
+		$ret= html_writer::div($displaytext,constants::MOD_READALOUD_ERROR_CONTAINER,array('id'=>constants::MOD_READALOUD_ERROR_CONTAINER));
         return $ret;
 	}
 	
@@ -198,8 +200,8 @@ class mod_readaloud_renderer extends plugin_renderer_base {
         $string_hints = base64_encode (json_encode($hints));
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
         $transcribe = $can_transcribe  ? "1" : "0";
-		$recorderdiv= html_writer::div('', MOD_READALOUD_CLASS  . '_center',
-							array('id'=>MOD_READALOUD_RECORDERID,
+		$recorderdiv= html_writer::div('', constants::MOD_READALOUD_CLASS  . '_center',
+							array('id'=>constants::MOD_READALOUD_RECORDERID,
                                 'data-id'=>'therecorder',
                                 'data-parent'=>$CFG->wwwroot,
                                 'data-localloader'=>'/mod/readaloud/poodllloader.html',
@@ -208,7 +210,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
                                 'data-width'=>"360",
                                 'data-height'=>"210",
                                 //'data-iframeclass'=>"letsberesponsive",
-                                'data-updatecontrol'=>MOD_READALOUD_UPDATE_CONTROL,
+                                'data-updatecontrol'=>constants::MOD_READALOUD_UPDATE_CONTROL,
                                 'data-timelimit'=> $moduleinstance->timelimit,
                                 'data-transcode'=>"1",
                                 'data-transcribe'=>$transcribe,
@@ -220,12 +222,12 @@ class mod_readaloud_renderer extends plugin_renderer_base {
                                 //'data-token'=>"643eba92a1447ac0c6a882c85051461a" //cloudpoodll
                                 )
         );
-        $containerdiv= html_writer::div($recorderdiv,MOD_READALOUD_RECORDER_CONTAINER . " " . MOD_READALOUD_CLASS  . '_center',
-            array('id'=>MOD_READALOUD_RECORDER_CONTAINER));
+        $containerdiv= html_writer::div($recorderdiv,constants::MOD_READALOUD_RECORDER_CONTAINER . " " . constants::MOD_READALOUD_CLASS  . '_center',
+            array('id'=>constants::MOD_READALOUD_RECORDER_CONTAINER));
         //=======================================
 
 
-        $recordingdiv = html_writer::div($containerdiv ,MOD_READALOUD_RECORDING_CONTAINER);
+        $recordingdiv = html_writer::div($containerdiv ,constants::MOD_READALOUD_RECORDING_CONTAINER);
 
         //prepare output
         $ret = "";
@@ -244,31 +246,31 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 
         $recopts =Array();
         //recorder html ids
-        $recopts['recorderid'] = MOD_READALOUD_RECORDERID;
-        $recopts['recordingcontainer'] = MOD_READALOUD_RECORDING_CONTAINER;
-        $recopts['recordercontainer'] = MOD_READALOUD_RECORDER_CONTAINER;
+        $recopts['recorderid'] = constants::MOD_READALOUD_RECORDERID;
+        $recopts['recordingcontainer'] = constants::MOD_READALOUD_RECORDING_CONTAINER;
+        $recopts['recordercontainer'] = constants::MOD_READALOUD_RECORDER_CONTAINER;
 
         //activity html ids
-        $recopts['passagecontainer'] = MOD_READALOUD_PASSAGE_CONTAINER;
-        $recopts['instructionscontainer'] = MOD_READALOUD_INSTRUCTIONS_CONTAINER;
-        $recopts['recordbuttoncontainer'] =MOD_READALOUD_RECORD_BUTTON_CONTAINER;
-        $recopts['startbuttoncontainer'] =MOD_READALOUD_START_BUTTON_CONTAINER;
-        $recopts['hider']=MOD_READALOUD_HIDER;
-        $recopts['progresscontainer'] = MOD_READALOUD_PROGRESS_CONTAINER;
-        $recopts['feedbackcontainer'] = MOD_READALOUD_FEEDBACK_CONTAINER;
-        $recopts['errorcontainer'] = MOD_READALOUD_ERROR_CONTAINER;
+        $recopts['passagecontainer'] = constants::MOD_READALOUD_PASSAGE_CONTAINER;
+        $recopts['instructionscontainer'] = constants::MOD_READALOUD_INSTRUCTIONS_CONTAINER;
+        $recopts['recordbuttoncontainer'] =constants::MOD_READALOUD_RECORD_BUTTON_CONTAINER;
+        $recopts['startbuttoncontainer'] =constants::MOD_READALOUD_START_BUTTON_CONTAINER;
+        $recopts['hider']=constants::MOD_READALOUD_HIDER;
+        $recopts['progresscontainer'] = constants::MOD_READALOUD_PROGRESS_CONTAINER;
+        $recopts['feedbackcontainer'] = constants::MOD_READALOUD_FEEDBACK_CONTAINER;
+        $recopts['errorcontainer'] = constants::MOD_READALOUD_ERROR_CONTAINER;
         $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
 
 
         //we need an update control tp hold the recorded filename, and one for draft item id
-        $ret_html = $ret_html . html_writer::tag('input', '', array('id' => MOD_READALOUD_UPDATE_CONTROL, 'type' => 'hidden'));
+        $ret_html = $ret_html . html_writer::tag('input', '', array('id' => constants::MOD_READALOUD_UPDATE_CONTROL, 'type' => 'hidden'));
 
 
         //this inits the M.mod_readaloud thingy, after the page has loaded.
         //we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
         //convert opts to json
         $jsonstring = json_encode($recopts);
-        $widgetid = MOD_READALOUD_RECORDERID . '_opts_9999';
+        $widgetid = constants::MOD_READALOUD_RECORDERID . '_opts_9999';
         $opts_html = html_writer::tag('input', '', array('id' => 'amdopts_' . $widgetid, 'type' => 'hidden', 'value' => $jsonstring));
 
         //the recorder div
@@ -276,7 +278,7 @@ class mod_readaloud_renderer extends plugin_renderer_base {
 
         $opts=array('cmid'=>$cm->id,'widgetid'=>$widgetid);
         $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', array($opts));
-        $this->page->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),MOD_READALOUD_LANG);
+        $this->page->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),constants::MOD_READALOUD_LANG);
 
         //these need to be returned and echo'ed to the page
         return $ret_html;
@@ -290,36 +292,36 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 	public function render_reportmenu($moduleinstance,$cm) {
 		
 		$basic = new single_button(
-			new moodle_url(MOD_READALOUD_URL . '/reports.php',array('report'=>'basic','id'=>$cm->id,'n'=>$moduleinstance->id)), 
-			get_string('basicreport',MOD_READALOUD_LANG), 'get');
+			new moodle_url(constants::MOD_READALOUD_URL . '/reports.php',array('report'=>'basic','id'=>$cm->id,'n'=>$moduleinstance->id)),
+			get_string('basicreport',constants::MOD_READALOUD_LANG), 'get');
 
 		$attempts = new single_button(
-			new moodle_url(MOD_READALOUD_URL . '/reports.php',array('report'=>'attempts','id'=>$cm->id,'n'=>$moduleinstance->id)), 
-			get_string('attemptsreport',MOD_READALOUD_LANG), 'get');
+			new moodle_url(constants::MOD_READALOUD_URL . '/reports.php',array('report'=>'attempts','id'=>$cm->id,'n'=>$moduleinstance->id)),
+			get_string('attemptsreport',constants::MOD_READALOUD_LANG), 'get');
 			
 			
-		$ret = html_writer::div($this->render($basic) .'<br />' .$this->render($attempts) .'<br />'  ,MOD_READALOUD_CLASS  . '_listbuttons');
+		$ret = html_writer::div($this->render($basic) .'<br />' .$this->render($attempts) .'<br />'  ,constants::MOD_READALOUD_CLASS  . '_listbuttons');
 
 		return $ret;
 	}
 
 	public function render_delete_allattempts($cm){
 		$deleteallbutton = new single_button(
-				new moodle_url(MOD_READALOUD_URL . '/manageattempts.php',array('id'=>$cm->id,'action'=>'confirmdeleteall')), 
-				get_string('deleteallattempts',MOD_READALOUD_LANG), 'get');
-		$ret =  html_writer::div( $this->render($deleteallbutton) ,MOD_READALOUD_CLASS  . '_actionbuttons');
+				new moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',array('id'=>$cm->id,'action'=>'confirmdeleteall')),
+				get_string('deleteallattempts',constants::MOD_READALOUD_LANG), 'get');
+		$ret =  html_writer::div( $this->render($deleteallbutton) ,constants::MOD_READALOUD_CLASS  . '_actionbuttons');
 		return $ret;
 	}
 
 	public function render_reporttitle_html($course,$username) {
 		$ret = $this->output->heading(format_string($course->fullname),2);
-		$ret .= $this->output->heading(get_string('reporttitle',MOD_READALOUD_LANG,$username),3);
+		$ret .= $this->output->heading(get_string('reporttitle',constants::MOD_READALOUD_LANG,$username),3);
 		return $ret;
 	}
 
 	public function render_empty_section_html($sectiontitle) {
 		global $CFG;
-		return $this->output->heading(get_string('nodataavailable',MOD_READALOUD_LANG),3);
+		return $this->output->heading(get_string('nodataavailable',constants::MOD_READALOUD_LANG),3);
 	}
 	
 	public function render_exportbuttons_html($cm,$formdata,$showreport){
@@ -330,15 +332,15 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 		/*
 		$formdata['format']='pdf';
 		$pdf = new single_button(
-			new moodle_url(MOD_READALOUD_URL . '/reports.php',$formdata),
-			get_string('exportpdf',MOD_READALOUD_LANG), 'get');
+			new moodle_url(constants::MOD_READALOUD_URL . '/reports.php',$formdata),
+			get_string('exportpdf',constants::MOD_READALOUD_LANG), 'get');
 		*/
 		$formdata['format']='csv';
 		$excel = new single_button(
-			new moodle_url(MOD_READALOUD_URL . '/reports.php',$formdata), 
-			get_string('exportexcel',MOD_READALOUD_LANG), 'get');
+			new moodle_url(constants::MOD_READALOUD_URL . '/reports.php',$formdata),
+			get_string('exportexcel',constants::MOD_READALOUD_LANG), 'get');
 
-		return html_writer::div( $this->render($excel),MOD_READALOUD_CLASS  . '_actionbuttons');
+		return html_writer::div( $this->render($excel),constants::MOD_READALOUD_CLASS  . '_actionbuttons');
 	}
 	
 
@@ -380,8 +382,8 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 		}
 		
 		//set up our table and head attributes
-		$tableattributes = array('class'=>'generaltable '. MOD_READALOUD_CLASS .'_table');
-		$headrow_attributes = array('class'=>MOD_READALOUD_CLASS . '_headrow');
+		$tableattributes = array('class'=>'generaltable '. constants::MOD_READALOUD_CLASS .'_table');
+		$headrow_attributes = array('class'=>constants::MOD_READALOUD_CLASS . '_headrow');
 		
 		$htmltable = new html_table();
 		$htmltable->attributes = $tableattributes;
@@ -400,7 +402,7 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 			$cells = array();
 			foreach($fields as $field){
 				$cell = new html_table_cell($row->{$field});
-				$cell->attributes= array('class'=>MOD_READALOUD_CLASS . '_cell_' . $report . '_' . $field);
+				$cell->attributes= array('class'=>constants::MOD_READALOUD_CLASS . '_cell_' . $report . '_' . $field);
 				$htr->cells[] = $cell;
 			}
 
@@ -414,8 +416,8 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 	
 	function show_reports_footer($moduleinstance,$cm,$formdata,$showreport){
 		// print's a popup link to your custom page
-		$link = new moodle_url(MOD_READALOUD_URL . '/reports.php',array('report'=>'menu','id'=>$cm->id,'n'=>$moduleinstance->id));
-		$ret =  html_writer::link($link, get_string('returntoreports',MOD_READALOUD_LANG));
+		$link = new moodle_url(constants::MOD_READALOUD_URL . '/reports.php',array('report'=>'menu','id'=>$cm->id,'n'=>$moduleinstance->id));
+		$ret =  html_writer::link($link, get_string('returntoreports',constants::MOD_READALOUD_LANG));
 		$ret .= $this->render_exportbuttons_html($cm,$formdata,$showreport);
 		return $ret;
 	}
@@ -436,8 +438,8 @@ class mod_readaloud_report_renderer extends plugin_renderer_base {
 	
 	function show_grading_footer($moduleinstance,$cm,$formdata){
 		// print's a popup link to your custom page
-		$link = new moodle_url(MOD_READALOUD_URL . '/grading.php',array('id'=>$cm->id,'n'=>$moduleinstance->id));
-		$ret =  html_writer::link($link, get_string('returntogradinghome',MOD_READALOUD_LANG));
+		$link = new moodle_url(constants::MOD_READALOUD_URL . '/grading.php',array('id'=>$cm->id,'n'=>$moduleinstance->id));
+		$ret =  html_writer::link($link, get_string('returntogradinghome',constants::MOD_READALOUD_LANG));
 		return $ret;
 	}
 
@@ -451,7 +453,7 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 		$sessionscore = $this->render_sessionscoredetails();
 		$mistakes = $this->render_mistakedetails();
 		$actionheader = html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
-				MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ACTION_CONTAINER));
+				constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
 		
 		
 		$ret = $this->render_header($gradenow->attemptdetails('userfullname'));
@@ -462,7 +464,7 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 	}
 	
 	public function render_header($username) {
-		$ret = $this->output->heading(get_string('showingattempt',MOD_READALOUD_LANG,$username),3);
+		$ret = $this->output->heading(get_string('showingattempt',constants::MOD_READALOUD_LANG,$username),3);
 		return $ret;
 	}
 	
@@ -481,22 +483,25 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 		foreach ($nodes as $node) {
 			$trimmednode = trim($node->nodeValue);
 			if(empty($trimmednode)){continue;}
-			//$words = preg_split('#\s+#', $node->nodeValue, null, PREG_SPLIT_NO_EMPTY);
-			$delim = ' ';
-			$words = explode($delim, $node->nodeValue);
+
+			//explode missed new lines that had been copied and pasted. eg A[newline]B was not split and was one word
+            //This resulted in ai selected error words, having different index to their passage text counterpart
+			$seperator = ' ';
+			//$words = explode($seperator, $node->nodeValue);
+            $words = preg_split('/\s+/', $node->nodeValue);
 
 			foreach($words as $word){
 				$wordcount++;
 				$newnode = $doc->createElement('span',$word);
-				$spacenode = $doc->createElement('span',$delim);
+				$spacenode = $doc->createElement('span',$seperator);
 				//$newnode->appendChild($spacenode);
 				//print_r($newnode);
-				$newnode->setAttribute('id',MOD_READALOUD_CLASS . '_grading_passageword_' . $wordcount);
+				$newnode->setAttribute('id',constants::MOD_READALOUD_CLASS . '_grading_passageword_' . $wordcount);
 				$newnode->setAttribute('data-wordnumber',$wordcount);
-				$newnode->setAttribute('class',MOD_READALOUD_CLASS . '_grading_passageword');
-				$spacenode->setAttribute('class',MOD_READALOUD_CLASS . '_grading_passagespace');
+				$newnode->setAttribute('class',constants::MOD_READALOUD_CLASS . '_grading_passageword');
+				$spacenode->setAttribute('class',constants::MOD_READALOUD_CLASS . '_grading_passagespace');
 				$spacenode->setAttribute('data-wordnumber',$wordcount);
-				$spacenode->setAttribute('id',MOD_READALOUD_CLASS . '_grading_passagespace_' . $wordcount);
+				$spacenode->setAttribute('id',constants::MOD_READALOUD_CLASS . '_grading_passagespace_' . $wordcount);
 				$node->parentNode->appendChild($newnode);
 				$node->parentNode->appendChild($spacenode);
 				$newnode = $doc->createElement('span',$word);
@@ -507,74 +512,74 @@ class mod_readaloud_gradenow_renderer extends plugin_renderer_base {
 		$usepassage= $doc->saveHTML();
 
 		
-		$ret = html_writer::div($usepassage,MOD_READALOUD_CLASS . '_grading_passagecont');
+		$ret = html_writer::div($usepassage,constants::MOD_READALOUD_CLASS . '_grading_passagecont');
 		return $ret;
 	}
 	
 	public function render_audioplayer($audiourl){
 		$audioplayer = html_writer::tag('audio','',
-									array('controls'=>'','src'=>$audiourl,'id'=>MOD_READALOUD_GRADING_PLAYER));
-		$ret = html_writer::div($audioplayer,MOD_READALOUD_GRADING_PLAYER_CONTAINER,array('id'=>MOD_READALOUD_GRADING_PLAYER_CONTAINER));
+									array('controls'=>'','src'=>$audiourl,'id'=>constants::MOD_READALOUD_GRADING_PLAYER));
+		$ret = html_writer::div($audioplayer,constants::MOD_READALOUD_GRADING_PLAYER_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_PLAYER_CONTAINER));
 		return $ret;
 	}
 	
 		  
 	public function render_hiddenaudioplayer(){
-		$audioplayer = html_writer::tag('audio','',array('src'=>'','id'=>MOD_READALOUD_HIDDEN_PLAYER,'class'=>MOD_READALOUD_HIDDEN_PLAYER));
+		$audioplayer = html_writer::tag('audio','',array('src'=>'','id'=>constants::MOD_READALOUD_HIDDEN_PLAYER,'class'=>constants::MOD_READALOUD_HIDDEN_PLAYER));
 		return $audioplayer;
 	}
 	public function render_wpmdetails(){
 		global $CFG;
-		$title = html_writer::div(get_string('wpm',MOD_READALOUD_LANG),'panel-heading');
-		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_WPM_SCORE));
-		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_WPM_CONTAINER . ' panel panel-primary',
-			array('id'=>MOD_READALOUD_GRADING_WPM_CONTAINER));
+		$title = html_writer::div(get_string('wpm',constants::MOD_READALOUD_LANG),'panel-heading');
+		$score = html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>constants::MOD_READALOUD_GRADING_WPM_SCORE));
+		$ret = html_writer::div($title . $score ,constants::MOD_READALOUD_GRADING_WPM_CONTAINER . ' panel panel-primary',
+			array('id'=>constants::MOD_READALOUD_GRADING_WPM_CONTAINER));
 		return $ret;
 	}
 	public function render_sessionscoredetails(){
 		global $CFG;
-		$title = html_writer::div(get_string('grade_p',MOD_READALOUD_LANG),'panel-heading');
-		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_SESSION_SCORE));
-		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_SESSIONSCORE_CONTAINER . ' panel panel-primary',
-			array('id'=>MOD_READALOUD_GRADING_SESSIONSCORE_CONTAINER));
+		$title = html_writer::div(get_string('grade_p',constants::MOD_READALOUD_LANG),'panel-heading');
+		$score = html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>constants::MOD_READALOUD_GRADING_SESSION_SCORE));
+		$ret = html_writer::div($title . $score ,constants::MOD_READALOUD_GRADING_SESSIONSCORE_CONTAINER . ' panel panel-primary',
+			array('id'=>constants::MOD_READALOUD_GRADING_SESSIONSCORE_CONTAINER));
 		return $ret;
 	}
 	public function render_accuracydetails(){
 		global $CFG;
-		$title = html_writer::div(get_string('accuracy_p',MOD_READALOUD_LANG),'panel-heading');
-		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_ACCURACY_SCORE));
-		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_ACCURACY_CONTAINER . ' panel panel-primary',
-			array('id'=>MOD_READALOUD_GRADING_ACCURACY_CONTAINER));
+		$title = html_writer::div(get_string('accuracy_p',constants::MOD_READALOUD_LANG),'panel-heading');
+		$score = html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>constants::MOD_READALOUD_GRADING_ACCURACY_SCORE));
+		$ret = html_writer::div($title . $score ,constants::MOD_READALOUD_GRADING_ACCURACY_CONTAINER . ' panel panel-primary',
+			array('id'=>constants::MOD_READALOUD_GRADING_ACCURACY_CONTAINER));
 		return $ret;
 	}
 	public function render_mistakedetails(){
 		global $CFG;
-		$title = html_writer::div(get_string('mistakes',MOD_READALOUD_LANG),'panel-heading');
-		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>MOD_READALOUD_GRADING_ERROR_SCORE));
-		$ret = html_writer::div($title . $score ,MOD_READALOUD_GRADING_ERROR_CONTAINER . ' panel panel-danger',
-			array('id'=>MOD_READALOUD_GRADING_ERROR_CONTAINER));
+		$title = html_writer::div(get_string('mistakes',constants::MOD_READALOUD_LANG),'panel-heading');
+		$score = html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>constants::MOD_READALOUD_GRADING_ERROR_SCORE));
+		$ret = html_writer::div($title . $score ,constants::MOD_READALOUD_GRADING_ERROR_CONTAINER . ' panel panel-danger',
+			array('id'=>constants::MOD_READALOUD_GRADING_ERROR_CONTAINER));
 		return $ret;
 	}
 	public function render_wpmdetails_old(){
 		global $CFG;
-		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/wpm.png','class'=>MOD_READALOUD_GRADING_WPM_IMG));
-		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE,array('id'=>MOD_READALOUD_GRADING_WPM_SCORE));
-		$ret = html_writer::div($img . $score ,MOD_READALOUD_GRADING_WPM_CONTAINER,array('id'=>MOD_READALOUD_GRADING_WPM_CONTAINER));
+		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/wpm.png','class'=>constants::MOD_READALOUD_GRADING_WPM_IMG));
+		$score = html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE,array('id'=>constants::MOD_READALOUD_GRADING_WPM_SCORE));
+		$ret = html_writer::div($img . $score ,constants::MOD_READALOUD_GRADING_WPM_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_WPM_CONTAINER));
 		return $ret;
 	}
 	public function render_accuracydetails_old(){
 		global $CFG;
-		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/accuracy.png','class'=>MOD_READALOUD_GRADING_ACCURACY_IMG));
-		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE,array('id'=>MOD_READALOUD_GRADING_ACCURACY_SCORE));
-		$ret = html_writer::div($img . $score ,MOD_READALOUD_GRADING_ACCURACY_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ACCURACY_CONTAINER));
+		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/accuracy.png','class'=>constants::MOD_READALOUD_GRADING_ACCURACY_IMG));
+		$score = html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE,array('id'=>constants::MOD_READALOUD_GRADING_ACCURACY_SCORE));
+		$ret = html_writer::div($img . $score ,constants::MOD_READALOUD_GRADING_ACCURACY_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACCURACY_CONTAINER));
 		return $ret;
 	}
 	public function render_mistakedetails_old(){
 		global $CFG;
-		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/cross.png','class'=>MOD_READALOUD_GRADING_ERROR_IMG));
-		$score = html_writer::div('0',MOD_READALOUD_GRADING_SCORE,array('id'=>MOD_READALOUD_GRADING_ERROR_SCORE));
+		$img = html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/cross.png','class'=>constants::MOD_READALOUD_GRADING_ERROR_IMG));
+		$score = html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE,array('id'=>constants::MOD_READALOUD_GRADING_ERROR_SCORE));
 
-		$ret = html_writer::div($img.$score,MOD_READALOUD_GRADING_ERROR_CONTAINER,array('id'=>MOD_READALOUD_GRADING_ERROR_CONTAINER));
+		$ret = html_writer::div($img.$score,constants::MOD_READALOUD_GRADING_ERROR_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ERROR_CONTAINER));
 		return $ret;
 	}
 }
