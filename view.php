@@ -96,7 +96,7 @@ $attempts = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>
 
 //can attempt ?
 $canattempt = has_capability('mod/readaloud:preview',$modulecontext);
-if(!$canattempt && $moduleinstance->maxattempts > 0){
+if(!$canattempt || $moduleinstance->maxattempts > 0){
 	$canattempt=true;
 	$attempts =  $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>$USER->id, constants::MOD_READALOUD_MODNAME.'id'=>$moduleinstance->id));
 	if($attempts && count($attempts)>=$moduleinstance->maxattempts){
