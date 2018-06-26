@@ -1,3 +1,9 @@
+Version 1.1.02 (Build 2018062600)
+-AI
+-Cloud Poodll integration
+-Backup and Restore
+-General refactor
+
 Version 1.1.1(Build 2018060902)
 -HTML5 version of ReadAloud
 

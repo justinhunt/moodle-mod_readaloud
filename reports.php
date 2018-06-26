@@ -26,7 +26,6 @@
 
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/reportclasses.php');
 
 use \mod_readaloud\constants;
 
@@ -102,8 +101,7 @@ $aph_opts['hiddenplayerbuttonactiveclass'] =constants::MOD_READALOUD_HIDDEN_PLAY
 $aph_opts['hiddenplayerbuttonplayingclass'] =constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PLAYING;
 $aph_opts['hiddenplayerbuttonpausedclass'] =constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PAUSED;
 
-//this inits the M.mod_readaloud thingy, after the page has loaded.
-//$PAGE->requires->js_init_call('M.mod_readaloud.gradinghelper.init', array($aph_opts),false,$jsmodule);
+//this inits the grading helper JS
 $PAGE->requires->js_call_amd("mod_readaloud/gradinghelper", 'init', array($aph_opts));
 
 //This puts all our display logic into the renderer.php files in this plugin
@@ -126,14 +124,14 @@ switch ($showreport){
 		return;
 
 	case 'basic':
-		$report = new mod_readaloud_basic_report();
+		$report = new \mod_readaloud\report\basic();//new mod_readaloud_basic_report();
 		//formdata should only have simple values, not objects
 		//later it gets turned into urls for the export buttons
 		$formdata = new stdClass();
 		break;
 		
 	case 'attempts':
-		$report = new mod_readaloud_attempts_report();
+		$report = new \mod_readaloud\report\attempts();
 		echo $gradenowrenderer->render_hiddenaudioplayer();
 		$formdata = new stdClass();
 		$formdata->readaloudid = $moduleinstance->id;

@@ -26,7 +26,6 @@
 
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/reportclasses.php');
 
 use \mod_readaloud\constants;
 
@@ -193,7 +192,7 @@ switch ($action){
         return;
 
 	case 'grading':
-		$report = new mod_readaloud_grading_report();
+		$report = new \mod_readaloud\report\grading();
 		//formdata should only have simple values, not objects
 		//later it gets turned into urls for the export buttons
 		$formdata = new stdClass();
@@ -202,7 +201,7 @@ switch ($action){
 		break;
 
 	case 'gradingbyuser':
-		$report = new mod_readaloud_grading_byuser_report();
+		$report = new \mod_readaloud\report\gradingbyuser();
 		//formdata should only have simple values, not objects
 		//later it gets turned into urls for the export buttons
 		$formdata = new stdClass();

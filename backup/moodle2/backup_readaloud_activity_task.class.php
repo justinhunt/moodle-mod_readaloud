@@ -26,6 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \mod_readaloud\constants;
+
 require_once($CFG->dirroot . '/mod/readaloud/backup/moodle2/backup_readaloud_stepslib.php');
 
 /**

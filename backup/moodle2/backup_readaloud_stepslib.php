@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/readaloud/lib.php');
+use \mod_readaloud\constants;
 
 /**
  * Defines the complete webquest structure for backup, with file and id annotations
@@ -50,7 +50,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
         // root element describing readaloud instance
         $oneactivity = new backup_nested_element(constants::MOD_READALOUD_MODNAME, array('id'), array(
-            'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat','feedback','feedbackformat','targetwpm','grade','gradeoptions','maxattempts','mingrade','ttslanguage','allowearlyexit','timecreated','timemodified'
+            'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat','feedback','feedbackformat','targetwpm','grade','gradeoptions','maxattempts','mingrade','ttslanguage','enableai','allowearlyexit','region','timecreated','timemodified'
 			));
 		
 		//attempts
@@ -60,11 +60,19 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 			"sessionscore","sessiontime","sessionerrors","sessionendword","timecreated","timemodified"
 		));
 
+        //ai results
+        $airesults = new backup_nested_element('airesults');
+        $airesult = new backup_nested_element('airesult', array('id'),array(
+            constants::MOD_READALOUD_MODNAME ."id","courseid","attemptid","transcript","fulltranscript","wpm","accuracy",
+            "sessionscore","sessiontime","sessionerrors","sessionendword","timecreated","timemodified"
+        ));
+
 		
 		// Build the tree.
         $oneactivity->add_child($attempts);
         $attempts->add_child($attempt);
-		
+        $attempt->add_child($airesults);
+        $airesults->add_child($airesult);
 
 
         // Define sources.
@@ -74,6 +82,9 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
         if ($userinfo) {
 			$attempt->set_source_table(constants::MOD_READALOUD_USERTABLE,
 											array(constants::MOD_READALOUD_MODNAME . 'id' => backup::VAR_PARENTID));
+            $airesult->set_source_table(constants::MOD_READALOUD_AITABLE,
+                array(constants::MOD_READALOUD_MODNAME . 'id' => backup::VAR_ACTIVITYID,
+                    'attemptid'=>backup::VAR_PARENTID));
         }
 
         // Define id annotations.

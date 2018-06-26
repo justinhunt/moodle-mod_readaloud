@@ -110,4 +110,5 @@ function register_aws_task($activityid, $attemptid,$modulecontextid){
     $s3_task->set_custom_data($customdata);
     // queue it
     \core\task\manager::queue_adhoc_task($s3_task);
+    return true;
 }

@@ -20,8 +20,8 @@
  * @copyright 2014 Justin Hunt poodllsupport@gmail.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
- 
- require_once($CFG->dirroot . '/mod/readaloud/lib.php');
+
+use \mod_readaloud\constants;
 
 /**
  * Define all the restore steps that will be used by the restore_readaloud_activity_task
@@ -60,6 +60,11 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 		 $attempts= new restore_path_element(constants::MOD_READALOUD_USERTABLE,
                                             '/activity/readaloud/attempts/attempt');
 		$paths[] = $attempts;
+
+		//airesults
+        $airesults = new restore_path_element(constants::MOD_READALOUD_AITABLE,
+            '/activity/readaloud/attempts/attempt/airesults/airesult');
+        $paths[] = $airesults;
 		 
 
 
@@ -103,7 +108,28 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 		//IF we had files for this set of data. )
        $this->set_mapping(constants::MOD_READALOUD_USERTABLE, $oldid, $newitemid, true);
     }
-	
+
+    protected function process_readaloud_airesult($data) {
+        global $DB;
+
+        $data = (object)$data;
+        $oldid = $data->id;
+
+        $data->timecreated = $this->apply_date_offset($data->timecreated);
+
+
+        $data->{constants::MOD_READALOUD_MODNAME . 'id'} = $this->get_new_parentid(constants::MOD_READALOUD_MODNAME);
+        $data->attemptid = $this->get_new_parentid(constants::MOD_READALOUD_USERTABLE);
+        $newitemid = $DB->insert_record(constants::MOD_READALOUD_AITABLE, $data);
+
+        // Mapping without files
+        //here we set the table name as the "key" to the mapping, but its actually arbitrary
+        //'we would need to use the "key" later when calling add_related_files for the itemid in the moodle files area
+        //IF we had files for this set of data. )
+        $this->set_mapping(constants::MOD_READALOUD_AITABLE, $oldid, $newitemid, true);
+    }
+
+
     protected function after_execute() {
         // Add module related files, no need to match by itemname (just internally handled context)
         $this->add_related_files(constants::MOD_READALOUD_FRANKY, 'intro', null);
