@@ -48,6 +48,9 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/enableai',
         get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details',constants::MOD_READALOUD_LANG), 0));
 
+    $settings->add(new admin_setting_configtext('mod_readaloud/accadjust',
+        get_string('accadjust', constants::MOD_READALOUD_LANG), get_string('accadjust_details', constants::MOD_READALOUD_LANG), 0, PARAM_INT));
+
     $regions = \mod_readaloud\utils::get_region_options();
     $settings->add(new admin_setting_configselect('mod_readaloud/awsregion', get_string('awsregion', constants::MOD_READALOUD_LANG), '', 'useast1', $regions));
 

@@ -143,6 +143,10 @@ $string['targetwpm']='Target WPM';
 $string['targetwpm_details']='The default target WPM. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%. The target WPM can also be set at the activity instance level. ';
 $string['targetwpm_help']='The target WPM score. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%.';
 
+$string['accadjust']='Accuracy adjust';
+$string['accadjust_details']='This is the rate(%) by which to adjust accuracy scores to compensate for errors in machine transcription.';
+$string['accadjust_help']='This rate should correspond as closely as possible to the estimated error rate. The estimated error rate is calculated by averaging the difference between machine and human evaluations of a sample of submissions.';
+
 $string['loadbootstrap']='Load Bootstrap';
 $string['loadbootstrap_details']='Bootstrap is a set of CSS and javascript often used to make big colorful buttons and user interfaces that work well on PC and mobile devices. ReadAloud will load it independently if this is checked. If your theme already loads it, and it causes things to look weird then uncheck this.';
 $string['loadfontawesome']='Load FontAwesome';
@@ -167,3 +171,7 @@ $string['awsregion']='AWS Region';
 $string['region']='AWS Region';
 $string['expiredays']='Days to keep file';
 $string['aigradenow']='AI Grade';
+
+$string['machinegrading']='Machine Grading';
+$string['viewmachinegrading']='Machine Grading';
+$string['review']='Review';

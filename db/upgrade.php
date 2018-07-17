@@ -160,11 +160,11 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018060900, 'readaloud');
     }
 
-    // Rename fedbackformat to feedbackformat
+    // Add expiredays and region to readaloud table
     if ($oldversion < 2018060902) {
         $table = new xmldb_table('readaloud');
 
-        // Define field expiredays to be added to readaloud_attempt
+        // Define field expiredays to be added to readaloud
         $field = new xmldb_field('expiredays', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '365');
 
         // add field to readaloud table
@@ -173,7 +173,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
 
 
-        // Define field expiredays to be added to readaloud_attempt
+        // Define field expiredays to be added to readaloud
         $field = new xmldb_field('region', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'useast1');
         // add field to readaloud table
         if (!$dbman->field_exists($table, $field)) {
@@ -182,6 +182,22 @@ function xmldb_readaloud_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2018060902, 'readaloud');
     }
+
+    // Add accadjust to readaloud table
+    if ($oldversion < 2018071300) {
+        $table = new xmldb_table('readaloud');
+
+        // Define field expiredays to be added to readaloud
+        $field = new xmldb_field('accadjust', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // add field to readaloud table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018071300, 'readaloud');
+    }
+
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

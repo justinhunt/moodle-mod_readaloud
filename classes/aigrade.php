@@ -123,7 +123,7 @@ class aigrade
         return $success;
     }
 
-   protected function do_diff(){
+   public function do_diff(){
         global $DB;
 
         //lowercase both
@@ -154,18 +154,27 @@ class aigrade
         $line_passage = implode(' ',$passagebits);
         $line_transcript = implode(' ',$transcriptbits);
 
-        //run diff engine
-        $diffs = diff::compare($line_passage,$line_transcript);
+       //use this to debug and stop on a certain word and see what is happening
+       $passagecount = count(explode(' ', $line_passage));
+       $sequences = diff::fetchSequences($line_passage,$line_transcript);
+       $diffs = diff::processSequences($sequences,$passagecount);
+
+       //run diff engine
+       // $diffs = diff::compare($line_passage,$line_transcript);
+
+
+
         $errors = new \stdClass();
         $currentword=0;
         $lastunmodified=0;
         foreach($diffs as $diff){
 
-            switch($diff[1]){
+          //  switch($diff[1]){
+            switch($diff){
                 case Diff::DELETED:
                     $currentword++;
                     $error = new \stdClass();
-                    $error->word=$diff[0];
+                    $error->word="";//$diff[0];
                     $error->wordnumber=$currentword;
                     $errors->{$currentword}=$error;
                     break;
@@ -208,11 +217,18 @@ class aigrade
         }
 
        ////wpm score
-        $wpmscore = round(($sessionendword - $errorcount) * 60 / $sessiontime);
+       if($sessiontime > 0) {
+           $wpmscore = round(($sessionendword - $errorcount) * 60 / $sessiontime);
+       }else{
+           $wpmscore =0;
+       }
 
         //accuracy score
-        $accuracyscore = round(($sessionendword - $errorcount)/$sessionendword * 100);
-
+       if($sessionendword > 0) {
+           $accuracyscore = round(($sessionendword - $errorcount) / $sessionendword * 100);
+       }else{
+           $accuracyscore=0;
+       }
 
         //sessionscore
         $usewpmscore = $wpmscore;

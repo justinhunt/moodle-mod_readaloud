@@ -168,9 +168,35 @@ switch ($action){
 		echo $renderer->footer();
 		return;
 
+
+    case 'regradenow':
+
+        $mode = "machinegrading";
+        $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
+        $aigrade->do_diff();
+
+
+        $data=array(
+            'action'=>'gradenowsubmit',
+            'attemptid'=>$attemptid,
+            'n'=>$moduleinstance->id,
+            'sessiontime'=>$aigrade->aidetails('sessiontime'),
+            'sessionscore'=>$aigrade->aidetails('sessionscore'),
+            'sessionendword'=>$aigrade->aidetails('sessionendword'),
+            'sessionerrors'=>$aigrade->aidetails('sessionerrors'));
+        $nextid = $aigrade->get_next_ungraded_id();
+        $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
+        $gradenowform->set_data($data);
+        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
+        echo $aigrade->prepare_javascript();
+        echo $gradenowrenderer->render_gradenow($aigrade);
+        $gradenowform->display();
+        echo $renderer->footer();
+        return;
+
     case 'aigradenow':
 
-
+        $mode = "machinegrading";
         $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
 
         $data=array(
@@ -209,7 +235,17 @@ switch ($action){
 		$formdata->userid = $userid;
 		$formdata->modulecontextid = $modulecontext->id;
 		break;
-		
+
+    case 'machinegrading':
+        $mode="machinegrading";
+        $report = new \mod_readaloud\report\machinegrading();
+        //formdata should only have simple values, not objects
+        //later it gets turned into urls for the export buttons
+        $formdata = new stdClass();
+        $formdata->readaloudid = $moduleinstance->id;
+        $formdata->modulecontextid = $modulecontext->id;
+        break;
+
 	default:
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
 		echo "unknown action.";

@@ -50,7 +50,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
         // root element describing readaloud instance
         $oneactivity = new backup_nested_element(constants::MOD_READALOUD_MODNAME, array('id'), array(
-            'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat','feedback','feedbackformat','targetwpm','grade','gradeoptions','maxattempts','mingrade','ttslanguage','enableai','allowearlyexit','region','timecreated','timemodified'
+            'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat','feedback','feedbackformat','targetwpm','accadjust','grade','gradeoptions','maxattempts','mingrade','ttslanguage','enableai','allowearlyexit','region','timecreated','timemodified'
 			));
 		
 		//attempts

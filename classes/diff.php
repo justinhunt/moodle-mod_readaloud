@@ -18,6 +18,102 @@ namespace mod_readaloud;
 // A class containing functions for computing diffs and formatting the output.
 class diff{
 
+
+    //Loop through passage, nest looping through transcript building collections of sequences
+    //sequence = seq length + tindex + pindex
+    public static function fetchSequences($passage_string, $transcript_string)
+    {
+        $passage = explode(' ', $passage_string);
+        $transcript = explode(' ', $transcript_string);
+        $p_length = count($passage);
+        $t_length = count($transcript);
+        $sequences = array();
+        $slength=0;
+        $tstart =0;
+        for($pstart =0; $pstart < $p_length; $pstart++){
+            while($slength + $tstart < $t_length) {
+                $match = $passage[$slength + $pstart] == $transcript[$slength + $tstart];
+                if ($match &&
+                    ($slength + $tstart + 1) < $t_length &&
+                    ($slength + $pstart + 1) < $p_length ) {
+                    //continue building sequence
+                    $slength++;
+                } else {
+                    //close current sequence
+                    if ($slength == 0) {
+                        //no sequence yet move to next word in transcript
+                        $tstart++;
+                    } else {
+                        $sequence = new \stdClass();
+                        $sequence->length = $slength;
+                        $sequence->tposition = $tstart;
+                        $sequence->pposition = $pstart;
+                        $sequences[] = $sequence;
+                        $tstart+= $slength;
+                        $slength = 0;
+                    }//end of if slength=0
+                }//end of if MATCH
+            }//end of while
+            $slength=0;
+            $tstart=0;
+        }//end of for
+        return $sequences;
+    }//end of fetchSequences
+
+    //sort array so that big sequences come first.
+    public static function cmp($a, $b)
+    {
+        if ($a->length == $b->length) {
+            if($a->tposition == $b->tposition){
+                return 0;
+            }else{
+                return ($a->tposition< $b->tposition) ? 1 : -1;
+            }
+        }
+        return ($a->length < $b->length) ? 1 : -1;
+    }
+
+    public static function processSequences($sequences, $passagelength){
+
+        usort($sequences, array('\mod_readaloud\diff','cmp'));
+        $diffs=array_fill(0, $passagelength, self::DELETED);
+        $priorsequences=array();
+        foreach($sequences as $sequence){
+            $bust=false;
+            for($p=$sequence->pposition; $p < $sequence->pposition + $sequence->length; $p++){
+                if($diffs[$p]!=self::DELETED){
+                    $bust=true;
+                }
+            }
+            if(!$bust){
+                foreach($priorsequences as $priorsequence){
+                    if($sequence->tposition >= $priorsequence->tposition &&
+                        $sequence->tposition  <= $priorsequence->tposition + $priorsequence->length){
+                        $bust=true;
+                        break;
+                    }
+                    if($sequence->tposition <= $priorsequence->tposition &&
+                        $sequence->pposition >= $priorsequence->pposition){
+                        $bust=true;
+                        break;
+                    }
+                    if($sequence->tposition >= $priorsequence->tposition &&
+                        $sequence->pposition <= $priorsequence->pposition){
+                        $bust=true;
+                        break;
+                    }
+                }
+            }
+            if($bust){continue;}
+            for($p=$sequence->pposition; $p < $sequence->pposition + $sequence->length; $p++){
+                $diffs[$p]=self::UNMODIFIED;
+                $priorsequences[] = $sequence;
+            }
+        }
+        return $diffs;
+    }
+
+
     // define the constants
     const UNMODIFIED = 0;
     const DELETED    = 1;
@@ -79,6 +175,7 @@ class diff{
         for ($index = 0; $index < $start; $index ++){
             $diff[] = array($sequence1[$index], self::UNMODIFIED);
         }
+
         while (count($partialDiff) > 0) $diff[] = array_pop($partialDiff);
         for ($index = $end1 + 1;
              $index < ($compareCharacters ? strlen($sequence1) : count($sequence1));

@@ -190,6 +190,7 @@ class renderer extends \plugin_renderer_base {
                 'data-parent'=>$CFG->wwwroot,
                 'data-localloader'=>'/mod/readaloud/poodllloader.html',
                 'data-media'=>"audio",
+                'data-appid'=>"readaloud",
                 'data-type'=>"readaloud",
                 'data-width'=>"360",
                 'data-height'=>"210",
