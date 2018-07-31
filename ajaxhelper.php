@@ -99,7 +99,7 @@ function save_to_moodle($filename,$readaloud){
 
 //register an adhoc task to pick up transcripts
 function register_aws_task($activityid, $attemptid,$modulecontextid){
-    $s3_task = new \mod_readaloud\task\_s3_adhoc();
+    $s3_task = new \mod_readaloud\task\readaloud_s3_adhoc();
     $s3_task->set_component('mod_readaloud');
 
     $customdata = new \stdClass();

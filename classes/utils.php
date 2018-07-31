@@ -133,6 +133,38 @@ class utils{
         return $token;
     }
 
+    public static function fetch_audio_points($fulltranscript,$matches){
+
+       //get type 'pronunciation' items from full transcript. The other type is 'punctuation'.
+        $transcript = json_decode($fulltranscript);
+        $titems=$transcript->results->items;
+        $twords=array();
+        foreach($titems as $titem){
+            if($titem->type == 'pronunciation'){
+                $twords[] = $titem;
+            }
+        }
+        $twordcount=count($twords);
+
+        //loop through matches and fetch audio start from word item
+        foreach ($matches as $matchitem){
+            if($matchitem->tposition <= $twordcount){
+                //pull the word data object from the full transcript, at the index of the match
+                $tword = $twords[$matchitem->tposition - 1];
+                //format the text of the word to lower case no punc, to match the word in the matchitem
+                $tword_text = strtolower($tword->alternatives[0]->content);
+                $tword_text = preg_replace("#[[:punct:]]#", "", $tword_text);
+                //if we got it, fetch the audio position from the word data object
+                if($matchitem->word == $tword_text){
+                    $matchitem->audiostart = $tword->start_time;
+
+                }
+            }
+        }
+        return $matches;
+    }
+
+
   public static function get_region_options(){
       return array(
         "useast1" => get_string("useast1",'mod_readaloud'),

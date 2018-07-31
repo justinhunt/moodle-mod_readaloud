@@ -64,7 +64,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
         $airesults = new backup_nested_element('airesults');
         $airesult = new backup_nested_element('airesult', array('id'),array(
             constants::MOD_READALOUD_MODNAME ."id","courseid","attemptid","transcript","fulltranscript","wpm","accuracy",
-            "sessionscore","sessiontime","sessionerrors","sessionendword","timecreated","timemodified"
+            "sessionscore","sessiontime","sessionerrors","sessionmatches","sessionendword","timecreated","timemodified"
         ));
 
 		

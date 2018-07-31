@@ -95,9 +95,9 @@ $gradenowrenderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY,'gradeno
 $attempts = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>$USER->id,'readaloudid'=>$moduleinstance->id),'id DESC');
 
 //can attempt ?
-$canattempt = has_capability('mod/readaloud:preview',$modulecontext);
-if(!$canattempt || $moduleinstance->maxattempts > 0){
-	$canattempt=true;
+$canattempt = true;
+$canpreview = has_capability('mod/readaloud:preview',$modulecontext);
+if(!$canpreview && $moduleinstance->maxattempts > 0){
 	$attempts =  $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>$USER->id, constants::MOD_READALOUD_MODNAME.'id'=>$moduleinstance->id));
 	if($attempts && count($attempts)>=$moduleinstance->maxattempts){
 		$canattempt=false;

@@ -118,7 +118,7 @@ class aigrade
             $success = $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
 
             $this->aidata->transcript = $transcript;
-            $this->aidata->fulltranscript = '';
+            $this->aidata->fulltranscript =  $fulltranscript;
         }
         return $success;
     }
@@ -126,67 +126,48 @@ class aigrade
    public function do_diff(){
         global $DB;
 
-        //lowercase both
-        $passage =strtolower($this->activitydata->passage);
-        $transcript=strtolower($this->aidata->transcript);
+        //turn the passage and transcript into an array of words
+       $passagebits = diff::fetchWordArray($this->activitydata->passage);
+       $transcriptbits = diff::fetchWordArray($this->aidata->transcript);
 
-        //turn passage into html only
-        $passage = strip_tags($passage);
+       //fetch sequences of transcript/pattern matched words
+       // then prepare an array of "differences"
+       $passagecount = count($passagebits);
+       $sequences = diff::fetchSequences($passagebits,$transcriptbits);
+       $diffs = diff::fetchDiffs($sequences,$passagecount);
 
-        //replace all line ends with spaces
-        $passage = preg_replace('#\R+#', ' ', $passage);
-        $transcript = preg_replace('#\R+#', ' ', $transcript);
-
-        //remove punctuation
-        //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
-        $passage = preg_replace("#[[:punct:]]#", "", $passage);
-        $transcript=preg_replace("#[[:punct:]]#", "", $transcript);
-
-        //split $passage and $transcript
-        $passagebits = explode(' ',$passage);
-        $transcriptbits = explode(' ',$transcript);
-
-        //remove any empty elements
-        $passagebits = array_filter($passagebits, function($value) { return $value !== ''; });
-        $transcriptbits= array_filter($transcriptbits, function($value) { return $value !== ''; });
-
-        //turn them into lines
-        $line_passage = implode(' ',$passagebits);
-        $line_transcript = implode(' ',$transcriptbits);
-
-       //use this to debug and stop on a certain word and see what is happening
-       $passagecount = count(explode(' ', $line_passage));
-       $sequences = diff::fetchSequences($line_passage,$line_transcript);
-       $diffs = diff::processSequences($sequences,$passagecount);
-
-       //run diff engine
-       // $diffs = diff::compare($line_passage,$line_transcript);
-
-
-
+       //from the array of differences build error data, match data, markers, scores and metrics
         $errors = new \stdClass();
+        $matches = new \stdClass();
         $currentword=0;
         $lastunmodified=0;
+        //loop through diffs
+       // (could do a for loop here .. since diff count = passage words count for now index is $currentword
         foreach($diffs as $diff){
-
-          //  switch($diff[1]){
-            switch($diff){
-                case Diff::DELETED:
-                    $currentword++;
+            $currentword++;
+            switch($diff[0]){
+                case Diff::UNMATCHED:
+                    //we collect error info so we can count and display them on passage
                     $error = new \stdClass();
-                    $error->word="";//$diff[0];
+                    $error->word=$passagebits[$currentword-1];
                     $error->wordnumber=$currentword;
                     $errors->{$currentword}=$error;
                     break;
-                case Diff::UNMODIFIED:
-                    //we need to track which word in the passage is the error
-                    //currentword increments on deleted or good, so we keep on sync with passage
-                    //but must not add "diff:inserted" (that would take us out of sync)
-                    $currentword++;
+
+                case Diff::MATCHED:
+                    //we collect match info so we can play audio from selected word
+                    $match = new \stdClass();
+                    $match->word=$passagebits[$currentword-1];
+                    $match->pposition=$currentword;
+                    $match->tposition = $diff[1];
+                    $match->audiostart=0;//we will assess this from full transcript shortly
+                    $matches->{$currentword}=$match;
                     $lastunmodified = $currentword;
                     break;
-                case Diff::INSERTED:
+
+                default:
                     //do nothing
+                    //should never get here
 
             }
         }
@@ -203,6 +184,11 @@ class aigrade
         }
         //finalise and serialise session errors
         $sessionerrors = json_encode($finalerrors);
+
+        //also  capture match information for debugging and audio point matching
+       //we can only map transcript to audio from match data
+       $matches = utils::fetch_audio_points($this->aidata->fulltranscript, $matches);
+       $sessionmatches = json_encode($matches);
 
        //session time
         $sessiontime = $this->attemptdata->sessiontime;
@@ -237,9 +223,11 @@ class aigrade
         }
         $sessionscore = round($usewpmscore/$this->activitydata->targetwpm * 100);
 
+        //save the diff and attempt analysis in the DB
         $record = new \stdClass();
         $record->id = $this->recordid;
         $record->sessionerrors = $sessionerrors;
+        $record->sessionmatches = $sessionmatches;
         $record->sessionendword = $sessionendword;
         $record->accuracy = $accuracyscore;
         $record->sessionscore = $sessionscore;

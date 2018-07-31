@@ -187,7 +187,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018071300) {
         $table = new xmldb_table('readaloud');
 
-        // Define field expiredays to be added to readaloud
+        //This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
         $field = new xmldb_field('accadjust', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to readaloud table
@@ -196,6 +196,21 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
 
         upgrade_mod_savepoint(true, 2018071300, 'readaloud');
+    }
+
+    // Add session matches to databaase
+    if ($oldversion < 2018073101) {
+        $table = new xmldb_table('readaloud_ai_result');
+
+        //records the matched words in the passage and their transcript location. For debugging, passage tweaking, and audio location
+        $field = new xmldb_field('sessionmatches', XMLDB_TYPE_TEXT, null, null, null, null);
+
+        // add field to readaloud table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018073101, 'readaloud');
     }
 
 
