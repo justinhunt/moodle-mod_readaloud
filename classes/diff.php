@@ -169,10 +169,10 @@ class diff{
             //ii) record transcript position so we can play it back.
             //Then store sequence in prior sequences
             for($p=$sequence->pposition; $p < $sequence->pposition + $sequence->length; $p++){
-                //$tposition = $p - $sequence->pposition;
-                //$tposition++; //NB pposition starts from 1. We adjust tposition to match
+                //word position in sequence ( 0 = first )
                 $wordposition = $p - $sequence->pposition;
-                $tposition = $sequence->tposition+$wordposition + 1;
+                //NB pposition starts from 1. We adjust tposition to match
+                $tposition = $sequence->tposition + $wordposition + 1;
                 $diffs[$p]=[self::MATCHED,$tposition];
                 $priorsequences[] = $sequence;
             }
