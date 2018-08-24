@@ -255,3 +255,23 @@
 		background-color: white;
 
     }
+	/* spotcheckmode */
+  .mod_readaloud_grading_passageword.mod_readaloud_grading_badword.mod_readaloud_spotcheckmode {
+	  border-color: green;
+	  background-color: #d7f9ca;
+  }
+.mod_readaloud_grading_passagespace.mod_readaloud_spotcheckmode {
+	background-color: green;
+}
+.mod_readaloud_grading_passageword.mod_readaloud_aiunmatched{
+	background-color: lightgrey;
+}
+.mod_readaloud_grading_passagespace.mod_readaloud_aiunmatched{
+	background-color: lightgrey;
+}
+.mod_readaloud_grading_passageactions {
+	margin-top: 10px;
+}
+.mod_readaloud_grading_passageactions > button {
+	margin: 5px;
+}

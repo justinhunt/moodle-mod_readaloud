@@ -6,6 +6,7 @@ define(['jquery','core/log'], function($,log) {
     return{
         //controls
         controls: {},
+        currentmode: 'grading',
 
         //class definitions
         cd: {
@@ -26,7 +27,13 @@ define(['jquery','core/log'], function($,log) {
             formelementsessionscore: 'mod_readaloud_grading_form_sessionscore',
             formelementendword: 'mod_readaloud_grading_form_sessionendword',
             formelementtime: 'mod_readaloud_grading_form_sessiontime',
-            formelementerrors: 'mod_readaloud_grading_form_sessionerrors'
+            formelementerrors: 'mod_readaloud_grading_form_sessionerrors',
+            modebutton: 'mod_readaloud_modebutton',
+            aigradebutton: 'mod_readaloud_aigradebutton',
+            clearbutton: 'mod_readaloud_clearbutton',
+            spotcheckmode: 'mod_readaloud_spotcheckmode',
+            aiunmatched: 'mod_readaloud_aiunmatched',
+            passagecontainer: 'mod_readaloud_grading_passagecont'
         },
 
         options: {
@@ -90,6 +97,11 @@ define(['jquery','core/log'], function($,log) {
                 this.options.sessionscore=opts['sessionscore'];
                 this.options.accuracy=opts['accuracy'];
                 this.options.wpm=opts['wpm'];
+
+                //We may have session matches and AI data, if AI is turned on
+                this.options.sessionmatches=JSON.parse(opts['sessionmatches']);
+                this.options.aidata=opts['aidata'];
+
                 //if this has been graded, draw the gradestate
                 this.redrawgradestate();
             }else{
@@ -137,6 +149,7 @@ define(['jquery','core/log'], function($,log) {
             this.controls.eachword = $('.' + this.cd.wordclass);
             this.controls.eachspace = $('.' + this.cd.spaceclass);
             this.controls.endwordmarker =  $('#' + this.cd.spaceclass + '_' + this.options.endwordnumber);
+            this.controls.spotcheckword = $('.' + this.cd.spotcheckmode);
 
             this.controls.wpmscorebox = $('#' + this.cd.wpmscoreid);
             this.controls.accuracyscorebox = $('#' + this.cd.accuracyscoreid);
@@ -150,21 +163,50 @@ define(['jquery','core/log'], function($,log) {
             this.controls.formelementerrors = $("#" + this.cd.formelementerrors);
             this.controls.formelementtime = $("#" + this.cd.formelementtime);
 
+            this.controls.passagecontainer = $("." + this.cd.passagecontainer);
+
+            //passage action buttons
+            this.controls.modebutton =  $("#" + this.cd.modebutton);
+            this.controls.aigradebutton =  $("#" + this.cd.aigradebutton);
+            this.controls.clearbutton =  $("#" + this.cd.clearbutton);
+
         },
 
         register_events: function(){
             var that = this;
             //set up event handlers
+
+
+            //Play audio from and to spot check part
+            this.controls.passagecontainer.on('click','.' + this.cd.spotcheckmode,function(){
+                var wordnumber = parseInt($(this).attr('data-wordnumber'));
+                that.doPlaySpotCheck(wordnumber);
+            });
+
+
             //in review mode, do nuffink though ... thats for the student
             if(this.options.reviewmode){
+                /*
                 if(this.enabletts && this.options.ttslanguage != 'none'){
                     this.controls.eachword.click(this.playword);
+                }
+                */
+
+                //if we have AI data then turn on spotcheckmode
+                if(this.options.sessionmatches) {
+                    this.doSpotCheckMode();
                 }
             }else{
 
                 //process word clicks
                 this.controls.eachword.click(
                     function() {
+                        //if we are in spotcheck mode just return, we do not grade
+                        if(that.currentmode=='spotcheck'){
+                            return;
+                        }
+
+
                         var wordnumber = $(this).attr('data-wordnumber');
                         var theword = $(this).text();
                         //this will disallow badwords after the endmarker
@@ -204,7 +246,215 @@ define(['jquery','core/log'], function($,log) {
                         that.processscores();
                     }
                 );//end of each space click
+
+                //process clearbutton's click event
+                this.controls.clearbutton.click(function(){
+                    //clear all the error words
+                    $('.' + that.cd.badwordclass).each(function(index){
+                        var wordnumber = $(this).attr('data-wordnumber');
+                        delete that.options.errorwords[wordnumber];
+                        $(this).removeClass(that.cd.badwordclass);
+                    });
+
+                    //remove unread words
+                    $('.' + that.cd.wordclass).removeClass(that.cd.unreadwordclass);
+
+                    //set endspace to last space
+                    that.options.endwordnumber = that.options.totalwordcount;
+                    $('.' + that.cd.spaceclass).removeClass(that.cd.endspaceclass);
+                    $('#' + that.cd.spaceclass + '_' + that.options.totalwordcount).addClass(that.cd.endspaceclass);
+
+                    //reprocess scores
+                    that.processscores();
+                });
+
+                //modebutton: turn on spotchecking
+                this.controls.modebutton.click(function(){
+                    switch(that.currentmode){
+                        case 'grading':
+                            that.doSpotCheckMode();
+                            break;
+                        case 'spotcheck':
+                            that.undoSpotCheckMode();
+                            break;
+                    }
+                });
+
             }//end of if/else reviewmode
+
+        },
+
+        /*
+        * Here we fetch the playchain, start playing frm audiostart and add an event handler to stop at audioend
+         */
+        doPlaySpotCheck: function(spotcheckindex){
+          var playchain = this.fetchPlayChain(spotcheckindex);
+          var theplayer = this.controls.audioplayer[0];
+          theplayer.currentTime=playchain.audiostart;
+          $(this.controls.audioplayer).off("timeupdate");
+          $(this.controls.audioplayer).on("timeupdate",function(e){
+              var currenttime = theplayer.currentTime;
+              if(currenttime >= playchain.audioend){
+                  $(this).off("timeupdate");
+                  theplayer.pause();
+              }
+          });
+            theplayer.play();
+        },
+
+        /*
+        * The playchain is all the words in a string of badwords.
+        * The complexity comes because a bad word  is usually one that isunmatched by AI.
+        * So if the teacher clicks on a passage word that did not appear in the transcript, what should we play?
+        * Answer: All the words from the last known to the next known word. Hence we create a play chain
+        * For consistency, if the teacher flags matched words as bad, while we do know their precise location we still
+        * make a play chain. Its not a common situation probably.
+         */
+        fetchPlayChain: function(spotcheckindex){
+
+            //find startword
+          var startindex=spotcheckindex;
+          var starttime = -1;
+          for(var wordnumber=spotcheckindex;wordnumber>0;wordnumber--){
+             var isbad = $('#' + this.cd.wordclass + '_' + wordnumber).hasClass(this.cd.badwordclass);
+             var isunmatched =$('#' + this.cd.wordclass + '_' + wordnumber).hasClass(this.cd.aiunmatched);
+             //if current wordnumber part of the playchain, set it as the startindex.
+              // And get the audiotime if its a matched word. (we only know audiotime of matched words)
+             if(isbad || isunmatched){
+                 startindex = wordnumber;
+                 if(!isunmatched){
+                     starttime=this.options.sessionmatches['' + wordnumber].audiostart;
+                 }else{
+                     starttime=-1;
+                 }
+             }else{
+                 break;
+             }
+          }//end of for loop --
+          //if we have no starttime then we need to get the next matched word's audioend and use that
+          if(starttime==-1){
+              starttime = 0;
+              for(var wordnumber=startindex-1;wordnumber>0;wordnumber--){
+                  if(this.options.sessionmatches['' + wordnumber]){
+                      starttime=this.options.sessionmatches['' + wordnumber].audioend;
+                      break;
+                  }
+              }
+          }
+
+            //find endword
+            var endindex=spotcheckindex;
+            var endtime = -1;
+            var passageendword = this.options.totalwordcount;
+            for(var wordnumber=spotcheckindex;wordnumber<=passageendword;wordnumber++){
+                var isbad = $('#' + this.cd.wordclass + '_' + wordnumber).hasClass(this.cd.badwordclass);
+                var isunmatched =$('#' + this.cd.wordclass + '_' + wordnumber).hasClass(this.cd.aiunmatched);
+                //if its part of the playchain, set it to startindex. And get time if its a matched word.
+                if(isbad || isunmatched){
+                    endindex = wordnumber;
+                    if(!isunmatched){
+                        endtime=this.options.sessionmatches['' + wordnumber].audioend;
+                    }else{
+                        endtime=-1;
+                    }
+                }else{
+                    break;
+                }
+            }//end of for loop --
+            //if we have no endtime then we need to get the next matched word's audiostart and use that
+            if(endtime==-1){
+                endtime = this.options.totalseconds;
+                for(var wordnumber=endindex+1;wordnumber<=passageendword;wordnumber++){
+                    if(this.options.sessionmatches['' + wordnumber]){
+                        endtime=this.options.sessionmatches['' + wordnumber].audiostart;
+                        break;
+                    }
+                }
+            }
+            var playchain = {};
+            playchain.startword=startindex;
+            playchain.endword=endindex;
+            playchain.audiostart=starttime;
+            playchain.audioend=endtime;
+            //console.log('audiostart:' + starttime);
+            //console.log('audioend:' + endtime);
+
+            return playchain;
+
+        },
+
+        /*
+        * Here we mark up the passage for spotcheck mode. This will make up the spaces and the words as either badwords
+        * or aiunmatched words. We need to create playchains so aiunmatched still is indeicated visibly even where its
+        * not a badword (ie has been corrected)
+         */
+        doSpotCheckMode: function(){
+            var that = this;
+
+            //mark up all ai unmatched words as aiunmatched
+            if(this.options.sessionmatches){
+                var prevmatch=0;
+                $.each(this.options.sessionmatches,function(index,match){
+                   var unmatchedcount = index - prevmatch - 1;
+                   if(unmatchedcount>0){
+                       for(var errorword =1;errorword<unmatchedcount+1; errorword++){
+                           var wordnumber = prevmatch + errorword;
+                           $('#' + that.cd.wordclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
+                       }
+                   }
+                   prevmatch = parseInt(index);
+                });
+
+                //mark all words from last matched word to the end as aiunmatched
+                for(var errorword =prevmatch+1;errorword<=this.options.endwordnumber; errorword++){
+                    var wordnumber = errorword;
+                    $('#' + that.cd.wordclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
+                }
+            }
+            //mark up all badwords as spotcheck words
+            $('.' + this.cd.badwordclass).addClass(this.cd.spotcheckmode);
+
+            //mark up spaces between spotcheck word and spotcheck/aiunmatched word (bad spaces)
+            $('.' + this.cd.badwordclass + '.' + this.cd.spotcheckmode).each(function(index){
+                var wordnumber = parseInt($(this).attr('data-wordnumber'));
+                //build chains (highlight spaces) of badwords or aiunmatched
+                if($('#' + that.cd.wordclass + '_' + (wordnumber + 1)).hasClass(that.cd.spotcheckmode)||
+                    $('#' + that.cd.wordclass + '_' + (wordnumber + 1)).hasClass(that.cd.aiunmatched)){
+                    $('#' + that.cd.spaceclass + '_' + wordnumber).addClass(that.cd.spotcheckmode);
+                };
+            });
+
+            //mark up spaces between aiunmatched word and spotcheck/aiunmatched word (aiunmatched spaces)
+            $('.' + this.cd.wordclass + '.' + this.cd.aiunmatched).each(function(index){
+                if(!$(this).hasClass(that.cd.spotcheckmode)) {
+                    var wordnumber = parseInt($(this).attr('data-wordnumber'));
+                    //build chains (highlight spaces) of badwords or aiunmatched
+                    if ($('#' + that.cd.wordclass + '_' + (wordnumber + 1)).hasClass(that.cd.spotcheckmode) ||
+                        $('#' + that.cd.wordclass + '_' + (wordnumber + 1)).hasClass(that.cd.aiunmatched)) {
+                        $('#' + that.cd.spaceclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
+                    }
+                }
+            });
+
+            this.currentmode="spotcheck";
+            var caption = M.util.get_string('gradingbutton', 'mod_readaloud');
+            this.controls.modebutton.text(caption);
+            this.controls.modebutton.removeClass('btn-success');
+            this.controls.modebutton.addClass('btn-primary');
+        },
+
+        undoSpotCheckMode: function(){
+            $('.' + this.cd.badwordclass).removeClass(this.cd.spotcheckmode);
+            $('.' + this.cd.spaceclass).removeClass(this.cd.spotcheckmode);
+            $('.' + this.cd.wordclass).removeClass(this.cd.aiunmatched);
+            $('.' + this.cd.spaceclass).removeClass(this.cd.aiunmatched);
+            $(this.controls.audioplayer).off("timeupdate");
+            this.currentmode="grading";
+            var caption = M.util.get_string('spotcheckbutton', 'mod_readaloud');
+            this.controls.modebutton.text(caption);
+            this.controls.modebutton.removeClass('btn-primary');
+            this.controls.modebutton.addClass('btn-success');
+
 
         },
 

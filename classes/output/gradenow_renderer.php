@@ -26,7 +26,42 @@ class gradenow_renderer extends \plugin_renderer_base {
         $ret = $this->render_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
         $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
-        //$ret .=  $this->output->heading('somedetails:' . $gradenow->attemptdetails('somedetails') , 5);
+        $ret .= $this->render_passageactions();
+
+        return $ret;
+    }
+
+    public function render_userreview($gradenow) {
+        $audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
+        $wpm = $this->render_wpmdetails();
+        $accuracy = $this->render_accuracydetails();
+        $sessionscore = $this->render_sessionscoredetails();
+        $mistakes = $this->render_mistakedetails();
+        $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
+            constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
+
+
+        $ret = $this->render_header($gradenow->attemptdetails('userfullname'));
+        $ret .= $actionheader;
+        $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
+
+        return $ret;
+    }
+
+    public function render_machinereview($gradenow) {
+        $audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
+        $wpm = $this->render_wpmdetails();
+        $accuracy = $this->render_accuracydetails();
+        $sessionscore = $this->render_sessionscoredetails();
+        $mistakes = $this->render_mistakedetails();
+        $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
+            constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
+
+
+        $ret = $this->render_header($gradenow->attemptdetails('userfullname'));
+        $ret .= $actionheader;
+        $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
+
         return $ret;
     }
 
@@ -81,6 +116,23 @@ class gradenow_renderer extends \plugin_renderer_base {
 
         $ret = \html_writer::div($usepassage,constants::MOD_READALOUD_CLASS . '_grading_passagecont');
         return $ret;
+    }
+    public function render_passageactions(){
+
+        $spotcheckbutton = \html_writer::tag('button',
+            get_string('spotcheckbutton',constants::MOD_READALOUD_LANG),
+            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_modebutton','class'=>constants::MOD_READALOUD_CLASS .'_modebutton btn btn-success'));
+        $aigradebutton = \html_writer::tag('button',
+            get_string('doaigrade',constants::MOD_READALOUD_LANG),
+            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_aigradebutton','class'=>constants::MOD_READALOUD_CLASS .'_aigradebutton btn btn-warning hidden'));
+        $clearbutton = \html_writer::tag('button',
+            get_string('doclear',constants::MOD_READALOUD_LANG),
+            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_clearbutton','class'=>constants::MOD_READALOUD_CLASS .'_clearbutton btn btn-link'));
+
+        $buttons = $spotcheckbutton . $aigradebutton . $clearbutton;
+
+        $container = \html_writer::div($buttons,constants::MOD_READALOUD_CLASS . '_grading_passageactions');
+        return $container;
     }
 
     public function render_audioplayer($audiourl){

@@ -175,3 +175,10 @@ $string['aigradenow']='AI Grade';
 $string['machinegrading']='Machine Grading';
 $string['viewmachinegrading']='Machine Grading';
 $string['review']='Review';
+
+
+$string['dospotcheck']="Spot Check";
+$string['spotcheckbutton']="Spot Check Mode";
+$string['gradingbutton']="Grading Mode";
+$string['doaigrade']="AI Grade";
+$string['doclear']="Clear all markers";

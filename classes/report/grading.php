@@ -14,7 +14,7 @@ class grading extends basereport
 {
 
     protected $report = "grading";
-    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'wpm', 'accuracy_p', 'grade_p', 'gradenow', 'aigradenow', 'timecreated', 'deletenow');
+    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'wpm', 'accuracy_p', 'grade_p', 'gradenow', 'timecreated', 'deletenow');
     protected $headingdata = null;
     protected $qcache = array();
     protected $ucache = array();
@@ -81,6 +81,7 @@ class grading extends basereport
                 }
                 break;
 
+                //this will load AI data and start from there, currently hidden from menu to keep it simple.
             case 'aigradenow':
                 if ($withlinks) {
                     $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'aigradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
@@ -136,7 +137,7 @@ class grading extends basereport
 
         $emptydata = array();
         $user_attempt_totals = array();
-        $alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE, array('readaloudid' => $formdata->readaloudid), 'id DESC, userid');
+        $alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE, array('readaloudid' => $formdata->readaloudid), 'userid, id DESC');
 
         if ($alldata) {
 

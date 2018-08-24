@@ -14,7 +14,7 @@ class machinegrading extends basereport
 {
 
     protected $report = "machinegrading";
-    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'wpm', 'accuracy_p', 'grade_p', 'gradenow', 'review', 'timecreated', 'deletenow');
+    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'wpm', 'accuracy_p', 'grade_p', 'review', 'timecreated','gradenow');
     protected $headingdata = null;
     protected $qcache = array();
     protected $ucache = array();
@@ -74,8 +74,20 @@ class machinegrading extends basereport
 
             case 'gradenow':
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
-                    $ret = \html_writer::link($link, get_string('gradenow', constants::MOD_READALOUD_LANG));
+                    $url = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
+                    $btn = new \single_button($url, get_string('gradenow', constants::MOD_READALOUD_LANG), 'post');
+                    $ret = $OUTPUT->render($btn);
+                } else {
+                    $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
+                }
+                break;
+
+            case 'regrade':
+
+                //FOR  REGRADE ... when fixing bogeys (replace review link with this one)
+                if ($withlinks) {
+                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'regradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
+                    $ret = \html_writer::link($link, 'REGRADE');
                 } else {
                     $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
                 }
@@ -85,18 +97,18 @@ class machinegrading extends basereport
 
                 //FOR NOW WE REFGRADE ... just temp. while fixing bogeys
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'regradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
-                    $ret = \html_writer::link($link, 'REGRADE');
+                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'machinereview', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
+                    $ret = \html_writer::link($link, get_string('review', constants::MOD_READALOUD_LANG));
                 } else {
                     $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
                 }
                 break;
 
-
             case 'timecreated':
                 $ret = date("Y-m-d H:i:s", $record->timecreated);
                 break;
 
+                //do we need this..? hid it for now
             case 'deletenow':
                 $url = new \moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
                     array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id, 'source' => $this->report));

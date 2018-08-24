@@ -157,7 +157,7 @@ class utils{
                 //if we got it, fetch the audio position from the word data object
                 if($matchitem->word == $tword_text){
                     $matchitem->audiostart = $tword->start_time;
-
+                    $matchitem->audioend = $tword->end_time;
                 }
             }
         }

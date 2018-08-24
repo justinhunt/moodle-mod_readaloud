@@ -124,9 +124,10 @@ if($attempts && $retake==0){
 		}else{	
 			$gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
 			$reviewmode =true;
-			$gradenow->prepare_javascript($reviewmode);
+			$force_aidata=false;
+			echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
 			echo $gradenowrenderer->render_hiddenaudioplayer();
-			echo $gradenowrenderer->render_gradenow($gradenow);
+			echo $gradenowrenderer->render_userreview($gradenow);
 		}
 		
 		//show  button or a label depending on of can retake

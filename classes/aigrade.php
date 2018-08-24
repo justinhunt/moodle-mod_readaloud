@@ -61,7 +61,11 @@ class aigrade
                 break;
 
             case 'sessiontime':
-                $ret = $this->aidata->sessiontime;
+            $ret = $this->aidata->sessiontime;
+            break;
+
+            case 'sessionmatches':
+                $ret = $this->aidata->sessionmatches;
                 break;
         }
         return $ret;
@@ -161,6 +165,7 @@ class aigrade
                     $match->pposition=$currentword;
                     $match->tposition = $diff[1];
                     $match->audiostart=0;//we will assess this from full transcript shortly
+                    $match->audioend=0;//we will assess this from full transcript shortly
                     $matches->{$currentword}=$match;
                     $lastunmodified = $currentword;
                     break;
@@ -235,13 +240,13 @@ class aigrade
         $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
     }
 
-
-    public function prepare_javascript(){
+/*
+    public function prepare_javascript($reviewmode=false){
         global $PAGE;
 
         //here we set up any info we need to pass into javascript
         $gradingopts =Array();
-        $gradingopts['reviewmode'] = false;
+        $gradingopts['reviewmode'] = $reviewmode;
         $gradingopts['enabletts'] = get_config(constants::MOD_READALOUD_FRANKY,'enabletts');
         $gradingopts['allowearlyexit'] = $this->activitydata->allowearlyexit ? true :false;
         $gradingopts['timelimit'] = $this->activitydata->timelimit;
@@ -253,6 +258,7 @@ class aigrade
         $gradingopts['sessiontime'] = $this->aidata->sessiontime;
         $gradingopts['sessionerrors'] = $this->aidata->sessionerrors;
         $gradingopts['sessionendword'] = $this->aidata->sessionendword;
+        $gradingopts['sessionmatches'] = $this->aidata->sessionmatches;
         $gradingopts['wpm'] = $this->aidata->wpm;
         $gradingopts['accuracy'] = $this->aidata->accuracy;
         $gradingopts['sessionscore'] = $this->aidata->sessionscore;
@@ -262,11 +268,17 @@ class aigrade
         $jsonstring = json_encode($gradingopts);
         $opts_html = \html_writer::tag('input', '', array('id' => $gradingopts['opts_id'], 'type' => 'hidden', 'value' => $jsonstring));
         $PAGE->requires->js_call_amd("mod_readaloud/gradenowhelper", 'init', array(array('id'=>$gradingopts['opts_id'])));
+        $PAGE->requires->strings_for_js(array(
+            'spotcheckbutton',
+            'gradingbutton'
+        ),
+            'mod_readaloud');
         //these need to be returned and echo'ed to the page
         return $opts_html;
 
     }
-
+*/
+/*
     public function attemptdetails($property){
         global $DB;
         switch($property){
@@ -292,6 +304,8 @@ class aigrade
         }
         return $ret;
     }
+*/
+    /*
 
     public function get_next_ungraded_id(){
         global $DB;
@@ -304,5 +318,6 @@ class aigrade
             return false;
         }
     }
+    */
 
 }

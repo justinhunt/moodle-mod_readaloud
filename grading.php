@@ -145,24 +145,25 @@ switch ($action){
 
 	case 'gradenow':
 
-
-
 		$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+		$force_aidata=false;//ai data could still be used if not human grading. we just do not force it
+        $reviewmode=false;
+
 
 
 		$data=array(
 			'action'=>'gradenowsubmit',
 			'attemptid'=>$attemptid,
 			'n'=>$moduleinstance->id,
-			'sessiontime'=>$gradenow->attemptdetails('sessiontime'),
-			'sessionscore'=>$gradenow->attemptdetails('sessionscore'),
-			'sessionendword'=>$gradenow->attemptdetails('sessionendword'),
-			'sessionerrors'=>$gradenow->attemptdetails('sessionerrors'));
+			'sessiontime'=>$gradenow->formdetails('sessiontime',$force_aidata),
+			'sessionscore'=>$gradenow->formdetails('sessionscore',$force_aidata),
+			'sessionendword'=>$gradenow->formdetails('sessionendword',$force_aidata),
+			'sessionerrors'=>$gradenow->formdetails('sessionerrors',$force_aidata));
 		$nextid = $gradenow->get_next_ungraded_id();
 		$gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
 		$gradenowform->set_data($data);
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
-        echo $gradenow->prepare_javascript();
+        echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
 		echo $gradenowrenderer->render_gradenow($gradenow);
 		$gradenowform->display();
 		echo $renderer->footer();
@@ -172,47 +173,83 @@ switch ($action){
     case 'regradenow':
 
         $mode = "machinegrading";
-        $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
-        $aigrade->do_diff();
+        $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+        $force_aidata=true;//in this case we are just interested in ai data
+        $reviewmode = false;
+
+        //this forces the regrade using any changes in the diff algorythm
+        //$aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
+        //$aigrade->do_diff();
 
 
         $data=array(
             'action'=>'gradenowsubmit',
             'attemptid'=>$attemptid,
             'n'=>$moduleinstance->id,
-            'sessiontime'=>$aigrade->aidetails('sessiontime'),
-            'sessionscore'=>$aigrade->aidetails('sessionscore'),
-            'sessionendword'=>$aigrade->aidetails('sessionendword'),
-            'sessionerrors'=>$aigrade->aidetails('sessionerrors'));
-        $nextid = $aigrade->get_next_ungraded_id();
+            'sessiontime'=>$gradenow->formdetails('sessiontime',$force_aidata),
+            'sessionscore'=>$gradenow->formdetails('sessionscore',$force_aidata),
+            'sessionendword'=>$gradenow->formdetails('sessionendword',$force_aidata),
+            'sessionerrors'=>$gradenow->formdetails('sessionerrors',$force_aidata));
+        $nextid = $gradenow->get_next_ungraded_id();
         $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
         $gradenowform->set_data($data);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
-        echo $aigrade->prepare_javascript();
-        echo $gradenowrenderer->render_gradenow($aigrade);
+        echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
+        echo $gradenowrenderer->render_gradenow($gradenow);
         $gradenowform->display();
+        echo $renderer->footer();
+        return;
+
+    case 'machinereview':
+
+        $mode = "machinegrading";
+        $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+        $force_aidata=true;//in this case we are just interested in ai data
+        $reviewmode=true;
+
+        $data=array(
+            'action'=>'gradenowsubmit',
+            'attemptid'=>$attemptid,
+            'n'=>$moduleinstance->id,
+            'sessiontime'=>$gradenow->formdetails('sessiontime',$force_aidata),
+            'sessionscore'=>$gradenow->formdetails('sessionscore',$force_aidata),
+            'sessionendword'=>$gradenow->formdetails('sessionendword',$force_aidata),
+            'sessionerrors'=>$gradenow->formdetails('sessionerrors',$force_aidata));
+        $nextid = $gradenow->get_next_ungraded_id();
+        $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
+        $gradenowform->set_data($data);
+        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
+
+        echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
+        echo $gradenowrenderer->render_machinereview($gradenow);
+        //echo $gradenowrenderer->render_machinereview($aigrade);
+       // $gradenowform->display();
         echo $renderer->footer();
         return;
 
     case 'aigradenow':
 
         $mode = "machinegrading";
-        $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
+        $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
+        $force_aidata=true;//in this case we are just interested in ai data
+        $reviewmode-false;
+
+        //$aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
 
         $data=array(
             'action'=>'gradenowsubmit',
             'attemptid'=>$attemptid,
             'n'=>$moduleinstance->id,
-            'sessiontime'=>$aigrade->aidetails('sessiontime'),
-            'sessionscore'=>$aigrade->aidetails('sessionscore'),
-            'sessionendword'=>$aigrade->aidetails('sessionendword'),
-            'sessionerrors'=>$aigrade->aidetails('sessionerrors'));
-        $nextid = $aigrade->get_next_ungraded_id();
+            'sessiontime'=>$gradenow->formdetails('sessiontime',$force_aidata),
+            'sessionscore'=>$gradenow->formdetails('sessionscore',$force_aidata),
+            'sessionendword'=>$gradenow->formdetails('sessionendword',$force_aidata),
+            'sessionerrors'=>$gradenow->formdetails('sessionerrors',$force_aidata));
+        $nextid = $gradenow->get_next_ungraded_id();
         $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
         $gradenowform->set_data($data);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
-        echo $aigrade->prepare_javascript();
-        echo $gradenowrenderer->render_gradenow($aigrade);
+        echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
+        echo $gradenowrenderer->render_gradenow($gradenow);
         $gradenowform->display();
         echo $renderer->footer();
         return;
