@@ -209,11 +209,12 @@ class utils{
     }
 
     //get average difference between human graded attempt error count and AI error count
+    //we only fetch if A) have machiune grade and B) sessiontime> 0(has been manually graded)
     public static function estimate_errors($readaloudid){
         global $DB;
         $errorestimate =0;
         $sql = "SELECT AVG(tai.errorcount - tu.errorcount) as errorestimate  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
-            " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=?";
+            " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.sessiontime > 0 AND tu.readaloudid=?";
         $result = $DB->get_field_sql($sql,array($readaloudid));
         if($result!==false){
             $errorestimate = round($result);
