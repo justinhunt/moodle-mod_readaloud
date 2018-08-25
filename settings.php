@@ -46,7 +46,14 @@ if ($ADMIN->fulltree) {
         get_string('apisecret', constants::MOD_READALOUD_LANG), get_string('apisecret_details', constants::MOD_READALOUD_LANG), '', PARAM_TEXT));
 
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/enableai',
-        get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details',constants::MOD_READALOUD_LANG), 0));
+        get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details',constants::MOD_READALOUD_LANG), 1));
+
+    $autoacc_options = \mod_readaloud\utils::get_autoaccmethod_options();
+    $settings->add(new admin_setting_configselect('mod_readaloud/accadjustmethod',
+        get_string('accadjustmethod', constants::MOD_READALOUD_LANG),
+        get_string('accadjustmethod_details',constants::MOD_READALOUD_LANG),
+        constants::ACCMETHOD_AUTO, $autoacc_options));
+
 
     $settings->add(new admin_setting_configtext('mod_readaloud/accadjust',
         get_string('accadjust', constants::MOD_READALOUD_LANG), get_string('accadjust_details', constants::MOD_READALOUD_LANG), 0, PARAM_INT));

@@ -95,6 +95,7 @@ class aigrade
         $data->sessiontime=$attemptdata->sessiontime ? $attemptdata->sessiontime:$this->activitydata->timelimit;
         $data->transcript='';
         $data->sessionerrors='';
+        $data->errorcount=0;
         $data->fulltranscript='';
         $data->timecreated=time();
         $data->timemodified=time();
@@ -207,117 +208,19 @@ class aigrade
             }
         }
 
-       ////wpm score
-       if($sessiontime > 0) {
-           $wpmscore = round(($sessionendword - $errorcount) * 60 / $sessiontime);
-       }else{
-           $wpmscore =0;
-       }
-
-        //accuracy score
-       if($sessionendword > 0) {
-           $accuracyscore = round(($sessionendword - $errorcount) / $sessionendword * 100);
-       }else{
-           $accuracyscore=0;
-       }
-
-        //sessionscore
-        $usewpmscore = $wpmscore;
-        if($usewpmscore > $this->activitydata->targetwpm){
-            $usewpmscore = $this->activitydata->targetwpm;
-        }
-        $sessionscore = round($usewpmscore/$this->activitydata->targetwpm * 100);
+        $scores = utils::processscores($sessiontime,$sessionendword,$errorcount,$this->activitydata->targetwpm);
 
         //save the diff and attempt analysis in the DB
         $record = new \stdClass();
         $record->id = $this->recordid;
         $record->sessionerrors = $sessionerrors;
+        $record->errorcount = $errorcount;
         $record->sessionmatches = $sessionmatches;
         $record->sessionendword = $sessionendword;
-        $record->accuracy = $accuracyscore;
-        $record->sessionscore = $sessionscore;
-        $record->wpm = $wpmscore;
+        $record->accuracy = $scores->accuracyscore;
+        $record->sessionscore = $scores->sessionscore;
+        $record->wpm = $scores->wpmscore;
         $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
     }
-
-/*
-    public function prepare_javascript($reviewmode=false){
-        global $PAGE;
-
-        //here we set up any info we need to pass into javascript
-        $gradingopts =Array();
-        $gradingopts['reviewmode'] = $reviewmode;
-        $gradingopts['enabletts'] = get_config(constants::MOD_READALOUD_FRANKY,'enabletts');
-        $gradingopts['allowearlyexit'] = $this->activitydata->allowearlyexit ? true :false;
-        $gradingopts['timelimit'] = $this->activitydata->timelimit;
-        $gradingopts['ttslanguage'] = $this->activitydata->ttslanguage;
-        $gradingopts['activityid'] = $this->activitydata->id;
-        $gradingopts['targetwpm'] = $this->activitydata->targetwpm;
-        $gradingopts['sesskey'] = sesskey();
-        $gradingopts['attemptid'] = $this->attemptdata->id;
-        $gradingopts['sessiontime'] = $this->aidata->sessiontime;
-        $gradingopts['sessionerrors'] = $this->aidata->sessionerrors;
-        $gradingopts['sessionendword'] = $this->aidata->sessionendword;
-        $gradingopts['sessionmatches'] = $this->aidata->sessionmatches;
-        $gradingopts['wpm'] = $this->aidata->wpm;
-        $gradingopts['accuracy'] = $this->aidata->accuracy;
-        $gradingopts['sessionscore'] = $this->aidata->sessionscore;
-        $gradingopts['opts_id'] = 'mod_readaloud_gradenowopts';
-
-
-        $jsonstring = json_encode($gradingopts);
-        $opts_html = \html_writer::tag('input', '', array('id' => $gradingopts['opts_id'], 'type' => 'hidden', 'value' => $jsonstring));
-        $PAGE->requires->js_call_amd("mod_readaloud/gradenowhelper", 'init', array(array('id'=>$gradingopts['opts_id'])));
-        $PAGE->requires->strings_for_js(array(
-            'spotcheckbutton',
-            'gradingbutton'
-        ),
-            'mod_readaloud');
-        //these need to be returned and echo'ed to the page
-        return $opts_html;
-
-    }
-*/
-/*
-    public function attemptdetails($property){
-        global $DB;
-        switch($property){
-            case 'userfullname':
-                $user = $DB->get_record('user',array('id'=>$this->attemptdata->userid));
-                $ret = fullname($user);
-                break;
-            case 'passage':
-                $ret = $this->activitydata->passage;
-                break;
-            case 'audiourl':
-                //we need to consider legacy client side URLs and cloud hosted ones
-                $ret = \mod_readaloud\utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, constants::MOD_READALOUD_FRANKY,
-                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS,
-                    $this->attemptdata->id);
-
-                break;
-            case 'somedetails':
-                $ret= $this->attemptdata->id . ' ' . $this->activitydata->passage;
-                break;
-            default:
-                $ret = $this->attemptdata->{$property};
-        }
-        return $ret;
-    }
-*/
-    /*
-
-    public function get_next_ungraded_id(){
-        global $DB;
-        $where = "id > " .$this->attemptid . " AND sessionscore = 0 AND readaloudid = " . $this->attemptdata->readaloudid;
-        $records = $DB->get_records_select(constants::MOD_READALOUD_USERTABLE,$where,array(),' id ASC');
-        if($records){
-            $rec = array_shift($records);
-            return $rec->id;
-        }else{
-            return false;
-        }
-    }
-    */
 
 }

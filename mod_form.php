@@ -109,10 +109,21 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addElement('advcheckbox', 'enableai', get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details', constants::MOD_READALOUD_LANG));
         $mform->setDefault('enableai',$config->enableai);
 
-        // Adding Acc Adjust field
+        // Error estimate method field
+        /* */
+        $autoacc_options = \mod_readaloud\utils::get_autoaccmethod_options();
+        $mform->addElement('select', 'accadjustmethod', get_string('accadjustmethod', constants::MOD_READALOUD_LANG),
+            $autoacc_options);
+        $mform->setType('accadjustmethod', PARAM_INT);
+        $mform->setDefault('accadjustmethod',$config->accadjustmethod);
+
+
+        // Fixed Error estimate field
         $mform->addElement('text', 'accadjust', get_string('accadjust', constants::MOD_READALOUD_LANG), array('size'=>'8'));
         $mform->setType('accadjust', PARAM_INT);
         $mform->setDefault('accadjust',$config->accadjust);
+        $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
+
 
 		//Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::MOD_READALOUD_LANG),

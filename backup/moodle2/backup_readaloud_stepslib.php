@@ -50,21 +50,23 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
         // root element describing readaloud instance
         $oneactivity = new backup_nested_element(constants::MOD_READALOUD_MODNAME, array('id'), array(
-            'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat','feedback','feedbackformat','targetwpm','accadjust','grade','gradeoptions','maxattempts','mingrade','ttslanguage','enableai','allowearlyexit','region','timecreated','timemodified'
+            'course','name','intro','introformat','timelimit','passage','passageformat','welcome','welcomeformat',
+            'feedback','feedbackformat','targetwpm','accadjustmethod','accadjust','grade','gradeoptions','maxattempts','mingrade',
+            'ttslanguage','enableai','allowearlyexit','region','timecreated','timemodified'
 			));
 		
 		//attempts
         $attempts = new backup_nested_element('attempts');
         $attempt = new backup_nested_element('attempt', array('id'),array(
 			constants::MOD_READALOUD_MODNAME ."id","courseid","userid","status","filename","wpm","accuracy",
-			"sessionscore","sessiontime","sessionerrors","sessionendword","timecreated","timemodified"
+			"sessionscore","sessiontime","sessionerrors","sessionendword","errorcount","timecreated","timemodified"
 		));
 
         //ai results
         $airesults = new backup_nested_element('airesults');
         $airesult = new backup_nested_element('airesult', array('id'),array(
             constants::MOD_READALOUD_MODNAME ."id","courseid","attemptid","transcript","fulltranscript","wpm","accuracy",
-            "sessionscore","sessiontime","sessionerrors","sessionmatches","sessionendword","timecreated","timemodified"
+            "sessionscore","sessiontime","sessionerrors","sessionmatches","sessionendword","errorcount","timecreated","timemodified"
         ));
 
 		

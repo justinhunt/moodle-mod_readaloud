@@ -63,7 +63,9 @@ $string['basicheading']='Basic Report';
 $string['attemptsheading']='Attempts Report';
 $string['attemptsbyuserheading']='User Attempts Report';
 $string['gradingheading']='Grading latest attempts for each user.';
+$string['machinegradingheading']='Machine evaluated latest attempt for each user.';
 $string['gradingbyuserheading']='Grading all attempts for: {$a}';
+$string['machinegradingbyuserheading']='Machine evaluated attempts for: {$a}';
 $string['totalattempts']='Attempts';
 $string['overview']='Overview';
 $string['overview_help']='Overview Help';
@@ -77,6 +79,7 @@ $string['gradenow']='Grade Now';
 $string['cannotgradenow']=' - ';
 $string['gradenowtitle']='Grading: {$a}';
 $string['showingattempt']='Showing attempt for: {$a}';
+$string['showingmachinegradedattempt']='Machine evaluated attempt for: {$a}';
 $string['basicreport']='Basic Report';
 $string['returntoreports']='Return to Reports';
 $string['returntogradinghome']='Return to Grading Top';
@@ -143,9 +146,16 @@ $string['targetwpm']='Target WPM';
 $string['targetwpm_details']='The default target WPM. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%. The target WPM can also be set at the activity instance level. ';
 $string['targetwpm_help']='The target WPM score. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%.';
 
-$string['accadjust']='Accuracy adjust';
-$string['accadjust_details']='This is the rate(%) by which to adjust accuracy scores to compensate for errors in machine transcription.';
-$string['accadjust_help']='This rate should correspond as closely as possible to the estimated error rate. The estimated error rate is calculated by averaging the difference between machine and human evaluations of a sample of submissions.';
+$string['accadjust']='Fixed error est.';
+$string['accadjust_details']='This is a fixed estimate of the number of machine transcription errors per attempt. If error estimation is set to "Fixed" then this value will be used to compensate scores for errors in machine transcription.';
+$string['accadjust_help']='This rate should correspond as closely as possible to the estimated error rate.';
+
+$string['accadjustmethod']='Error estimation';
+$string['accadjustmethod_details']='An estimate of the number of machine transcription errors per attempt is used to create adjusted scores that compensate for errors in machine transcription.';
+$string['accadjustmethod_help']='For error estimate and accuracy adjustment, we can: never estimate errors; auto estimate errors(default); or use a fixed error estimate.';
+$string['accmethod_none']='None';
+$string['accmethod_auto']='Auto';
+$string['accmethod_fixed']='Fixed';
 
 $string['loadbootstrap']='Load Bootstrap';
 $string['loadbootstrap_details']='Bootstrap is a set of CSS and javascript often used to make big colorful buttons and user interfaces that work well on PC and mobile devices. ReadAloud will load it independently if this is checked. If your theme already loads it, and it causes things to look weird then uncheck this.';
@@ -172,8 +182,8 @@ $string['region']='AWS Region';
 $string['expiredays']='Days to keep file';
 $string['aigradenow']='AI Grade';
 
-$string['machinegrading']='Machine Grading';
-$string['viewmachinegrading']='Machine Grading';
+$string['machinegrading']='Machine Evaluations';
+$string['viewmachinegrading']='Machine Evaluation';
 $string['review']='Review';
 
 
@@ -182,3 +192,13 @@ $string['spotcheckbutton']="Spot Check Mode";
 $string['gradingbutton']="Grading Mode";
 $string['doaigrade']="AI Grade";
 $string['doclear']="Clear all markers";
+
+$string['gradethisattempt']="Grade this attempt";
+$string['rawwpm']= "WPM";
+$string['rawaccuracy_p']='Acc(%)';
+$string['rawgrade_p']='Grade(%)';
+$string['adjustedwpm']= "Adj. WPM";
+$string['adjustedaccuracy_p']='Adj. Acc(%)';
+$string['adjustedgrade_p']='Adj. Grade(%)';
+
+

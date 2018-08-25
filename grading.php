@@ -178,8 +178,8 @@ switch ($action){
         $reviewmode = false;
 
         //this forces the regrade using any changes in the diff algorythm
-        //$aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
-        //$aigrade->do_diff();
+        $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
+        $aigrade->do_diff();
 
 
         $data=array(
@@ -222,7 +222,10 @@ switch ($action){
 
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
         echo $gradenowrenderer->render_machinereview($gradenow);
-        //echo $gradenowrenderer->render_machinereview($aigrade);
+        //if we can grade and manage attempts show the gradenow button
+        if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
+            echo $gradenowrenderer->render_gradenowbutton($gradenow);
+        }
        // $gradenowform->display();
         echo $renderer->footer();
         return;
@@ -280,6 +283,28 @@ switch ($action){
         //later it gets turned into urls for the export buttons
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
+        $formdata->modulecontextid = $modulecontext->id;
+        switch($moduleinstance->accadjustmethod){
+            case constants::ACCMETHOD_NONE:
+                $accadjust=0;
+                break;
+            case constants::ACCMETHOD_AUTO:
+                $accadjust = \mod_readaloud\utils::estimate_errors($moduleinstance->id);
+                break;
+            case constants::ACCMETHOD_FIXED:
+                $accadjust = $moduleinstance->accadjust;
+        }
+        $formdata->accadjust=$accadjust;
+        $formdata->targetwpm=$moduleinstance->targetwpm;
+        break;
+
+    case 'machinegradingbyuser':
+        $report = new \mod_readaloud\report\machinegradingbyuser();
+        //formdata should only have simple values, not objects
+        //later it gets turned into urls for the export buttons
+        $formdata = new stdClass();
+        $formdata->readaloudid = $moduleinstance->id;
+        $formdata->userid = $userid;
         $formdata->modulecontextid = $modulecontext->id;
         break;
 

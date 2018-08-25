@@ -14,7 +14,7 @@ class machinegrading extends basereport
 {
 
     protected $report = "machinegrading";
-    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'wpm', 'accuracy_p', 'grade_p', 'review', 'timecreated','gradenow');
+    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'rawwpm', 'rawaccuracy_p', 'rawgrade_p','review','adjustedwpm', 'adjustedaccuracy_p', 'adjustedgrade_p',  'timecreated');
     protected $headingdata = null;
     protected $qcache = array();
     protected $ucache = array();
@@ -60,18 +60,31 @@ class machinegrading extends basereport
                 }
                 break;
 
-            case 'wpm':
+            case 'rawwpm':
                 $ret = $record->wpm;
                 break;
 
-            case 'accuracy_p':
+            case 'rawaccuracy_p':
                 $ret = $record->accuracy;
                 break;
 
-            case 'grade_p':
+            case 'rawgrade_p':
                 $ret = $record->sessionscore;
                 break;
 
+            case 'adjustedwpm':
+                $ret = $record->adjustwpm;
+                break;
+
+            case 'adjustedaccuracy_p':
+                $ret = $record->adjustaccuracy;
+                break;
+
+            case 'adjustedgrade_p':
+                $ret = $record->adjustsessionscore;
+                break;
+
+            //we took this button away to make some room
             case 'gradenow':
                 if ($withlinks) {
                     $url = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
@@ -82,6 +95,8 @@ class machinegrading extends basereport
                 }
                 break;
 
+            //case 'regrade':
+            //this will be useful once we add hints to passage markup, and when you change machine algorythms and processing
             case 'regrade':
 
                 //FOR  REGRADE ... when fixing bogeys (replace review link with this one)
@@ -95,7 +110,6 @@ class machinegrading extends basereport
 
             case 'review':
 
-                //FOR NOW WE REFGRADE ... just temp. while fixing bogeys
                 if ($withlinks) {
                     $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'machinereview', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
                     $ret = \html_writer::link($link, get_string('review', constants::MOD_READALOUD_LANG));
@@ -136,7 +150,7 @@ class machinegrading extends basereport
         if (!$record) {
             return $ret;
         }
-        return get_string('gradingheading', constants::MOD_READALOUD_LANG);
+        return get_string('machinegradingheading', constants::MOD_READALOUD_LANG);
 
     }//end of function
 
@@ -148,10 +162,11 @@ class machinegrading extends basereport
         $this->headingdata = new \stdClass();
         $this->rawdata = [];
 
+
         $emptydata = array();
         $maxfield = 'id';
         $user_attempt_totals = array();
-        $sql = "SELECT tai.id,tu.userid, tai.wpm, tai.accuracy,tu.timecreated,tai.attemptid, tai.sessionscore,tai.sessiontime,tai.sessionendword, tu.filename, tai.readaloudid  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+        $sql = "SELECT tai.id,tu.userid, tai.wpm, tai.accuracy,tu.timecreated,tai.attemptid, tai.sessionerrors, tai.sessionscore,tai.sessiontime,tai.sessionendword, tu.filename, tai.readaloudid  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
             " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=? ORDER BY 'tu.userid, tai." . $maxfield . " DESC'";
         $alldata = $DB->get_records_sql($sql, array($formdata->readaloudid));
 
@@ -170,8 +185,28 @@ class machinegrading extends basereport
                         continue;
                     }
                 }
+
+                //make the audio url for the selected attempt data
                 $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
                     constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+
+
+                //fetch and poke in the adjusted scores here, though we could also do it from
+                //fetch formatted field
+                //we need to calc the no. of errors and adjust
+                $errorcount = \mod_readaloud\utils::count_sessionerrors($thedata->sessionerrors);
+                $newerrorcount = $errorcount - $formdata->accadjust;
+                if($newerrorcount < 0){$newerrorcount=0;}
+                //recalculate scores with new errorcount
+                $adjusted_scores = \mod_readaloud\utils::processscores($thedata->sessiontime,
+                    $thedata->sessionendword,
+                    $newerrorcount,
+                    $formdata->targetwpm);
+                $thedata->adjustwpm = $adjusted_scores->wpmscore;
+                $thedata->adjustaccuracy = $adjusted_scores->accuracyscore;
+                $thedata->adjustsessionscore = $adjusted_scores->sessionscore;
+
+
                 $this->rawdata[$thedata->userid] = $thedata;
             }
             foreach ($this->rawdata as $thedata) {

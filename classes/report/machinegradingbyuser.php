@@ -10,11 +10,11 @@ namespace mod_readaloud\report;
 
 use \mod_readaloud\constants;
 
-class gradingbyuser extends basereport
+class machinegradingbyuser extends basereport
 {
 
-    protected $report="gradingbyuser";
-    protected $fields = array('id','audiofile','wpm','accuracy_p','grade_p','timecreated','gradenow','deletenow');
+    protected $report="machinegradingbyuser";
+    protected $fields = array('id','audiofile','wpm','accuracy_p','grade_p','timecreated','review');
     protected $headingdata = null;
     protected $qcache=array();
     protected $ucache=array();
@@ -26,9 +26,11 @@ class gradingbyuser extends basereport
         $ret='';
         if(!$record){return $ret;}
         $user = $this->fetch_cache('user',$record->userid);
-        return get_string('gradingbyuserheading',constants::MOD_READALOUD_LANG,fullname($user));
+        return get_string('machinegradingbyuserheading',constants::MOD_READALOUD_LANG,fullname($user));
 
     }
+
+
 
     public function fetch_formatted_field($field, $record, $withlinks)
     {
@@ -41,10 +43,6 @@ class gradingbyuser extends basereport
 
             case 'audiofile':
                 if ($withlinks) {
-                    /*
-                    $ret = html_writer::tag('audio','',
-                            array('controls'=>'','src'=>$record->audiourl));
-                        */
                     $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
 
                 } else {
@@ -64,26 +62,20 @@ class gradingbyuser extends basereport
                 $ret = $record->sessionscore;
                 break;
 
-            case 'gradenow':
+
+            case 'review':
+
+                //FOR NOW WE REFGRADE ... just temp. while fixing bogeys
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
-                    $ret = \html_writer::link($link, get_string('gradenow', constants::MOD_READALOUD_LANG));
+                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'machinereview', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
+                    $ret = \html_writer::link($link, get_string('review', constants::MOD_READALOUD_LANG));
                 } else {
                     $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
                 }
                 break;
 
-
             case 'timecreated':
                 $ret = date("Y-m-d H:i:s", $record->timecreated);
-                break;
-
-            case 'deletenow':
-                $url = new \moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
-                    array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id, 'source' => $this->report));
-                $btn = new \single_button($url, get_string('delete'), 'post');
-                $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::MOD_READALOUD_LANG));
-                $ret = $OUTPUT->render($btn);
                 break;
 
             default:
@@ -111,12 +103,13 @@ class gradingbyuser extends basereport
 
         $emptydata = array();
         $user_attempt_totals = array();
-        $alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE, array('readaloudid' => $formdata->readaloudid, 'userid' => $formdata->userid), 'id DESC');
+        $sql = "SELECT tai.id,tu.userid, tai.wpm, tai.accuracy,tu.timecreated,tai.attemptid, tai.sessionscore,tai.sessiontime,tai.sessionendword, tu.filename, tai.readaloudid  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+            " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=? AND tu.userid=? ORDER BY 'tai.id DESC'";
+        $alldata = $DB->get_records_sql($sql, array($formdata->readaloudid,$formdata->userid));
 
         if ($alldata) {
 
             foreach ($alldata as $thedata) {
-
 
                 $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
                     constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);

@@ -1,3 +1,7 @@
+Version 1.1.04 (Build 2018082402)
+-added accadjustmethod and errorcount fields
+-implemented auto error estimation
+
 Version 1.1.03 (Build 2018071300)
 -added accadjust field
 

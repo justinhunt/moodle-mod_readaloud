@@ -23,7 +23,7 @@ class gradenow_renderer extends \plugin_renderer_base {
             constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
 
 
-        $ret = $this->render_header($gradenow->attemptdetails('userfullname'));
+        $ret = $this->render_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
         $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
         $ret .= $this->render_passageactions();
@@ -41,7 +41,7 @@ class gradenow_renderer extends \plugin_renderer_base {
             constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
 
 
-        $ret = $this->render_header($gradenow->attemptdetails('userfullname'));
+        $ret = $this->render_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
         $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
 
@@ -58,15 +58,29 @@ class gradenow_renderer extends \plugin_renderer_base {
             constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
 
 
-        $ret = $this->render_header($gradenow->attemptdetails('userfullname'));
+        $ret = $this->render_machinegrade_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
         $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
-
         return $ret;
     }
 
-    public function render_header($username) {
+    public function render_gradenowbutton($gradenow){
+        $attemptid = $gradenow->attemptdetails('id');
+        $readaloudid = $gradenow->attemptdetails('readaloudid');
+        $url = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $readaloudid, 'attemptid' => $attemptid));
+        $btn = new \single_button($url, get_string('gradethisattempt', constants::MOD_READALOUD_LANG), 'post');
+        $gradenowbutton = $this->output->render($btn);
+        $ret = \html_writer::div($gradenowbutton,constants::MOD_READALOUD_CLASS . '_grading_passageactions');
+        return $ret;
+    }
+
+    public function render_attempt_header($username) {
         $ret = $this->output->heading(get_string('showingattempt',constants::MOD_READALOUD_LANG,$username),3);
+        return $ret;
+    }
+
+    public function render_machinegrade_attempt_header($username) {
+        $ret = $this->output->heading(get_string('showingmachinegradedattempt',constants::MOD_READALOUD_LANG,$username),3);
         return $ret;
     }
 

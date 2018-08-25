@@ -164,6 +164,71 @@ class utils{
         return $matches;
     }
 
+    //this is a server side implementation of the same name function in gradenowhelper.js
+    //we need this when calculating adjusted grades(reports/machinegrading.php) and on making machine grades(aigrade.php)
+    public static function processscores($sessiontime,$sessionendword,$errorcount,$targetwpm){
+
+        ////wpm score
+        if($sessiontime > 0) {
+            $wpmscore = round(($sessionendword - $errorcount) * 60 / $sessiontime);
+        }else{
+            $wpmscore =0;
+        }
+
+        //accuracy score
+        if($sessionendword > 0) {
+            $accuracyscore = round(($sessionendword - $errorcount) / $sessionendword * 100);
+        }else{
+            $accuracyscore=0;
+        }
+
+        //sessionscore
+        $usewpmscore = $wpmscore;
+        if($usewpmscore > $targetwpm){
+            $usewpmscore = $targetwpm;
+        }
+        $sessionscore = round($usewpmscore/$targetwpm * 100);
+
+        $scores= new \stdClass();
+        $scores->wpmscore = $wpmscore;
+        $scores->accuracyscore = $accuracyscore;
+        $scores->sessionscore=$sessionscore;
+        return $scores;
+
+    }
+
+    //take a json string of session errors, anmd count how many there are.
+    public static function count_sessionerrors($sessionerrors){
+        $errors = json_decode($sessionerrors);
+        if($errors){
+            $errorcount = count(get_object_vars($errors));
+        }else{
+            $errorcount=0;
+        }
+        return $errorcount;
+    }
+
+    //get average difference between human graded attempt error count and AI error count
+    public static function estimate_errors($readaloudid){
+        global $DB;
+        $errorestimate =0;
+        $sql = "SELECT AVG(tai.errorcount - tu.errorcount) as errorestimate  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+            " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=?";
+        $result = $DB->get_field_sql($sql,array($readaloudid));
+        if($result!==false){
+            $errorestimate = round($result);
+        }
+        return $errorestimate;
+    }
+
+    //for error estimate and accuracy adjustment, we can auto estimate errors, never estimate errors, or use a fixed error estimate
+    public static function get_autoaccmethod_options(){
+        return array(
+            constants::ACCMETHOD_NONE => get_string("accmethod_none",'mod_readaloud'),
+            constants::ACCMETHOD_AUTO  => get_string("accmethod_auto",'mod_readaloud'),
+            constants::ACCMETHOD_FIXED  => get_string("accmethod_fixed",'mod_readaloud')
+        );
+    }
 
   public static function get_region_options(){
       return array(

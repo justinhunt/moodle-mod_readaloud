@@ -55,6 +55,7 @@ class gradenow{
                 $this->aidata->sessionscore = $record->sessionscore;
                 $this->aidata->sessionendword= $record->sessionendword;
                 $this->aidata->sessionerrors= $record->sessionerrors;
+                $this->aidata->errorcount= $record->errorcount;
                 $this->aidata->wpm= $record->wpm;
                 $this->aidata->accuracy= $record->accuracy;
                 $this->aidata->sessiontime= $record->sessiontime;
@@ -86,6 +87,11 @@ class gradenow{
 		$updatedattempt->sessionscore = $formdata->sessionscore;
 		$updatedattempt->sessionerrors = $formdata->sessionerrors;
 		$updatedattempt->sessionendword = $formdata->sessionendword;
+
+		//its a little redundancy but we add error count here to make machine eval. error estimation easier
+        $errorcount = utils::count_sessionerrors($formdata->sessionerrors);
+        $updatedattempt->errorcount=$errorcount;
+
 		$DB->update_record(constants::MOD_READALOUD_USERTABLE,$updatedattempt);
    }
    
