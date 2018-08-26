@@ -121,6 +121,15 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
+    /**
+     * Show the reading passage after the attempt, basically set it to display on load and give it a background color
+     */
+    public function show_passage_postattempt($readaloud){
+        $ret = "";
+        $ret .= \html_writer::div( $readaloud->passage ,constants::MOD_READALOUD_PASSAGE_CONTAINER . ' ' . constants::MOD_READALOUD_POSTATTEMPT,
+            array('id'=>constants::MOD_READALOUD_PASSAGE_CONTAINER));
+        return $ret;
+    }
 
     /**
      * Show the reading passage
@@ -146,16 +155,41 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
+    public function show_humanevaluated_message(){
+        $displaytext = get_string('humanevaluatedmessage',constants::MOD_READALOUD_LANG);
+        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_EVALUATED_MESSAGE,array('id'=>constants::MOD_READALOUD_EVALUATED_MESSAGE));
+        return $ret;
+    }
+
+    public function show_machineevaluated_message(){
+        $displaytext = get_string('machineevaluatedmessage',constants::MOD_READALOUD_LANG);
+        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_EVALUATED_MESSAGE,array('id'=>constants::MOD_READALOUD_EVALUATED_MESSAGE));
+        return $ret;
+    }
+
     /**
      * Show the feedback set in the activity settings
      */
-    public function show_feedback($readaloud,$cm,$showtitle){
+    public function show_feedback($readaloud,$showtitle){
         $thetitle =  $this->output->heading($showtitle, 3, 'main');
         $displaytext =  \html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
         $displaytext .= $this->output->box_start();
         $displaytext .=  \html_writer::div($readaloud->feedback,constants::MOD_READALOUD_CLASS  . '_center');
         $displaytext .= $this->output->box_end();
         $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_FEEDBACK_CONTAINER,array('id'=>constants::MOD_READALOUD_FEEDBACK_CONTAINER));
+        return $ret;
+    }
+
+    /**
+     * Show the feedback set in the activity settings
+     */
+    public function show_feedback_postattempt($readaloud,$showtitle){
+        $thetitle =  $this->output->heading($showtitle, 3, 'main');
+        $displaytext =  \html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext .= $this->output->box_start();
+        $displaytext .=  \html_writer::div($readaloud->feedback,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext .= $this->output->box_end();
+        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_FEEDBACK_CONTAINER . ' ' . constants::MOD_READALOUD_POSTATTEMPT,array('id'=>constants::MOD_READALOUD_FEEDBACK_CONTAINER));
         return $ret;
     }
 

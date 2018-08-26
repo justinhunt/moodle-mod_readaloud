@@ -39,6 +39,7 @@ const MOD_READALOUD_RECORDER_INSTRUCTIONS_RIGHT='mod_readaloud_recorder_instr_ri
 const MOD_READALOUD_RECORDER_INSTRUCTIONS_LEFT='mod_readaloud_recorder_instr_left';
 const MOD_READALOUD_INSTRUCTIONS_CONTAINER='mod_readaloud_instructions_cont';
 const MOD_READALOUD_PASSAGE_CONTAINER='mod_readaloud_passage_cont';
+const MOD_READALOUD_POSTATTEMPT= 'mod_readaloud_postattempt';
 const MOD_READALOUD_FEEDBACK_CONTAINER='mod_readaloud_feedback_cont';
 const MOD_READALOUD_ERROR_CONTAINER='mod_readaloud_error_cont';
 const MOD_READALOUD_GRADING_ERROR_CONTAINER='mod_readaloud_grading_error_cont';
@@ -67,6 +68,7 @@ const MOD_READALOUD_HIDDEN_PLAYER_BUTTON='mod_readaloud_hidden_player_button';
 const MOD_READALOUD_HIDDEN_PLAYER_BUTTON_ACTIVE='mod_readaloud_hidden_player_button_active';
 const MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PAUSED='mod_readaloud_hidden_player_button_paused';
 const MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PLAYING='mod_readaloud_hidden_player_button_playing';
+const MOD_READALOUD_EVALUATED_MESSAGE='mod_readaloud_evaluated_message';
 
 
 const MOD_READALOUD_GRADEHIGHEST= 0;
@@ -79,5 +81,12 @@ const ACCMETHOD_NONE =0;
 const ACCMETHOD_AUTO =1;
 const ACCMETHOD_FIXED =2;
 
+const POSTATTEMPT_NONE=0;
+const POSTATTEMPT_EVAL=1;
+const POSTATTEMPT_EVALERRORS=2;
 
+const REVIEWMODE_NONE=0;
+const REVIEWMODE_MACHINE=1;
+const REVIEWMODE_HUMAN=2;
+const REVIEWMODE_SCORESONLY=3;
 }

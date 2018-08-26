@@ -186,6 +186,8 @@ $string['machinegrading']='Machine Evaluations';
 $string['viewmachinegrading']='Machine Evaluation';
 $string['review']='Review';
 
+$string['humanevaluatedmessage']='Your latest attempt has been graded by your teacher and results are displayed below.';
+$string['machineevaluatedmessage']='Your latest attempt has been graded <i>automatically</i> and results are displayed below.';
 
 $string['dospotcheck']="Spot Check";
 $string['spotcheckbutton']="Spot Check Mode";
@@ -200,5 +202,14 @@ $string['rawgrade_p']='Grade(%)';
 $string['adjustedwpm']= "Adj. WPM";
 $string['adjustedaccuracy_p']='Adj. Acc(%)';
 $string['adjustedgrade_p']='Adj. Grade(%)';
+
+$string['humanpostattempt']="Evaluation display (human)";
+$string['humanpostattempt_details']="What to show students after they have attempted and received a human evaluation";
+$string['machinepostattempt']="Evaluation display (machine)";
+$string['machinepostattempt_details']="What to show students after they have attempted and received a machine evaluation";
+$string['postattempt_none']="Nothing";
+$string['postattempt_eval']="The evaluation(scores)";
+$string['postattempt_evalerrors']="The evaluation(scores) and errors";
+
 
 

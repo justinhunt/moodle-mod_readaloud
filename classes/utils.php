@@ -61,6 +61,7 @@ class utils{
         switch($instance->region){
             case "useast1":
             case "dublin":
+            case "sydney":
                 break;
             default:
                 $ret = false;
@@ -208,8 +209,17 @@ class utils{
         return $errorcount;
     }
 
+    //get all the aievaluations for a user
+    public static function get_aieval_byuser($readaloudid,$userid){
+        global $DB;
+        $sql = "SELECT tai.*  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+            " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=? AND tu.userid=?";
+        $result = $DB->get_records_sql($sql,array($readaloudid,$userid));
+        return $result;
+    }
+
     //get average difference between human graded attempt error count and AI error count
-    //we only fetch if A) have machiune grade and B) sessiontime> 0(has been manually graded)
+    //we only fetch if A) have machine grade and B) sessiontime> 0(has been manually graded)
     public static function estimate_errors($readaloudid){
         global $DB;
         $errorestimate =0;
@@ -220,6 +230,15 @@ class utils{
             $errorestimate = round($result);
         }
         return $errorestimate;
+    }
+
+    //What to show students after an attempt
+    public static function get_postattempt_options(){
+        return array(
+            constants::POSTATTEMPT_NONE => get_string("postattempt_none",'mod_readaloud'),
+            constants::POSTATTEMPT_EVAL  => get_string("postattempt_eval",'mod_readaloud'),
+            constants::POSTATTEMPT_EVALERRORS  => get_string("postattempt_evalerrors",'mod_readaloud')
+        );
     }
 
     //for error estimate and accuracy adjustment, we can auto estimate errors, never estimate errors, or use a fixed error estimate

@@ -147,7 +147,7 @@ switch ($action){
 
 		$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
 		$force_aidata=false;//ai data could still be used if not human grading. we just do not force it
-        $reviewmode=false;
+        $reviewmode=$reviewmode=constants::REVIEWMODE_NONE;
 
 
 
@@ -175,7 +175,7 @@ switch ($action){
         $mode = "machinegrading";
         $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
         $force_aidata=true;//in this case we are just interested in ai data
-        $reviewmode = false;
+        $reviewmode = $reviewmode=constants::REVIEWMODE_NONE;
 
         //this forces the regrade using any changes in the diff algorythm
         $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
@@ -205,7 +205,7 @@ switch ($action){
         $mode = "machinegrading";
         $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
         $force_aidata=true;//in this case we are just interested in ai data
-        $reviewmode=true;
+        $reviewmode=constants::REVIEWMODE_MACHINE;
 
         $data=array(
             'action'=>'gradenowsubmit',
@@ -235,7 +235,7 @@ switch ($action){
         $mode = "machinegrading";
         $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
         $force_aidata=true;//in this case we are just interested in ai data
-        $reviewmode-false;
+        $reviewmode=$reviewmode=constants::REVIEWMODE_NONE;
 
         //$aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
 

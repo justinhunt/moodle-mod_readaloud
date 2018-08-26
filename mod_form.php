@@ -124,6 +124,18 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->setDefault('accadjust',$config->accadjust);
         $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
 
+        // Post attempt evaluation display (human)
+        $postattempt_options = \mod_readaloud\utils::get_postattempt_options();
+        $mform->addElement('select', 'humanpostattempt', get_string('humanpostattempt', constants::MOD_READALOUD_LANG),
+            $postattempt_options);
+        $mform->setType('humanpostattempt', PARAM_INT);
+        $mform->setDefault('humanpostattempt',$config->humanpostattempt);
+
+        // Post attempt evaluation display (machine)
+        $mform->addElement('select', 'machinepostattempt', get_string('machinepostattempt', constants::MOD_READALOUD_LANG),
+            $postattempt_options);
+        $mform->setType('machinepostattempt', PARAM_INT);
+        $mform->setDefault('machinepostattempt',$config->machinepostattempt);
 
 		//Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::MOD_READALOUD_LANG),

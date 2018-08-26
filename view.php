@@ -93,6 +93,7 @@ $gradenowrenderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY,'gradeno
 
 //if we are in review mode, lets review
 $attempts = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>$USER->id,'readaloudid'=>$moduleinstance->id),'id DESC');
+$ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id,$USER->id);
 
 //can attempt ?
 $canattempt = true;
@@ -109,35 +110,97 @@ if(!$canattempt){$retake=0;}
 
 //display previous attempts if we have them
 if($attempts && $retake==0){
-		//if we are teacher we see tabs. If student we just see the quiz
-		if(has_capability('mod/readaloud:preview',$modulecontext)){
-			echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::MOD_READALOUD_LANG));
-		}else{
-			echo $renderer->notabsheader();
-		}
-		$latestattempt = array_shift($attempts);
-		
-		// show results if graded
-		if($latestattempt->sessiontime==null){
-			echo $renderer->show_welcome($moduleinstance->welcome,$moduleinstance->name);
-			echo $renderer->show_ungradedyet();
-		}else{	
-			$gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
-			$reviewmode =true;
-			$force_aidata=false;
-			echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
-			echo $gradenowrenderer->render_hiddenaudioplayer();
-			echo $gradenowrenderer->render_userreview($gradenow);
-		}
-		
-		//show  button or a label depending on of can retake
-		if($canattempt){
-			echo $renderer->reattemptbutton($moduleinstance);
-		}else{
-			echo $renderer->exceededattempts($moduleinstance);
-		}
-		echo $renderer->footer();
-		return;
+    //if we are teacher we see tabs. If student we just see the quiz
+    if(has_capability('mod/readaloud:preview',$modulecontext)){
+        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::MOD_READALOUD_LANG));
+    }else{
+        echo $renderer->notabsheader();
+    }
+    $latestattempt = array_shift($attempts);
+
+    //========================================
+    if(\mod_readaloud\utils::can_transcribe($moduleinstance)) {
+        $latest_aigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
+    }else{
+        $latest_aigrade =false;
+    }
+
+    $have_humaneval = $latestattempt->sessiontime!=null;
+    $have_aieval = $latest_aigrade !== false;
+
+    if( $have_humaneval){
+        switch($moduleinstance->humanpostattempt){
+            case constants::POSTATTEMPT_NONE:
+                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
+                echo $renderer->show_passage_postattempt($moduleinstance);
+                break;
+            case constants::POSTATTEMPT_EVAL:
+                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
+                echo $renderer->show_humanevaluated_message();
+                $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
+                $reviewmode =constants::REVIEWMODE_SCORESONLY;
+                $force_aidata=false;
+                echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
+                echo $gradenowrenderer->render_attempt_scoresheader($gradenow);
+                echo $renderer->show_passage_postattempt($moduleinstance);
+
+                break;
+
+            case constants::POSTATTEMPT_EVALERRORS:
+                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
+                echo $renderer->show_humanevaluated_message();
+                $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
+                $reviewmode =constants::REVIEWMODE_HUMAN;
+                $force_aidata=false;
+                echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
+                echo $gradenowrenderer->render_hiddenaudioplayer();
+                echo $gradenowrenderer->render_userreview($gradenow);
+                break;
+        }
+    }else if($have_aieval){
+        switch($moduleinstance->machinepostattempt){
+            case constants::POSTATTEMPT_NONE:
+                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
+                echo $renderer->show_passage_postattempt($moduleinstance);
+
+                break;
+            case constants::POSTATTEMPT_EVAL:
+                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
+                echo $renderer->show_machineevaluated_message();
+                $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
+                $reviewmode =constants::REVIEWMODE_SCORESONLY;
+                $force_aidata=true;
+                echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
+                echo $gradenowrenderer->render_attempt_scoresheader($gradenow);
+                echo $renderer->show_passage_postattempt($moduleinstance);
+                break;
+
+            case constants::POSTATTEMPT_EVALERRORS:
+                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
+                echo $renderer->show_machineevaluated_message();
+                $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
+                $reviewmode =constants::REVIEWMODE_MACHINE;
+                $force_aidata=true;
+                echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
+                echo $gradenowrenderer->render_hiddenaudioplayer();
+                echo $gradenowrenderer->render_userreview($gradenow);
+                break;
+
+        }
+    }else{
+        echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
+        echo $renderer->show_ungradedyet();
+        echo $renderer->show_passage_postattempt($moduleinstance);
+    }
+    
+    //show  button or a label depending on of can retake
+    if($canattempt){
+        echo $renderer->reattemptbutton($moduleinstance);
+    }else{
+        echo $renderer->exceededattempts($moduleinstance);
+    }
+    echo $renderer->footer();
+    return;
 }
 
 
@@ -157,7 +220,7 @@ $token = \mod_readaloud\utils::fetch_token($config->apiuser,$config->apisecret);
 
 //show all the main parts. Many will be hidden and displayed by JS
 echo $renderer->show_welcome($moduleinstance->welcome,$moduleinstance->name);
-echo $renderer->show_feedback($moduleinstance,$cm,$moduleinstance->name);
+echo $renderer->show_feedback($moduleinstance,$moduleinstance->name);
 echo $renderer->show_error($moduleinstance,$cm);
 echo $renderer->show_passage($moduleinstance,$cm);
 echo $renderer->show_recorder($moduleinstance,$token);

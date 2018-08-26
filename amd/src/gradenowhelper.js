@@ -5,8 +5,16 @@ define(['jquery','core/log'], function($,log) {
 
     return{
         //controls
+
         controls: {},
         currentmode: 'grading',
+
+        constants: {
+          REVIEWMODE_NONE: 0,
+          REVIEWMODE_MACHINE: 1,
+          REVIEWMODE_HUMAN: 2,
+          REVIEWMODE_SCORESONLY: 3
+        },
 
         //class definitions
         cd: {
@@ -185,7 +193,7 @@ define(['jquery','core/log'], function($,log) {
 
 
             //in review mode, do nuffink though ... thats for the student
-            if(this.options.reviewmode){
+            if(this.options.reviewmode == this.constants.REVIEWMODE_MACHINE){
                 /*
                 if(this.enabletts && this.options.ttslanguage != 'none'){
                     this.controls.eachword.click(this.playword);

@@ -249,6 +249,24 @@ function xmldb_readaloud_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2018082402, 'readaloud');
     }
+    // Add humanpostattempt and machinepostattempt to readaloud table
+    if ($oldversion < 2018082403) {
+        $table = new xmldb_table('readaloud');
+
+        //This adds the post attempt display options for each of the evaluation methods (machine and human)
+        $field1 = new xmldb_field('humanpostattempt', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '2');
+        $field2 = new xmldb_field('machinepostattempt', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
+
+        // add fields to readaloud table
+        if (!$dbman->field_exists($table, $field1)) {
+            $dbman->add_field($table, $field1);
+        }
+        if (!$dbman->field_exists($table, $field2)) {
+            $dbman->add_field($table, $field2);
+        }
+
+        upgrade_mod_savepoint(true, 2018082403, 'readaloud');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

@@ -68,6 +68,17 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/allowearlyexit',
 	 get_string('allowearlyexit', constants::MOD_READALOUD_LANG), get_string('allowearlyexit_defaultdetails',constants::MOD_READALOUD_LANG), 0));
 
+    $postattempt_options = \mod_readaloud\utils::get_postattempt_options();
+    $settings->add(new admin_setting_configselect('mod_readaloud/humanpostattempt',
+        get_string('humanpostattempt', constants::MOD_READALOUD_LANG),
+        get_string('humanpostattempt_details',constants::MOD_READALOUD_LANG),
+        constants::POSTATTEMPT_EVALERRORS, $postattempt_options));
+
+    $settings->add(new admin_setting_configselect('mod_readaloud/machinepostattempt',
+        get_string('machinepostattempt', constants::MOD_READALOUD_LANG),
+        get_string('machinepostattempt_details',constants::MOD_READALOUD_LANG),
+        constants::POSTATTEMPT_EVAL, $postattempt_options));
+
     /*
 	 $settings->add(new admin_setting_configcheckbox('mod_readaloud/enabletts', 
 	 get_string('enabletts', constants::MOD_READALOUD_LANG), get_string('enabletts_details',constants::MOD_READALOUD_LANG), 0));

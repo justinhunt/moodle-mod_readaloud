@@ -31,12 +31,13 @@ class aigrade
                 }
             }
             if(!$this->has_transcripts()){
-                if( $this->activitydata->region=='useast1') {
+                //we need more plumbing to be able to util::can_transcribe a here (a module instance) so we just accept
+                //if( $this->activitydata->region=='useast1') {
                     $success = $this->fetch_transcripts();
                     if($success){
                         $this->do_diff();
                     }
-                }
+                //}
             }
         }else{
             //if there is no attempt we should not even be here

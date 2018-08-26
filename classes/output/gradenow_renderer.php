@@ -13,7 +13,7 @@ use \mod_readaloud\constants;
 
 class gradenow_renderer extends \plugin_renderer_base {
 
-    public function render_gradenow($gradenow) {
+    public function render_attempt_scoresheader($gradenow){
         $audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
         $wpm = $this->render_wpmdetails();
         $accuracy = $this->render_accuracydetails();
@@ -21,8 +21,11 @@ class gradenow_renderer extends \plugin_renderer_base {
         $mistakes = $this->render_mistakedetails();
         $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
             constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
+        return $actionheader;
+    }
 
-
+    public function render_gradenow($gradenow) {
+        $actionheader = $this->render_attempt_scoresheader($gradenow);
         $ret = $this->render_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
         $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
@@ -32,32 +35,15 @@ class gradenow_renderer extends \plugin_renderer_base {
     }
 
     public function render_userreview($gradenow) {
-        $audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
-        $wpm = $this->render_wpmdetails();
-        $accuracy = $this->render_accuracydetails();
-        $sessionscore = $this->render_sessionscoredetails();
-        $mistakes = $this->render_mistakedetails();
-        $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
-            constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
-
-
+        $actionheader = $this->render_attempt_scoresheader($gradenow);
         $ret = $this->render_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
         $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
-
         return $ret;
     }
 
     public function render_machinereview($gradenow) {
-        $audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
-        $wpm = $this->render_wpmdetails();
-        $accuracy = $this->render_accuracydetails();
-        $sessionscore = $this->render_sessionscoredetails();
-        $mistakes = $this->render_mistakedetails();
-        $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
-            constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
-
-
+        $actionheader = $this->render_attempt_scoresheader($gradenow);
         $ret = $this->render_machinegrade_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
         $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
@@ -193,28 +179,4 @@ class gradenow_renderer extends \plugin_renderer_base {
             array('id'=>constants::MOD_READALOUD_GRADING_ERROR_CONTAINER));
         return $ret;
     }
-    public function render_wpmdetails_old(){
-        global $CFG;
-        $img = \html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/wpm.png','class'=>constants::MOD_READALOUD_GRADING_WPM_IMG));
-        $score = \html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE,array('id'=>constants::MOD_READALOUD_GRADING_WPM_SCORE));
-        $ret = \html_writer::div($img . $score ,constants::MOD_READALOUD_GRADING_WPM_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_WPM_CONTAINER));
-        return $ret;
-    }
-    public function render_accuracydetails_old(){
-        global $CFG;
-        $img = \html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/accuracy.png','class'=>constants::MOD_READALOUD_GRADING_ACCURACY_IMG));
-        $score = \html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE,array('id'=>constants::MOD_READALOUD_GRADING_ACCURACY_SCORE));
-        $ret = \html_writer::div($img . $score ,constants::MOD_READALOUD_GRADING_ACCURACY_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACCURACY_CONTAINER));
-        return $ret;
-    }
-    public function render_mistakedetails_old(){
-        global $CFG;
-        $img = \html_writer::tag('img','',array('src'=>$CFG->wwwroot . '/mod/readaloud/pix/cross.png','class'=>constants::MOD_READALOUD_GRADING_ERROR_IMG));
-        $score = \html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE,array('id'=>constants::MOD_READALOUD_GRADING_ERROR_SCORE));
-
-        $ret = \html_writer::div($img.$score,constants::MOD_READALOUD_GRADING_ERROR_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ERROR_CONTAINER));
-        return $ret;
-    }
-
-
 }
