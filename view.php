@@ -192,7 +192,7 @@ if($attempts && $retake==0){
         echo $renderer->show_ungradedyet();
         echo $renderer->show_passage_postattempt($moduleinstance);
     }
-    
+
     //show  button or a label depending on of can retake
     if($canattempt){
         echo $renderer->reattemptbutton($moduleinstance);

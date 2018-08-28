@@ -57,7 +57,7 @@ class utils{
         //but it only takes one no ....
         $ret = true;
 
-        //currently only useast1 can transcribe
+        //The regions that can transcribe
         switch($instance->region){
             case "useast1":
             case "dublin":
