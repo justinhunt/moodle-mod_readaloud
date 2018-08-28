@@ -125,6 +125,14 @@ if($attempts && $retake==0){
         $latest_aigrade =false;
     }
 
+    //FOR NOW .... display massaged passage
+    $thetext = $moduleinstance->passage;
+    $alternates = \mod_readaloud\diff::fetchAlternativesArray($thetext);
+    if($alternates->matchcount){
+        $moduleinstance->passage = $alternates->newtext;
+    }
+
+
     $have_humaneval = $latestattempt->sessiontime!=null;
     $have_aieval = $latest_aigrade !== false;
 

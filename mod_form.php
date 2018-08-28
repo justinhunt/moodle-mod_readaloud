@@ -162,6 +162,8 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $this->standard_grading_coursemodule_elements();
         
         //grade options
+        //for now we hard code this to latest attempt
+        /*
         $gradeoptions = array(constants::MOD_READALOUD_GRADEHIGHEST => get_string('gradehighest',constants::MOD_READALOUD_LANG),
                             constants::MOD_READALOUD_GRADELOWEST => get_string('gradelowest', constants::MOD_READALOUD_LANG),
                             constants::MOD_READALOUD_GRADELATEST => get_string('gradelatest', constants::MOD_READALOUD_LANG),
@@ -169,6 +171,9 @@ class mod_readaloud_mod_form extends moodleform_mod {
 							constants::MOD_READALOUD_GRADENONE => get_string('gradenone', constants::MOD_READALOUD_LANG));
         $mform->addElement('select', 'gradeoptions', get_string('gradeoptions', constants::MOD_READALOUD_LANG), $gradeoptions);
 		$mform->setDefault('gradeoptions',constants::MOD_READALOUD_GRADELATEST);
+        */
+        $mform->addElement('hidden', 'gradeoptions',constants::MOD_READALOUD_GRADELATEST);
+        $mform->setType('gradeoptions', PARAM_INT);
 		
 		
 

@@ -33,6 +33,10 @@ class diff{
         //replace all line ends with spaces
         $thetext = preg_replace('#\R+#', ' ', $thetext);
 
+        //search for alternatives definitions, and replace them
+        $alternatives = self::fetchAlternativesArray($thetext);
+        $thetext = $alternatives->newtext;
+
         //remove punctuation
         //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
         $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
@@ -43,10 +47,78 @@ class diff{
         //remove any empty elements
         $textbits = array_filter($textbits, function($value) { return $value !== ''; });
 
-        //re index array because array_filter converts array to assoc. (ie can go from indexes 0,1,2,3,4,5 to 0,1,3,4,5)
+        //re index array because array_filter converts array to assoc. (ie could have gone from indexes 0,1,2,3,4,5 to 0,1,3,4,5)
         $textbits = array_values($textbits);
 
         return $textbits;
+    }
+
+    /*
+     * This function parses and replaces {{view|alternate}} strings from text passages
+     * It is used to prepare the text for display, and also the text for comparison
+     *
+     * TO DO: For this whole alternates thing ...optimize so we only parse the passage once when its saved
+     *  and store the index of a word with alternates, so we do not need to loop through the alternates array on checking
+     *
+     */
+    public static function fetchAlternativesArray($thetext){
+        $ret = new \stdClass();
+        $regexp = "/\{\{(.*?)}}/";
+        $matches = [];
+
+        //This parses {{view|alternate}} substrings into the $matches array
+        //eg "The time to hesitate {{banana|birdman}} is through {{basically|basik lee}}."
+        // becomes ..
+        /*
+        Array
+        (
+            [0] => Array
+            (
+                [0] => {{banana|birdman}}
+                [1] => {{basically|basik lee}}
+        )
+
+            [1] => Array
+                (
+                 [0] => banana|birdman
+                 [1] => basically|basik lee
+                )
+        )
+        */
+
+        $result = preg_match_all($regexp,$thetext,$matches);
+        //if no result an empty result set
+        if(!$result){
+            $ret->newtext = $thetext;
+            $ret->fullmatches = [];
+            $ret->alternatives=[];
+            $ret->matchcount=0;
+            return $ret;
+        }
+
+        //this will make arrays of view and alternate eg alt_pair[0]=banana alt_pair[1]=birdman
+        foreach($matches[1] as $alt_pair){
+            $alt_pairs[]=explode("|",$alt_pair);
+        }
+
+        //this creates a version of $thetext with only the "view" part of the alt_pair
+        //eg "The time to hesitate banana is through basically.";
+        $matchcount = count($matches[0]);
+        $newtext = $thetext;
+        for($index=0;$index<$matchcount;$index++){
+            $newtext = str_replace($matches[0][$index],$alt_pairs[$index][0],$newtext);
+            //if there was no delimiter in the matched part, we should just add the view as the alternative to prevent error later
+            if(count($alt_pairs[$index]==1)){
+                $alt_pairs[$index][1]=$alt_pairs[$index][0];
+            }
+        }
+
+        //build return object
+        $ret->fullmatches=$matches[0];
+        $ret->alternatives=$alt_pairs;
+        $ret->newtext=$newtext;
+        $ret->matchcount=$matchcount;
+        return $ret;
     }
 
     //Loop through passage, nest looping through transcript building collections of sequences (passage match records)

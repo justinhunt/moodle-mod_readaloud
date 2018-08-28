@@ -134,6 +134,7 @@ class aigrade
 
         //turn the passage and transcript into an array of words
        $passagebits = diff::fetchWordArray($this->activitydata->passage);
+       $alternatives = diff::fetchAlternativesArray($this->activitydata->passage);
        $transcriptbits = diff::fetchWordArray($this->aidata->transcript);
 
        //fetch sequences of transcript/pattern matched words
