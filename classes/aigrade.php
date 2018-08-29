@@ -134,13 +134,13 @@ class aigrade
 
         //turn the passage and transcript into an array of words
        $passagebits = diff::fetchWordArray($this->activitydata->passage);
-       $alternatives = diff::fetchAlternativesArray($this->activitydata->passage);
+       $alternatives = diff::fetchAlternativesArray($this->activitydata->alternatives);
        $transcriptbits = diff::fetchWordArray($this->aidata->transcript);
 
        //fetch sequences of transcript/pattern matched words
        // then prepare an array of "differences"
        $passagecount = count($passagebits);
-       $sequences = diff::fetchSequences($passagebits,$transcriptbits);
+       $sequences = diff::fetchSequences($passagebits,$transcriptbits,$alternatives);
        $diffs = diff::fetchDiffs($sequences,$passagecount);
 
        //from the array of differences build error data, match data, markers, scores and metrics

@@ -267,6 +267,20 @@ function xmldb_readaloud_upgrade($oldversion) {
 
         upgrade_mod_savepoint(true, 2018082403, 'readaloud');
     }
+    // Add "alternatives" to readaloud table
+    if ($oldversion < 2018082404) {
+        $table = new xmldb_table('readaloud');
+
+        //This adds the post attempt display options for each of the evaluation methods (machine and human)
+        $field = new xmldb_field('alternatives',XMLDB_TYPE_TEXT, null, null, null, null);
+
+        // add fields to readaloud table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018082404, 'readaloud');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

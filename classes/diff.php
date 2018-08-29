@@ -33,10 +33,6 @@ class diff{
         //replace all line ends with spaces
         $thetext = preg_replace('#\R+#', ' ', $thetext);
 
-        //search for alternatives definitions, and replace them
-        $alternatives = self::fetchAlternativesArray($thetext);
-        $thetext = $alternatives->newtext;
-
         //remove punctuation
         //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
         $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
@@ -53,123 +49,170 @@ class diff{
         return $textbits;
     }
 
-    /*
-     * This function parses and replaces {{view|alternate}} strings from text passages
-     * It is used to prepare the text for display, and also the text for comparison
-     *
-     * TO DO: For this whole alternates thing ...optimize so we only parse the passage once when its saved
-     *  and store the index of a word with alternates, so we do not need to loop through the alternates array on checking
-     *
-     */
-    public static function fetchAlternativesArray($thetext){
-        $ret = new \stdClass();
-        $regexp = "/\{\{(.*?)}}/";
-        $matches = [];
+/*
+ * This function parses and replaces {{view|alternate}} strings from text passages
+ * It is used to prepare the text for display, and also the text for comparison
+ *
+ * TO DO: For this whole alternates thing ...optimize so we only parse the passage once when its saved
+ *  and store the index of a word with alternates, so we do not need to loop through the alternates array on checking
+ *
+ */
+public static function fetchAlternativesArray($thealternates)
+{
 
-        //This parses {{view|alternate}} substrings into the $matches array
-        //eg "The time to hesitate {{banana|birdman}} is through {{basically|basik lee}}."
-        // becomes ..
-        /*
-        Array
-        (
-            [0] => Array
-            (
-                [0] => {{banana|birdman}}
-                [1] => {{basically|basik lee}}
-        )
 
-            [1] => Array
-                (
-                 [0] => banana|birdman
-                 [1] => basically|basik lee
-                )
-        )
-        */
+    //return empty if input data is useless
+    if(trim($thealternates)==''){
+        return [];
+    }
+    //regexp from https://stackoverflow.com/questions/7058168/explode-textarea-php-at-new-lines
+    $lines = preg_split('/\r\n|[\r\n]/', $thealternates);
+    $alternatives = [];
 
-        $result = preg_match_all($regexp,$thetext,$matches);
-        //if no result an empty result set
-        if(!$result){
-            $ret->newtext = $thetext;
-            $ret->fullmatches = [];
-            $ret->alternatives=[];
-            $ret->matchcount=0;
-            return $ret;
-        }
-
-        //this will make arrays of view and alternate eg alt_pair[0]=banana alt_pair[1]=birdman
-        foreach($matches[1] as $alt_pair){
-            $alt_pairs[]=explode("|",$alt_pair);
-        }
-
-        //this creates a version of $thetext with only the "view" part of the alt_pair
-        //eg "The time to hesitate banana is through basically.";
-        $matchcount = count($matches[0]);
-        $newtext = $thetext;
-        for($index=0;$index<$matchcount;$index++){
-            $newtext = str_replace($matches[0][$index],$alt_pairs[$index][0],$newtext);
-            //if there was no delimiter in the matched part, we should just add the view as the alternative to prevent error later
-            if(count($alt_pairs[$index]==1)){
-                $alt_pairs[$index][1]=$alt_pairs[$index][0];
+    foreach($lines as $line){
+        if(!empty(trim($line))) {
+            $set = explode('|', $line);
+            switch(count($set)){
+                case 0:
+                case 1:
+                    continue;
+                case 2:
+                default:
+                    $alternatives[] = $set;
             }
         }
-
-        //build return object
-        $ret->fullmatches=$matches[0];
-        $ret->alternatives=$alt_pairs;
-        $ret->newtext=$newtext;
-        $ret->matchcount=$matchcount;
-        return $ret;
     }
+    return $alternatives;
+}
+
 
     //Loop through passage, nest looping through transcript building collections of sequences (passage match records)
     //one sequence = sequence_length[length] + sequence_start(transcript)[tposition] + sequence_start(passage)[pposition]
     //we do not discriminate over length or position of sequence. All sequences are saved
+
+    //NB the match length in the transcript may have differed from the passage, if the alternatives has more than one word
+    //eg 1989 -> nineteen eighty nine.
+    // BUT we cancelled this feature,
+    // but still keep the transcript sequence length and passage sequence length code in place in this function
+    //
     //returns array of sequences
-    public static function fetchSequences($passage, $transcript)
+    public static function fetchSequences($passage, $transcript, $alternatives)
     {
         $p_length = count($passage);
         $t_length = count($transcript);
         $sequences = array();
-        $slength=0; //sequence length
+        $t_slength=0; //sequence length (in the transcript)
+        $p_slength=0; //sequence length (in the passage)
         $tstart =0; //transcript sequence match search start index
+
 
         //loop through passage word by word
         for($pstart =0; $pstart < $p_length; $pstart++){
             //loop through transcript finding matches starting from current passage word
             //we step over the length of any sequences we find to begin search for next sequence
-            while($slength + $tstart < $t_length) {
-                $match = $passage[$slength + $pstart] == $transcript[$slength + $tstart];
+            while($t_slength + $tstart < $t_length) {
+                //check for a direct match
+                $passageword= $passage[$p_slength + $pstart];
+                $transcriptword =$transcript[$t_slength + $tstart];
+                $match = $passageword == $transcriptword;
+                $t_matchlength=1;
+
+                //if no direct match is there an alternates match
+                if(!$match && $alternatives){
+                    $matchlength = self::fetch_alternatives_matchlength($passageword,
+                        $transcriptword,
+                        $alternatives,
+                        $transcript,
+                        $t_slength + $tstart);
+                    if($matchlength){
+                        $match= true;
+                        $t_matchlength = $matchlength;
+
+                    }
+                }//end of if no direct match
+
                 //if we have a match and the passage and transcript each have another word, we will continue
                 //(ie to try to match the next word)
                 if ($match &&
-                    ($slength + $tstart + 1) < $t_length &&
-                    ($slength + $pstart + 1) < $p_length ) {
+                    ($t_slength + $tstart + $t_matchlength) < $t_length &&
+                    ($p_slength + $pstart + 1) < $p_length ) {
                     //continue building sequence
-                    $slength++;
+                    $p_slength++;
+                    $t_slength+= $t_matchlength;
 
-                    //if no match or end of transcript/passage, close out the current sequence(if we even had one)
+                    //else: no match or end of transcript/passage,
                 } else {
-                    //if we never even had a sequence we just move to next word in transcript
-                    if ($slength == 0) {
+                    //if we have a match here, then its the last word of passage or transcript...
+                    //we build our sequence object and return
+                     if($match){
+                         $p_slength++;
+                         $t_slength+= $t_matchlength;
+                         $sequence = new \stdClass();
+                         $sequence->length = $p_slength;
+                         $sequence->tlength = $t_slength;
+                         $sequence->tposition = $tstart;
+                         $sequence->pposition = $pstart;
+                         $sequences[] = $sequence;
+                         //we bump tstart, which will end this loop
+                         $tstart+= $t_slength;
+
+
+                         //if we never even had a sequence we just move to next word in transcript
+                    }elseif ($p_slength == 0) {
                         $tstart++;
-                    //if we had a sequence, we build the sequence object, store it in $sequences,
-                        //step transcript index and look for next sequence
+
+                    //if we had a sequence but this is not a match, we build the sequence object, store it in $sequences,
+                     //step transcript index and look for next sequence
                     } else {
                         $sequence = new \stdClass();
-                        $sequence->length = $slength;
+                        $sequence->length = $p_slength;
+                        $sequence->tlength = $t_slength;
                         $sequence->tposition = $tstart;
                         $sequence->pposition = $pstart;
                         $sequences[] = $sequence;
-                        $tstart+= $slength;
-                        $slength = 0;
+
+                        //re init transcript loop variables for the next pass
+                        $tstart+= $t_slength;
+                        $p_slength = 0;
+                        $t_slength = 0;
                     }//end of "IF slength=0"
                 }//end of "IF match"
             }//end of "WHILE Transcript Index < t_length"
+            //reset transcript loop variables for each pass of passageword loop
             $slength=0;
             $tstart=0;
+            $altmatchcount = 0;
         }//end of "FOR each passage word"
         return $sequences;
     }//end of fetchSequences
+
+    /*
+     * This will run through the list of alternatives for a given passageword, and if any match the transcript,
+     * will return the length of the match. Anything greater than 0 is a full match.
+     * We just look for single word matches currently, but stil return length of match, ie 1
+     */
+    public static function fetch_alternatives_matchlength($passageword,$transcriptword,$alternatives,$transcript,$startpoint){
+            $match =false;
+            $matchlength=0;
+
+            //loop through all alternatives
+            //and then through each alternative->wordset
+
+            foreach($alternatives as $alternateset){
+                if($alternateset[0]==$passageword){
+                    for($setindex =1;$setindex<count($alternateset);$setindex++) {
+                        if ($alternateset[$setindex] == $transcriptword || $alternateset[$setindex] == '*') {
+                            $match = true;
+                            $matchlength = 1;
+                            break;
+                        }
+                    }
+                }//end of if alternatesset[0]
+                if($match==true){break;}
+            }//end of for each alternatives
+        //its a bit hacky but simple ... we just return the matchlength
+        return $matchlength;
+    }
 
     //for use with PHP usort and arrays of sequences
     //sort array so that long sequences come first.
@@ -194,6 +237,10 @@ class diff{
     //   b)- check transcript match in sequence[tpos -> tpos+length] was not already allocated to another part of passage in previous sequence
     //   c)- check passage match position and transcript position are consistent with previous sequences
     //     inconsistent example: If T position 3 was matched to P position 5, T position 4 could not match with P position 2
+    //
+    //NB aborted supporting multiword alternatives at this point. We know the sequence length in transcript
+    //but we can not add a valid tposition for a pposition in the final diff array when the pposition occurs
+    // after an alternate match in the same sequence. so gave up ... for now. Justin 2018/08
     public static function fetchDiffs($sequences, $passagelength){
         //i) default passage positions to unmatched and transcript position -1
         $diffs=array_fill(0, $passagelength, [self::UNMATCHED,-1]);

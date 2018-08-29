@@ -80,7 +80,13 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$ednofileoptions = readaloud_editor_no_files_options($this->context);
 		$opts = array('rows'=>'15', 'columns'=>'80');
 		$mform->addElement('editor','passage_editor',get_string('passagelabel',constants::MOD_READALOUD_LANG),$opts, $ednofileoptions);
-		
+
+		//The alternatives declaration
+        $mform->addElement('textarea','alternatives',get_string("alternatives", constants::MOD_READALOUD_LANG),
+            'wrap="virtual" rows="20" cols="50"');
+        $mform->setDefault('alternatives','');
+        $mform->setType('alternatives',PARAM_RAW);
+
 		//welcome and feedback
 		$opts = array('rows'=>'6', 'columns'=>'80');
 		$mform->addElement('editor','welcome_editor',get_string('welcomelabel',constants::MOD_READALOUD_LANG),$opts, $ednofileoptions);

@@ -13,7 +13,8 @@
         <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
 		<FIELD NAME="passage" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The passage to be read." />
         <FIELD NAME="passageformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the passage field (MOODLE, HTML, MARKDOWN...)"/>
-		<FIELD NAME="welcome" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Welcome text" />
+          <FIELD NAME="alternatives" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Alternatives" />
+          <FIELD NAME="welcome" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Welcome text" />
         <FIELD NAME="welcomeformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the welcome field (MOODLE, HTML, MARKDOWN...)"/>
 		<FIELD NAME="feedback" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Feedback text" />
         <FIELD NAME="feedbackformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the feedback field (MOODLE, HTML, MARKDOWN...)"/>

@@ -97,6 +97,7 @@ class machinegrading extends basereport
 
             //case 'regrade':
             //this will be useful once we add hints to passage markup, and when you change machine algorythms and processing
+            case "review":
             case 'regrade':
 
                 //FOR  REGRADE ... when fixing bogeys (replace review link with this one)
@@ -108,7 +109,7 @@ class machinegrading extends basereport
                 }
                 break;
 
-            case 'review':
+            case 'xxreview':
 
                 if ($withlinks) {
                     $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'machinereview', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));

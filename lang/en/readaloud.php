@@ -105,6 +105,7 @@ $string['feedbacklabel'] ='Default Feedback';
 $string['feedbacklabel_details'] ='The default text to show in the feedback field when creating a new Read Aloud activity.';
 $string['welcomelabel'] = 'Welcome Message';
 $string['feedbacklabel'] = 'Feedback Message';
+$string['alternatives']='Alternatives';
 $string['defaultwelcome'] = 'Please read the following passage aloud.';
 $string['defaultfeedback'] = 'Thanks for your time.';
 $string['timelimit'] = 'Time Limit';
