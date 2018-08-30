@@ -182,26 +182,15 @@ switch ($action){
         //fetch attempt and ai data
         $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
         $force_aidata=true;//in this case we are just interested in ai data
-        $reviewmode = $reviewmode=constants::REVIEWMODE_NONE;
+        $reviewmode = $reviewmode=constants::REVIEWMODE_MACHINE;
 
-
-
-
-        $data=array(
-            'action'=>'gradenowsubmit',
-            'attemptid'=>$attemptid,
-            'n'=>$moduleinstance->id,
-            'sessiontime'=>$gradenow->formdetails('sessiontime',$force_aidata),
-            'sessionscore'=>$gradenow->formdetails('sessionscore',$force_aidata),
-            'sessionendword'=>$gradenow->formdetails('sessionendword',$force_aidata),
-            'sessionerrors'=>$gradenow->formdetails('sessionerrors',$force_aidata));
-        $nextid = $gradenow->get_next_ungraded_id();
-        $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
-        $gradenowform->set_data($data);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
-        echo $gradenowrenderer->render_gradenow($gradenow);
-        $gradenowform->display();
+        echo $gradenowrenderer->render_machinereview($gradenow);
+        //if we can grade and manage attempts show the gradenow button
+        if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
+            echo $gradenowrenderer->render_machinereview_buttons($gradenow);
+        }
         echo $renderer->footer();
         return;
 
@@ -212,17 +201,6 @@ switch ($action){
         $force_aidata=true;//in this case we are just interested in ai data
         $reviewmode=constants::REVIEWMODE_MACHINE;
 
-        $data=array(
-            'action'=>'gradenowsubmit',
-            'attemptid'=>$attemptid,
-            'n'=>$moduleinstance->id,
-            'sessiontime'=>$gradenow->formdetails('sessiontime',$force_aidata),
-            'sessionscore'=>$gradenow->formdetails('sessionscore',$force_aidata),
-            'sessionendword'=>$gradenow->formdetails('sessionendword',$force_aidata),
-            'sessionerrors'=>$gradenow->formdetails('sessionerrors',$force_aidata));
-        $nextid = $gradenow->get_next_ungraded_id();
-        $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
-        $gradenowform->set_data($data);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
 
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
@@ -231,7 +209,6 @@ switch ($action){
         if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
             echo $gradenowrenderer->render_machinereview_buttons($gradenow);
         }
-       // $gradenowform->display();
         echo $renderer->footer();
         return;
 
