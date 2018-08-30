@@ -14,7 +14,7 @@ class machinegrading extends basereport
 {
 
     protected $report = "machinegrading";
-    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'rawwpm', 'rawaccuracy_p', 'rawgrade_p','review','adjustedwpm', 'adjustedaccuracy_p', 'adjustedgrade_p',  'timecreated');
+    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'rawwpm', 'rawaccuracy_p', 'rawgrade_p','review','regrade','adjustedwpm', 'adjustedaccuracy_p', 'adjustedgrade_p',  'timecreated');
     protected $headingdata = null;
     protected $qcache = array();
     protected $ucache = array();
@@ -103,7 +103,7 @@ class machinegrading extends basereport
                 //FOR  REGRADE ... when fixing bogeys (replace review link with this one)
                 if ($withlinks) {
                     $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'regradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
-                    $ret = \html_writer::link($link, 'REGRADE');
+                    $ret = \html_writer::link($link, get_string('regrade', constants::MOD_READALOUD_LANG));
                 } else {
                     $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
                 }

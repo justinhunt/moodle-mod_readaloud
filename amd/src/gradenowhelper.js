@@ -125,10 +125,9 @@ define(['jquery','core/log'], function($,log) {
                 this.options.endwordnumber = this.options.totalwordcount;
             }
 
-
-
             //add the endword marker
-            this.controls.endwordmarker.addClass(this.cd.endspaceclass);
+            var thespace = $('#' + this.cd.spaceclass + '_' + this.options.endwordnumber );
+            thespace.addClass(this.cd.endspaceclass);
 
             //register events
            this.register_events();

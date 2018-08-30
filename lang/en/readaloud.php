@@ -186,6 +186,8 @@ $string['aigradenow']='AI Grade';
 $string['machinegrading']='Machine Evaluations';
 $string['viewmachinegrading']='Machine Evaluation';
 $string['review']='Review';
+$string['regrade']='Regrade';
+
 
 $string['humanevaluatedmessage']='Your latest attempt has been graded by your teacher and results are displayed below.';
 $string['machineevaluatedmessage']='Your latest attempt has been graded <i>automatically</i> and results are displayed below.';
