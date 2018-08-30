@@ -37,7 +37,10 @@ define(['jquery','core/log'], function($,log) {
             formelementtime: 'mod_readaloud_grading_form_sessiontime',
             formelementerrors: 'mod_readaloud_grading_form_sessionerrors',
             modebutton: 'mod_readaloud_modebutton',
-            aigradebutton: 'mod_readaloud_aigradebutton',
+
+            spotcheckbutton: 'mod_readaloud_spotcheckbutton',
+            transcriptcheckbutton: 'mod_readaloud_transcriptcheckbutton',
+            gradingbutton: 'mod_readaloud_gradingbutton',
             clearbutton: 'mod_readaloud_clearbutton',
             spotcheckmode: 'mod_readaloud_spotcheckmode',
             aiunmatched: 'mod_readaloud_aiunmatched',
@@ -109,6 +112,11 @@ define(['jquery','core/log'], function($,log) {
                 //We may have session matches and AI data, if AI is turned on
                 this.options.sessionmatches=JSON.parse(opts['sessionmatches']);
                 this.options.aidata=opts['aidata'];
+                if(this.options.aidata) {
+                    this.options.transcriptwords = opts['aidata'].transcript.split(" ");
+                }else{
+                    this.options.transcriptwords=[];
+                }
 
                 //if this has been graded, draw the gradestate
                 this.redrawgradestate();
@@ -175,7 +183,10 @@ define(['jquery','core/log'], function($,log) {
 
             //passage action buttons
             this.controls.modebutton =  $("#" + this.cd.modebutton);
-            this.controls.aigradebutton =  $("#" + this.cd.aigradebutton);
+
+            this.controls.gradingbutton =  $("#" + this.cd.gradingbutton);
+            this.controls.spotcheckbutton =  $("#" + this.cd.spotcheckbutton);
+            this.controls.transcriptcheckbutton =  $("#" + this.cd.transcriptcheckbutton);
             this.controls.clearbutton =  $("#" + this.cd.clearbutton);
 
         },
@@ -204,6 +215,29 @@ define(['jquery','core/log'], function($,log) {
                 if(this.options.sessionmatches) {
                     this.doSpotCheckMode();
                 }
+
+                //add listeners for click events
+                this.controls.eachword.click(
+                    function() {
+                        //if we are in spotcheck mode just return, we do not grade
+                        if (that.currentmode == 'spotcheck') {
+                            return;
+                        }
+
+                        //get the word that was clicked
+                        var wordnumber = $(this).attr('data-wordnumber');
+                        var theword = $(this).text();
+
+                        if (that.currentmode == 'transcriptcheck') {
+                            var chunk = that.fetchTranscriptChunk(wordnumber);
+                            if (chunk) {
+                                alert(chunk);
+                            }
+                            return;
+                        }
+                    });
+
+            //if not in review mode
             }else{
 
                 //process word clicks
@@ -214,9 +248,16 @@ define(['jquery','core/log'], function($,log) {
                             return;
                         }
 
-
+                        //get the word that was clicked
                         var wordnumber = $(this).attr('data-wordnumber');
                         var theword = $(this).text();
+
+                        if(that.currentmode=='transcriptcheck'){
+                            var chunk = that.fetchTranscriptChunk(wordnumber);
+                            if(chunk){alert(chunk);}
+                            return;
+                        }
+
                         //this will disallow badwords after the endmarker
                         if(that.options.enforcemarker && Number(wordnumber)>Number(that.options.endwordnumber)){
                             return;
@@ -236,6 +277,13 @@ define(['jquery','core/log'], function($,log) {
                 //process space clicks
                 this.controls.eachspace.click(
                     function() {
+
+                        //if we are in spotcheck or transcript check mode just return, we do not grade
+                        if(that.currentmode=='spotcheck' || that.currentmode=='transcriptcheck' ){
+                            return;
+                        }
+
+
                         //this event is entered by  click on space
                         //it relies on attr data-wordnumber being set correctly
                         var wordnumber = $(this).attr('data-wordnumber');
@@ -257,6 +305,12 @@ define(['jquery','core/log'], function($,log) {
 
                 //process clearbutton's click event
                 this.controls.clearbutton.click(function(){
+
+                    //if we are in spotcheck or transcript check mode just return, we do not grade
+                    if(that.currentmode=='spotcheck' || that.currentmode=='transcriptcheck' ){
+                        return;
+                    }
+
                     //clear all the error words
                     $('.' + that.cd.badwordclass).each(function(index){
                         var wordnumber = $(this).attr('data-wordnumber');
@@ -276,19 +330,67 @@ define(['jquery','core/log'], function($,log) {
                     that.processscores();
                 });
 
-                //modebutton: turn on spotchecking
-                this.controls.modebutton.click(function(){
-                    switch(that.currentmode){
-                        case 'grading':
-                            that.doSpotCheckMode();
-                            break;
-                        case 'spotcheck':
-                            that.undoSpotCheckMode();
-                            break;
-                    }
+
+                //modebutton: turn on grading
+                this.controls.gradingbutton.click(function(){
+                    that.undoCurrentMode();
+                    that.doGradingMode();
+                    that.updateButtonStates();
                 });
 
             }//end of if/else reviewmode
+
+            //either in or out of review mode we want these
+            //modebutton: turn on spotchecking
+            this.controls.spotcheckbutton.click(function(){
+                that.undoCurrentMode();
+                that.doSpotCheckMode();
+                that.updateButtonStates();
+            });
+
+            //modebutton: turn on transcript checking
+            this.controls.transcriptcheckbutton.click(function(){
+                that.undoCurrentMode();
+                that.doTranscriptCheckMode();
+                that.updateButtonStates();
+            });
+
+
+        },
+
+        undoCurrentMode: function(){
+            switch(this.currentmode){
+                case 'grading':
+                    //we do not undo this, its the default
+                    break;
+                case 'spotcheck':
+                    this.undoSpotCheckMode();
+                    break;
+                case 'transcriptcheck':
+                    this.undoTranscriptCheckMode();
+                    break;
+            }
+
+        },
+
+        updateButtonStates: function(){
+            switch(this.currentmode){
+                case 'grading':
+                    this.controls.gradingbutton.prop('disabled', true);
+                    this.controls.spotcheckbutton.prop('disabled', false);
+                    this.controls.transcriptcheckbutton.prop('disabled', false);
+                    break;
+                case 'spotcheck':
+                    this.controls.gradingbutton.prop('disabled', false);
+                    this.controls.spotcheckbutton.prop('disabled', true);
+                    this.controls.transcriptcheckbutton.prop('disabled', false);
+                    break;
+                case 'transcriptcheck':
+                    this.controls.gradingbutton.prop('disabled', false);
+                    this.controls.spotcheckbutton.prop('disabled', false);
+                    this.controls.transcriptcheckbutton.prop('disabled', true);
+                    break;
+            }
 
         },
 
@@ -443,12 +545,7 @@ define(['jquery','core/log'], function($,log) {
                     }
                 }
             });
-
             this.currentmode="spotcheck";
-            var caption = M.util.get_string('gradingbutton', 'mod_readaloud');
-            this.controls.modebutton.text(caption);
-            this.controls.modebutton.removeClass('btn-success');
-            this.controls.modebutton.addClass('btn-primary');
         },
 
         undoSpotCheckMode: function(){
@@ -457,14 +554,112 @@ define(['jquery','core/log'], function($,log) {
             $('.' + this.cd.wordclass).removeClass(this.cd.aiunmatched);
             $('.' + this.cd.spaceclass).removeClass(this.cd.aiunmatched);
             $(this.controls.audioplayer).off("timeupdate");
-            this.currentmode="grading";
-            var caption = M.util.get_string('spotcheckbutton', 'mod_readaloud');
-            this.controls.modebutton.text(caption);
-            this.controls.modebutton.removeClass('btn-primary');
-            this.controls.modebutton.addClass('btn-success');
-
-
         },
+
+        /*
+       * Here we mark up the passage for transcriptcheck mode.
+        */
+        doTranscriptCheckMode: function(){
+            var that = this;
+            //mark up all ai unmatched words as transcriptcheck
+            if(this.options.sessionmatches){
+                var prevmatch=0;
+                $.each(this.options.sessionmatches,function(index,match){
+                    var unmatchedcount = index - prevmatch - 1;
+                    if(unmatchedcount>0){
+                        for(var errorword =1;errorword<unmatchedcount+1; errorword++){
+                            var wordnumber = prevmatch + errorword;
+                            $('#' + that.cd.wordclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
+                        }
+                    }
+                    prevmatch = parseInt(index);
+                });
+
+                //mark all words from last matched word to the end as aiunmatched
+                for(var errorword =prevmatch+1;errorword<=this.options.endwordnumber; errorword++){
+                    var wordnumber = errorword;
+                    $('#' + that.cd.wordclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
+                }
+            }
+
+            //mark up spaces between aiunmatched word and aiunmatched (bad spaces)
+            $('.' + this.cd.aiunmatched).each(function(index){
+                var wordnumber = parseInt($(this).attr('data-wordnumber'));
+                //build chains (highlight spaces) of badwords or aiunmatched
+                if($('#' + that.cd.wordclass + '_' + (wordnumber + 1)).hasClass(that.cd.aiunmatched)){
+                    $('#' + that.cd.spaceclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
+                };
+            });
+
+            this.currentmode="transcriptcheck";
+        },
+
+        undoTranscriptCheckMode: function(){
+            $('.' + this.cd.wordclass).removeClass(this.cd.aiunmatched);
+            $('.' + this.cd.spaceclass).removeClass(this.cd.aiunmatched);
+        },
+
+        doGradingMode: function(){
+            this.currentmode="grading";
+        },
+
+        /*
+       * This will take a wordindex and find the previous and next transcript indexes that were matched and
+       * return all the transcript words in between those.
+        */
+        fetchTranscriptChunk: function(checkindex){
+
+            var transcriptlength= this.options.transcriptwords.length;
+            if(transcriptlength==0){return "";}
+
+            //find startindex
+            var startindex=-1;
+            for(var wordnumber=checkindex;wordnumber>0;wordnumber--){
+
+                var isunmatched =$('#' + this.cd.wordclass + '_' + wordnumber).hasClass(this.cd.aiunmatched);
+                //if current wordnumber part of the playchain, set it as the startindex.
+                // And get the audiotime if its a matched word. (we only know audiotime of matched words)
+                if(!isunmatched){
+                    startindex=this.options.sessionmatches['' + wordnumber].tposition+1;
+                    break;
+                }
+            }//end of for loop
+
+            //find endindex
+            var endindex=-1;
+            for(var wordnumber=checkindex;wordnumber<=transcriptlength;wordnumber++){
+
+                var isunmatched =$('#' + this.cd.wordclass + '_' + wordnumber).hasClass(this.cd.aiunmatched);
+                //if current wordnumber part of the playchain, set it as the startindex.
+                // And get the audiotime if its a matched word. (we only know audiotime of matched words)
+                if(!isunmatched){
+                    endindex=this.options.sessionmatches['' + wordnumber].tposition-1;
+                    break;
+                }
+            }//end of for loop --
+            if(startindex==-1){startindex=1;}
+            if(endindex==transcriptlength){endindex=-1;}
+
+            //up until this point the indexes have started from 1, since the passage word numbers start from 1
+            //but the transcript array is 0 based so we adjust. array splice function does not include item and endindex
+            ///so it needs to be one more then start index. hence we do not adjust that
+            startindex--;
+
+            //finally we return the section
+            var  ret=false;
+            if(endindex>0) {
+              ret = this.options.transcriptwords.slice(startindex, endindex).join(" ");
+            }else{
+              ret = this.options.transcriptwords.slice(startindex).join(" ");
+            }
+            if(ret.trim()==''){
+                return false;
+            }else{
+                return ret;
+            }
+        },
+
+
 
         playword: function(){
             var m = this;//M.mod_readaloud.gradenowhelper;

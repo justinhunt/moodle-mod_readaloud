@@ -23,19 +23,14 @@ class diff{
     const UNMATCHED    = 1;
 
 
+    /*
+ * Split passage of text into an array of words
+ *
+ */
     public static function fetchWordArray($thetext){
-        //lowercaseify
-        $thetext=strtolower($thetext);
 
-        //remove any html
-        $thetext = strip_tags($thetext);
-
-        //replace all line ends with spaces
-        $thetext = preg_replace('#\R+#', ' ', $thetext);
-
-        //remove punctuation
-        //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
-        $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
+        //tidy up the text so its just lower case words seperated by spaces
+        $thetext = self::cleanText($thetext);
 
         //split on spaces into words
         $textbits = explode(' ',$thetext);
@@ -49,6 +44,31 @@ class diff{
         return $textbits;
     }
 
+ /*
+ * Clean word of things that might prevent a match
+  * i) lowercase it
+  * ii) remove html characters
+  * iii) replace any line ends with spaces (so we can "split" later)
+  * iv) remove punctuation
+ *
+ */
+    public static function cleanText($thetext){
+        //lowercaseify
+        $thetext=strtolower($thetext);
+
+        //remove any html
+        $thetext = strip_tags($thetext);
+
+        //replace all line ends with spaces
+        $thetext = preg_replace('#\R+#', ' ', $thetext);
+
+        //remove punctuation
+        //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
+        $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
+
+        return $thetext;
+    }
+
 /*
  * This function parses and replaces {{view|alternate}} strings from text passages
  * It is used to prepare the text for display, and also the text for comparison
@@ -59,8 +79,6 @@ class diff{
  */
 public static function fetchAlternativesArray($thealternates)
 {
-
-
     //return empty if input data is useless
     if(trim($thealternates)==''){
         return [];
@@ -78,7 +96,16 @@ public static function fetchAlternativesArray($thealternates)
                     continue;
                 case 2:
                 default:
-                    $alternatives[] = $set;
+                    //clean each word in set
+                    $words= [];
+                    foreach($set as $word){
+                        $word = trim($word);
+                        if($word !='*') {
+                            $word = self::cleanText($word);
+                        }
+                        $words[]=$word;
+                    }
+                    $alternatives[] = $words;
             }
         }
     }
@@ -88,12 +115,15 @@ public static function fetchAlternativesArray($thealternates)
 
     //Loop through passage, nest looping through transcript building collections of sequences (passage match records)
     //one sequence = sequence_length[length] + sequence_start(transcript)[tposition] + sequence_start(passage)[pposition]
-    //we do not discriminate over length or position of sequence. All sequences are saved
+    //we do not discriminate over length or position of sequence at this stage. All sequences are saved
 
-    //NB the match length in the transcript may have differed from the passage, if the alternatives has more than one word
+    //NB The sequence length should be the same in the passage and transcript (because they "matched")
+    //But we attempted to have multiple word alteratives which could mean that the match length in the transcript
+    // would differ from the match length in the passage
     //eg 1989 -> nineteen eighty nine.
     // BUT we cancelled this feature,
-    // but still keep the transcript sequence length and passage sequence length code in place in this function
+    // however still keep the transcript sequence length and passage sequence length code in place in this function
+    // but we could probably edit this back one day
     //
     //returns array of sequences
     public static function fetchSequences($passage, $transcript, $alternatives)
@@ -119,11 +149,9 @@ public static function fetchAlternativesArray($thealternates)
 
                 //if no direct match is there an alternates match
                 if(!$match && $alternatives){
-                    $matchlength = self::fetch_alternatives_matchlength($passageword,
+                    $matchlength = self::check_alternatives_for_match($passageword,
                         $transcriptword,
-                        $alternatives,
-                        $transcript,
-                        $t_slength + $tstart);
+                        $alternatives);
                     if($matchlength){
                         $match= true;
                         $t_matchlength = $matchlength;
@@ -191,7 +219,7 @@ public static function fetchAlternativesArray($thealternates)
      * will return the length of the match. Anything greater than 0 is a full match.
      * We just look for single word matches currently, but stil return length of match, ie 1
      */
-    public static function fetch_alternatives_matchlength($passageword,$transcriptword,$alternatives,$transcript,$startpoint){
+    public static function check_alternatives_for_match($passageword,$transcriptword,$alternatives){
             $match =false;
             $matchlength=0;
 
@@ -231,7 +259,7 @@ public static function fetchAlternativesArray($thealternates)
 
     //returns an array of "diff" results, one for each word(ie position) in passage
     //i) default all passage positions to unmatched (self::UNMATCHED)
-    //ii) sort sequences by length, transcript position
+    //ii) sort sequences by length(longer sorts higher), transcript position
     //iii) for each sequence
     //   a)- check passage match in sequence was not already matched by previous sequence (bust if so)
     //   b)- check transcript match in sequence[tpos -> tpos+length] was not already allocated to another part of passage in previous sequence
@@ -246,6 +274,7 @@ public static function fetchAlternativesArray($thealternates)
         $diffs=array_fill(0, $passagelength, [self::UNMATCHED,-1]);
 
         //ii) sort sequences by length, transcript posn
+        //long sequences sort higher, and are placed in the diff array first
         usort($sequences, array('\mod_readaloud\diff','cmp'));
 
         //record prior sequences for iii)

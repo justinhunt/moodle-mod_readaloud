@@ -193,6 +193,7 @@ $string['machineevaluatedmessage']='Your latest attempt has been graded <i>autom
 $string['dospotcheck']="Spot Check";
 $string['spotcheckbutton']="Spot Check Mode";
 $string['gradingbutton']="Grading Mode";
+$string['transcriptcheckbutton']="Transcript Check Mode";
 $string['doaigrade']="AI Grade";
 $string['doclear']="Clear all markers";
 

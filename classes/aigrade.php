@@ -119,7 +119,7 @@ class aigrade
         if($transcript ) {
             $record = new \stdClass();
             $record->id = $this->recordid;
-            $record->transcript = $transcript;
+            $record->transcript = diff::cleanText($transcript);
             $record->fulltranscript = $fulltranscript;
             $success = $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
 
@@ -223,6 +223,15 @@ class aigrade
         $record->sessionscore = $scores->sessionscore;
         $record->wpm = $scores->wpmscore;
         $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
+
+        //also uodate our internal data to prevent another db call to refresh data
+       $this->aidata->sessionerrors = $sessionerrors;
+       $this->aidata->errorcount = $errorcount;
+       $this->aidata->sessionmatches = $sessionmatches;
+       $this->aidata->sessionendword = $sessionendword;
+       $this->aidata->accuracy = $scores->accuracyscore;
+       $this->aidata->sessionscore = $scores->sessionscore;
+       $this->aidata->wpm = $scores->wpmscore;
     }
 
 }

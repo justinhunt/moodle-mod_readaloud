@@ -50,13 +50,22 @@ class gradenow_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function render_gradenowbutton($gradenow){
+    public function render_machinereview_buttons($gradenow){
         $attemptid = $gradenow->attemptdetails('id');
         $readaloudid = $gradenow->attemptdetails('readaloudid');
         $url = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $readaloudid, 'attemptid' => $attemptid));
         $btn = new \single_button($url, get_string('gradethisattempt', constants::MOD_READALOUD_LANG), 'post');
         $gradenowbutton = $this->output->render($btn);
-        $ret = \html_writer::div($gradenowbutton,constants::MOD_READALOUD_CLASS . '_grading_passageactions');
+
+        $spotcheckbutton = \html_writer::tag('button',
+            get_string('spotcheckbutton',constants::MOD_READALOUD_LANG),
+            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_spotcheckbutton','class'=>constants::MOD_READALOUD_CLASS .'_spotcheckbutton btn btn-success','disabled'=>true));
+
+        $transcriptcheckbutton = \html_writer::tag('button',
+            get_string('transcriptcheckbutton',constants::MOD_READALOUD_LANG),
+            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_transcriptcheckbutton','class'=>constants::MOD_READALOUD_CLASS .'_transcriptcheckbutton btn btn-warning'));
+
+        $ret = \html_writer::div($gradenowbutton . $spotcheckbutton . $transcriptcheckbutton,constants::MOD_READALOUD_CLASS . '_grading_passageactions');
         return $ret;
     }
 
@@ -119,17 +128,24 @@ class gradenow_renderer extends \plugin_renderer_base {
     }
     public function render_passageactions(){
 
+        $gradingbutton = \html_writer::tag('button',
+            get_string('gradingbutton',constants::MOD_READALOUD_LANG),
+            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_gradingbutton','class'=>constants::MOD_READALOUD_CLASS .'_gradingbutton btn btn-primary', 'disabled'=>true));
+
         $spotcheckbutton = \html_writer::tag('button',
             get_string('spotcheckbutton',constants::MOD_READALOUD_LANG),
-            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_modebutton','class'=>constants::MOD_READALOUD_CLASS .'_modebutton btn btn-success'));
-        $aigradebutton = \html_writer::tag('button',
-            get_string('doaigrade',constants::MOD_READALOUD_LANG),
-            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_aigradebutton','class'=>constants::MOD_READALOUD_CLASS .'_aigradebutton btn btn-warning hidden'));
+            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_spotcheckbutton','class'=>constants::MOD_READALOUD_CLASS .'_spotcheckbutton btn btn-success'));
+
+        $transcriptcheckbutton = \html_writer::tag('button',
+            get_string('transcriptcheckbutton',constants::MOD_READALOUD_LANG),
+            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_transcriptcheckbutton','class'=>constants::MOD_READALOUD_CLASS .'_transcriptcheckbutton btn btn-warning'));
+
+
         $clearbutton = \html_writer::tag('button',
             get_string('doclear',constants::MOD_READALOUD_LANG),
             array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_clearbutton','class'=>constants::MOD_READALOUD_CLASS .'_clearbutton btn btn-link'));
 
-        $buttons = $spotcheckbutton . $aigradebutton . $clearbutton;
+        $buttons =  $gradingbutton . $spotcheckbutton . $transcriptcheckbutton . $clearbutton;
 
         $container = \html_writer::div($buttons,constants::MOD_READALOUD_CLASS . '_grading_passageactions');
         return $container;
