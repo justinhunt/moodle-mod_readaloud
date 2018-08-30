@@ -140,7 +140,9 @@ public static function fetchAlternativesArray($thealternates)
         for($pstart =0; $pstart < $p_length; $pstart++){
             //loop through transcript finding matches starting from current passage word
             //we step over the length of any sequences we find to begin search for next sequence
-            while($t_slength + $tstart < $t_length) {
+            while($t_slength + $tstart < $t_length &&
+                $p_slength + $pstart < $p_length
+            ) {
                 //check for a direct match
                 $passageword= $passage[$p_slength + $pstart];
                 $transcriptword =$transcript[$t_slength + $tstart];
