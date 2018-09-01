@@ -20,6 +20,9 @@
 	margin: auto;
 	text-align: center;
 	width: 100%;
+	background-image: url([[pix:mod_readaloud|loader]]);
+	background-repeat: no-repeat;
+	background-position: center center;
 }
 
 .mod_readaloud_recorder_instr_right,
@@ -143,6 +146,9 @@ div.mod_readaloud_passage_cont.mod_readaloud_postattempt {
 .mod_readaloud_feedback_cont {
 	display: none;
 }
+.mod_readaloud_backtotop_cont {
+	display: none;
+}
 div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 	display: block;
 }
@@ -213,6 +219,7 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 	display: flex;
 }
 .mod_readaloud_afterattempt_cont,
+.mod_readaloud_backtotop_cont,
 .mod_readaloud_ungraded_cont {
 	margin-left: auto;
 	margin-right: auto;

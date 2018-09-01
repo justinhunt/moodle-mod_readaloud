@@ -28,6 +28,7 @@ const MOD_READALOUD_DRAFT_CONTROL='mod_readaloud_draft_control';
 const MOD_READALOUD_PROGRESS_CONTAINER='mod_readaloud_progress_cont';
 const MOD_READALOUD_HIDER='mod_readaloud_hider';
 const MOD_READALOUD_STOP_BUTTON='mod_readaloud_stop_button';
+const MOD_READALOUD_BACKTOTOP_CONTAINER='mod_readaloud_backtotop_cont';
 const MOD_READALOUD_RECORD_BUTTON_CONTAINER='mod_readaloud_record_button_cont';
 const MOD_READALOUD_START_BUTTON_CONTAINER='mod_readaloud_start_button_cont';
 const MOD_READALOUD_STOP_BUTTON_CONTAINER='mod_readaloud_stop_button_cont';

@@ -57,6 +57,7 @@ class gradenowform extends \moodleform{
 			$buttonarray[] = &$mform->createElement('submit', 'submitbutton2', get_string('saveandnext',constants::MOD_READALOUD_LANG));
 		}
 		$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+
 	//	$mform->closeHeaderBefore('buttonar');
 		
 		   //-------------------------------------------------------------------------------

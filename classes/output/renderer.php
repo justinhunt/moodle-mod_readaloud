@@ -80,6 +80,19 @@ class renderer extends \plugin_renderer_base {
     /**
      *
      */
+    public function show_backtotopbutton($moduleinstance){
+
+        $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/view.php',
+            array('n'=>$moduleinstance->id)),get_string('backtotop',constants::MOD_READALOUD_FRANKY));
+
+        $ret = \html_writer::div($button ,constants::MOD_READALOUD_BACKTOTOP_CONTAINER);
+        return $ret;
+
+    }
+
+    /**
+     *
+     */
     public function exceededattempts($moduleinstance){
         $message = get_string("exceededattempts",constants::MOD_READALOUD_LANG,$moduleinstance->maxattempts);
         $ret = \html_writer::div($message ,constants::MOD_READALOUD_CLASS  . '_afterattempt_cont');
@@ -277,6 +290,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['hider']=constants::MOD_READALOUD_HIDER;
         $recopts['progresscontainer'] = constants::MOD_READALOUD_PROGRESS_CONTAINER;
         $recopts['feedbackcontainer'] = constants::MOD_READALOUD_FEEDBACK_CONTAINER;
+        $recopts['backtotopcontainer'] = constants::MOD_READALOUD_BACKTOTOP_CONTAINER;
         $recopts['errorcontainer'] = constants::MOD_READALOUD_ERROR_CONTAINER;
         $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
 

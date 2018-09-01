@@ -93,7 +93,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$mform->addElement('editor','feedback_editor',get_string('feedbacklabel',constants::MOD_READALOUD_LANG),$opts, $ednofileoptions);
 		
 		//defaults
-		$mform->setDefault('passage_editor',array('text'=>'', 'format'=>FORMAT_MOODLE));		
+		$mform->setDefault('passage_editor',array('text'=>'', 'format'=>FORMAT_PLAIN));
 		$mform->setDefault('welcome_editor',array('text'=>$config->defaultwelcome, 'format'=>FORMAT_MOODLE));
 		$mform->setDefault('feedback_editor',array('text'=>$config->defaultfeedback, 'format'=>FORMAT_MOODLE));
 		
@@ -106,6 +106,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addElement('text', 'targetwpm', get_string('targetwpm', constants::MOD_READALOUD_LANG), array('size'=>'8'));
         $mform->setType('targetwpm', PARAM_INT);
 		$mform->setDefault('targetwpm',$config->targetwpm);
+        $mform->addHelpButton('targetwpm', 'targetwpm', constants::MOD_READALOUD_LANG);
 		
 		//allow early exit
 		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', constants::MOD_READALOUD_LANG), get_string('allowearlyexit_details', constants::MOD_READALOUD_LANG));
@@ -122,13 +123,14 @@ class mod_readaloud_mod_form extends moodleform_mod {
             $autoacc_options);
         $mform->setType('accadjustmethod', PARAM_INT);
         $mform->setDefault('accadjustmethod',$config->accadjustmethod);
-
+        $mform->addHelpButton('accadjustmethod', 'accadjustmethod', constants::MOD_READALOUD_LANG);
 
         // Fixed Error estimate field
         $mform->addElement('text', 'accadjust', get_string('accadjust', constants::MOD_READALOUD_LANG), array('size'=>'8'));
         $mform->setType('accadjust', PARAM_INT);
         $mform->setDefault('accadjust',$config->accadjust);
         $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
+        $mform->addHelpButton('accadjust', 'accadjust', constants::MOD_READALOUD_LANG);
 
         // Post attempt evaluation display (human)
         $postattempt_options = \mod_readaloud\utils::get_postattempt_options();

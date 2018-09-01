@@ -61,21 +61,41 @@ class grading extends basereport
                 break;
 
             case 'wpm':
-                $ret = $record->wpm;
+                if($record->sessiontime ==0){
+                    $ret = '';
+                }else {
+                    $ret = $record->wpm;
+                }
                 break;
 
             case 'accuracy_p':
-                $ret = $record->accuracy;
+                if($record->sessiontime ==0){
+                    $ret = '';
+                }else {
+                    $ret = $record->accuracy;
+                }
                 break;
 
             case 'grade_p':
-                $ret = $record->sessionscore;
+                if($record->sessiontime ==0){
+                    $ret = '';
+                }else {
+                    $ret = $record->sessionscore;
+                }
                 break;
 
             case 'gradenow':
                 if ($withlinks) {
+
+                    if($record->sessiontime ==0) {
+                        $buttonclasses= 'btn btn-default';
+                        $buttonlabel = get_string('gradenow', constants::MOD_READALOUD_LANG);
+                    }else{
+                        $buttonclasses= '';
+                        $buttonlabel= get_string('regrade', constants::MOD_READALOUD_LANG);
+                    }
                     $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
-                    $ret = \html_writer::link($link, get_string('gradenow', constants::MOD_READALOUD_LANG));
+                    $ret = \html_writer::link($link, $buttonlabel,array('class'=>$buttonclasses));
                 } else {
                     $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
                 }
@@ -137,7 +157,11 @@ class grading extends basereport
 
         $emptydata = array();
         $user_attempt_totals = array();
-        $alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE, array('readaloudid' => $formdata->readaloudid), 'userid, id DESC');
+
+        $sql = "SELECT tu.*  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
+            " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
+        $alldata = $DB->get_records_sql($sql, array($formdata->readaloudid));
+
 
         if ($alldata) {
 

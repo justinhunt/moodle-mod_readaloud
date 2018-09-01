@@ -67,14 +67,23 @@ class gradenow{
    
    public function get_next_ungraded_id(){
 		global $DB;
-		$where = "id > " .$this->attemptid . " AND sessionscore = 0 AND readaloudid = " . $this->attemptdata->readaloudid;
-		$records = $DB->get_records_select(constants::MOD_READALOUD_USERTABLE,$where,array(),' id ASC');
-		if($records){
-			$rec = array_shift($records);
-			return $rec->id;
-		}else{
-			return false;
-		}
+
+       $sql = "SELECT tu.*  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
+           " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
+       $records = $DB->get_records_sql($sql, array($this->attemptdata->readaloudid));
+       $past=false;
+       $nextid=false;
+       foreach($records as $data) {
+           if ($data->userid == $this->attemptdata->userid) {
+               $past = true;
+           } else {
+               if ($past  && $data->sessionscore ==0) {
+                   $nextid = $data->id;
+                   break;
+               }
+           }//end of id $data userid
+       }//end of for loop
+        return $nextid;
    }
    
    public function update($formdata){

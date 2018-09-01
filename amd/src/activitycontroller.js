@@ -15,6 +15,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
         sorryboxid: null,
         controls: null,
         ra_recorder: null,
+        rec_time_start: 0,
 
         //for making multiple instances
         clone: function(){
@@ -73,7 +74,8 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
                 instructionscontainer: $('.' +  opts['instructionscontainer']),
                 recinstructionscontainerright: $('.' +  opts['recinstructionscontainerright']),
                 recinstructionscontainerleft: $('.' +  opts['recinstructionscontainerleft']),
-                allowearlyexit: $('.' +  opts['allowearlyexit'])
+                allowearlyexit: $('.' +  opts['allowearlyexit']),
+                backtotopcontainer: $('.' +  opts['backtotopcontainer'])
             };
             this.controls = controls;
         },
@@ -98,6 +100,8 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             //contains no meaningful data
             //See https://api.poodll.com
             var on_recording_start= function(eventdata){
+
+                dd.rec_time_start = new Date().getTime();
                 dd.dopassagelayout();
                 dd.controls.passagecontainer.show(1000,dd.beginall);
             };
@@ -106,8 +110,11 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             //contains no meaningful data
             //See https://api.poodll.com
             var on_recording_end= function(eventdata){
-                //ultimately this is good
-                //but its jama till the true recorder is ready
+                //its a bit hacky but the rec end event can arrive immed. somehow probably when the mic test ends
+                var now = new Date().getTime();
+                if((now - dd.rec_time_start) < 3000){
+                    return;
+                }
                 dd.douploadlayout();
             };
 
@@ -201,9 +208,10 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             m.controls.hider.fadeOut('fast');
             m.controls.progresscontainer.fadeOut('fast');
             m.controls.instructionscontainer.hide();
-           // m.controls.passagecontainer.hide();
+            m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.show();
+            m.controls.backtotopcontainer.show();
         },
         doerrorlayout: function(){
             var m = this;
@@ -212,6 +220,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
             m.controls.errorcontainer.show();
+            m.controls.backtotopcontainer.show();
         }
     };//end of returned object
 });//total end

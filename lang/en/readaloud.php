@@ -83,6 +83,7 @@ $string['showingmachinegradedattempt']='Machine evaluated attempt for: {$a}';
 $string['basicreport']='Basic Report';
 $string['returntoreports']='Return to Reports';
 $string['returntogradinghome']='Return to Grading Top';
+$string['returntomachinegradinghome']='Return to Machine Evaluations Top';
 $string['exportexcel']='Export to CSV';
 $string['mingradedetails'] = 'The minimum grade required to "complete" this activity.';
 $string['mingrade'] = 'Minimum Grade';
@@ -106,8 +107,8 @@ $string['feedbacklabel_details'] ='The default text to show in the feedback fiel
 $string['welcomelabel'] = 'Welcome Message';
 $string['feedbacklabel'] = 'Feedback Message';
 $string['alternatives']='Alternatives';
-$string['defaultwelcome'] = 'Please read the following passage aloud.';
-$string['defaultfeedback'] = 'Thanks for your time.';
+$string['defaultwelcome'] = 'To begin the activity first test your microphone. When we can hear sound from your microphone a start button will appear. After you press the start button, a reading passage will appear. Read the passage aloud as clearly as you can.';
+$string['defaultfeedback'] = 'Thanks for reading. Please be patient until your attempt has been evaluated.';
 $string['timelimit'] = 'Time Limit';
 $string['gotnosound'] = 'We could not hear you. Please check the permissions and settings for microphone and try again.';
 $string['recordnameschool'] = 'Say your name and school';
@@ -127,10 +128,11 @@ $string['timecreated'] = 'Time Created';
 $string['nodataavailable'] = 'No Data Available Yet';
 $string['saveandnext'] = 'Save .... and next';
 $string['reattempt'] = 'Try Again';
-$string['notgradedyet'] = 'Your last submission has not been graded yet';
+$string['notgradedyet'] = 'Your submission has been received, but has not been graded yet';
 $string['enabletts'] = 'Enable TTS(experimental)';
 $string['enabletts_details'] = '<b>TTS is currently not implemented</b>. When implemented words marked as errors, if clicked will play back the correct pronunciation via a TTS service.';
-$string['ttslanguage'] = 'TTS Language';
+//we hijacked this setting for both TTS STT .... bad ... but they are always the same aren't they?
+$string['ttslanguage'] = 'Passage Language';
 $string['deleteattemptconfirm'] = "Are you sure that you want to delete this attempt?";
 $string['deletenow']='';
 $string['allowearlyexit']='Can exit early';
@@ -214,6 +216,6 @@ $string['machinepostattempt_details']="What to show students after they have att
 $string['postattempt_none']="Nothing";
 $string['postattempt_eval']="The evaluation(scores)";
 $string['postattempt_evalerrors']="The evaluation(scores) and errors";
-
-
+$string['attemptsperpage']="Attempts to show per page: ";
+$string['backtotop']="Back to Start";
 

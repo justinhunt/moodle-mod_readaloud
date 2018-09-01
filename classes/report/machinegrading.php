@@ -167,12 +167,14 @@ class machinegrading extends basereport
         $emptydata = array();
         $maxfield = 'id';
         $user_attempt_totals = array();
-        $sql = "SELECT tai.id,tu.userid, tai.wpm, tai.accuracy,tu.timecreated,tai.attemptid, tai.sessionerrors, tai.sessionscore,tai.sessiontime,tai.sessionendword, tu.filename, tai.readaloudid  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
-            " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=? ORDER BY 'tu.userid, tai." . $maxfield . " DESC'";
+        $sql = "SELECT tai.id,tu.userid, tai.wpm, tai.accuracy,tu.timecreated,tai.attemptid, tai.sessionerrors," .
+            " tai.sessionscore,tai.sessiontime,tai.sessionendword, tu.filename, tai.readaloudid,  u.firstnamephonetic," .
+        "u.lastnamephonetic,u.middlename,u.alternatename,u.firstname,u.lastname  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+            " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
+        " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename, tai.id DESC";
         $alldata = $DB->get_records_sql($sql, array($formdata->readaloudid));
 
         if ($alldata) {
-
             foreach ($alldata as $thedata) {
 
                 //we ony take the max (attempt, accuracy, wpm ..)
@@ -186,6 +188,7 @@ class machinegrading extends basereport
                         continue;
                     }
                 }
+
 
                 //make the audio url for the selected attempt data
                 $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
@@ -206,13 +209,12 @@ class machinegrading extends basereport
                 $thedata->adjustwpm = $adjusted_scores->wpmscore;
                 $thedata->adjustaccuracy = $adjusted_scores->accuracyscore;
                 $thedata->adjustsessionscore = $adjusted_scores->sessionscore;
-
-
                 $this->rawdata[$thedata->userid] = $thedata;
             }
             foreach ($this->rawdata as $thedata) {
                 $thedata->totalattempts = $user_attempt_totals[$thedata->userid];
             }
+
         } else {
             $this->rawdata = $emptydata;
         }

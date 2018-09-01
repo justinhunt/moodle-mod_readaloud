@@ -108,7 +108,7 @@ if(!$canpreview && $moduleinstance->maxattempts > 0){
 //reset our retake flag if we cant reatempt
 if(!$canattempt){$retake=0;}
 
-//display previous attempts if we have them
+//display the most recent previous attempt if we have one
 if($attempts && $retake==0){
     //if we are teacher we see tabs. If student we just see the quiz
     if(has_capability('mod/readaloud:preview',$modulecontext)){
@@ -126,7 +126,7 @@ if($attempts && $retake==0){
     }
 
     $have_humaneval = $latestattempt->sessiontime!=null;
-    $have_aieval = $latest_aigrade !== false;
+    $have_aieval = $latest_aigrade && $latest_aigrade->has_transcripts();
 
     if( $have_humaneval){
         switch($moduleinstance->humanpostattempt){
@@ -225,6 +225,7 @@ echo $renderer->show_error($moduleinstance,$cm);
 echo $renderer->show_passage($moduleinstance,$cm);
 echo $renderer->show_recorder($moduleinstance,$token);
 echo $renderer->show_progress($moduleinstance,$cm);
+echo $renderer->show_backtotopbutton($moduleinstance);
 
 //the module AMD code
 echo $renderer->fetch_activity_amd($cm, $moduleinstance);

@@ -35,12 +35,14 @@ $format = optional_param('format', 'html', PARAM_TEXT); //export format csv or h
 $action = optional_param('action', 'grading', PARAM_TEXT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // user id
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // attemptid
+$saveandnext = optional_param('submitbutton2', 'false', PARAM_TEXT); //Is this a savebutton2
+
 
 //paging details
 $paging = new stdClass();
 $paging->perpage = optional_param('perpage',-1, PARAM_INT);
 $paging->pageno = optional_param('pageno',0, PARAM_INT);
-$paging->sort  = optional_param('sort','iddsc', PARAM_TEXT);
+$paging->sort  = optional_param('sort','user', PARAM_TEXT);
 
 
 if ($id) {
@@ -52,11 +54,9 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance(constants::MOD_READALOUD_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    print_error('You must specify a course_module ID or an instance ID');
 }
 
-$PAGE->set_url(constants::MOD_READALOUD_URL . '/grading.php',
-	array('id' => $cm->id,'format'=>$format,'action'=>$action,'userid'=>$userid,'attemptid'=>$attemptid));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -100,10 +100,16 @@ switch($action){
 			readaloud_update_grades($moduleinstance, $gradenow->attemptdetails('userid'));
 			
 			//move on or return to grading
-			if(property_exists($data,'submit2')){
+			if($saveandnext != ('false')){
 				$attemptid = $gradenow->get_next_ungraded_id();
 				if($attemptid){
 					$action='gradenow';
+					//redirect to clear out form data so we can gradenow on next attempt
+                    $url =  new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
+                            array('id' => $cm->id,'format'=>$format,
+                                'action'=>$action,'userid'=>$userid,
+                                'attemptid'=>$attemptid));
+                    redirect($url);
 				}else{
 					$action='grading';
 				}
@@ -115,6 +121,8 @@ switch($action){
 }
 
 
+$PAGE->set_url(constants::MOD_READALOUD_URL . '/grading.php',
+    array('id' => $cm->id,'format'=>$format,'action'=>$action,'userid'=>$userid,'attemptid'=>$attemptid));
 
 /// Set up the page header
 $PAGE->set_title(format_string($moduleinstance->name));
@@ -148,24 +156,24 @@ switch ($action){
 		$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
 		$force_aidata=false;//ai data could still be used if not human grading. we just do not force it
         $reviewmode=$reviewmode=constants::REVIEWMODE_NONE;
-
-
-
-		$data=array(
+        $nextid = $gradenow->get_next_ungraded_id();
+		$setdata=array(
 			'action'=>'gradenowsubmit',
 			'attemptid'=>$attemptid,
 			'n'=>$moduleinstance->id,
+			'shownext'=>$nextid,
 			'sessiontime'=>$gradenow->formdetails('sessiontime',$force_aidata),
 			'sessionscore'=>$gradenow->formdetails('sessionscore',$force_aidata),
 			'sessionendword'=>$gradenow->formdetails('sessionendword',$force_aidata),
 			'sessionerrors'=>$gradenow->formdetails('sessionerrors',$force_aidata));
-		$nextid = $gradenow->get_next_ungraded_id();
+
 		$gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
-		$gradenowform->set_data($data);
+		$gradenowform->set_data($setdata);
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
 		echo $gradenowrenderer->render_gradenow($gradenow);
 		$gradenowform->display();
+        echo $reportrenderer->show_grading_footer($moduleinstance,$cm);
 		echo $renderer->footer();
 		return;
 
@@ -191,6 +199,7 @@ switch ($action){
         if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
             echo $gradenowrenderer->render_machinereview_buttons($gradenow);
         }
+        echo $reportrenderer->show_machinegrading_footer($moduleinstance,$cm);
         echo $renderer->footer();
         return;
 
@@ -209,6 +218,7 @@ switch ($action){
         if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
             echo $gradenowrenderer->render_machinereview_buttons($gradenow);
         }
+        echo $reportrenderer->show_machinegrading_footer($moduleinstance,$cm);
         echo $renderer->footer();
         return;
 
@@ -221,7 +231,7 @@ switch ($action){
 
         //$aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
 
-        $data=array(
+        $setdata=array(
             'action'=>'gradenowsubmit',
             'attemptid'=>$attemptid,
             'n'=>$moduleinstance->id,
@@ -231,11 +241,12 @@ switch ($action){
             'sessionerrors'=>$gradenow->formdetails('sessionerrors',$force_aidata));
         $nextid = $gradenow->get_next_ungraded_id();
         $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
-        $gradenowform->set_data($data);
+        $gradenowform->set_data($setdata);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
         echo $gradenowrenderer->render_gradenow($gradenow);
         $gradenowform->display();
+        echo $reportrenderer->show_machinegrading_footer($moduleinstance,$cm);
         echo $renderer->footer();
         return;
 
@@ -322,18 +333,26 @@ $report->process_raw_data($formdata, $moduleinstance);
 $reportheading = $report->fetch_formatted_heading();
 
 switch($format){
+    case 'csv':
+        $reportrows = $report->fetch_formatted_rows(false);
+        $reportrenderer->render_section_csv($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows, $report->fetch_fields());
+        exit;
 	case 'html':
 	default:
-		
-		$reportrows = $report->fetch_formatted_rows(true,$paging);
-		$allrowscount = $report->fetch_all_rows_count();
-		$pagingbar = $reportrenderer->show_paging_bar($allrowscount, $paging,$PAGE->url);
+        $reportrows = $report->fetch_formatted_rows(true,$paging);
+        $allrowscount = $report->fetch_all_rows_count();
+	    $pagingbar = $reportrenderer->show_paging_bar($allrowscount, $paging,$PAGE->url);
+        $perpage_selector = $reportrenderer->show_perpage_selector($PAGE->url,$paging);
+
+
 		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
 		echo $gradenowrenderer->render_hiddenaudioplayer();
 		echo $extraheader;
 		echo $pagingbar;
+		echo $perpage_selector;
 		echo $reportrenderer->render_section_html($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows, $report->fetch_fields());
 		echo $pagingbar;
-		echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$formdata);
+		echo $reportrenderer->show_grading_footer($moduleinstance,$cm);
+        echo $reportrenderer->show_export_buttons($cm,$formdata,$action);
 		echo $renderer->footer();
 }
