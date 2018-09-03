@@ -134,7 +134,7 @@ class utils{
         return $token;
     }
 
-    public static function fetch_audio_points($fulltranscript,$matches){
+    public static function fetch_audio_points($fulltranscript,$matches,$alternatives){
 
        //get type 'pronunciation' items from full transcript. The other type is 'punctuation'.
         $transcript = json_decode($fulltranscript);
@@ -152,13 +152,28 @@ class utils{
             if($matchitem->tposition <= $twordcount){
                 //pull the word data object from the full transcript, at the index of the match
                 $tword = $twords[$matchitem->tposition - 1];
-                //format the text of the word to lower case no punc, to match the word in the matchitem
-                $tword_text = strtolower($tword->alternatives[0]->content);
-                $tword_text = preg_replace("#[[:punct:]]#", "", $tword_text);
-                //if we got it, fetch the audio position from the word data object
-                if($matchitem->word == $tword_text){
+
+                //trust or be sure by matching ...
+                $trust = false;
+                if($trust){
                     $matchitem->audiostart = $tword->start_time;
                     $matchitem->audioend = $tword->end_time;
+                }else {
+                    //format the text of the word to lower case no punc, to match the word in the matchitem
+                    $tword_text = strtolower($tword->alternatives[0]->content);
+                    $tword_text = preg_replace("#[[:punct:]]#", "", $tword_text);
+                    //if we got it, fetch the audio position from the word data object
+                    if ($matchitem->word == $tword_text) {
+                        $matchitem->audiostart = $tword->start_time;
+                        $matchitem->audioend = $tword->end_time;
+
+                    //do alternatives search for match
+                    }elseif(diff::check_alternatives_for_match($matchitem->word,
+                        $tword_text,
+                        $alternatives)){
+                        $matchitem->audiostart = $tword->start_time;
+                        $matchitem->audioend = $tword->end_time;
+                    }
                 }
             }
         }

@@ -195,7 +195,7 @@ class aigrade
 
         //also  capture match information for debugging and audio point matching
        //we can only map transcript to audio from match data
-       $matches = utils::fetch_audio_points($this->aidata->fulltranscript, $matches);
+       $matches = utils::fetch_audio_points($this->aidata->fulltranscript, $matches,$alternatives);
        $sessionmatches = json_encode($matches);
 
        //session time
