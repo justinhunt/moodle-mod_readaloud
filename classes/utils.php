@@ -113,6 +113,8 @@ class utils{
                 //store the expiry timestamp and adjust it for diffs between our server times
                 if($resp_object->validuntil) {
                     $validuntil = $resp_object->validuntil - ($resp_object->poodlltime - time());
+                    //we refresh one hour out, to prevent any overlap
+                    $validuntil = $validuntil - (1 * HOURSECS);
                 }else{
                     $validuntil = 0;
                 }
@@ -130,6 +132,8 @@ class utils{
                     //ERROR = $resp_object->error
                 }
             }
+        }else{
+            $token='';
         }
         return $token;
     }
