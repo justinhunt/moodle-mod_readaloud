@@ -164,25 +164,67 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
         //set up events related to popover helper
         init_popoverhelper: function(){
             var that =this;
-            //on reject just close the popover
-            popoverhelper.onReject=function(){popoverhelper.remove();};
 
-            popoverhelper.onAccept=function(){
+            //when the user clicks the reject popover accept button, we arrive here
+            popoverhelper.onReject=function(){
                 var clickwordnumber = $(this).attr('data-wordnumber');
+
+                //if nothing changed, just close the popover
+                var nochange = (clickwordnumber in that.options.errorwords);
+                if(nochange){
+                    popoverhelper.remove();
+                    return;
+                }
+
+                //if a new choice was made update things
                 var playchain= that.fetchPlayChain(clickwordnumber);
-                for(var theword = playchain.startword;theword<=playchain.endword;theword++){
-                    if(theword in that.options.errorwords){
-                        delete that.options.errorwords[theword];
-                        $('#' + that.cd.wordclass + '_' + theword).removeClass(that.cd.badwordclass);
-                        $('#' + that.cd.wordclass + '_' + theword).removeClass(that.cd.spotcheckmode);
-                        $('#' + that.cd.spaceclass + '_' + theword).removeClass(that.cd.spotcheckmode);
+                for(var wordindex = playchain.startword;wordindex<=playchain.endword;wordindex++){
+                    if(!(wordindex in that.options.errorwords)){
+                        var theword = $('#' + that.cd.wordclass + '_' + wordindex);
+                        var thespace = $('#' + that.cd.spaceclass + '_' + wordindex);
+                        that.adderrorword(wordindex,theword.text());
+                        theword.addClass(that.cd.badwordclass);
+                        theword.addClass(that.cd.spotcheckmode);
+                        if(wordindex!=playchain.endword) {
+                            thespace.addClass(that.cd.spotcheckmode);
+                        }
                     }
                 }
-                that.markup_badspaces();
+                //that.markup_badspaces();
                 that.markup_aiunmatchedspaces();
                 that.processscores();
                 popoverhelper.remove();
             };
+
+            //when the user clicks the popover accept button, we arrive here
+            popoverhelper.onAccept=function(){
+                var clickwordnumber = $(this).attr('data-wordnumber');
+
+                //if nothing changed, just close the popover
+                var nochange = !(clickwordnumber in that.options.errorwords);
+                if(nochange){
+                    popoverhelper.remove();
+                    return;
+                }
+                //if a new choice was made update things
+                var playchain= that.fetchPlayChain(clickwordnumber);
+                for(var wordindex = playchain.startword;wordindex<=playchain.endword;wordindex++){
+                    if(wordindex in that.options.errorwords){
+                        delete that.options.errorwords[wordindex];
+                        var theword = $('#' + that.cd.wordclass + '_' + wordindex);
+                        var thespace = $('#' + that.cd.spaceclass + '_' + wordindex);
+                        theword.removeClass(that.cd.badwordclass);
+                        theword.removeClass(that.cd.spotcheckmode);
+                        thespace.removeClass(that.cd.spotcheckmode);
+                    }
+                }
+                //that.markup_badspaces();
+                that.markup_aiunmatchedspaces();
+                that.processscores();
+                popoverhelper.remove();
+            };
+
+            //init the popover now that we have set the correct callback event handling thingies
             popoverhelper.init();
         },
 
@@ -225,9 +267,11 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
 
 
             //Play audio from and to spot check part
-            this.controls.passagecontainer.on('click','.' + this.cd.spotcheckmode,function(){
-                var wordnumber = parseInt($(this).attr('data-wordnumber'));
-                that.doPlaySpotCheck(wordnumber);
+            this.controls.passagecontainer.on('click','.' + this.cd.spotcheckmode + ', .' + this.cd.aiunmatched,function(){
+                if(that.currentmode=='spotcheck') {
+                    var wordnumber = parseInt($(this).attr('data-wordnumber'));
+                    that.doPlaySpotCheck(wordnumber);
+                }
             });
 
 
@@ -280,7 +324,7 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
 
                         //if we are in spotcheck mode lets enable quick grade popovers
                         if(that.currentmode=='spotcheck'){
-                            if($(this).hasClass(that.cd.badwordclass)) {
+                            if($(this).hasClass(that.cd.badwordclass) || $(this).hasClass(that.cd.aiunmatched)) {
                                 popoverhelper.addQuickGrader(this);
                             }
                             return;
@@ -543,7 +587,7 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
             $('.' + this.cd.badwordclass).addClass(this.cd.spotcheckmode);
 
             //mark up spaces between spotcheck word and spotcheck/aiunmatched word (bad spaces)
-            this.markup_badspaces();
+            //this.markup_badspaces();
 
             //mark up spaces between aiunmatched word and spotcheck/aiunmatched word (aiunmatched spaces)
             this.markup_aiunmatchedspaces();
@@ -577,6 +621,7 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
         },
 
         //mark up spaces between spotcheck word and spotcheck/aiunmatched word (bad spaces)
+        /* NO LONGER USED  */
         markup_badspaces: function(){
             var that =this;
             //mark up spaces between spotcheck word and spotcheck/aiunmatched word (bad spaces)
@@ -593,14 +638,12 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
         markup_aiunmatchedspaces: function(){
             var that =this;
             $('.' + this.cd.wordclass + '.' + this.cd.aiunmatched).each(function(index){
-                if(!$(this).hasClass(that.cd.spotcheckmode)) {
                     var wordnumber = parseInt($(this).attr('data-wordnumber'));
                     //build chains (highlight spaces) of badwords or aiunmatched
                     if ($('#' + that.cd.wordclass + '_' + (wordnumber + 1)).hasClass(that.cd.spotcheckmode) ||
                         $('#' + that.cd.wordclass + '_' + (wordnumber + 1)).hasClass(that.cd.aiunmatched)) {
                         $('#' + that.cd.spaceclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
                     }
-                }
             });
         },
 
