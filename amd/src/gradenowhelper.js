@@ -1,4 +1,4 @@
-define(['jquery','core/log'], function($,log) {
+define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popoverhelper) {
     "use strict"; // jshint ;_;
 
     log.debug('Readaloud Gradenow helper: initialising');
@@ -155,6 +155,35 @@ define(['jquery','core/log'], function($,log) {
             }else{
                 processloadedaudio();
             }
+
+            //init our popover helper which sets up the button events
+            this.init_popoverhelper();
+
+        },
+
+        //set up events related to popover helper
+        init_popoverhelper: function(){
+            var that =this;
+            //on reject just close the popover
+            popoverhelper.onReject=function(){popoverhelper.remove();};
+
+            popoverhelper.onAccept=function(){
+                var clickwordnumber = $(this).attr('data-wordnumber');
+                var playchain= that.fetchPlayChain(clickwordnumber);
+                for(var theword = playchain.startword;theword<=playchain.endword;theword++){
+                    if(theword in that.options.errorwords){
+                        delete that.options.errorwords[theword];
+                        $('#' + that.cd.wordclass + '_' + theword).removeClass(that.cd.badwordclass);
+                        $('#' + that.cd.wordclass + '_' + theword).removeClass(that.cd.spotcheckmode);
+                        $('#' + that.cd.spaceclass + '_' + theword).removeClass(that.cd.spotcheckmode);
+                    }
+                }
+                that.markup_badspaces();
+                that.markup_aiunmatchedspaces();
+                that.processscores();
+                popoverhelper.remove();
+            };
+            popoverhelper.init();
         },
 
         register_controls: function(){
@@ -229,9 +258,10 @@ define(['jquery','core/log'], function($,log) {
 
                         if (that.currentmode == 'transcriptcheck') {
                             var chunk = that.fetchTranscriptChunk(wordnumber);
-                            if (chunk) {
-                                alert(chunk);
+                            if(chunk){
+                                popoverhelper.addTranscript(this,chunk);
                             }
+
                             return;
                         }
                     });
@@ -242,18 +272,25 @@ define(['jquery','core/log'], function($,log) {
                 //process word clicks
                 this.controls.eachword.click(
                     function() {
-                        //if we are in spotcheck mode just return, we do not grade
-                        if(that.currentmode=='spotcheck'){
-                            return;
-                        }
+
 
                         //get the word that was clicked
                         var wordnumber = $(this).attr('data-wordnumber');
                         var theword = $(this).text();
 
+                        //if we are in spotcheck mode lets enable quick grade popovers
+                        if(that.currentmode=='spotcheck'){
+                            if($(this).hasClass(that.cd.badwordclass)) {
+                                popoverhelper.addQuickGrader(this);
+                            }
+                            return;
+                        }
+
                         if(that.currentmode=='transcriptcheck'){
                             var chunk = that.fetchTranscriptChunk(wordnumber);
-                            if(chunk){alert(chunk);}
+                            if(chunk){
+                                popoverhelper.addTranscript(this,chunk);
+                            }
                             return;
                         }
 
@@ -281,7 +318,6 @@ define(['jquery','core/log'], function($,log) {
                         if(that.currentmode=='spotcheck' || that.currentmode=='transcriptcheck' ){
                             return;
                         }
-
 
                         //this event is entered by  click on space
                         //it relies on attr data-wordnumber being set correctly
@@ -501,17 +537,34 @@ define(['jquery','core/log'], function($,log) {
             var that = this;
 
             //mark up all ai unmatched words as aiunmatched
+            this.markup_aiunmatchedwords();
+
+            //mark up all badwords as spotcheck words
+            $('.' + this.cd.badwordclass).addClass(this.cd.spotcheckmode);
+
+            //mark up spaces between spotcheck word and spotcheck/aiunmatched word (bad spaces)
+            this.markup_badspaces();
+
+            //mark up spaces between aiunmatched word and spotcheck/aiunmatched word (aiunmatched spaces)
+            this.markup_aiunmatchedspaces();
+
+            this.currentmode="spotcheck";
+        },
+
+        //mark up all ai unmatched words as aiunmatched
+        markup_aiunmatchedwords: function(){
+            var that =this;
             if(this.options.sessionmatches){
                 var prevmatch=0;
                 $.each(this.options.sessionmatches,function(index,match){
-                   var unmatchedcount = index - prevmatch - 1;
-                   if(unmatchedcount>0){
-                       for(var errorword =1;errorword<unmatchedcount+1; errorword++){
-                           var wordnumber = prevmatch + errorword;
-                           $('#' + that.cd.wordclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
-                       }
-                   }
-                   prevmatch = parseInt(index);
+                    var unmatchedcount = index - prevmatch - 1;
+                    if(unmatchedcount>0){
+                        for(var errorword =1;errorword<unmatchedcount+1; errorword++){
+                            var wordnumber = prevmatch + errorword;
+                            $('#' + that.cd.wordclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
+                        }
+                    }
+                    prevmatch = parseInt(index);
                 });
 
                 //mark all words from last matched word to the end as aiunmatched
@@ -520,9 +573,12 @@ define(['jquery','core/log'], function($,log) {
                     $('#' + that.cd.wordclass + '_' + wordnumber).addClass(that.cd.aiunmatched);
                 }
             }
-            //mark up all badwords as spotcheck words
-            $('.' + this.cd.badwordclass).addClass(this.cd.spotcheckmode);
 
+        },
+
+        //mark up spaces between spotcheck word and spotcheck/aiunmatched word (bad spaces)
+        markup_badspaces: function(){
+            var that =this;
             //mark up spaces between spotcheck word and spotcheck/aiunmatched word (bad spaces)
             $('.' + this.cd.badwordclass + '.' + this.cd.spotcheckmode).each(function(index){
                 var wordnumber = parseInt($(this).attr('data-wordnumber'));
@@ -532,8 +588,10 @@ define(['jquery','core/log'], function($,log) {
                     $('#' + that.cd.spaceclass + '_' + wordnumber).addClass(that.cd.spotcheckmode);
                 };
             });
+        },
 
-            //mark up spaces between aiunmatched word and spotcheck/aiunmatched word (aiunmatched spaces)
+        markup_aiunmatchedspaces: function(){
+            var that =this;
             $('.' + this.cd.wordclass + '.' + this.cd.aiunmatched).each(function(index){
                 if(!$(this).hasClass(that.cd.spotcheckmode)) {
                     var wordnumber = parseInt($(this).attr('data-wordnumber'));
@@ -544,8 +602,9 @@ define(['jquery','core/log'], function($,log) {
                     }
                 }
             });
-            this.currentmode="spotcheck";
         },
+
+
 
         undoSpotCheckMode: function(){
             $('.' + this.cd.badwordclass).removeClass(this.cd.spotcheckmode);
@@ -553,6 +612,7 @@ define(['jquery','core/log'], function($,log) {
             $('.' + this.cd.wordclass).removeClass(this.cd.aiunmatched);
             $('.' + this.cd.spaceclass).removeClass(this.cd.aiunmatched);
             $(this.controls.audioplayer).off("timeupdate");
+            popoverhelper.remove();
         },
 
         /*
@@ -596,6 +656,7 @@ define(['jquery','core/log'], function($,log) {
         undoTranscriptCheckMode: function(){
             $('.' + this.cd.wordclass).removeClass(this.cd.aiunmatched);
             $('.' + this.cd.spaceclass).removeClass(this.cd.aiunmatched);
+            popoverhelper.remove();
         },
 
         doGradingMode: function(){
