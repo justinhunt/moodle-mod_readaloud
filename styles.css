@@ -282,3 +282,33 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 .mod_readaloud_grading_passageactions > button {
 	margin: 5px;
 }
+
+.btn.mod_readaloud_quickgrade_ok {
+	background-color: DodgerBlue; /* Blue background */
+	border: none; /* Remove borders */
+	color: white; /* White text */
+	padding: 10px 14px; /* Some padding */
+	font-size: 14px; /* Set a font size */
+	cursor: pointer; /* Mouse pointer on hover */
+	margin: 2px;
+}
+
+/* Darker background on mouse-over */
+.btn.mod_readaloud_quickgrade_ok:hover {
+	background-color: RoyalBlue;
+}
+
+.btn.mod_readaloud_quickgrade_ng {
+	background-color: darkgrey; /* Blue background */
+	border: none; /* Remove borders */
+	color: white; /* White text */
+	padding: 10px 14px; /* Some padding */
+	font-size: 14px; /* Set a font size */
+	cursor: pointer; /* Mouse pointer on hover */
+	margin: 2px;
+}
+
+/* Darker background on mouse-over */
+.btn.mod_readaloud_quickgrade_ng:hover {
+	background-color: grey;
+}

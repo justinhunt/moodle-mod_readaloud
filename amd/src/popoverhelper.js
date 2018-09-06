@@ -44,15 +44,17 @@ Relationships between the recorder and the surrounding elements should be manage
 
             var thefunc = function(){
                 var wordnumber = $(this).attr("data-wordnumber");
-                var okbutton = "<button type='button' class='" + that.okbuttonclass + "' data-wordnumber='" + wordnumber + "'>OK</button>";
-                var ngbutton = "<button type='button' class='" + that.ngbuttonclass + "' data-wordnumber='" + wordnumber + "'>NG</button>";
+                var oklabel = M.util.get_string('ok','mod_readaloud');
+                var nglabel = M.util.get_string('ng','mod_readaloud');
+                var okbutton = "<button type='button' class='btn " + that.okbuttonclass + "' data-wordnumber='" + wordnumber + "'><i class='fa fa-check'></i> " + oklabel + "</button>";
+                var ngbutton = "<button type='button' class='btn " + that.ngbuttonclass + "' data-wordnumber='" + wordnumber + "'><i class='fa fa-close'></i> " + nglabel + "</button>";
                 var container = "<div class='mod_readaloud_quickgrade_cont'>" + okbutton + ngbutton + "</div>";
                 return container;
             };
 
             //lets add the popover
             $(item).popover({
-                title: 'ok we popover',
+                title: M.util.get_string('quickgrade','mod_readaloud'),
                 content: thefunc,
                 trigger: 'manual',
                 placement: 'top',
@@ -79,7 +81,7 @@ Relationships between the recorder and the surrounding elements should be manage
 
             //lets add the popover
             $(item).popover({
-                title: 'Transcript',
+                title: M.util.get_string('transcript','mod_readaloud'),
                 content: transcript,
                 trigger: 'manual',
                 placement: 'top'

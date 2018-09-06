@@ -220,7 +220,11 @@ class gradenow{
        $PAGE->requires->js_call_amd("mod_readaloud/gradenowhelper", 'init', array(array('id'=>$gradingopts['opts_id'])));
        $PAGE->requires->strings_for_js(array(
            'spotcheckbutton',
-           'gradingbutton'
+           'gradingbutton',
+           'transcript',
+           'quickgrade',
+           'ok',
+           'ng'
        ),
            'mod_readaloud');
 

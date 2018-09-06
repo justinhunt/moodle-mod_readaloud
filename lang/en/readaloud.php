@@ -218,4 +218,7 @@ $string['postattempt_eval']="The evaluation(scores)";
 $string['postattempt_evalerrors']="The evaluation(scores) and errors";
 $string['attemptsperpage']="Attempts to show per page: ";
 $string['backtotop']="Back to Start";
-
+$string['transcript']="Transcript";
+$string['quickgrade']="Quick Grade";
+$string['ok']="OK";
+$string['ng']="NG";
