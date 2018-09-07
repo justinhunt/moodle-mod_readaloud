@@ -93,6 +93,45 @@ class renderer extends \plugin_renderer_base {
     /**
      *
      */
+    public function show_machineregradeallbutton($moduleinstance){
+        $options=[];
+        $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/gradesadmin.php',
+            array('n'=>$moduleinstance->id, 'action'=>'machineregradeall')),get_string('machineregradeall',constants::MOD_READALOUD_FRANKY),'post',$options);
+
+        $ret = \html_writer::div($button ,constants::MOD_READALOUD_GRADESADMIN_CONTAINER);
+        return $ret;
+    }
+
+    /**
+     *
+     */
+    public function show_pushmachinegradesbutton($moduleinstance){
+
+        if($moduleinstance->enableai && $moduleinstance->machgrademethod==constants::MACHINEGRADE_MACHINE){
+            $options=[];
+        }else{
+            $options=array('disabled'=>'disabled');
+        }
+        $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/gradesadmin.php',
+            array('n'=>$moduleinstance->id, 'action'=>'pushmachinegrades')),get_string('pushmachinegrades',constants::MOD_READALOUD_FRANKY),'post',$options);
+
+        $ret = \html_writer::div($button ,constants::MOD_READALOUD_GRADESADMIN_CONTAINER);
+        return $ret;
+    }
+
+    /**
+     *
+     */
+    public function show_currenterrorestimate($errorestimate){
+        $message = get_string("currenterrorestimate",constants::MOD_READALOUD_LANG,$errorestimate);
+        $ret = \html_writer::div($message ,constants::MOD_READALOUD_GRADESADMIN_CONTAINER);
+        return $ret;
+
+    }
+
+    /**
+     *
+     */
     public function exceededattempts($moduleinstance){
         $message = get_string("exceededattempts",constants::MOD_READALOUD_LANG,$moduleinstance->maxattempts);
         $ret = \html_writer::div($message ,constants::MOD_READALOUD_CLASS  . '_afterattempt_cont');
@@ -103,6 +142,19 @@ class renderer extends \plugin_renderer_base {
     public function show_ungradedyet(){
         $message = get_string("notgradedyet",constants::MOD_READALOUD_LANG);
         $ret = \html_writer::div($message ,constants::MOD_READALOUD_CLASS  . '_ungraded_cont');
+        return $ret;
+    }
+
+    /**
+     *  Show grades admin heading
+     */
+    public function show_gradesadmin_heading($showtitle,$showinstructions) {
+        $thetitle =  $this->output->heading($showtitle, 3, 'main');
+        $displaytext =  \html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext .= $this->output->box_start();
+        $displaytext .= \html_writer::div($showinstructions ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext .= $this->output->box_end();
+        $ret= \html_writer::div($displaytext);
         return $ret;
     }
 

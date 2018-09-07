@@ -291,6 +291,7 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 	font-size: 14px; /* Set a font size */
 	cursor: pointer; /* Mouse pointer on hover */
 	margin: 2px;
+	background-image: none;
 }
 
 /* Darker background on mouse-over */
@@ -306,9 +307,13 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 	font-size: 14px; /* Set a font size */
 	cursor: pointer; /* Mouse pointer on hover */
 	margin: 2px;
+	background-image: none;
 }
 
 /* Darker background on mouse-over */
 .btn.mod_readaloud_quickgrade_ng:hover {
 	background-color: grey;
+}
+div.mod_readaloud_gradesadmin_cont {
+	margin: 8px;
 }

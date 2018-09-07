@@ -176,6 +176,14 @@ function readaloud_grade_item_update($moduleinstance, $grades=null) {
         $params = array('itemname'=>$moduleinstance->name);
     }
 
+    //if we are machine grading we need to fetch the error estimate
+    if($moduleinstance->machgrademethod=constants::MACHINEGRADE_MACHINE &&
+        $moduleinstance->enableai) {
+        $errorestimate = \mod_readaloud\utils::estimate_errors($moduleinstance->id);
+    }else{
+        $errorestimate =0;
+    }
+
     if ($moduleinstance->grade > 0) {
         $params['gradetype']  = GRADE_TYPE_VALUE;
         $params['grademax']   = $moduleinstance->grade;
@@ -219,14 +227,13 @@ function readaloud_grade_item_update($moduleinstance, $grades=null) {
             }
             //check raw grade isnt null otherwise we insert a grade of 0
             if ($grade['rawgrade'] !== null) {
-                $grades[$key]['rawgrade'] = ($grade['rawgrade'] * $params['grademax'] / 100);
+                $grades[$key]['rawgrade'] = (($grade['rawgrade'] + $errorestimate) * $params['grademax'] / 100);
             } else {
                 //setting rawgrade to null just in case user is deleting a grade
                 $grades[$key]['rawgrade'] = null;
             }
         }
     }
-
 
     return grade_update('mod/' . constants::MOD_READALOUD_MODNAME, $moduleinstance->course, 'mod', constants::MOD_READALOUD_MODNAME, $moduleinstance->id, 0, $grades, $params);
 }
@@ -285,14 +292,29 @@ function readaloud_get_user_grades($moduleinstance, $userid=0) {
 
     }
 
-	$idfield = 'a.' . constants::MOD_READALOUD_MODNAME . 'id';
+	$idfield = 'ai.' . constants::MOD_READALOUD_MODNAME . 'id';
     if ($moduleinstance->maxattempts==1 || $moduleinstance->gradeoptions == constants::MOD_READALOUD_GRADELATEST) {
+        //from which table do we get these grades..
+        switch($moduleinstance->machgrademethod){
 
-		$sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
-                      FROM {user} u, {". constants::MOD_READALOUD_USERTABLE ."} a
-                     WHERE a.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = $idfield)  AND u.id = a.userid AND $idfield = :moduleid
+            case constants::MACHINEGRADE_MACHINE:
+                $sql = "SELECT u.id, u.id AS userid, ai.sessionscore AS rawgrade
+                      FROM {user} u, {". constants::MOD_READALOUD_AITABLE ."} ai INNER JOIN {". constants::MOD_READALOUD_USERTABLE ."} attempt ON ai.attemptid = attempt.id
+                     WHERE attempt.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
                            $user
-                  GROUP BY u.id, a.sessionscore";
+                  GROUP BY u.id, ai.sessionscore";
+                break;
+            case constants::MACHINEGRADE_NONE:
+            default:
+
+                $sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
+                          FROM {user} u, {". constants::MOD_READALOUD_USERTABLE ."} a
+                         WHERE a.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid)  AND u.id = a.userid AND a.readaloudid = :moduleid
+                               $user
+                      GROUP BY u.id, a.sessionscore";
+        }
+
+
 	
 	}else{
 		switch($moduleinstance->gradeoptions){

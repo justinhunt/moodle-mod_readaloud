@@ -282,6 +282,21 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018082404, 'readaloud');
     }
 
+    // Add accadjustmethod to readaloud table
+    if ($oldversion < 2018090700) {
+        $table = new xmldb_table('readaloud');
+
+        //This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
+        $field = new xmldb_field('machgrademethod', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // add field to AI table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_mod_savepoint(true, 2018090700, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

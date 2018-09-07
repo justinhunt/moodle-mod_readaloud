@@ -82,11 +82,6 @@ $PAGE->set_pagelayout('course');
 //Get an admin settings 
 $config = get_config(constants::MOD_READALOUD_FRANKY);
 
-//require bootstrap and fontawesome ... maybe
-if($config->loadfontawesome){
-	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
-}
-
 //Get our renderers
 $renderer = $PAGE->get_renderer('mod_readaloud');
 $gradenowrenderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY,'gradenow');

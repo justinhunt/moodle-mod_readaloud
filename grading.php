@@ -60,6 +60,7 @@ if ($id) {
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
+require_capability('mod/readaloud:manage', $modulecontext);
 
 //Get an admin settings 
 $config = get_config(constants::MOD_READALOUD_FRANKY);
@@ -69,20 +70,16 @@ if($paging->perpage==-1){
 	$paging->perpage = $config->itemsperpage;
 }
 
-//Diverge logging logic at Moodle 2.7
-if($CFG->version<2014051200){
-	add_to_log($course->id, constants::MOD_READALOUD_MODNAME, 'reports', "reports.php?id={$cm->id}", $moduleinstance->name, $cm->id);
-}else{
-	// Trigger module viewed event.
-	$event = \mod_readaloud\event\course_module_viewed::create(array(
-	   'objectid' => $moduleinstance->id,
-	   'context' => $modulecontext
-	));
-	$event->add_record_snapshot('course_modules', $cm);
-	$event->add_record_snapshot('course', $course);
-	$event->add_record_snapshot(constants::MOD_READALOUD_MODNAME, $moduleinstance);
-	$event->trigger();
-} 
+// Trigger module viewed event.
+$event = \mod_readaloud\event\course_module_viewed::create(array(
+   'objectid' => $moduleinstance->id,
+   'context' => $modulecontext
+));
+$event->add_record_snapshot('course_modules', $cm);
+$event->add_record_snapshot('course', $course);
+$event->add_record_snapshot(constants::MOD_READALOUD_MODNAME, $moduleinstance);
+$event->trigger();
+
 
 //process form submission
 switch($action){
@@ -96,9 +93,12 @@ switch($action){
 			$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
 			$gradenow->update($data);
 			
-			//update gradebook
-			readaloud_update_grades($moduleinstance, $gradenow->attemptdetails('userid'));
-			
+			//update gradebook (but only if we are using human grades)
+            if($moduleinstance->machgrademethod == constants::MACHINEGRADE_NONE ||
+                !$moduleinstance->enableai) {
+                readaloud_update_grades($moduleinstance, $gradenow->attemptdetails('userid'));
+            }
+
 			//move on or return to grading
 			if($saveandnext != ('false')){
 				$attemptid = $gradenow->get_next_ungraded_id();
@@ -130,16 +130,6 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
 $PAGE->requires->jquery();
-
-//require bootstrap and fontawesome ... maybe
-if($config->loadfontawesome){
-	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/font-awesome/css/font-awesome.min.css'));
-}
-if($config->loadbootstrap){
-	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/css/bootstrap.min.css'));
-	$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/readaloud/bootstrap-3.3.4-dist/js/bootstrap.min.js'));
-}
-
 
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY);
@@ -173,7 +163,7 @@ switch ($action){
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
 		echo $gradenowrenderer->render_gradenow($gradenow);
 		$gradenowform->display();
-        echo $reportrenderer->show_grading_footer($moduleinstance,$cm);
+        echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$mode);
 		echo $renderer->footer();
 		return;
 
@@ -199,7 +189,7 @@ switch ($action){
         if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
             echo $gradenowrenderer->render_machinereview_buttons($gradenow);
         }
-        echo $reportrenderer->show_machinegrading_footer($moduleinstance,$cm);
+        echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$mode);
         echo $renderer->footer();
         return;
 
@@ -218,7 +208,7 @@ switch ($action){
         if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
             echo $gradenowrenderer->render_machinereview_buttons($gradenow);
         }
-        echo $reportrenderer->show_machinegrading_footer($moduleinstance,$cm);
+        echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$mode);
         echo $renderer->footer();
         return;
 
@@ -246,7 +236,7 @@ switch ($action){
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
         echo $gradenowrenderer->render_gradenow($gradenow);
         $gradenowform->display();
-        echo $reportrenderer->show_machinegrading_footer($moduleinstance,$cm);
+        echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$mode);
         echo $renderer->footer();
         return;
 
@@ -292,6 +282,7 @@ switch ($action){
         break;
 
     case 'machinegradingbyuser':
+        $mode = "machinegrading";
         $report = new \mod_readaloud\report\machinegradingbyuser();
         //formdata should only have simple values, not objects
         //later it gets turned into urls for the export buttons
@@ -352,7 +343,7 @@ switch($format){
 		echo $perpage_selector;
 		echo $reportrenderer->render_section_html($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows, $report->fetch_fields());
 		echo $pagingbar;
-		echo $reportrenderer->show_grading_footer($moduleinstance,$cm);
+		echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$mode);
         echo $reportrenderer->show_export_buttons($cm,$formdata,$action);
 		echo $renderer->footer();
 }

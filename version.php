@@ -29,9 +29,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018082404;               // If version == 0 then module will not be installed
+$plugin->version   = 2018090700;               // If version == 0 then module will not be installed
 $plugin->requires  = 2010031900;      // Requires this Moodle version
 $plugin->cron      = 0;               // Period for cron to check this module (secs)
 $plugin->component = 'mod_readaloud'; // To check on upgrade, that module sits in correct place
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.1.06 (Build 2018082404)';
+$plugin->release = '1.1.07 (Build 2018090700)';

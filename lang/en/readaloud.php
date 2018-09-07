@@ -160,11 +160,6 @@ $string['accmethod_none']='None';
 $string['accmethod_auto']='Auto';
 $string['accmethod_fixed']='Fixed';
 
-$string['loadbootstrap']='Load Bootstrap';
-$string['loadbootstrap_details']='Bootstrap is a set of CSS and javascript often used to make big colorful buttons and user interfaces that work well on PC and mobile devices. ReadAloud will load it independently if this is checked. If your theme already loads it, and it causes things to look weird then uncheck this.';
-$string['loadfontawesome']='Load FontAwesome';
-$string['loadfontawesome_details']='FontAwesome provides bland icons that represent arrows and circles and various common symbols you see on toolbars and buttons. ReadAloud loads this for you if this is checked. Should this cause problems, uncheck it.';
-
 $string['apiuser']='Poodll API User ';
 $string['apiuser_details']='The Poodll account username that authorises Poodll on this site.';
 $string['apisecret']='Poodll API Secret ';
@@ -222,3 +217,19 @@ $string['transcript']="Transcript";
 $string['quickgrade']="Quick Grade";
 $string['ok']="OK";
 $string['ng']="NG";
+$string['machinegrademethod']="Machine Grade";
+$string['machinegrademethod_help']="Use machine evaluations or human evaluations as grades in grade book.";
+$string['machinegradenone']="Do not use machine eval. for grade";
+$string['machinegrademachine']="Use machine eval. for grade";
+$string['gradesadmin']="Machine Grades Admin";
+$string['viewgradesadmin']='Grades Admin';
+$string['machineregradeall']='Re machine evaluate all attempts';
+$string['pushmachinegrades']='Push machine evaluations to gradebook';
+$string['currenterrorestimate']='Current error estimate: {$a}';
+$string['gradesadmintitle']='Machine Grades Administration';
+$string['gradesadmininstructions']='On this page you can re-evaluate all the machine evaluations, which is a good thing to do if you have altered the alternatives for this passage. If you have enabled machine grading you can also push the adjusted grades to the gradebook.';
+
+$string['noattemptsregrade']='No attempts to regrade';
+$string['machineregraded']='Successfully regraded {$a->done} attempts. Skipped {$a->skipped} attempts.';
+$string['machinegradespushed']='Successfully pushed grades to gradebook';
+

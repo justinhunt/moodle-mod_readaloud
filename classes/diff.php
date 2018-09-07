@@ -71,7 +71,7 @@ class diff{
 
 /*
  * This function parses and replaces {{view|alternate}} strings from text passages
- * It is used to prepare the text for display, and also the text for comparison
+ * It is used to prepare for comparison
  *
  * TO DO: For this whole alternates thing ...optimize so we only parse the passage once when its saved
  *  and store the index of a word with alternates, so we do not need to loop through the alternates array on checking
@@ -118,12 +118,12 @@ public static function fetchAlternativesArray($thealternates)
     //we do not discriminate over length or position of sequence at this stage. All sequences are saved
 
     //NB The sequence length should be the same in the passage and transcript (because they "matched")
-    //But we attempted to have multiple word alteratives which could mean that the match length in the transcript
+    //But we attempted to have "multiple word alternatives" which could mean that the match length in the transcript
     // would differ from the match length in the passage
     //eg 1989 -> nineteen eighty nine.
-    // BUT we cancelled this feature,
+    // BUT we cancelled this feature because the code became more complex than wanted to maintain,
     // however still keep the transcript sequence length and passage sequence length code in place in this function
-    // but we could probably edit this back one day
+    // so we could have another go at this if needed
     //
     //returns array of sequences
     public static function fetchSequences($passage, $transcript, $alternatives)
@@ -139,7 +139,7 @@ public static function fetchAlternativesArray($thealternates)
         //loop through passage word by word
         for($pstart =0; $pstart < $p_length; $pstart++){
             //loop through transcript finding matches starting from current passage word
-            //we step over the length of any sequences we find to begin search for next sequence
+            //we step over the length of any sequences we have already found to begin search for next sequence
             while($t_slength + $tstart < $t_length &&
                 $p_slength + $pstart < $p_length
             ) {
@@ -219,7 +219,7 @@ public static function fetchAlternativesArray($thealternates)
     /*
      * This will run through the list of alternatives for a given passageword, and if any match the transcript,
      * will return the length of the match. Anything greater than 0 is a full match.
-     * We just look for single word matches currently, but stil return length of match, ie 1
+     * We just look for single word matches currently, but still return length of match (ie its always 1)
      */
     public static function check_alternatives_for_match($passageword,$transcriptword,$alternatives){
             $match =false;
@@ -240,7 +240,7 @@ public static function fetchAlternativesArray($thealternates)
                 }//end of if alternatesset[0]
                 if($match==true){break;}
             }//end of for each alternatives
-        //its a bit hacky but simple ... we just return the matchlength
+        //we return the matchlength
         return $matchlength;
     }
 
@@ -261,16 +261,16 @@ public static function fetchAlternativesArray($thealternates)
 
     //returns an array of "diff" results, one for each word(ie position) in passage
     //i) default all passage positions to unmatched (self::UNMATCHED)
-    //ii) sort sequences by length(longer sorts higher), transcript position
+    //ii) sort sequences by length(longer sorts higher), transcript position (earlier sorts higher)
     //iii) for each sequence
     //   a)- check passage match in sequence was not already matched by previous sequence (bust if so)
     //   b)- check transcript match in sequence[tpos -> tpos+length] was not already allocated to another part of passage in previous sequence
     //   c)- check passage match position and transcript position are consistent with previous sequences
     //     inconsistent example: If T position 3 was matched to P position 5, T position 4 could not match with P position 2
     //
-    //NB aborted supporting multiword alternatives at this point. We know the sequence length in transcript
+    //NB aborted supporting "multiple word alternatives" at this point. We know the sequence length in transcript
     //but we can not add a valid tposition for a pposition in the final diff array when the pposition occurs
-    // after an alternate match in the same sequence. so gave up ... for now. Justin 2018/08
+    // after an alternate match in the same sequence. At that point gave up ... for now. Justin 2018/08
     public static function fetchDiffs($sequences, $passagelength){
         //i) default passage positions to unmatched and transcript position -1
         $diffs=array_fill(0, $passagelength, [self::UNMATCHED,-1]);

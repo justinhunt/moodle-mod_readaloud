@@ -68,6 +68,10 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/allowearlyexit',
 	 get_string('allowearlyexit', constants::MOD_READALOUD_LANG), get_string('allowearlyexit_defaultdetails',constants::MOD_READALOUD_LANG), 0));
 
+    $machinegradeoptions = \mod_readaloud\utils::get_machinegrade_options();
+    $settings->add(new admin_setting_configselect('mod_readaloud/machinegrademethod', get_string('machinegrademethod', constants::MOD_READALOUD_LANG),
+        get_string('machinegrademethod_help', constants::MOD_READALOUD_LANG), constants::MACHINEGRADE_MACHINE, $machinegradeoptions));
+
     $postattempt_options = \mod_readaloud\utils::get_postattempt_options();
     $settings->add(new admin_setting_configselect('mod_readaloud/humanpostattempt',
         get_string('humanpostattempt', constants::MOD_READALOUD_LANG),
@@ -88,11 +92,6 @@ if ($ADMIN->fulltree) {
 	 $settings->add(new admin_setting_configselect('mod_readaloud/ttslanguage', get_string('ttslanguage', constants::MOD_READALOUD_LANG), '', 'en', $langoptions));
 	 
 	 $settings->add(new admin_setting_configtext('mod_readaloud/itemsperpage',
-        get_string('itemsperpage', constants::MOD_READALOUD_LANG), get_string('itemsperpage_details', constants::MOD_READALOUD_LANG), 40, PARAM_INT));
-        
-    $settings->add(new admin_setting_configcheckbox('mod_readaloud/loadbootstrap', 
-	 get_string('loadbootstrap', constants::MOD_READALOUD_LANG), get_string('loadbootstrap_details',constants::MOD_READALOUD_LANG), 1));
-	 
-	$settings->add(new admin_setting_configcheckbox('mod_readaloud/loadfontawesome', 
-	 get_string('loadfontawesome', constants::MOD_READALOUD_LANG), get_string('loadfontawesome_details',constants::MOD_READALOUD_LANG), 1));
+        get_string('itemsperpage', constants::MOD_READALOUD_LANG), get_string('itemsperpage_details', constants::MOD_READALOUD_LANG), 10, PARAM_INT));
+
 }

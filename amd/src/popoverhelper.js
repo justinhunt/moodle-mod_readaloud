@@ -1,5 +1,6 @@
-define(['jquery','core/log','theme_boost/tooltip','theme_boost/popover'], function($,log) {
+define(['jquery','core/log','mod_readaloud/loader','theme_boost/popover'], function($,log) {
     "use strict"; // jshint ;_;
+
 /*
 This file is largely to handle recorder specific tasks, configuring it , loading it, its appearance
 It should not be concerned with anything non recorder'ish like elements on the page around
@@ -13,6 +14,7 @@ Relationships between the recorder and the surrounding elements should be manage
         lastitem: false,
         okbuttonclass: 'mod_readaloud_quickgrade_ok',
         ngbuttonclass: 'mod_readaloud_quickgrade_ng',
+        dispose: false, //Bv4 = dispose ??? Bv3 = destroy ??
 
         init: function(){
             this.register_events();
@@ -23,11 +25,30 @@ Relationships between the recorder and the surrounding elements should be manage
             $(document).on('click','.' + this.ngbuttonclass,this.onReject);
         },
 
+        disposeWord: function(){
+            if(this.dispose){return this.dispose;}
+            if($.fn.popover.Constructor.hasOwnProperty('VERSION')){
+                var version = $.fn.popover.Constructor.VERSION.charAt(0);
+            }else{
+                var version ='3';
+            }
+            switch(version){
+                case '4':
+                    this.dispose='dispose';
+                    break;
+                case '3':
+                default:
+                    this.dispose='destroy';
+                    break;
+            }
+            return this.dispose;
+        },
+
         remove: function(item){
           if(item) {
-              $(item).popover('dispose');
+              $(item).popover(this.disposeWord());
           }else if(this.lastitem) {
-              $(this.lastitem).popover('dispose');
+              $(this.lastitem).popover(this.disposeWord());
               this.lastitem=false;
           }
         },
@@ -36,7 +57,7 @@ Relationships between the recorder and the surrounding elements should be manage
 
             //dispose of previous popover, and remember this one
             if(this.lastitem && this.lastitem !== item) {
-                $(this.lastitem).popover('dispose');
+                $(this.lastitem).popover(this.disposeWord());
                 this.lastitem=false;
             }
             this.lastitem = item;
@@ -67,14 +88,14 @@ Relationships between the recorder and the surrounding elements should be manage
 
             //if we are already showing this item then dispose of it, set last item to null and go home
             if(this.lastitem == item) {
-                $(this.lastitem).popover('dispose');
+                $(this.lastitem).popover(this.disposeWord());
                 this.lastitem = false;
                 return;
             }
 
             //dispose of previous popover, and remember this one
             if(this.lastitem) {
-                $(this.lastitem).popover('dispose');
+                $(this.lastitem).popover(this.disposeWord());
                 this.lastitem=false;
             }
             this.lastitem = item;

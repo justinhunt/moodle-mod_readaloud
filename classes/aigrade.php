@@ -79,7 +79,7 @@ class aigrade
 
     //do we have the AI transcripts
    public function has_transcripts(){
-        return property_exists($this->aidata,'transcript') && !empty($this->aidata->transcript);
+        return property_exists($this->aidata,'transcript') && !empty($this->aidata->transcript) && !empty($this->aidata->fulltranscript);
     }
 
     //do we have the AI at all
@@ -109,6 +109,7 @@ class aigrade
    public function fetch_transcripts(){
         global $DB;
         $success = false;
+        $transcript= false;
         if($this->attemptdata->filename && strpos($this->attemptdata->filename,'https')===0){
             $transcript = utils::curl_fetch($this->attemptdata->filename . '.txt');
             if(strpos($transcript,"<Error><Code>AccessDenied</Code>")>0){

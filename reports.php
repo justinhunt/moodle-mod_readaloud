@@ -60,6 +60,8 @@ $PAGE->set_url(constants::MOD_READALOUD_URL . '/reports.php',
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
+require_capability('mod/readaloud:manage', $modulecontext);
+
 //Get an admin settings 
 $config = get_config(constants::MOD_READALOUD_FRANKY);
 
@@ -69,20 +71,17 @@ if($paging->perpage==-1){
 }
 
 
-//Diverge logging logic at Moodle 2.7
-if($CFG->version<2014051200){
-	add_to_log($course->id, constants::MOD_READALOUD_MODNAME, 'reports', "reports.php?id={$cm->id}", $moduleinstance->name, $cm->id);
-}else{
-	// Trigger module viewed event.
-	$event = \mod_readaloud\event\course_module_viewed::create(array(
-	   'objectid' => $moduleinstance->id,
-	   'context' => $modulecontext
-	));
-	$event->add_record_snapshot('course_modules', $cm);
-	$event->add_record_snapshot('course', $course);
-	$event->add_record_snapshot(constants::MOD_READALOUD_MODNAME, $moduleinstance);
-	$event->trigger();
-} 
+
+// Trigger module viewed event.
+$event = \mod_readaloud\event\course_module_viewed::create(array(
+   'objectid' => $moduleinstance->id,
+   'context' => $modulecontext
+));
+$event->add_record_snapshot('course_modules', $cm);
+$event->add_record_snapshot('course', $course);
+$event->add_record_snapshot(constants::MOD_READALOUD_MODNAME, $moduleinstance);
+$event->trigger();
+
 
 
 /// Set up the page header

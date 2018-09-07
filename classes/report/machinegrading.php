@@ -42,7 +42,7 @@ class machinegrading extends basereport
                 $ret = $record->totalattempts;
                 if ($withlinks) {
                     $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
-                        array('action' => 'gradingbyuser', 'n' => $record->readaloudid, 'userid' => $record->userid));
+                        array('action' => 'machinegradingbyuser', 'n' => $record->readaloudid, 'userid' => $record->userid));
                     $ret = \html_writer::link($link, $ret);
                 }
                 break;

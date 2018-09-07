@@ -278,6 +278,13 @@ class utils{
       );
   }
 
+    public static function get_machinegrade_options(){
+        return array(
+            constants::MACHINEGRADE_NONE => get_string("machinegradenone",'mod_readaloud'),
+            constants::MACHINEGRADE_MACHINE => get_string("machinegrademachine",'mod_readaloud')
+        );
+    }
+
   public static function get_expiredays_options(){
       return array(
           "1"=>"1",

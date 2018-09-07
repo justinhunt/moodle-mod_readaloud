@@ -52,8 +52,10 @@ $row[] = new tabobject('view', "$CFG->wwwroot/mod/readaloud/view.php?id=$cm->id"
 $row[] = new tabobject('grading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id", get_string('grading', constants::MOD_READALOUD_LANG), get_string('viewgrading', constants::MOD_READALOUD_LANG));
 if($moduleinstance->enableai) {
     $row[] = new tabobject('machinegrading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id&action=machinegrading", get_string('machinegrading', constants::MOD_READALOUD_LANG), get_string('viewmachinegrading', constants::MOD_READALOUD_LANG));
+    $row[] = new tabobject('gradesadmin', "$CFG->wwwroot/mod/readaloud/gradesadmin.php?id=$cm->id", get_string('gradesadmin', constants::MOD_READALOUD_LANG), get_string('viewgradesadmin', constants::MOD_READALOUD_LANG));
+
 }
-$row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', constants::MOD_READALOUD_LANG), get_string('viewreports', constants::MOD_READALOUD_LANG));
+//$row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', constants::MOD_READALOUD_LANG), get_string('viewreports', constants::MOD_READALOUD_LANG));
 $tabs[] = $row;
 
 print_tabs($tabs, $currenttab, $inactive, $activated);

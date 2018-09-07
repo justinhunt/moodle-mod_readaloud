@@ -182,6 +182,12 @@ class mod_readaloud_mod_form extends moodleform_mod {
         */
         $mform->addElement('hidden', 'gradeoptions',constants::MOD_READALOUD_GRADELATEST);
         $mform->setType('gradeoptions', PARAM_INT);
+
+        //human vs machine grade options
+        $machinegradeoptions = \mod_readaloud\utils::get_machinegrade_options();
+        $mform->addElement('select', 'machgrademethod', get_string('machinegrademethod', constants::MOD_READALOUD_LANG), $machinegradeoptions);
+        $mform->setDefault('machgrademethod',$config->machinegrademethod);
+        $mform->addHelpButton('machgrademethod', 'machinegrademethod', constants::MOD_READALOUD_LANG);
 		
 		
 
