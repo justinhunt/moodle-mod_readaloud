@@ -146,7 +146,7 @@ div.mod_readaloud_passage_cont.mod_readaloud_postattempt {
 .mod_readaloud_feedback_cont {
 	display: none;
 }
-.mod_readaloud_backtotop_cont {
+.mod_readaloud_wheretonext_cont {
 	display: none;
 }
 div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
@@ -219,7 +219,7 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 	display: flex;
 }
 .mod_readaloud_afterattempt_cont,
-.mod_readaloud_backtotop_cont,
+.mod_readaloud_wheretonext_cont,
 .mod_readaloud_ungraded_cont {
 	margin-left: auto;
 	margin-right: auto;

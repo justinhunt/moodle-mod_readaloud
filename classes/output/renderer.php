@@ -9,6 +9,7 @@
 namespace mod_readaloud\output;
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 class renderer extends \plugin_renderer_base {
 
@@ -80,12 +81,18 @@ class renderer extends \plugin_renderer_base {
     /**
      *
      */
-    public function show_backtotopbutton($moduleinstance){
+    public function show_wheretonext($moduleinstance){
 
-        $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/view.php',
-            array('n'=>$moduleinstance->id)),get_string('backtotop',constants::MOD_READALOUD_FRANKY));
-
-        $ret = \html_writer::div($button ,constants::MOD_READALOUD_BACKTOTOP_CONTAINER);
+        $nextactivity = utils::fetch_next_activity($moduleinstance->activitylink);
+        //show activity link if we are up to it
+        if ($nextactivity->url) {
+            $button= $this->output->single_button($nextactivity->url,$nextactivity->label);
+        //else lets show a back to top link
+        }else {
+            $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/view.php',
+                array('n' => $moduleinstance->id)), get_string('backtotop', constants::MOD_READALOUD_FRANKY));
+        }
+        $ret = \html_writer::div($button ,constants::MOD_READALOUD_WHERETONEXT_CONTAINER);
         return $ret;
 
     }
@@ -287,6 +294,7 @@ class renderer extends \plugin_renderer_base {
             array('id'=>constants::MOD_READALOUD_RECORDERID,
                 'data-id'=>'therecorder',
                 'data-parent'=>$CFG->wwwroot,
+                'data-localloading'=>'auto',
                 'data-localloader'=>'/mod/readaloud/poodllloader.html',
                 'data-media'=>"audio",
                 'data-appid'=>"readaloud",
@@ -343,7 +351,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['hider']=constants::MOD_READALOUD_HIDER;
         $recopts['progresscontainer'] = constants::MOD_READALOUD_PROGRESS_CONTAINER;
         $recopts['feedbackcontainer'] = constants::MOD_READALOUD_FEEDBACK_CONTAINER;
-        $recopts['backtotopcontainer'] = constants::MOD_READALOUD_BACKTOTOP_CONTAINER;
+        $recopts['wheretonextcontainer'] = constants::MOD_READALOUD_WHERETONEXT_CONTAINER;
         $recopts['errorcontainer'] = constants::MOD_READALOUD_ERROR_CONTAINER;
         $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
 

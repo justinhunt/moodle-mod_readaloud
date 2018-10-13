@@ -109,9 +109,35 @@ class restore_readaloud_activity_task extends restore_activity_task {
      */
     static public function define_restore_log_rules_for_course() {
         $rules = array();
-
         $rules[] = new restore_log_rule(constants::MOD_READALOUD_MODNAME, 'view all', 'index.php?id={course}', null);
-
         return $rules;
+    }
+
+    /**
+     * Re-map the  activitylink information
+     * If activitylink has no mapping in the backup data then it could either be a duplication of a
+     * readaloud, or a backup/restore of a single one. We have no way to determine which and whether this is the
+     * same site and/or course. Therefore we try and retrieve a mapping, but fallback to the original value if one
+     * was not found. We then test to see whether the value found is valid for the course being restored into.
+     */
+    public function after_restore() {
+        global $DB;
+
+        $readaloud = $DB->get_record(constants::MOD_READALOUD_TABLE, array('id' => $this->get_activityid()), 'id, course, activitylink');
+        $updaterequired = false;
+
+        if (!empty($readaloud->activitylink)) {
+            $updaterequired = true;
+            if ($newitem = restore_dbops::get_backup_ids_record($this->get_restoreid(), 'course_module', $readaloud->activitylink)) {
+                $readaloud->activitylink = $newitem->newitemid;
+            }
+            if (!$DB->record_exists('course_modules', array('id' => $readaloud->activitylink, 'course' => $readaloud->course))) {
+                $readaloud->activitylink = 0;
+            }
+        }
+
+        if ($updaterequired) {
+            $DB->update_record('readaloud', $readaloud);
+        }
     }
 }

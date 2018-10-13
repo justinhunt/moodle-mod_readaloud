@@ -91,7 +91,7 @@ class utils{
     public static function fetch_token($apiuser, $apisecret)
     {
 
-        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, 'mod_readaloud', 'token');
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::MOD_READALOUD_FRANKY, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
         $tokenuser = $cache->get('recentpoodlluser');
 
@@ -251,37 +251,77 @@ class utils{
         return $errorestimate;
     }
 
+    /**
+     * Returns the link for the related activity
+     * @return string
+     */
+    public static function fetch_next_activity($activitylink) {
+        global $DB;
+        $ret = new \stdClass();
+        $ret->url=false;
+        $ret->label=false;
+        if(!$activitylink){
+            return $ret;
+        }
+
+        $module = $DB->get_record('course_modules', array('id' => $activitylink));
+        if ($module) {
+            $modname = $DB->get_field('modules', 'name', array('id' => $module->module));
+            if ($modname) {
+                $instancename = $DB->get_field($modname, 'name', array('id' => $module->instance));
+                if ($instancename) {
+                    $ret->url = new \moodle_url('/mod/'.$modname.'/view.php', array('id' => $activitylink));
+                    $ret->label = get_string('activitylinkname',constants::MOD_READALOUD_LANG, $instancename);
+                }
+            }
+        }
+        return $ret;
+    }
+
     //What to show students after an attempt
     public static function get_postattempt_options(){
         return array(
-            constants::POSTATTEMPT_NONE => get_string("postattempt_none",'mod_readaloud'),
-            constants::POSTATTEMPT_EVAL  => get_string("postattempt_eval",'mod_readaloud'),
-            constants::POSTATTEMPT_EVALERRORS  => get_string("postattempt_evalerrors",'mod_readaloud')
+            constants::POSTATTEMPT_NONE => get_string("postattempt_none",constants::MOD_READALOUD_LANG),
+            constants::POSTATTEMPT_EVAL  => get_string("postattempt_eval",constants::MOD_READALOUD_LANG),
+            constants::POSTATTEMPT_EVALERRORS  => get_string("postattempt_evalerrors",constants::MOD_READALOUD_LANG)
         );
     }
 
     //for error estimate and accuracy adjustment, we can auto estimate errors, never estimate errors, or use a fixed error estimate
     public static function get_autoaccmethod_options(){
         return array(
-            constants::ACCMETHOD_NONE => get_string("accmethod_none",'mod_readaloud'),
-            constants::ACCMETHOD_AUTO  => get_string("accmethod_auto",'mod_readaloud'),
-            constants::ACCMETHOD_FIXED  => get_string("accmethod_fixed",'mod_readaloud')
+            constants::ACCMETHOD_NONE => get_string("accmethod_none",constants::MOD_READALOUD_LANG),
+            constants::ACCMETHOD_AUTO  => get_string("accmethod_auto",constants::MOD_READALOUD_LANG),
+            constants::ACCMETHOD_FIXED  => get_string("accmethod_fixed",constants::MOD_READALOUD_LANG)
         );
     }
 
   public static function get_region_options(){
       return array(
-        "useast1" => get_string("useast1",'mod_readaloud'),
-          "tokyo" => get_string("tokyo",'mod_readaloud'),
-          "sydney" => get_string("sydney",'mod_readaloud'),
-          "dublin" => get_string("dublin",'mod_readaloud')
+        "useast1" => get_string("useast1",constants::MOD_READALOUD_LANG),
+          "tokyo" => get_string("tokyo",constants::MOD_READALOUD_LANG),
+          "sydney" => get_string("sydney",constants::MOD_READALOUD_LANG),
+          "dublin" => get_string("dublin",constants::MOD_READALOUD_LANG)
       );
   }
 
     public static function get_machinegrade_options(){
         return array(
-            constants::MACHINEGRADE_NONE => get_string("machinegradenone",'mod_readaloud'),
-            constants::MACHINEGRADE_MACHINE => get_string("machinegrademachine",'mod_readaloud')
+            constants::MACHINEGRADE_NONE => get_string("machinegradenone",constants::MOD_READALOUD_LANG),
+            constants::MACHINEGRADE_MACHINE => get_string("machinegrademachine",constants::MOD_READALOUD_LANG)
+        );
+    }
+
+    public static function get_timelimit_options(){
+        return array(
+            0 => get_string("notimelimit",constants::MOD_READALOUD_LANG),
+            30 => get_string("xsecs",constants::MOD_READALOUD_LANG,'30'),
+            45 => get_string("xsecs",constants::MOD_READALOUD_LANG,'45'),
+            60 => get_string("onemin",constants::MOD_READALOUD_LANG),
+            90 => get_string("oneminxsecs",constants::MOD_READALOUD_LANG,'30'),
+            120 => get_string("xmins",constants::MOD_READALOUD_LANG,'2'),
+            150 => get_string("xminsecs",constants::MOD_READALOUD_LANG,array('minutes'=>2,'seconds'=>30)),
+            180 => get_string("xmins",constants::MOD_READALOUD_LANG,'3')
         );
     }
 
@@ -295,14 +335,14 @@ class utils{
           "180"=>"180",
           "365"=>"365",
           "730"=>"730",
-          "9999"=>get_string('forever','mod_readaloud')
+          "9999"=>get_string('forever',constants::MOD_READALOUD_LANG)
       );
   }
 
    public static function get_lang_options(){
        return array(
-            'en-US'=>get_string('en-us','mod_readaloud'),
-           'es-US'=>get_string('es-us','mod_readaloud')
+            'en-US'=>get_string('en-us',constants::MOD_READALOUD_LANG),
+           'es-US'=>get_string('es-us',constants::MOD_READALOUD_LANG)
        );
 	/*
       return array(

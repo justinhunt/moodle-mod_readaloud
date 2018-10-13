@@ -52,7 +52,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
         $oneactivity = new backup_nested_element(constants::MOD_READALOUD_MODNAME, array('id'), array(
             'course','name','intro','introformat','timelimit','passage','passageformat','alternatives','welcome','welcomeformat',
             'feedback','feedbackformat','targetwpm','accadjustmethod','accadjust','humanpostattempt','machinepostattempt','grade','gradeoptions','machgrademethod','maxattempts','mingrade',
-            'ttslanguage','enableai','allowearlyexit','region','timecreated','timemodified'
+            'ttslanguage','enableai','allowearlyexit','region','activitylink','timecreated','timemodified'
 			));
 		
 		//attempts

@@ -41,7 +41,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
      * Defines forms elements
      */
     public function definition() {
-    	global $CFG;
+    	global $CFG, $COURSE;
 
         $mform = $this->_form;
 
@@ -68,14 +68,17 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		}
 		
 		//time target
-		$mform->addElement('duration', 'timelimit', get_string('timelimit',constants::MOD_READALOUD_LANG));
+        $timelimit_options = \mod_readaloud\utils::get_timelimit_options();
+        $mform->addElement('select', 'timelimit', get_string('timelimit', constants::MOD_READALOUD_LANG),
+            $timelimit_options);
+		//$mform->addElement('duration', 'timelimit', get_string('timelimit',constants::MOD_READALOUD_LANG)));
 		$mform->setDefault('timelimit',60);
 		
 		//add other editors
 		//could add files but need the context/mod info. So for now just rich text
 		$config = get_config(constants::MOD_READALOUD_FRANKY);
 		
-		//The pasage
+		//The passage
 		//$edfileoptions = readaloud_editor_with_files_options($this->context);
 		$ednofileoptions = readaloud_editor_no_files_options($this->context);
 		$opts = array('rows'=>'15', 'columns'=>'80');
@@ -112,10 +115,6 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', constants::MOD_READALOUD_LANG), get_string('allowearlyexit_details', constants::MOD_READALOUD_LANG));
 		$mform->setDefault('allowearlyexit',$config->allowearlyexit);
 
-        //Enable AI
-        $mform->addElement('advcheckbox', 'enableai', get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details', constants::MOD_READALOUD_LANG));
-        $mform->setDefault('enableai',$config->enableai);
-
         // Error estimate method field
         /* */
         $autoacc_options = \mod_readaloud\utils::get_autoaccmethod_options();
@@ -132,39 +131,13 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
         $mform->addHelpButton('accadjust', 'accadjust', constants::MOD_READALOUD_LANG);
 
-        // Post attempt evaluation display (human)
-        $postattempt_options = \mod_readaloud\utils::get_postattempt_options();
-        $mform->addElement('select', 'humanpostattempt', get_string('humanpostattempt', constants::MOD_READALOUD_LANG),
-            $postattempt_options);
-        $mform->setType('humanpostattempt', PARAM_INT);
-        $mform->setDefault('humanpostattempt',$config->humanpostattempt);
-
-        // Post attempt evaluation display (machine)
-        $mform->addElement('select', 'machinepostattempt', get_string('machinepostattempt', constants::MOD_READALOUD_LANG),
-            $postattempt_options);
-        $mform->setType('machinepostattempt', PARAM_INT);
-        $mform->setDefault('machinepostattempt',$config->machinepostattempt);
-
 		//Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::MOD_READALOUD_LANG),
                             1 => '1',2 => '2',3 => '3',4 => '4',5 => '5',);
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', constants::MOD_READALOUD_LANG), $attemptoptions);
-		
-		//tts options
-        $langoptions = \mod_readaloud\utils::get_lang_options();
-        $mform->addElement('select', 'ttslanguage', get_string('ttslanguage', constants::MOD_READALOUD_LANG), $langoptions);
-        $mform->setDefault('ttslanguage',$config->ttslanguage);
 
 
-        //region
-        $regionoptions = \mod_readaloud\utils::get_region_options();
-        $mform->addElement('select', 'region', get_string('region', constants::MOD_READALOUD_LANG), $regionoptions);
-        $mform->setDefault('region',$config->awsregion);
 
-        //expiredays
-        $expiredaysoptions = \mod_readaloud\utils::get_expiredays_options();
-        $mform->addElement('select', 'expiredays', get_string('expiredays', constants::MOD_READALOUD_LANG), $expiredaysoptions);
-        $mform->setDefault('expiredays',$config->expiredays);
 		
 		 // Grade.
         $this->standard_grading_coursemodule_elements();
@@ -188,8 +161,66 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addElement('select', 'machgrademethod', get_string('machinegrademethod', constants::MOD_READALOUD_LANG), $machinegradeoptions);
         $mform->setDefault('machgrademethod',$config->machinegrademethod);
         $mform->addHelpButton('machgrademethod', 'machinegrademethod', constants::MOD_READALOUD_LANG);
-		
-		
+
+        // Appearance.
+        $mform->addElement('header', 'recordingaiheader', get_string('recordingaiheader',constants::MOD_READALOUD_LANG));
+
+        //Enable AI
+        $mform->addElement('advcheckbox', 'enableai', get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details', constants::MOD_READALOUD_LANG));
+        $mform->setDefault('enableai',$config->enableai);
+
+        //tts options
+        $langoptions = \mod_readaloud\utils::get_lang_options();
+        $mform->addElement('select', 'ttslanguage', get_string('ttslanguage', constants::MOD_READALOUD_LANG), $langoptions);
+        $mform->setDefault('ttslanguage',$config->ttslanguage);
+
+
+        //region
+        $regionoptions = \mod_readaloud\utils::get_region_options();
+        $mform->addElement('select', 'region', get_string('region', constants::MOD_READALOUD_LANG), $regionoptions);
+        $mform->setDefault('region',$config->awsregion);
+
+        //expiredays
+        $expiredaysoptions = \mod_readaloud\utils::get_expiredays_options();
+        $mform->addElement('select', 'expiredays', get_string('expiredays', constants::MOD_READALOUD_LANG), $expiredaysoptions);
+        $mform->setDefault('expiredays',$config->expiredays);
+
+
+        // Post attempt
+        $mform->addElement('header', 'postattemptheader', get_string('postattemptheader',constants::MOD_READALOUD_LANG));
+
+        // Get the modules.
+        if ($mods = get_course_mods($COURSE->id)) {
+            $modinstances = array();
+            foreach ($mods as $mod) {
+                // Get the module name and then store it in a new array.
+                if ($module = get_coursemodule_from_instance($mod->modname, $mod->instance, $COURSE->id)) {
+                    // Exclude this ReadAloud activity (if it's already been saved.)
+                    if (!isset($this->_cm->id) || $this->_cm->id != $mod->id) {
+                        $modinstances[$mod->id] = $mod->modname.' - '.$module->name;
+                    }
+                }
+            }
+            asort($modinstances); // Sort by module name.
+            $modinstances=array(0=>get_string('none'))+$modinstances;
+
+            $mform->addElement('select', 'activitylink', get_string('activitylink', 'lesson'), $modinstances);
+            $mform->addHelpButton('activitylink', 'activitylink', 'lesson');
+            $mform->setDefault('activitylink', 0);
+        }
+
+        // Post attempt evaluation display (human)
+        $postattempt_options = \mod_readaloud\utils::get_postattempt_options();
+        $mform->addElement('select', 'humanpostattempt', get_string('humanpostattempt', constants::MOD_READALOUD_LANG),
+            $postattempt_options);
+        $mform->setType('humanpostattempt', PARAM_INT);
+        $mform->setDefault('humanpostattempt',$config->humanpostattempt);
+
+        // Post attempt evaluation display (machine)
+        $mform->addElement('select', 'machinepostattempt', get_string('machinepostattempt', constants::MOD_READALOUD_LANG),
+            $postattempt_options);
+        $mform->setType('machinepostattempt', PARAM_INT);
+        $mform->setDefault('machinepostattempt',$config->machinepostattempt);
 
         //-------------------------------------------------------------------------------
         // add standard elements, common to all modules

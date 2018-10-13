@@ -220,7 +220,7 @@ echo $renderer->show_error($moduleinstance,$cm);
 echo $renderer->show_passage($moduleinstance,$cm);
 echo $renderer->show_recorder($moduleinstance,$token);
 echo $renderer->show_progress($moduleinstance,$cm);
-echo $renderer->show_backtotopbutton($moduleinstance);
+echo $renderer->show_wheretonext($moduleinstance);
 
 //the module AMD code
 echo $renderer->fetch_activity_amd($cm, $moduleinstance);

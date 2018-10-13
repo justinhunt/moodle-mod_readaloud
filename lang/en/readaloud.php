@@ -36,6 +36,9 @@ $string['readaloudfieldset'] = 'Custom example fieldset';
 $string['readaloudname'] = 'Read Aloud';
 $string['readaloudname_help'] = 'This is the content of the help tooltip associated with the readaloudname field. Markdown syntax is supported.';
 $string['readaloud'] = 'readaloud';
+$string['activitylink'] = 'Link to next activity';
+$string['activitylink_help'] = 'To provide a link after the attempt to another activity in the course, select the activity from the dropdown list.';
+$string['activitylinkname'] = 'Go to {$a}';
 $string['pluginadministration'] = 'Read Aloud Administration';
 $string['pluginname'] = 'Read Aloud Activity';
 $string['someadminsetting'] = 'Some Admin Setting';
@@ -233,3 +236,12 @@ $string['noattemptsregrade']='No attempts to regrade';
 $string['machineregraded']='Successfully regraded {$a->done} attempts. Skipped {$a->skipped} attempts.';
 $string['machinegradespushed']='Successfully pushed grades to gradebook';
 
+$string['notimelimit']='No time limit';
+$string['xsecs']='{$a} seconds';
+$string['onemin']='1 minute';
+$string['xmins']='{$a} minutes';
+$string['oneminxsecs']='1 minutes {$a} seconds';
+$string['xminsecs']='{$a->minutes} minutes {$a->seconds} seconds';
+
+$string['postattemptheader']='Post attempt options';
+$string['recordingaiheader']='Recording and AI options';

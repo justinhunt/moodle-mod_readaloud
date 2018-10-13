@@ -75,7 +75,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
                 recinstructionscontainerright: $('.' +  opts['recinstructionscontainerright']),
                 recinstructionscontainerleft: $('.' +  opts['recinstructionscontainerleft']),
                 allowearlyexit: $('.' +  opts['allowearlyexit']),
-                backtotopcontainer: $('.' +  opts['backtotopcontainer'])
+                wheretonextcontainer: $('.' +  opts['wheretonextcontainer'])
             };
             this.controls = controls;
         },
@@ -211,7 +211,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.show();
-            m.controls.backtotopcontainer.show();
+            m.controls.wheretonextcontainer.show();
         },
         doerrorlayout: function(){
             var m = this;
@@ -220,7 +220,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
             m.controls.errorcontainer.show();
-            m.controls.backtotopcontainer.show();
+            m.controls.wheretonextcontainer.show();
         }
     };//end of returned object
 });//total end
