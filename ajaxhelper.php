@@ -28,6 +28,7 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 
 use \mod_readaloud\constants;
+use \mod_readaloud\aigrade;
 
 $cmid = required_param('cmid',  PARAM_INT); // course_module ID, or
 //$sessionid = required_param('sessionid',  PARAM_INT); // course_module ID, or
@@ -96,6 +97,14 @@ function save_to_moodle($filename,$readaloud){
     if(!$attemptid){
         return false;
     }
+    $newattempt->id = $attemptid;
+
+    //if we are machine grading add an entry to AI table too
+    if($readaloud->machgrademethod == constants::MACHINEGRADE_MACHINE) {
+        aigrade::create_record($newattempt, $readaloud->timelimit);
+    }
+
+    //return the attempt id
     return $attemptid;
 }
 

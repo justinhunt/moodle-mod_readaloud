@@ -265,8 +265,6 @@ function readaloud_update_grades($moduleinstance, $userid=0, $nullifnone=true) {
     } else {
         readaloud_grade_item_update($moduleinstance);
     }
-	
-	//echo "updategrades" . $userid;
 }
 
 /**
@@ -292,59 +290,49 @@ function readaloud_get_user_grades($moduleinstance, $userid=0) {
 
     }
 
-	$idfield = 'ai.' . constants::MOD_READALOUD_MODNAME . 'id';
-    if ($moduleinstance->maxattempts==1 || $moduleinstance->gradeoptions == constants::MOD_READALOUD_GRADELATEST) {
-        //from which table do we get these grades..
-        switch($moduleinstance->machgrademethod){
+    //aigrades sql
+    $ai_sql = "SELECT u.id, u.id AS userid, ai.sessionscore AS rawgrade
+                  FROM {user} u, {". constants::MOD_READALOUD_AITABLE ."} ai INNER JOIN {". constants::MOD_READALOUD_USERTABLE ."} attempt ON ai.attemptid = attempt.id
+                 WHERE attempt.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
+                       $user
+              GROUP BY u.id, ai.sessionscore";
 
-            case constants::MACHINEGRADE_MACHINE:
-                $sql = "SELECT u.id, u.id AS userid, ai.sessionscore AS rawgrade
-                      FROM {user} u, {". constants::MOD_READALOUD_AITABLE ."} ai INNER JOIN {". constants::MOD_READALOUD_USERTABLE ."} attempt ON ai.attemptid = attempt.id
-                     WHERE attempt.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
-                           $user
-                  GROUP BY u.id, ai.sessionscore";
-                break;
-            case constants::MACHINEGRADE_NONE:
-            default:
-
-                $sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
-                          FROM {user} u, {". constants::MOD_READALOUD_USERTABLE ."} a
-                         WHERE a.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid)  AND u.id = a.userid AND a.readaloudid = :moduleid
-                               $user
-                      GROUP BY u.id, a.sessionscore";
-        }
-
-
-	
-	}else{
-		switch($moduleinstance->gradeoptions){
-			case constants::MOD_READALOUD_GRADEHIGHEST:
-				$sql = "SELECT u.id, u.id AS userid, MAX( a.sessionscore  ) AS rawgrade
+    //human_sql
+    $human_sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
                       FROM {user} u, {". constants::MOD_READALOUD_USERTABLE ."} a
-                     WHERE u.id = a.userid AND $idfield = :moduleid
+                     WHERE a.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid)  AND u.id = a.userid AND a.readaloudid = :moduleid
                            $user
-                  GROUP BY u.id";
-				  break;
-			case constants::MOD_READALOUD_GRADELOWEST:
-				$sql = "SELECT u.id, u.id AS userid, MIN(  a.sessionscore  ) AS rawgrade
-                      FROM {user} u, {". constants::MOD_READALOUD_USERTABLE ."} a
-                     WHERE u.id = a.userid AND $idfield = :moduleid
-                           $user
-                  GROUP BY u.id";
-				  break;
-			case constants::MOD_READALOUD_GRADEAVERAGE:
-            $sql = "SELECT u.id, u.id AS userid, AVG( a.sessionscore  ) AS rawgrade
-                      FROM {user} u, {". constants::MOD_READALOUD_USERTABLE ."} a
-                     WHERE u.id = a.userid AND $idfield = :moduleid
-                           $user
-                  GROUP BY u.id";
-				  break;
+                  GROUP BY u.id, a.sessionscore";
 
-        }
+    //hybrid sql
+    $hybrid_sql = "SELECT u.id, u.sessiontime as sessiontime, u.sessionscore as humangrade, u.id AS userid, ai.sessionscore AS aigrade
+                  FROM {user} u, {". constants::MOD_READALOUD_AITABLE ."} ai INNER JOIN {". constants::MOD_READALOUD_USERTABLE ."} attempt ON ai.attemptid = attempt.id
+                 WHERE attempt.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
+                       $user
+              GROUP BY u.id, ai.sessionscore";
 
-    } 
+    //from which table do we get these grades..
+    switch($moduleinstance->machgrademethod){
 
-    return $DB->get_records_sql($sql, $params);
+        case constants::MACHINEGRADE_MACHINE:
+            $results = $DB->get_records_sql($hybrid_sql, $params);
+            //sessiontime is our indicator that a human grade has been saved.
+            foreach($results as $result){
+                if($result->sessiontime>0){
+                    $result->rawgrade=$results->humangrade;
+                }else{
+                    $result->rawgrade=$results->aigrade;
+                }
+            }
+            break;
+
+        case constants::MACHINEGRADE_NONE:
+        default:
+            $results = $DB->get_records_sql($human_sql, $params);
+
+    }
+    //return results
+    return $results;
 }
 
 

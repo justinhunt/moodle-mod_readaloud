@@ -141,6 +141,7 @@ $mode = "grading";
 $extraheader="";
 switch ($action){
 
+    //load individual attempt page with most recent(human or machine) eval and action buttons
 	case 'gradenow':
 
 		$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
@@ -168,6 +169,7 @@ switch ($action){
 		return;
 
 
+    //load individual attempt page with machine eval and action buttons   (BUT rerun the AI auto grade code on it first)
     case 'regradenow':
 
         $mode = "machinegrading";
@@ -193,6 +195,7 @@ switch ($action){
         echo $renderer->footer();
         return;
 
+    //load individual attempt page with machine eval (NO action buttons )
     case 'machinereview':
 
         $mode = "machinegrading";
@@ -212,6 +215,7 @@ switch ($action){
         echo $renderer->footer();
         return;
 
+     //load individual attempt page with machine eval and action buttons
     case 'aigradenow':
 
         $mode = "machinegrading";
@@ -240,6 +244,7 @@ switch ($action){
         echo $renderer->footer();
         return;
 
+    //list view of attempts and grades and action links
 	case 'grading':
 		$report = new \mod_readaloud\report\grading();
 		//formdata should only have simple values, not objects
@@ -249,6 +254,7 @@ switch ($action){
 		$formdata->modulecontextid = $modulecontext->id;
 		break;
 
+    //list view of attempts and grades and action links for a particular user
 	case 'gradingbyuser':
 		$report = new \mod_readaloud\report\gradingbyuser();
 		//formdata should only have simple values, not objects
@@ -259,6 +265,7 @@ switch ($action){
 		$formdata->modulecontextid = $modulecontext->id;
 		break;
 
+    //list view of attempts and machine grades and action links
     case 'machinegrading':
         $mode="machinegrading";
         $report = new \mod_readaloud\report\machinegrading();
@@ -281,6 +288,7 @@ switch ($action){
         $formdata->targetwpm=$moduleinstance->targetwpm;
         break;
 
+    //list view of machine  attempts and grades and action links for a particular user
     case 'machinegradingbyuser':
         $mode = "machinegrading";
         $report = new \mod_readaloud\report\machinegradingbyuser();

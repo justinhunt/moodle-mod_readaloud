@@ -87,7 +87,7 @@ class utils{
         return $data;
     }
 
-    //We need a Poodll token to make this happen
+    //We need a Poodll token to make all this recording and transcripts happen
     public static function fetch_token($apiuser, $apisecret)
     {
 
@@ -138,6 +138,7 @@ class utils{
         return $token;
     }
 
+    //fetch start-time and end-time points for each word
     public static function fetch_audio_points($fulltranscript,$matches,$alternatives){
 
        //get type 'pronunciation' items from full transcript. The other type is 'punctuation'.

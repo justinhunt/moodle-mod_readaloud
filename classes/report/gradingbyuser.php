@@ -14,7 +14,7 @@ class gradingbyuser extends basereport
 {
 
     protected $report="gradingbyuser";
-    protected $fields = array('id','audiofile','wpm','accuracy_p','grade_p','timecreated','gradenow','deletenow');
+    protected $fields = array('id','audiofile','wpm','accuracy_p','grade_p','grader','timecreated','gradenow','deletenow');
     protected $headingdata = null;
     protected $qcache=array();
     protected $ucache=array();
@@ -52,16 +52,44 @@ class gradingbyuser extends basereport
                 }
                 break;
 
+            //WPM could hold either human or AI data
             case 'wpm':
-                $ret = $record->wpm;
+                //if not human or ai graded
+                if($record->sessiontime ==0 && !$record->wpm){
+                    $ret = '';
+                }else {
+                    $ret = $record->wpm;
+                }
                 break;
 
+            //accuracy could hold either human or ai data
             case 'accuracy_p':
-                $ret = $record->accuracy;
+                //if not human or ai graded
+                if($record->sessiontime ==0 && !$record->wpm){
+                    $ret = '';
+                }else {
+                    $ret = $record->accuracy;
+                }
                 break;
 
+            //grade could hold either human or ai data
             case 'grade_p':
-                $ret = $record->sessionscore;
+                //if not human or ai graded
+                if($record->sessiontime ==0 && !$record->wpm){
+                    $ret = '';
+                }else {
+                    $ret = $record->sessionscore;
+                }
+                break;
+
+            case 'grader':
+                if($record->sessiontime ==0 && $record->wpm){
+                    $ret = get_string('grader_ai',constants::MOD_READALOUD_LANG);
+                }else if($record->sessiontime){
+                    $ret = get_string('grader_human',constants::MOD_READALOUD_LANG);
+                }else{
+                    $ret =get_string('grader_ungraded',constants::MOD_READALOUD_LANG);
+                }
                 break;
 
             case 'gradenow':
@@ -112,6 +140,44 @@ class gradingbyuser extends basereport
         $emptydata = array();
         $user_attempt_totals = array();
         $alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE, array('readaloudid' => $formdata->readaloudid, 'userid' => $formdata->userid), 'id DESC');
+
+        //if we are not machine grading the SQL is simpler
+        $human_sql = "SELECT tu.*  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu " .
+            "WHERE tu.readaloudid=? " .
+            "ORDER BY tu.id DESC";
+
+        //if we are machine grading we need to fetch human and machine so we can get WPM etc from either
+        $hybrid_sql="SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu " .
+            "INNER JOIN {". constants::MOD_READALOUD_AITABLE ."} tai ON tai.attemptid=tu.id " .
+            "WHERE tu.readaloudid=? " .
+            "ORDER BY tu.id DESC";
+
+        //we need a module instance to know which scoring method we are using.
+        $moduleinstance = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$formdata->readaloudid));
+
+        //run the sql and match up WPM/ accuracy and sessionscore if we need to
+        switch($moduleinstance->machgrademethod){
+
+            case constants::MACHINEGRADE_MACHINE:
+                $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid));
+                if($alldata) {
+                    //sessiontime is our indicator that a human grade has been saved.
+                    foreach ($alldata as $result) {
+                        if (!$result->sessiontime) {
+                            $result->wpm = $result->aiwpm;
+                            $result->accuracy = $result->aiaccuracy;
+                            $result->sessionscore = $result->aisessionscore;
+                        }
+                    }
+                }
+                break;
+
+            case constants::MACHINEGRADE_NONE:
+            default:
+                $alldata =$DB->get_records_sql($human_sql, array($formdata->readaloudid));
+
+        }
+
 
         if ($alldata) {
 

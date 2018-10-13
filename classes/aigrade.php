@@ -24,27 +24,28 @@ class aigrade
                 $this->recordid = $record->id;
                 $this->aidata = $record;
             } else {
-                $this->recordid = $this->create_record($this->attemptdata);
+                $this->recordid = self::create_record($this->attemptdata,$this->activitydata->timelimit);
                 if ($this->recordid) {
                     $record = $DB->get_record(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
                     $this->aidata = $record;
                 }
             }
             if(!$this->has_transcripts()){
-                //we need more plumbing to be able to util::can_transcribe a here (a module instance) so we just accept
-                //if( $this->activitydata->region=='useast1') {
+                //if we do not have transcripts we try to fetch them
                     $success = $this->fetch_transcripts();
+                    //if we got transcripts, right on man.
+                    //we process them and update gradebook
                     if($success){
                         $this->do_diff();
+                        $this->send_to_gradebook();
                     }
-                //}
             }
         }else{
             //if there is no attempt we should not even be here
         }
     }
 
-    
+    //just a simple interface to manage returning read only property data
     public function aidetails($property){
         switch($property) {
             case 'sessionscore':
@@ -77,6 +78,11 @@ class aigrade
         return $this->attemptdata ? true : false;
     }
 
+    //we leave it up to the grading logic how/if it adds the ai grades to gradebook
+    public function send_to_gradebook(){
+        readaloud_update_grades($this->activitydata, $this->attemptdata->userid);
+    }
+
     //do we have the AI transcripts
    public function has_transcripts(){
         return property_exists($this->aidata,'transcript') && !empty($this->aidata->transcript) && !empty($this->aidata->fulltranscript);
@@ -87,13 +93,15 @@ class aigrade
        return utils::can_transcribe($moduleinstance);
     }
 
-   protected function create_record($attemptdata){
+    //add an entry for the AI data for this attempt in the database
+    //we will fill it up with data shortly
+   public static function create_record($attemptdata,$timelimit){
         global $DB;
         $data = new \stdClass();
         $data->attemptid=$attemptdata->id;
         $data->courseid=$attemptdata->courseid;
         $data->readaloudid=$attemptdata->readaloudid;
-        $data->sessiontime=$attemptdata->sessiontime ? $attemptdata->sessiontime:$this->activitydata->timelimit;
+        $data->sessiontime=$attemptdata->sessiontime ? $attemptdata->sessiontime:$timelimit;
         $data->transcript='';
         $data->sessionerrors='';
         $data->errorcount=0;
@@ -101,11 +109,12 @@ class aigrade
         $data->timecreated=time();
         $data->timemodified=time();
         $recordid = $DB->insert_record(constants::MOD_READALOUD_AITABLE,$data);
-        $this->recordid=$recordid;
         return $recordid;
     }
 
 
+    //transcripts become ready in their own time, if they're ready update data and DB,
+    // if not just report that back
    public function fetch_transcripts(){
         global $DB;
         $success = false;
@@ -130,6 +139,7 @@ class aigrade
         return $success;
     }
 
+    //this is the serious stuff, this is the high level function that manages the comparison of transcript and passage
    public function do_diff(){
         global $DB;
 

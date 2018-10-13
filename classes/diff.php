@@ -1,26 +1,24 @@
 <?php
 
-/*
-
-class.Diff.php
-
-A class containing a diff implementation
-
-Created by Kate Morley - http://iamkate.com/ - and released under the terms of
-the CC0 1.0 Universal legal code:
-
-http://creativecommons.org/publicdomain/zero/1.0/legalcode
-
-*/
+/**
+ * Differencing class for Poodll Readaloud
+ *
+ * A class containing functions for computing diffs between reading passage and audio transcript
+ * This mght be hard to follow, but its documented as well as I could
+ *
+ * @package    mod_readaloud
+ * @copyright  2018 Justin Hunt (poodllsupport@gmail.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace mod_readaloud;
 
-// A class containing functions for computing diffs between reading passage and audio transcript
+//
 class diff{
 
     // define the constants
     const MATCHED = 0;
-    const UNMATCHED    = 1;
+    const UNMATCHED = 1;
 
 
     /*
@@ -122,7 +120,7 @@ public static function fetchAlternativesArray($thealternates)
     // would differ from the match length in the passage
     //eg 1989 -> nineteen eighty nine.
     // BUT we cancelled this feature because the code became more complex than wanted to maintain,
-    // however still keep the transcript sequence length and passage sequence length code in place in this function
+    // however still kept the transcript sequence length and passage sequence length code in place in this function
     // so we could have another go at this if needed
     //
     //returns array of sequences
@@ -173,7 +171,7 @@ public static function fetchAlternativesArray($thealternates)
                     //else: no match or end of transcript/passage,
                 } else {
                     //if we have a match here, then its the last word of passage or transcript...
-                    //we build our sequence object and return
+                    //we build our sequence object, store it in $sequences, and return
                      if($match){
                          $p_slength++;
                          $t_slength+= $t_matchlength;
