@@ -123,7 +123,9 @@ if($attempts && $retake==0){
     $have_humaneval = $latestattempt->sessiontime!=null;
     $have_aieval = $latest_aigrade && $latest_aigrade->has_transcripts();
 
-    if( $have_humaneval){
+    if( $have_humaneval || $have_aieval){
+        //we useed to distingush between humanpostattempt and machinepostattempt but we simplified it,
+        // /and just use the human value for all
         switch($moduleinstance->humanpostattempt){
             case constants::POSTATTEMPT_NONE:
                 echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
@@ -131,10 +133,15 @@ if($attempts && $retake==0){
                 break;
             case constants::POSTATTEMPT_EVAL:
                 echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
-                echo $renderer->show_humanevaluated_message();
+                if( $have_humaneval) {
+                    echo $renderer->show_humanevaluated_message();
+                    $force_aidata=false;
+                }else{
+                    echo $renderer->show_machineevaluated_message();
+                    $force_aidata=true;
+                }
                 $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
                 $reviewmode =constants::REVIEWMODE_SCORESONLY;
-                $force_aidata=false;
                 echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
                 echo $gradenowrenderer->render_attempt_scoresheader($gradenow);
                 echo $renderer->show_passage_postattempt($moduleinstance);
@@ -143,44 +150,20 @@ if($attempts && $retake==0){
 
             case constants::POSTATTEMPT_EVALERRORS:
                 echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
-                echo $renderer->show_humanevaluated_message();
+                if( $have_humaneval) {
+                    echo $renderer->show_humanevaluated_message();
+                    $reviewmode = constants::REVIEWMODE_HUMAN;
+                    $force_aidata=false;
+                }else{
+                    echo $renderer->show_machineevaluated_message();
+                    $reviewmode =constants::REVIEWMODE_MACHINE;
+                    $force_aidata=true;
+                }
                 $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
-                $reviewmode =constants::REVIEWMODE_HUMAN;
-                $force_aidata=false;
                 echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
                 echo $gradenowrenderer->render_hiddenaudioplayer();
                 echo $gradenowrenderer->render_userreview($gradenow);
                 break;
-        }
-    }else if($have_aieval){
-        switch($moduleinstance->machinepostattempt){
-            case constants::POSTATTEMPT_NONE:
-                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
-                echo $renderer->show_passage_postattempt($moduleinstance);
-
-                break;
-            case constants::POSTATTEMPT_EVAL:
-                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
-                echo $renderer->show_machineevaluated_message();
-                $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
-                $reviewmode =constants::REVIEWMODE_SCORESONLY;
-                $force_aidata=true;
-                echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
-                echo $gradenowrenderer->render_attempt_scoresheader($gradenow);
-                echo $renderer->show_passage_postattempt($moduleinstance);
-                break;
-
-            case constants::POSTATTEMPT_EVALERRORS:
-                echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);
-                echo $renderer->show_machineevaluated_message();
-                $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
-                $reviewmode =constants::REVIEWMODE_MACHINE;
-                $force_aidata=true;
-                echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
-                echo $gradenowrenderer->render_hiddenaudioplayer();
-                echo $gradenowrenderer->render_userreview($gradenow);
-                break;
-
         }
     }else{
         echo $renderer->show_feedback_postattempt($moduleinstance,$moduleinstance->name);

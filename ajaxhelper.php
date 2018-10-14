@@ -99,8 +99,11 @@ function save_to_moodle($filename,$readaloud){
     }
     $newattempt->id = $attemptid;
 
-    //if we are machine grading add an entry to AI table too
-    if($readaloud->machgrademethod == constants::MACHINEGRADE_MACHINE) {
+    //if we are machine grading we need an entry to AI table too
+    //But ... there is the chance a user will CHANGE this value after submissions have begun,
+    //If they do, INNER JOIN SQL in grade related logic will mess up gradebook if aigrade record is not available.
+    //So for prudence sake we ALWAYS create an aigrade record
+    if(true || $readaloud->machgrademethod == constants::MACHINEGRADE_MACHINE) {
         aigrade::create_record($newattempt, $readaloud->timelimit);
     }
 

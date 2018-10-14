@@ -177,8 +177,9 @@ function readaloud_grade_item_update($moduleinstance, $grades=null) {
     }
 
     //if we are machine grading we need to fetch the error estimate
-    if($moduleinstance->machgrademethod=constants::MACHINEGRADE_MACHINE &&
-        $moduleinstance->enableai) {
+    //hard coded to no error estimate since we turned off the feature
+    if(false && $moduleinstance->machgrademethod=constants::MACHINEGRADE_MACHINE &&
+        $moduleinstance->enableai && $moduleinstance->accadjustmethod != constants::ACCMETHOD_NONE) {
         $errorestimate = \mod_readaloud\utils::estimate_errors($moduleinstance->id);
     }else{
         $errorestimate =0;

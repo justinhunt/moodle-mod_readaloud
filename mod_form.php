@@ -115,21 +115,29 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', constants::MOD_READALOUD_LANG), get_string('allowearlyexit_details', constants::MOD_READALOUD_LANG));
 		$mform->setDefault('allowearlyexit',$config->allowearlyexit);
 
-        // Error estimate method field
-        /* */
+        // Error estimate method field ... weremoved this to simplify things ... can bring back as feature later
+        /*
         $autoacc_options = \mod_readaloud\utils::get_autoaccmethod_options();
         $mform->addElement('select', 'accadjustmethod', get_string('accadjustmethod', constants::MOD_READALOUD_LANG),
             $autoacc_options);
         $mform->setType('accadjustmethod', PARAM_INT);
         $mform->setDefault('accadjustmethod',$config->accadjustmethod);
         $mform->addHelpButton('accadjustmethod', 'accadjustmethod', constants::MOD_READALOUD_LANG);
+        */
+        $mform->addElement('hidden', 'accadjustmethod',constants::ACCMETHOD_NONE);
+        $mform->setType('accadjustmethod', PARAM_INT);
 
-        // Fixed Error estimate field
+        // Fixed Error estimate field  ... we removed this to simplify things ... can bring back as feature later
+        /*
         $mform->addElement('text', 'accadjust', get_string('accadjust', constants::MOD_READALOUD_LANG), array('size'=>'8'));
         $mform->setType('accadjust', PARAM_INT);
         $mform->setDefault('accadjust',$config->accadjust);
         $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
         $mform->addHelpButton('accadjust', 'accadjust', constants::MOD_READALOUD_LANG);
+        */
+        $mform->addElement('hidden', 'accadjust',0);
+        $mform->setType('accadjust', PARAM_INT);
+
 
 		//Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::MOD_READALOUD_LANG),
@@ -202,17 +210,18 @@ class mod_readaloud_mod_form extends moodleform_mod {
 
         // Post attempt evaluation display (human)
         $postattempt_options = \mod_readaloud\utils::get_postattempt_options();
-        $mform->addElement('select', 'humanpostattempt', get_string('humanpostattempt', constants::MOD_READALOUD_LANG),
+        $mform->addElement('select', 'humanpostattempt', get_string('evaluationview', constants::MOD_READALOUD_LANG),
             $postattempt_options);
         $mform->setType('humanpostattempt', PARAM_INT);
         $mform->setDefault('humanpostattempt',$config->humanpostattempt);
 
         // Post attempt evaluation display (machine)
+        /*
         $mform->addElement('select', 'machinepostattempt', get_string('machinepostattempt', constants::MOD_READALOUD_LANG),
             $postattempt_options);
         $mform->setType('machinepostattempt', PARAM_INT);
         $mform->setDefault('machinepostattempt',$config->machinepostattempt);
-
+        */
         //-------------------------------------------------------------------------------
         // add standard elements, common to all modules
         $this->standard_coursemodule_elements();

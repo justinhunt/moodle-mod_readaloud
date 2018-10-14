@@ -47,17 +47,18 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/enableai',
         get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details',constants::MOD_READALOUD_LANG), 1));
-
+/*
+ * //we removed this to simplify things, can bring back as feature later
     $autoacc_options = \mod_readaloud\utils::get_autoaccmethod_options();
     $settings->add(new admin_setting_configselect('mod_readaloud/accadjustmethod',
         get_string('accadjustmethod', constants::MOD_READALOUD_LANG),
         get_string('accadjustmethod_details',constants::MOD_READALOUD_LANG),
-        constants::ACCMETHOD_AUTO, $autoacc_options));
+        constants::ACCMETHOD_NONE, $autoacc_options));
 
 
     $settings->add(new admin_setting_configtext('mod_readaloud/accadjust',
         get_string('accadjust', constants::MOD_READALOUD_LANG), get_string('accadjust_details', constants::MOD_READALOUD_LANG), 0, PARAM_INT));
-
+*/
     $regions = \mod_readaloud\utils::get_region_options();
     $settings->add(new admin_setting_configselect('mod_readaloud/awsregion', get_string('awsregion', constants::MOD_READALOUD_LANG), '', 'useast1', $regions));
 
@@ -74,14 +75,15 @@ if ($ADMIN->fulltree) {
 
     $postattempt_options = \mod_readaloud\utils::get_postattempt_options();
     $settings->add(new admin_setting_configselect('mod_readaloud/humanpostattempt',
-        get_string('humanpostattempt', constants::MOD_READALOUD_LANG),
-        get_string('humanpostattempt_details',constants::MOD_READALOUD_LANG),
+        get_string('evaluationview', constants::MOD_READALOUD_LANG),
+        get_string('evaluationview_details',constants::MOD_READALOUD_LANG),
         constants::POSTATTEMPT_EVALERRORS, $postattempt_options));
-
+/*
     $settings->add(new admin_setting_configselect('mod_readaloud/machinepostattempt',
         get_string('machinepostattempt', constants::MOD_READALOUD_LANG),
         get_string('machinepostattempt_details',constants::MOD_READALOUD_LANG),
         constants::POSTATTEMPT_EVAL, $postattempt_options));
+    */
 
     /*
 	 $settings->add(new admin_setting_configcheckbox('mod_readaloud/enabletts', 
