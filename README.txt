@@ -1,11 +1,12 @@
 Read Aloud Module for Moodle
 =============
 
-ReadAloud is an online testing system designed to assist teachers in evaluating their students reading fluency as WCPM(Word Count Per Minute) scores.
+ReadAloud is an online testing system designed to assist teachers in evaluating their students reading fluency as WPM(Words Per Minute) scores.
 
-The teacher assigns a reading passage and the student is required to record themselves reading the passage aloud. The teacher can later grade passages via the online interface and the student can see both their scores and the words that were marked as incorrectly spoken. The teacher can optionally enable a TTS(Text to Speech)  feature that allows the student to hear the correct pronunciation of the word.
+The teacher assigns a reading passage and the student is required to record themselves reading the passage aloud. Read Aloud incorporates AI features so that student attempts can be evaluated automatically. The teacher can later grade/re-grade passages manually via the online interface. The student is able to see both their scores and the words that were marked as incorrectly spoken.
 
-NB. Source files for the audio recorder are not in the download. That can be downloaded seperately from : https://www.dropbox.com/s/309ritx3v0l9seo/audio_recorder_source.zip?dl=0
+Read Aloud requires a Cloud Poodll API username and secret from https://poodll.com. See here: https://poodll.freshdesk.com/solution/articles/19000083076-cloud-poodll-api-secret
+
 
 Justin Hunt
 poodllsupport@gmail.com

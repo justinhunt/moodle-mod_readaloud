@@ -1,4 +1,7 @@
 
+Version 2.0.0 (Build 2018101200)
+-Release version of ReadAloud with CloudPoodll and AI integration
+
 Version 1.1.08 (Build 2018090701)
 --added support for HTML5 fallback tag (actually made sure we never fallback .. just show a warning)
 
