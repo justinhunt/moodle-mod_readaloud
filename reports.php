@@ -28,6 +28,7 @@
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // readaloud instance ID 

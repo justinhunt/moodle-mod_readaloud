@@ -9,6 +9,7 @@
 namespace mod_readaloud\report;
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 class machinegrading extends basereport
 {

@@ -114,7 +114,7 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_pushmachinegradesbutton($moduleinstance){
 
-        if($moduleinstance->enableai && $moduleinstance->machgrademethod==constants::MACHINEGRADE_MACHINE){
+        if(utils::can_transcribe(moduleinstance) && $moduleinstance->machgrademethod==constants::MACHINEGRADE_MACHINE){
             $options=[];
         }else{
             $options=array('disabled'=>'disabled');

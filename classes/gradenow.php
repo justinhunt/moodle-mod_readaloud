@@ -49,21 +49,28 @@ class gradenow{
 	   if($attemptdata){
 			$this->attemptdata = $attemptdata;
 			$this->activitydata = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$attemptdata->readaloudid));
-			if($DB->record_exists(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid))){
-                $record = $DB->get_record(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
-                $this->aidata = new \stdClass();
-                $this->aidata->sessionscore = $record->sessionscore;
-                $this->aidata->sessionendword= $record->sessionendword;
-                $this->aidata->sessionerrors= $record->sessionerrors;
-                $this->aidata->errorcount= $record->errorcount;
-                $this->aidata->wpm= $record->wpm;
-                $this->aidata->accuracy= $record->accuracy;
-                $this->aidata->sessiontime= $record->sessiontime;
-                $this->aidata->sessionmatches= $record->sessionmatches;
-                $this->aidata->transcript= $record->transcript;
-            }
-		}
-   }
+			//ai data is useful, but if we don't got it we don't got it.
+			if(utils::can_transcribe($this->activitydata)) {
+                if ($DB->record_exists(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid))) {
+                    $record = $DB->get_record(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
+                    //we only load aidata if we reallyhave some, the presence of ai record is no longer a good check
+                    //do we have a transcript ... is the real check
+                    if($record->transcript!='') {
+                        $this->aidata = new \stdClass();
+                        $this->aidata->sessionscore = $record->sessionscore;
+                        $this->aidata->sessionendword = $record->sessionendword;
+                        $this->aidata->sessionerrors = $record->sessionerrors;
+                        $this->aidata->errorcount = $record->errorcount;
+                        $this->aidata->wpm = $record->wpm;
+                        $this->aidata->accuracy = $record->accuracy;
+                        $this->aidata->sessiontime = $record->sessiontime;
+                        $this->aidata->sessionmatches = $record->sessionmatches;
+                        $this->aidata->transcript = $record->transcript;
+                    }
+                }//end of if we have an AI record
+            }//end of if we can transcribe
+		}//end of if attempt data
+   }//end of constructor
    
    public function get_next_ungraded_id(){
 		global $DB;

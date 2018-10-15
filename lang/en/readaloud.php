@@ -154,7 +154,7 @@ $string['apiuser_details']='The Poodll account username that authorises Poodll o
 $string['apisecret']='Poodll API Secret ';
 $string['apisecret_details']='The Poodll API secret. See <a href= "https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret">here</a> for more details';
 $string['enableai']='Enable AI';
-$string['enableai_details']='Using AI Read Aloud can estimate the results from a student attempt';
+$string['enableai_details']='Read Aloud can evaluate results from a student attempt using AI. Check to enable.';
 
 
 $string['useast1']='US East';
@@ -194,14 +194,14 @@ $string['adjustedaccuracy_p']='Adj. Acc(%)';
 $string['adjustedgrade_p']='Adj. Grade(%)';
 
 $string['evaluationview']="Evaluation display";
-$string['evaluationview_details']="What to show students after they have attempted and received anevaluation";
+$string['evaluationview_details']="What to show students after they have attempted and received an evaluation";
 $string['humanpostattempt']="Evaluation display (human)";
 $string['humanpostattempt_details']="What to show students after they have attempted and received a human evaluation";
 $string['machinepostattempt']="Evaluation display (machine)";
 $string['machinepostattempt_details']="What to show students after they have attempted and received a machine evaluation";
-$string['postattempt_none']="Nothing";
-$string['postattempt_eval']="The evaluation(scores)";
-$string['postattempt_evalerrors']="The evaluation(scores) and errors";
+$string['postattempt_none']="Show the passage. Don't show evaluation or errors.";
+$string['postattempt_eval']="Show the passage, and evaluation(scores)";
+$string['postattempt_evalerrors']="Show the passage, evaluation(scores) and errors";
 $string['attemptsperpage']="Attempts to show per page: ";
 $string['backtotop']="Back to Start";
 $string['transcript']="Transcript";

@@ -75,6 +75,8 @@ class aigrade
 
     //has attempt data. If not we really can not do much. Perhaps the attempt was deleted?
     public function has_attempt(){
+        global $CFG;
+        require_once($CFG->dirroot.'/mod/readaloud/lib.php');
         return $this->attemptdata ? true : false;
     }
 

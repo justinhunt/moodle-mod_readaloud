@@ -9,6 +9,7 @@
 namespace mod_readaloud\report;
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 class gradingbyuser extends basereport
 {
@@ -154,36 +155,27 @@ class gradingbyuser extends basereport
 
         //we need a module instance to know which scoring method we are using.
         $moduleinstance = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$formdata->readaloudid));
+        $cantranscribe = utils::can_transcribe($moduleinstance);
 
         //run the sql and match up WPM/ accuracy and sessionscore if we need to
-        switch($moduleinstance->machgrademethod){
-
-            case constants::MACHINEGRADE_MACHINE:
-                $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid));
-                if($alldata) {
-                    //sessiontime is our indicator that a human grade has been saved.
-                    foreach ($alldata as $result) {
-                        if (!$result->sessiontime) {
-                            $result->wpm = $result->aiwpm;
-                            $result->accuracy = $result->aiaccuracy;
-                            $result->sessionscore = $result->aisessionscore;
-                        }
+        if($moduleinstance->machgrademethod==constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+            $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid));
+            if($alldata) {
+                //sessiontime is our indicator that a human grade has been saved.
+                foreach ($alldata as $result) {
+                    if (!$result->sessiontime) {
+                        $result->wpm = $result->aiwpm;
+                        $result->accuracy = $result->aiaccuracy;
+                        $result->sessionscore = $result->aisessionscore;
                     }
                 }
-                break;
-
-            case constants::MACHINEGRADE_NONE:
-            default:
-                $alldata =$DB->get_records_sql($human_sql, array($formdata->readaloudid));
-
+            }
+        }else{
+            $alldata =$DB->get_records_sql($human_sql, array($formdata->readaloudid));
         }
 
-
         if ($alldata) {
-
             foreach ($alldata as $thedata) {
-
-
                 $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
                     constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
                 $this->rawdata[] = $thedata;

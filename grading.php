@@ -93,11 +93,9 @@ switch($action){
 			$gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
 			$gradenow->update($data);
 			
-			//update gradebook (but only if we are using human grades)
-            if($moduleinstance->machgrademethod == constants::MACHINEGRADE_NONE ||
-                !$moduleinstance->enableai) {
-                readaloud_update_grades($moduleinstance, $gradenow->attemptdetails('userid'));
-            }
+			//update gradebook
+            readaloud_update_grades($moduleinstance, $gradenow->attemptdetails('userid'));
+
 
 			//move on or return to grading
 			if($saveandnext != ('false')){

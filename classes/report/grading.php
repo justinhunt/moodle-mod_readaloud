@@ -9,6 +9,7 @@
 namespace mod_readaloud\report;
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 class grading extends basereport
 {
@@ -186,13 +187,12 @@ class grading extends basereport
 
         //we need a module instance to know which scoring method we are using.
         $moduleinstance = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$formdata->readaloudid));
+        $cantranscribe = utils::can_transcribe($moduleinstance);
 
         //run the sql and match up WPM/ accuracy and sessionscore if we need to
-        switch($moduleinstance->machgrademethod){
-
-            case constants::MACHINEGRADE_MACHINE:
+        if($moduleinstance->machgrademethod==constants::MACHINEGRADE_MACHINE && $cantranscribe) {
                 $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid));
-                if($alldata) {
+                if ($alldata) {
                     //sessiontime is our indicator that a human grade has been saved.
                     foreach ($alldata as $result) {
                         if (!$result->sessiontime) {
@@ -202,12 +202,8 @@ class grading extends basereport
                         }
                     }
                 }
-                break;
-
-            case constants::MACHINEGRADE_NONE:
-            default:
+        }else{
                 $alldata =$DB->get_records_sql($human_sql, array($formdata->readaloudid));
-
         }
 
 

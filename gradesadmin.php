@@ -89,7 +89,7 @@ switch($action){
             array('id' => $cm->id,
                 'action'=>'menu'));
         if($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE &&
-            $moduleinstance->enableai) {
+            utils::can_transcribe($moduleinstance)) {
             readaloud_update_grades($moduleinstance);
         }
         redirect($url,get_string('machinegradespushed',constants::MOD_READALOUD_LANG),5);
