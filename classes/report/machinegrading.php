@@ -126,11 +126,15 @@ class machinegrading extends basereport
 
                 //do we need this..? hid it for now
             case 'deletenow':
-                $url = new \moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
-                    array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id, 'source' => $this->report));
-                $btn = new \single_button($url, get_string('delete'), 'post');
-                $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::MOD_READALOUD_LANG));
-                $ret = $OUTPUT->render($btn);
+                if ($withlinks) {
+                    $url = new \moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
+                        array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id, 'source' => $this->report));
+                    $btn = new \single_button($url, get_string('delete'), 'post');
+                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::MOD_READALOUD_LANG));
+                    $ret = $OUTPUT->render($btn);
+                }else {
+                    $ret = '';
+                }
                 break;
 
             default:
