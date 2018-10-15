@@ -720,8 +720,7 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
             for(var wordnumber=checkindex;wordnumber>0;wordnumber--){
 
                 var isunmatched =$('#' + this.cd.wordclass + '_' + wordnumber).hasClass(this.cd.aiunmatched);
-                //if current wordnumber part of the playchain, set it as the startindex.
-                // And get the audiotime if its a matched word. (we only know audiotime of matched words)
+                //if we matched then the subsequent transcript word is the last unmatched one in the checkindex sequence
                 if(!isunmatched){
                     startindex=this.options.sessionmatches['' + wordnumber].tposition+1;
                     break;
@@ -733,15 +732,23 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
             for(var wordnumber=checkindex;wordnumber<=transcriptlength;wordnumber++){
 
                 var isunmatched =$('#' + this.cd.wordclass + '_' + wordnumber).hasClass(this.cd.aiunmatched);
-                //if current wordnumber part of the playchain, set it as the startindex.
-                // And get the audiotime if its a matched word. (we only know audiotime of matched words)
+                //if we matched then the previous transcript word is the last unmatched one in the checkindex sequence
                 if(!isunmatched){
                     endindex=this.options.sessionmatches['' + wordnumber].tposition-1;
                     break;
                 }
             }//end of for loop --
+
+            //if there was no previous matched word, we set start to 1
             if(startindex==-1){startindex=1;}
-            if(endindex==transcriptlength){endindex=-1;}
+            //if there was no subsequent matched word we flag the end as the -1
+            if(endindex==transcriptlength){
+                    endindex=-1;
+            //an edge case is where the first word is not in transcript and first match is the second or later passage
+            //word. It might not be possible for endindex to be lower than start index, but we don't want it anyway
+            }else if(endindex==0 || endindex < startindex){
+                return false;
+            }
 
             //up until this point the indexes have started from 1, since the passage word numbers start from 1
             //but the transcript array is 0 based so we adjust. array splice function does not include item and endindex
@@ -761,8 +768,7 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
                 return ret;
             }
         },
-
-
+        
 
         playword: function(){
             var m = this;//M.mod_readaloud.gradenowhelper;
