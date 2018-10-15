@@ -768,7 +768,7 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
                 return ret;
             }
         },
-        
+
 
         playword: function(){
             var m = this;//M.mod_readaloud.gradenowhelper;
