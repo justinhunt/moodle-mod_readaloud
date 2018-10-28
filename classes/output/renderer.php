@@ -372,7 +372,7 @@ class renderer extends \plugin_renderer_base {
 
         $opts=array('cmid'=>$cm->id,'widgetid'=>$widgetid);
         $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', array($opts));
-        $this->page->requires->strings_for_js(array('gotnosound','recordnameschool','done','beginreading'),constants::MOD_READALOUD_LANG);
+        $this->page->requires->strings_for_js(array('gotnosound','done','beginreading'),constants::MOD_READALOUD_LANG);
 
         //these need to be returned and echo'ed to the page
         return $ret_html;

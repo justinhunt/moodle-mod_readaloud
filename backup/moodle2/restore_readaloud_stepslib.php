@@ -109,7 +109,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
        $this->set_mapping(constants::MOD_READALOUD_USERTABLE, $oldid, $newitemid, true);
     }
 
-    protected function process_readaloud_airesult($data) {
+    protected function process_readaloud_ai_result($data) {
         global $DB;
 
         $data = (object)$data;
