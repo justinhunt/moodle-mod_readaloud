@@ -62,6 +62,7 @@ class utils{
             case "useast1":
             case "dublin":
             case "sydney":
+            case "ottawa":
                 break;
             default:
                 $ret = false;
@@ -302,7 +303,11 @@ class utils{
         "useast1" => get_string("useast1",constants::MOD_READALOUD_LANG),
           "tokyo" => get_string("tokyo",constants::MOD_READALOUD_LANG),
           "sydney" => get_string("sydney",constants::MOD_READALOUD_LANG),
-          "dublin" => get_string("dublin",constants::MOD_READALOUD_LANG)
+          "dublin" => get_string("dublin",constants::MOD_READALOUD_LANG),
+          "ottawa" => get_string("ottawa",constants::MOD_READALOUD_LANG),
+          "frankfurt" => get_string("frankfurt",constants::MOD_READALOUD_LANG),
+          "london" => get_string("london",constants::MOD_READALOUD_LANG),
+          "saopaulo" => get_string("saopaulo",constants::MOD_READALOUD_LANG),
       );
   }
 
@@ -343,7 +348,10 @@ class utils{
    public static function get_lang_options(){
        return array(
             'en-US'=>get_string('en-us',constants::MOD_READALOUD_LANG),
-           'es-US'=>get_string('es-us',constants::MOD_READALOUD_LANG)
+           'en-UK'=>get_string('en-uk',constants::MOD_READALOUD_LANG),
+           'en-AU'=>get_string('en-au',constants::MOD_READALOUD_LANG),
+           'es-US'=>get_string('es-us',constants::MOD_READALOUD_LANG),
+           'fr-CA'=>get_string('fr-ca',constants::MOD_READALOUD_LANG),
        );
 	/*
       return array(

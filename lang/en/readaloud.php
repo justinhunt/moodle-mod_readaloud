@@ -157,12 +157,19 @@ $string['enableai_details']='Read Aloud can evaluate results from a student atte
 
 
 $string['useast1']='US East';
-$string['tokyo']='Tokyo, Japan';
+$string['tokyo']='Tokyo, Japan (no AI)';
 $string['sydney']='Sydney, Australia';
 $string['dublin']='Dublin, Ireland';
+$string['ottawa']='Ottawa, Canada (slow)';
+$string['frankfurt']='Frankfurt, Germany (no AI)';
+$string['london']='London, U.K (no AI)';
+$string['saopaulo']='Sao Paulo, Brazil (no AI)';
 $string['forever']='Never expire';
 $string['en-us']='English (US)';
 $string['es-us']='Spanish (US)';
+$string['en-au']='English (Aus.)';
+$string['en-uk']='English (UK)';
+$string['fr-ca']='French (Can.)';
 $string['awsregion']='AWS Region';
 $string['region']='AWS Region';
 $string['expiredays']='Days to keep file';
