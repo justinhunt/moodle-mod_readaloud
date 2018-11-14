@@ -3,6 +3,7 @@ Version 2.0.1 (Build 2018111200)
 -Added Sao Paulo,  Frankfurt, London regions (no AI)
 -Add support for Ottawa region (yes AI)
 -Support for accents (en-UK, en-AU) and Canadian French (fr-CA) in AI regions
+-Fixed non English transcription calls that were broken
 
 Version 2.0.0 (Build 2018101200)
 -Release version of ReadAloud with CloudPoodll and AI integration

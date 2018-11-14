@@ -306,7 +306,7 @@ class renderer extends \plugin_renderer_base {
                 'data-timelimit'=> $moduleinstance->timelimit,
                 'data-transcode'=>"1",
                 'data-transcribe'=>$transcribe,
-                'data-transcribelanguage'=>$moduleinstance->ttslanguage,
+                'data-language'=>$moduleinstance->ttslanguage,
                 'data-expiredays'=>$moduleinstance->expiredays,
                 'data-region'=>$moduleinstance->region,
                 'data-fallback'=>'warning',
