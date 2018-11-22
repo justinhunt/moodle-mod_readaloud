@@ -297,7 +297,7 @@ class renderer extends \plugin_renderer_base {
                 'data-localloading'=>'auto',
                 'data-localloader'=>'/mod/readaloud/poodllloader.html',
                 'data-media'=>"audio",
-                'data-appid'=>"readaloud",
+                'data-appid'=>constants::MOD_READALOUD_FRANKY,
                 'data-type'=>"readaloud",
                 'data-width'=>"360",
                 'data-height'=>"210",

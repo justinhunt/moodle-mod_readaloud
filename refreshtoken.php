@@ -15,22 +15,30 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
- * Defines the version of readaloud
+ * A token refreshing helper for Read Aloud
  *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
  *
- * @package    mod_readaloud
- * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)
+ * @package    Mod_ReadAloud
+ * @copyright  Justin Hunt (justin@poodll.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018111200;
-$plugin->requires  = 2016052300;      // Requires Moodle 3.1
-$plugin->component = 'mod_readaloud';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.0.2 (Build 2018111800)';
+require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+
+use \mod_readaloud\utils;
+use \mod_readaloud\constants;
+
+require_login(0, false);
+$systemcontext = context_system::instance();
+
+if(has_capability('moodle/site:config',$systemcontext)){
+    $apiuser = get_config(constants::MOD_READALOUD_FRANKY,'apiuser');
+    $apisecret=get_config(constants::MOD_READALOUD_FRANKY,'apisecret');
+    $force=true;
+    if($apiuser && $apisecret) {
+        utils::fetch_token($apiuser, $apisecret, $force);
+    }
+}
+redirect($CFG->wwwroot . '/admin/settings.php?section=modsettingreadaloud');

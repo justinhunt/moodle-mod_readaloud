@@ -11,7 +11,6 @@ namespace mod_readaloud;
 
 class constants
 {
-
 const MOD_READALOUD_FRANKY='mod_readaloud';
 const MOD_READALOUD_FILEAREA_SUBMISSIONS='submission';
 const MOD_READALOUD_LANG='mod_readaloud';

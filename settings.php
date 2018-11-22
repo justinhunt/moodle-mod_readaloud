@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die;
 require_once($CFG->dirroot.'/mod/readaloud/lib.php');
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 if ($ADMIN->fulltree) {
 
@@ -42,8 +43,13 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext('mod_readaloud/apiuser',
         get_string('apiuser', constants::MOD_READALOUD_LANG), get_string('apiuser_details', constants::MOD_READALOUD_LANG), '', PARAM_TEXT));
 
+    $tokeninfo =   utils::fetch_token_for_display(get_config(constants::MOD_READALOUD_FRANKY,'apiuser'),get_config(constants::MOD_READALOUD_FRANKY,'apisecret'));
+    //get_string('apisecret_details', constants::MOD_READALOUD_LANG)
     $settings->add(new admin_setting_configtext('mod_readaloud/apisecret',
-        get_string('apisecret', constants::MOD_READALOUD_LANG), get_string('apisecret_details', constants::MOD_READALOUD_LANG), '', PARAM_TEXT));
+        get_string('apisecret', constants::MOD_READALOUD_LANG),$tokeninfo , '', PARAM_TEXT));
+
+
+
 
     $settings->add(new admin_setting_configcheckbox('mod_readaloud/enableai',
         get_string('enableai', constants::MOD_READALOUD_LANG), get_string('enableai_details',constants::MOD_READALOUD_LANG), 1));
