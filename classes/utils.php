@@ -98,6 +98,8 @@ class utils{
 
 
         $message = '';
+        $apiuser = trim($apiuser);
+        $apisecret = trim($apisecret);
         if(empty($apiuser)){
            $message .= get_string('noapiuser',constants::MOD_READALOUD_LANG) . '<br>';
        }
@@ -150,6 +152,8 @@ class utils{
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::MOD_READALOUD_FRANKY, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
         $tokenuser = $cache->get('recentpoodlluser');
+        $apiuser = trim($apiuser);
+        $apisecret = trim($apisecret);
 
         //if we got a token and its less than expiry time
         // use the cached one
