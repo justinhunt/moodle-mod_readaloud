@@ -78,16 +78,25 @@ class utils{
 
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper
-   public static function curl_fetch($url){
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        $data = curl_exec($curl);
-        curl_close($curl);
-        return $data;
+    //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
+    //this is our helper
+    public static function curl_fetch($url,$postdata=false)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($postdata) {
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+        }
+        $contents = curl_exec($ch);
+        curl_close($ch);
+        return $contents;
     }
 
+    //This is called from the settings page and we do not want to make calls out to cloud.poodll.com on settings
+    //page load, for performance and stability issues. So if the cache is empty and/or no token, we just show a
+    //"refresh token" links
     public static function fetch_token_for_display($apiuser,$apisecret){
        global $CFG;
 
@@ -117,7 +126,7 @@ class utils{
 
         //if we have no token object the creds were wrong ... or something
         if(!($tokenobject)){
-            $message = get_string('credentialsinvalid',constants::MOD_READALOUD_LANG);
+            $message = get_string('notokenincache',constants::MOD_READALOUD_LANG);
             //if we have an object but its no good, creds werer wrong ..or something
         }elseif(!property_exists($tokenobject,'token') || empty($tokenobject->token)){
             $message = get_string('credentialsinvalid',constants::MOD_READALOUD_LANG);
@@ -164,8 +173,13 @@ class utils{
         }
 
         // Send the request & save response to $resp
-        $token_url ="https://cloud.poodll.com/local/cpapi/poodlltoken.php?username=$apiuser&password=$apisecret&service=cloud_poodll";
-        $token_response = self::curl_fetch($token_url);
+        $token_url ="https://cloud.poodll.com/local/cpapi/poodlltoken.php";
+        $postdata = array(
+            'username' => $apiuser,
+            'password' => $apisecret,
+            'service'=>'cloud_poodll'
+        );
+        $token_response = self::curl_fetch($token_url,$postdata);
         if ($token_response) {
             $resp_object = json_decode($token_response);
             if($resp_object && property_exists($resp_object,'token')) {
@@ -185,11 +199,15 @@ class utils{
                 $tokenobject->validuntil = $validuntil;
                 $tokenobject->subs=false;
                 $tokenobject->apps=false;
+                $tokenobject->sites=false;
                 if(property_exists($resp_object,'subs')){
                     $tokenobject->subs = $resp_object->subs;
                 }
                 if(property_exists($resp_object,'apps')){
                     $tokenobject->apps = $resp_object->apps;
+                }
+                if(property_exists($resp_object,'sites')){
+                    $tokenobject->sites = $resp_object->sites;
                 }
 
                 $cache->set('recentpoodlltoken', $tokenobject);
