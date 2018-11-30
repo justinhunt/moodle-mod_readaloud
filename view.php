@@ -80,21 +80,21 @@ $PAGE->set_pagelayout('course');
 
 
 //Get an admin settings 
-$config = get_config(constants::MOD_READALOUD_FRANKY);
+$config = get_config(constants::M_COMPONENT);
 
 //Get our renderers
 $renderer = $PAGE->get_renderer('mod_readaloud');
-$gradenowrenderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY,'gradenow');
+$gradenowrenderer = $PAGE->get_renderer(constants::M_COMPONENT,'gradenow');
 
 //if we are in review mode, lets review
-$attempts = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>$USER->id,'readaloudid'=>$moduleinstance->id),'id DESC');
+$attempts = $DB->get_records(constants::M_USERTABLE,array('userid'=>$USER->id,'readaloudid'=>$moduleinstance->id),'id DESC');
 $ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id,$USER->id);
 
 //can attempt ?
 $canattempt = true;
 $canpreview = has_capability('mod/readaloud:preview',$modulecontext);
 if(!$canpreview && $moduleinstance->maxattempts > 0){
-	$attempts =  $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('userid'=>$USER->id, constants::MOD_READALOUD_MODNAME.'id'=>$moduleinstance->id));
+	$attempts =  $DB->get_records(constants::M_USERTABLE,array('userid'=>$USER->id, constants::M_MODNAME.'id'=>$moduleinstance->id));
 	if($attempts && count($attempts)>=$moduleinstance->maxattempts){
 		$canattempt=false;
 	}
@@ -107,7 +107,7 @@ if(!$canattempt){$retake=0;}
 if($attempts && $retake==0){
     //if we are teacher we see tabs. If student we just see the quiz
     if(has_capability('mod/readaloud:preview',$modulecontext)){
-        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::MOD_READALOUD_LANG));
+        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
     }else{
         echo $renderer->notabsheader();
     }
@@ -187,7 +187,7 @@ if($attempts && $retake==0){
 
 //if we are teacher we see tabs. If student we just see the quiz
 if(has_capability('mod/readaloud:preview',$modulecontext)){
-	echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::MOD_READALOUD_LANG));
+	echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
 }else{
 	echo $renderer->notabsheader();
 }

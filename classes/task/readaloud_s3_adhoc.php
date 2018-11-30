@@ -50,7 +50,7 @@ class readaloud_s3_adhoc extends \core\task\adhoc_task {
 		$cd =  $this->get_custom_data();
 		//$trace->output($cd->somedata)
 
-         $activity = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$cd->activityid));
+         $activity = $DB->get_record(constants::M_TABLE,array('id'=>$cd->activityid));
          if(!\mod_readaloud\utils::can_transcribe($activity)){
              $this->do_forever_fail('This activity does not support transcription',$trace);
              return;

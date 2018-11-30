@@ -48,7 +48,7 @@ class basic extends basereport
         $record = $this->headingdata;
         $ret='';
         if(!$record){return $ret;}
-        return get_string('basicheading',constants::MOD_READALOUD_LANG);
+        return get_string('basicheading',constants::M_COMPONENT);
 
     }
 
@@ -59,7 +59,7 @@ class basic extends basereport
         $this->headingdata = new \stdClass();
 
         $emptydata = array();
-        $alldata = $DB->get_records(constants::MOD_READALOUD_TABLE,array());
+        $alldata = $DB->get_records(constants::M_TABLE,array());
         if($alldata){
             $this->rawdata= $alldata;
         }else{

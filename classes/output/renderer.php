@@ -41,7 +41,7 @@ class renderer extends \plugin_renderer_base {
         $output = $this->output->header();
 
         if (has_capability('mod/readaloud:manage', $context)) {
-            //   $output .= $this->output->heading_with_help($activityname, 'overview', constants::MOD_READALOUD_LANG);
+            //   $output .= $this->output->heading_with_help($activityname, 'overview', constants::M_COMPONENT);
 
             if (!empty($currenttab)) {
                 ob_start();
@@ -70,10 +70,10 @@ class renderer extends \plugin_renderer_base {
      */
     public function reattemptbutton($moduleinstance){
 
-        $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/view.php',
-            array('n'=>$moduleinstance->id,'retake'=>1)),get_string('reattempt',constants::MOD_READALOUD_FRANKY));
+        $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
+            array('n'=>$moduleinstance->id,'retake'=>1)),get_string('reattempt',constants::M_COMPONENT));
 
-        $ret = \html_writer::div($button ,constants::MOD_READALOUD_CLASS  . '_afterattempt_cont');
+        $ret = \html_writer::div($button ,constants::M_CLASS  . '_afterattempt_cont');
         return $ret;
 
     }
@@ -89,10 +89,10 @@ class renderer extends \plugin_renderer_base {
             $button= $this->output->single_button($nextactivity->url,$nextactivity->label);
         //else lets show a back to top link
         }else {
-            $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/view.php',
-                array('n' => $moduleinstance->id)), get_string('backtotop', constants::MOD_READALOUD_FRANKY));
+            $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
+                array('n' => $moduleinstance->id)), get_string('backtotop', constants::M_COMPONENT));
         }
-        $ret = \html_writer::div($button ,constants::MOD_READALOUD_WHERETONEXT_CONTAINER);
+        $ret = \html_writer::div($button ,constants::M_WHERETONEXT_CONTAINER);
         return $ret;
 
     }
@@ -102,10 +102,10 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_machineregradeallbutton($moduleinstance){
         $options=[];
-        $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/gradesadmin.php',
-            array('n'=>$moduleinstance->id, 'action'=>'machineregradeall')),get_string('machineregradeall',constants::MOD_READALOUD_FRANKY),'post',$options);
+        $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/gradesadmin.php',
+            array('n'=>$moduleinstance->id, 'action'=>'machineregradeall')),get_string('machineregradeall',constants::M_COMPONENT),'post',$options);
 
-        $ret = \html_writer::div($button ,constants::MOD_READALOUD_GRADESADMIN_CONTAINER);
+        $ret = \html_writer::div($button ,constants::M_GRADESADMIN_CONTAINER);
         return $ret;
     }
 
@@ -119,10 +119,10 @@ class renderer extends \plugin_renderer_base {
         }else{
             $options=array('disabled'=>'disabled');
         }
-        $button = $this->output->single_button(new \moodle_url(constants::MOD_READALOUD_URL . '/gradesadmin.php',
-            array('n'=>$moduleinstance->id, 'action'=>'pushmachinegrades')),get_string('pushmachinegrades',constants::MOD_READALOUD_FRANKY),'post',$options);
+        $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/gradesadmin.php',
+            array('n'=>$moduleinstance->id, 'action'=>'pushmachinegrades')),get_string('pushmachinegrades',constants::M_COMPONENT),'post',$options);
 
-        $ret = \html_writer::div($button ,constants::MOD_READALOUD_GRADESADMIN_CONTAINER);
+        $ret = \html_writer::div($button ,constants::M_GRADESADMIN_CONTAINER);
         return $ret;
     }
 
@@ -130,8 +130,8 @@ class renderer extends \plugin_renderer_base {
      *
      */
     public function show_currenterrorestimate($errorestimate){
-        $message = get_string("currenterrorestimate",constants::MOD_READALOUD_LANG,$errorestimate);
-        $ret = \html_writer::div($message ,constants::MOD_READALOUD_GRADESADMIN_CONTAINER);
+        $message = get_string("currenterrorestimate",constants::M_COMPONENT,$errorestimate);
+        $ret = \html_writer::div($message ,constants::M_GRADESADMIN_CONTAINER);
         return $ret;
 
     }
@@ -140,15 +140,15 @@ class renderer extends \plugin_renderer_base {
      *
      */
     public function exceededattempts($moduleinstance){
-        $message = get_string("exceededattempts",constants::MOD_READALOUD_LANG,$moduleinstance->maxattempts);
-        $ret = \html_writer::div($message ,constants::MOD_READALOUD_CLASS  . '_afterattempt_cont');
+        $message = get_string("exceededattempts",constants::M_COMPONENT,$moduleinstance->maxattempts);
+        $ret = \html_writer::div($message ,constants::M_CLASS  . '_afterattempt_cont');
         return $ret;
 
     }
 
     public function show_ungradedyet(){
-        $message = get_string("notgradedyet",constants::MOD_READALOUD_LANG);
-        $ret = \html_writer::div($message ,constants::MOD_READALOUD_CLASS  . '_ungraded_cont');
+        $message = get_string("notgradedyet",constants::M_COMPONENT);
+        $ret = \html_writer::div($message ,constants::M_CLASS  . '_ungraded_cont');
         return $ret;
     }
 
@@ -157,9 +157,9 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_gradesadmin_heading($showtitle,$showinstructions) {
         $thetitle =  $this->output->heading($showtitle, 3, 'main');
-        $displaytext =  \html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext =  \html_writer::div($thetitle ,constants::M_CLASS  . '_center');
         $displaytext .= $this->output->box_start();
-        $displaytext .= \html_writer::div($showinstructions ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext .= \html_writer::div($showinstructions ,constants::M_CLASS  . '_center');
         $displaytext .= $this->output->box_end();
         $ret= \html_writer::div($displaytext);
         return $ret;
@@ -172,11 +172,11 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_welcome($showtext, $showtitle) {
         $thetitle =  $this->output->heading($showtitle, 3, 'main');
-        $displaytext =  \html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext =  \html_writer::div($thetitle ,constants::M_CLASS  . '_center');
         $displaytext .= $this->output->box_start();
-        $displaytext .= \html_writer::div($showtext ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext .= \html_writer::div($showtext ,constants::M_CLASS  . '_center');
         $displaytext .= $this->output->box_end();
-        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_INSTRUCTIONS_CONTAINER,array('id'=>constants::MOD_READALOUD_INSTRUCTIONS_CONTAINER));
+        $ret= \html_writer::div($displaytext,constants::M_INSTRUCTIONS_CONTAINER,array('id'=>constants::M_INSTRUCTIONS_CONTAINER));
         return $ret;
     }
 
@@ -198,8 +198,8 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_passage_postattempt($readaloud){
         $ret = "";
-        $ret .= \html_writer::div( $readaloud->passage ,constants::MOD_READALOUD_PASSAGE_CONTAINER . ' ' . constants::MOD_READALOUD_POSTATTEMPT,
-            array('id'=>constants::MOD_READALOUD_PASSAGE_CONTAINER));
+        $ret .= \html_writer::div( $readaloud->passage ,constants::M_PASSAGE_CONTAINER . ' ' . constants::M_POSTATTEMPT,
+            array('id'=>constants::M_PASSAGE_CONTAINER));
         return $ret;
     }
 
@@ -209,8 +209,8 @@ class renderer extends \plugin_renderer_base {
     public function show_passage($readaloud,$cm){
 
         $ret = "";
-        $ret .= \html_writer::div( $readaloud->passage ,constants::MOD_READALOUD_PASSAGE_CONTAINER,
-            array('id'=>constants::MOD_READALOUD_PASSAGE_CONTAINER));
+        $ret .= \html_writer::div( $readaloud->passage ,constants::M_PASSAGE_CONTAINER,
+            array('id'=>constants::M_PASSAGE_CONTAINER));
         return $ret;
     }
 
@@ -218,24 +218,24 @@ class renderer extends \plugin_renderer_base {
      *  Show a progress circle overlay while uploading
      */
     public function show_progress($readaloud,$cm){
-        $hider =  \html_writer::div('',constants::MOD_READALOUD_HIDER,array('id'=>constants::MOD_READALOUD_HIDER));
-        $message =  \html_writer::tag('h4',get_string('processing',constants::MOD_READALOUD_LANG),array());
+        $hider =  \html_writer::div('',constants::M_HIDER,array('id'=>constants::M_HIDER));
+        $message =  \html_writer::tag('h4',get_string('processing',constants::M_COMPONENT),array());
         $spinner =  \html_writer::tag('i','',array('class'=>'fa fa-spinner fa-5x fa-spin'));
-        $progressdiv = \html_writer::div($message . $spinner ,constants::MOD_READALOUD_PROGRESS_CONTAINER,
-            array('id'=>constants::MOD_READALOUD_PROGRESS_CONTAINER));
+        $progressdiv = \html_writer::div($message . $spinner ,constants::M_PROGRESS_CONTAINER,
+            array('id'=>constants::M_PROGRESS_CONTAINER));
         $ret = $hider . $progressdiv;
         return $ret;
     }
 
     public function show_humanevaluated_message(){
-        $displaytext = get_string('humanevaluatedmessage',constants::MOD_READALOUD_LANG);
-        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_EVALUATED_MESSAGE,array('id'=>constants::MOD_READALOUD_EVALUATED_MESSAGE));
+        $displaytext = get_string('humanevaluatedmessage',constants::M_COMPONENT);
+        $ret= \html_writer::div($displaytext,constants::M_EVALUATED_MESSAGE,array('id'=>constants::M_EVALUATED_MESSAGE));
         return $ret;
     }
 
     public function show_machineevaluated_message(){
-        $displaytext = get_string('machineevaluatedmessage',constants::MOD_READALOUD_LANG);
-        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_EVALUATED_MESSAGE,array('id'=>constants::MOD_READALOUD_EVALUATED_MESSAGE));
+        $displaytext = get_string('machineevaluatedmessage',constants::M_COMPONENT);
+        $ret= \html_writer::div($displaytext,constants::M_EVALUATED_MESSAGE,array('id'=>constants::M_EVALUATED_MESSAGE));
         return $ret;
     }
 
@@ -244,11 +244,11 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_feedback($readaloud,$showtitle){
         $thetitle =  $this->output->heading($showtitle, 3, 'main');
-        $displaytext =  \html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext =  \html_writer::div($thetitle ,constants::M_CLASS  . '_center');
         $displaytext .= $this->output->box_start();
-        $displaytext .=  \html_writer::div($readaloud->feedback,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext .=  \html_writer::div($readaloud->feedback,constants::M_CLASS  . '_center');
         $displaytext .= $this->output->box_end();
-        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_FEEDBACK_CONTAINER,array('id'=>constants::MOD_READALOUD_FEEDBACK_CONTAINER));
+        $ret= \html_writer::div($displaytext,constants::M_FEEDBACK_CONTAINER,array('id'=>constants::M_FEEDBACK_CONTAINER));
         return $ret;
     }
 
@@ -257,11 +257,11 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_feedback_postattempt($readaloud,$showtitle){
         $thetitle =  $this->output->heading($showtitle, 3, 'main');
-        $displaytext =  \html_writer::div($thetitle ,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext =  \html_writer::div($thetitle ,constants::M_CLASS  . '_center');
         $displaytext .= $this->output->box_start();
-        $displaytext .=  \html_writer::div($readaloud->feedback,constants::MOD_READALOUD_CLASS  . '_center');
+        $displaytext .=  \html_writer::div($readaloud->feedback,constants::M_CLASS  . '_center');
         $displaytext .= $this->output->box_end();
-        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_FEEDBACK_CONTAINER . ' ' . constants::MOD_READALOUD_POSTATTEMPT,array('id'=>constants::MOD_READALOUD_FEEDBACK_CONTAINER));
+        $ret= \html_writer::div($displaytext,constants::M_FEEDBACK_CONTAINER . ' ' . constants::M_POSTATTEMPT,array('id'=>constants::M_FEEDBACK_CONTAINER));
         return $ret;
     }
 
@@ -270,10 +270,10 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_error($readaloud,$cm){
         $displaytext = $this->output->box_start();
-        $displaytext .= $this->output->heading(get_string('errorheader',constants::MOD_READALOUD_LANG), 3, 'main');
-        $displaytext .=  \html_writer::div(get_string('uploadconverterror',constants::MOD_READALOUD_LANG),'',array());
+        $displaytext .= $this->output->heading(get_string('errorheader',constants::M_COMPONENT), 3, 'main');
+        $displaytext .=  \html_writer::div(get_string('uploadconverterror',constants::M_COMPONENT),'',array());
         $displaytext .= $this->output->box_end();
-        $ret= \html_writer::div($displaytext,constants::MOD_READALOUD_ERROR_CONTAINER,array('id'=>constants::MOD_READALOUD_ERROR_CONTAINER));
+        $ret= \html_writer::div($displaytext,constants::M_ERROR_CONTAINER,array('id'=>constants::M_ERROR_CONTAINER));
         return $ret;
     }
 
@@ -290,19 +290,19 @@ class renderer extends \plugin_renderer_base {
         $string_hints = base64_encode (json_encode($hints));
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
         $transcribe = $can_transcribe  ? "1" : "0";
-        $recorderdiv= \html_writer::div('', constants::MOD_READALOUD_CLASS  . '_center',
-            array('id'=>constants::MOD_READALOUD_RECORDERID,
+        $recorderdiv= \html_writer::div('', constants::M_CLASS  . '_center',
+            array('id'=>constants::M_RECORDERID,
                 'data-id'=>'therecorder',
                 'data-parent'=>$CFG->wwwroot,
                 'data-localloading'=>'auto',
                 'data-localloader'=>'/mod/readaloud/poodllloader.html',
                 'data-media'=>"audio",
-                'data-appid'=>constants::MOD_READALOUD_FRANKY,
+                'data-appid'=>constants::M_COMPONENT,
                 'data-type'=>"readaloud",
                 'data-width'=>"360",
                 'data-height'=>"210",
                 //'data-iframeclass'=>"letsberesponsive",
-                'data-updatecontrol'=>constants::MOD_READALOUD_UPDATE_CONTROL,
+                'data-updatecontrol'=>constants::M_UPDATE_CONTROL,
                 'data-timelimit'=> $moduleinstance->timelimit,
                 'data-transcode'=>"1",
                 'data-transcribe'=>$transcribe,
@@ -315,12 +315,12 @@ class renderer extends \plugin_renderer_base {
                 //'data-token'=>"643eba92a1447ac0c6a882c85051461a" //cloudpoodll
             )
         );
-        $containerdiv= \html_writer::div($recorderdiv,constants::MOD_READALOUD_RECORDER_CONTAINER . " " . constants::MOD_READALOUD_CLASS  . '_center',
-            array('id'=>constants::MOD_READALOUD_RECORDER_CONTAINER));
+        $containerdiv= \html_writer::div($recorderdiv,constants::M_RECORDER_CONTAINER . " " . constants::M_CLASS  . '_center',
+            array('id'=>constants::M_RECORDER_CONTAINER));
         //=======================================
 
 
-        $recordingdiv = \html_writer::div($containerdiv ,constants::MOD_READALOUD_RECORDING_CONTAINER);
+        $recordingdiv = \html_writer::div($containerdiv ,constants::M_RECORDING_CONTAINER);
 
         //prepare output
         $ret = "";
@@ -339,32 +339,32 @@ class renderer extends \plugin_renderer_base {
 
         $recopts =Array();
         //recorder html ids
-        $recopts['recorderid'] = constants::MOD_READALOUD_RECORDERID;
-        $recopts['recordingcontainer'] = constants::MOD_READALOUD_RECORDING_CONTAINER;
-        $recopts['recordercontainer'] = constants::MOD_READALOUD_RECORDER_CONTAINER;
+        $recopts['recorderid'] = constants::M_RECORDERID;
+        $recopts['recordingcontainer'] = constants::M_RECORDING_CONTAINER;
+        $recopts['recordercontainer'] = constants::M_RECORDER_CONTAINER;
 
         //activity html ids
-        $recopts['passagecontainer'] = constants::MOD_READALOUD_PASSAGE_CONTAINER;
-        $recopts['instructionscontainer'] = constants::MOD_READALOUD_INSTRUCTIONS_CONTAINER;
-        $recopts['recordbuttoncontainer'] =constants::MOD_READALOUD_RECORD_BUTTON_CONTAINER;
-        $recopts['startbuttoncontainer'] =constants::MOD_READALOUD_START_BUTTON_CONTAINER;
-        $recopts['hider']=constants::MOD_READALOUD_HIDER;
-        $recopts['progresscontainer'] = constants::MOD_READALOUD_PROGRESS_CONTAINER;
-        $recopts['feedbackcontainer'] = constants::MOD_READALOUD_FEEDBACK_CONTAINER;
-        $recopts['wheretonextcontainer'] = constants::MOD_READALOUD_WHERETONEXT_CONTAINER;
-        $recopts['errorcontainer'] = constants::MOD_READALOUD_ERROR_CONTAINER;
+        $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
+        $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
+        $recopts['recordbuttoncontainer'] =constants::M_RECORD_BUTTON_CONTAINER;
+        $recopts['startbuttoncontainer'] =constants::M_START_BUTTON_CONTAINER;
+        $recopts['hider']=constants::M_HIDER;
+        $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
+        $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
+        $recopts['wheretonextcontainer'] = constants::M_WHERETONEXT_CONTAINER;
+        $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
         $recopts['allowearlyexit'] =  $moduleinstance->allowearlyexit ? true :false;
 
 
         //we need an update control tp hold the recorded filename, and one for draft item id
-        $ret_html = $ret_html . \html_writer::tag('input', '', array('id' => constants::MOD_READALOUD_UPDATE_CONTROL, 'type' => 'hidden'));
+        $ret_html = $ret_html . \html_writer::tag('input', '', array('id' => constants::M_UPDATE_CONTROL, 'type' => 'hidden'));
 
 
         //this inits the M.mod_readaloud thingy, after the page has loaded.
         //we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
         //convert opts to json
         $jsonstring = json_encode($recopts);
-        $widgetid = constants::MOD_READALOUD_RECORDERID . '_opts_9999';
+        $widgetid = constants::M_RECORDERID . '_opts_9999';
         $opts_html = \html_writer::tag('input', '', array('id' => 'amdopts_' . $widgetid, 'type' => 'hidden', 'value' => $jsonstring));
 
         //the recorder div
@@ -372,7 +372,7 @@ class renderer extends \plugin_renderer_base {
 
         $opts=array('cmid'=>$cm->id,'widgetid'=>$widgetid);
         $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', array($opts));
-        $this->page->requires->strings_for_js(array('gotnosound','done','beginreading'),constants::MOD_READALOUD_LANG);
+        $this->page->requires->strings_for_js(array('gotnosound','done','beginreading'),constants::M_COMPONENT);
 
         //these need to be returned and echo'ed to the page
         return $ret_html;

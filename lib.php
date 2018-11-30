@@ -65,8 +65,8 @@ function readaloud_supports($feature) {
  * @param $mform form passed by reference
  */
 function readaloud_reset_course_form_definition(&$mform) {
-    $mform->addElement('header', constants::MOD_READALOUD_MODNAME . 'header', get_string('modulenameplural', constants::MOD_READALOUD_LANG));
-    $mform->addElement('advcheckbox', 'reset_' . constants::MOD_READALOUD_MODNAME , get_string('deletealluserdata',constants::MOD_READALOUD_LANG));
+    $mform->addElement('header', constants::M_MODNAME . 'header', get_string('modulenameplural', constants::M_COMPONENT));
+    $mform->addElement('advcheckbox', 'reset_' . constants::M_MODNAME , get_string('deletealluserdata',constants::M_COMPONENT));
 }
 
 /**
@@ -75,7 +75,7 @@ function readaloud_reset_course_form_definition(&$mform) {
  * @return array
  */
 function readaloud_reset_course_form_defaults($course) {
-    return array('reset_' . constants::MOD_READALOUD_MODNAME =>1);
+    return array('reset_' . constants::M_MODNAME =>1);
 }
 
 
@@ -100,8 +100,8 @@ function readaloud_reset_gradebook($courseid, $type='') {
     global $CFG, $DB;
 
     $sql = "SELECT l.*, cm.idnumber as cmidnumber, l.course as courseid
-              FROM {" . constants::MOD_READALOUD_TABLE . "} l, {course_modules} cm, {modules} m
-             WHERE m.name='" . constants::MOD_READALOUD_MODNAME . "' AND m.id=cm.module AND cm.instance=l.id AND l.course=:course";
+              FROM {" . constants::M_TABLE . "} l, {course_modules} cm, {modules} m
+             WHERE m.name='" . constants::M_MODNAME . "' AND m.id=cm.module AND cm.instance=l.id AND l.course=:course";
     $params = array ("course" => $courseid);
     if ($moduleinstances = $DB->get_records_sql($sql,$params)) {
         foreach ($moduleinstances as $moduleinstance) {
@@ -122,30 +122,30 @@ function readaloud_reset_gradebook($courseid, $type='') {
 function readaloud_reset_userdata($data) {
     global $CFG, $DB;
 
-    $componentstr = get_string('modulenameplural', constants::MOD_READALOUD_LANG);
+    $componentstr = get_string('modulenameplural', constants::M_COMPONENT);
     $status = array();
 
-    if (!empty($data->{'reset_' . constants::MOD_READALOUD_MODNAME})) {
+    if (!empty($data->{'reset_' . constants::M_MODNAME})) {
         $sql = "SELECT l.id
-                         FROM {".constants::MOD_READALOUD_TABLE."} l
+                         FROM {".constants::M_TABLE."} l
                         WHERE l.course=:course";
 
         $params = array ("course" => $data->courseid);
-        $DB->delete_records_select(constants::MOD_READALOUD_USERTABLE, constants::MOD_READALOUD_MODNAME . "id IN ($sql)", $params);
+        $DB->delete_records_select(constants::M_USERTABLE, constants::M_MODNAME . "id IN ($sql)", $params);
         //delete AI grades
-        $DB->delete_records_select(constants::MOD_READALOUD_AITABLE, constants::MOD_READALOUD_MODNAME . "id IN ($sql)", $params);
+        $DB->delete_records_select(constants::M_AITABLE, constants::M_MODNAME . "id IN ($sql)", $params);
 
         // remove all grades from gradebook
         if (empty($data->reset_gradebook_grades)) {
             readaloud_reset_gradebook($data->courseid);
         }
 
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('deletealluserdata', constants::MOD_READALOUD_LANG), 'error'=>false);
+        $status[] = array('component'=>$componentstr, 'item'=>get_string('deletealluserdata', constants::M_COMPONENT), 'error'=>false);
     }
 
     /// updating dates - shift may be negative too
     if ($data->timeshift) {
-        shift_course_mod_dates(constants::MOD_READALOUD_MODNAME, array('available', 'deadline'), $data->timeshift, $data->courseid);
+        shift_course_mod_dates(constants::M_MODNAME, array('available', 'deadline'), $data->timeshift, $data->courseid);
         $status[] = array('component'=>$componentstr, 'item'=>get_string('datechanged'), 'error'=>false);
     }
 
@@ -206,7 +206,7 @@ function readaloud_grade_item_update($moduleinstance, $grades=null) {
 
         // When converting a score to a scale, use scale's grade maximum to calculate it.
         if (!empty($currentgrade) && $currentgrade->rawgrade !== null) {
-            $grade = grade_get_grades($moduleinstance->course, 'mod', constants::MOD_READALOUD_MODNAME, $moduleinstance->id, $currentgrade->userid);
+            $grade = grade_get_grades($moduleinstance->course, 'mod', constants::M_MODNAME, $moduleinstance->id, $currentgrade->userid);
             $params['grademax']   = reset($grade->items)->grademax;
         }
     } else {
@@ -237,7 +237,7 @@ function readaloud_grade_item_update($moduleinstance, $grades=null) {
         }
     }
 
-    return grade_update('mod/' . constants::MOD_READALOUD_MODNAME, $moduleinstance->course, 'mod', constants::MOD_READALOUD_MODNAME, $moduleinstance->id, 0, $grades, $params);
+    return grade_update('mod/' . constants::M_MODNAME, $moduleinstance->course, 'mod', constants::M_MODNAME, $moduleinstance->id, 0, $grades, $params);
 }
 
 /**
@@ -295,22 +295,22 @@ function readaloud_get_user_grades($moduleinstance, $userid=0) {
 
     //aigrades sql
     $ai_sql = "SELECT u.id, u.id AS userid, ai.sessionscore AS rawgrade
-                  FROM {user} u, {". constants::MOD_READALOUD_AITABLE ."} ai INNER JOIN {". constants::MOD_READALOUD_USERTABLE ."} attempt ON ai.attemptid = attempt.id
-                 WHERE attempt.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
+                  FROM {user} u, {". constants::M_AITABLE ."} ai INNER JOIN {". constants::M_USERTABLE ."} attempt ON ai.attemptid = attempt.id
+                 WHERE attempt.id= (SELECT max(id) FROM {". constants::M_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
                        $user
               GROUP BY u.id, ai.sessionscore";
 
     //human_sql
     $human_sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
-                      FROM {user} u, {". constants::MOD_READALOUD_USERTABLE ."} a
-                     WHERE a.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid)  AND u.id = a.userid AND a.readaloudid = :moduleid
+                      FROM {user} u, {". constants::M_USERTABLE ."} a
+                     WHERE a.id= (SELECT max(id) FROM {". constants::M_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid)  AND u.id = a.userid AND a.readaloudid = :moduleid
                            $user
                   GROUP BY u.id";
 
     //hybrid sql
     $hybrid_sql = "SELECT u.id, attempt.sessiontime as sessiontime, attempt.sessionscore as humangrade, u.id AS userid, ai.sessionscore AS aigrade
-                  FROM {user} u, {". constants::MOD_READALOUD_AITABLE ."} ai INNER JOIN {". constants::MOD_READALOUD_USERTABLE ."} attempt ON ai.attemptid = attempt.id
-                 WHERE attempt.id= (SELECT max(id) FROM {". constants::MOD_READALOUD_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
+                  FROM {user} u, {". constants::M_AITABLE ."} ai INNER JOIN {". constants::M_USERTABLE ."} attempt ON ai.attemptid = attempt.id
+                 WHERE attempt.id= (SELECT max(id) FROM {". constants::M_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
                        $user
               GROUP BY u.id";
 
@@ -345,14 +345,14 @@ function readaloud_is_complete($course,$cm,$userid,$type) {
 	  global $CFG,$DB;
 
 	// Get module object
-    if(!($moduleinstance=$DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$cm->instance)))) {
+    if(!($moduleinstance=$DB->get_record(constants::M_TABLE,array('id'=>$cm->instance)))) {
         throw new Exception("Can't find module with cmid: {$cm->instance}");
     }
-	$idfield = 'a.' . constants::MOD_READALOUD_MODNAME . 'id';
+	$idfield = 'a.' . constants::M_MODNAME . 'id';
 	$params = array('moduleid'=>$moduleinstance->id, 'userid'=>$userid);
 	$sql = "SELECT  MAX( sessionscore  ) AS grade
-                      FROM {". constants::MOD_READALOUD_USERTABLE ."}
-                     WHERE userid = :userid AND " . constants::MOD_READALOUD_MODNAME . "id = :moduleid";
+                      FROM {". constants::M_USERTABLE ."}
+                     WHERE userid = :userid AND " . constants::M_MODNAME . "id = :moduleid";
 	$result = $DB->get_field_sql($sql, $params);
 	if($result===false){return false;}
 	 
@@ -400,7 +400,7 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
 
     $readaloud->timecreated = time();
 	$readaloud = readaloud_process_editors($readaloud,$mform);
-    $instanceid = $DB->insert_record(constants::MOD_READALOUD_TABLE, $readaloud);
+    $instanceid = $DB->insert_record(constants::M_TABLE, $readaloud);
 	return $instanceid;
 }
 
@@ -413,7 +413,7 @@ function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $
 	$itemid=0;
 	$edoptions = readaloud_editor_no_files_options($context);
 	foreach($editors as $editor){
-		$readaloud = file_postupdate_standard_editor( $readaloud, $editor, $edoptions,$context,constants::MOD_READALOUD_FRANKY,$editor,$itemid);
+		$readaloud = file_postupdate_standard_editor( $readaloud, $editor, $edoptions,$context,constants::M_COMPONENT,$editor,$itemid);
 	}
 	return $readaloud;
 }
@@ -435,7 +435,7 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
     $readaloud->timemodified = time();
     $readaloud->id = $readaloud->instance;
 	$readaloud = readaloud_process_editors($readaloud,$mform);
-	$success = $DB->update_record(constants::MOD_READALOUD_TABLE, $readaloud);
+	$success = $DB->update_record(constants::M_TABLE, $readaloud);
 	return $success;
 }
 
@@ -452,13 +452,13 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
 function readaloud_delete_instance($id) {
     global $DB;
 
-    if (! $readaloud = $DB->get_record(constants::MOD_READALOUD_TABLE, array('id' => $id))) {
+    if (! $readaloud = $DB->get_record(constants::M_TABLE, array('id' => $id))) {
         return false;
     }
 
     # Delete any dependent records here #
 
-    $DB->delete_records(constants::MOD_READALOUD_TABLE, array('id' => $readaloud->id));
+    $DB->delete_records(constants::M_TABLE, array('id' => $readaloud->id));
 
     return true;
 }
@@ -572,7 +572,7 @@ function readaloud_scale_used($readaloudid, $scaleid) {
     global $DB;
 
     /** @example */
-    if ($scaleid and $DB->record_exists(constants::MOD_READALOUD_TABLE, array('id' => $readaloudid, 'grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists(constants::M_TABLE, array('id' => $readaloudid, 'grade' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -591,7 +591,7 @@ function readaloud_scale_used_anywhere($scaleid) {
     global $DB;
 
     /** @example */
-    if ($scaleid and $DB->record_exists(constants::MOD_READALOUD_TABLE, array('grade' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists(constants::M_TABLE, array('grade' => -$scaleid))) {
         return true;
     } else {
         return false;

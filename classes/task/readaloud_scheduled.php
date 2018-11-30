@@ -39,7 +39,7 @@ class readaloud_scheduled extends \core\task\scheduled_task {
 		
 	public function get_name() {
         // Shown in admin screens
-        return get_string('readaloudtask', constants::MOD_READALOUD_LANG);
+        return get_string('readaloudtask', constants::M_COMPONENT);
     }
 	
 	 /**

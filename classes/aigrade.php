@@ -16,17 +16,17 @@ class aigrade
         global $DB;
         $this->attemptid = $attemptid;
         $this->modulecontextid = $modulecontextid;
-        $this->attemptdata = $DB->get_record(constants::MOD_READALOUD_USERTABLE,array('id'=>$attemptid));
+        $this->attemptdata = $DB->get_record(constants::M_USERTABLE,array('id'=>$attemptid));
         if($this->attemptdata) {
-            $this->activitydata = $DB->get_record(constants::MOD_READALOUD_TABLE, array('id' => $this->attemptdata->readaloudid));
-            $record = $DB->get_record(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
+            $this->activitydata = $DB->get_record(constants::M_TABLE, array('id' => $this->attemptdata->readaloudid));
+            $record = $DB->get_record(constants::M_AITABLE, array('attemptid' => $attemptid));
             if ($record) {
                 $this->recordid = $record->id;
                 $this->aidata = $record;
             } else {
                 $this->recordid = self::create_record($this->attemptdata,$this->activitydata->timelimit);
                 if ($this->recordid) {
-                    $record = $DB->get_record(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
+                    $record = $DB->get_record(constants::M_AITABLE, array('attemptid' => $attemptid));
                     $this->aidata = $record;
                 }
             }
@@ -110,7 +110,7 @@ class aigrade
         $data->fulltranscript='';
         $data->timecreated=time();
         $data->timemodified=time();
-        $recordid = $DB->insert_record(constants::MOD_READALOUD_AITABLE,$data);
+        $recordid = $DB->insert_record(constants::M_AITABLE,$data);
         return $recordid;
     }
 
@@ -133,7 +133,7 @@ class aigrade
             $record->id = $this->recordid;
             $record->transcript = diff::cleanText($transcript);
             $record->fulltranscript = $fulltranscript;
-            $success = $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
+            $success = $DB->update_record(constants::M_AITABLE, $record);
 
             $this->aidata->transcript = $transcript;
             $this->aidata->fulltranscript =  $fulltranscript;
@@ -235,7 +235,7 @@ class aigrade
         $record->accuracy = $scores->accuracyscore;
         $record->sessionscore = $scores->sessionscore;
         $record->wpm = $scores->wpmscore;
-        $DB->update_record(constants::MOD_READALOUD_AITABLE, $record);
+        $DB->update_record(constants::M_AITABLE, $record);
 
         //also uodate our internal data to prevent another db call to refresh data
        $this->aidata->sessionerrors = $sessionerrors;

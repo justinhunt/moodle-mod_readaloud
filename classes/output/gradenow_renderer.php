@@ -20,7 +20,7 @@ class gradenow_renderer extends \plugin_renderer_base {
         $sessionscore = $this->render_sessionscoredetails();
         $mistakes = $this->render_mistakedetails();
         $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
-            constants::MOD_READALOUD_GRADING_ACTION_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_ACTION_CONTAINER));
+            constants::M_GRADING_ACTION_CONTAINER,array('id'=>constants::M_GRADING_ACTION_CONTAINER));
         return $actionheader;
     }
 
@@ -53,29 +53,29 @@ class gradenow_renderer extends \plugin_renderer_base {
     public function render_machinereview_buttons($gradenow){
         $attemptid = $gradenow->attemptdetails('id');
         $readaloudid = $gradenow->attemptdetails('readaloudid');
-        $url = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $readaloudid, 'attemptid' => $attemptid));
-        $btn = new \single_button($url, get_string('gradethisattempt', constants::MOD_READALOUD_LANG), 'post');
+        $url = new \moodle_url(constants::M_URL . '/grading.php', array('action' => 'gradenow', 'n' => $readaloudid, 'attemptid' => $attemptid));
+        $btn = new \single_button($url, get_string('gradethisattempt', constants::M_COMPONENT), 'post');
         $gradenowbutton = $this->output->render($btn);
 
         $spotcheckbutton = \html_writer::tag('button',
-            get_string('spotcheckbutton',constants::MOD_READALOUD_LANG),
-            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_spotcheckbutton','class'=>constants::MOD_READALOUD_CLASS .'_spotcheckbutton btn btn-success','disabled'=>true));
+            get_string('spotcheckbutton',constants::M_COMPONENT),
+            array('type'=>'button','id'=>constants::M_CLASS .'_spotcheckbutton','class'=>constants::M_CLASS .'_spotcheckbutton btn btn-success','disabled'=>true));
 
         $transcriptcheckbutton = \html_writer::tag('button',
-            get_string('transcriptcheckbutton',constants::MOD_READALOUD_LANG),
-            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_transcriptcheckbutton','class'=>constants::MOD_READALOUD_CLASS .'_transcriptcheckbutton btn btn-warning'));
+            get_string('transcriptcheckbutton',constants::M_COMPONENT),
+            array('type'=>'button','id'=>constants::M_CLASS .'_transcriptcheckbutton','class'=>constants::M_CLASS .'_transcriptcheckbutton btn btn-warning'));
 
-        $ret = \html_writer::div($gradenowbutton . $spotcheckbutton . $transcriptcheckbutton,constants::MOD_READALOUD_CLASS . '_grading_passageactions');
+        $ret = \html_writer::div($gradenowbutton . $spotcheckbutton . $transcriptcheckbutton,constants::M_CLASS . '_grading_passageactions');
         return $ret;
     }
 
     public function render_attempt_header($username) {
-        $ret = $this->output->heading(get_string('showingattempt',constants::MOD_READALOUD_LANG,$username),3);
+        $ret = $this->output->heading(get_string('showingattempt',constants::M_COMPONENT,$username),3);
         return $ret;
     }
 
     public function render_machinegrade_attempt_header($username) {
-        $ret = $this->output->heading(get_string('showingmachinegradedattempt',constants::MOD_READALOUD_LANG,$username),3);
+        $ret = $this->output->heading(get_string('showingmachinegradedattempt',constants::M_COMPONENT,$username),3);
         return $ret;
     }
 
@@ -107,12 +107,12 @@ class gradenow_renderer extends \plugin_renderer_base {
                 $spacenode = $doc->createElement('span',$seperator);
                 //$newnode->appendChild($spacenode);
                 //print_r($newnode);
-                $newnode->setAttribute('id',constants::MOD_READALOUD_CLASS . '_grading_passageword_' . $wordcount);
+                $newnode->setAttribute('id',constants::M_CLASS . '_grading_passageword_' . $wordcount);
                 $newnode->setAttribute('data-wordnumber',$wordcount);
-                $newnode->setAttribute('class',constants::MOD_READALOUD_CLASS . '_grading_passageword');
-                $spacenode->setAttribute('class',constants::MOD_READALOUD_CLASS . '_grading_passagespace');
+                $newnode->setAttribute('class',constants::M_CLASS . '_grading_passageword');
+                $spacenode->setAttribute('class',constants::M_CLASS . '_grading_passagespace');
                 $spacenode->setAttribute('data-wordnumber',$wordcount);
-                $spacenode->setAttribute('id',constants::MOD_READALOUD_CLASS . '_grading_passagespace_' . $wordcount);
+                $spacenode->setAttribute('id',constants::M_CLASS . '_grading_passagespace_' . $wordcount);
                 $node->parentNode->appendChild($newnode);
                 $node->parentNode->appendChild($spacenode);
                 $newnode = $doc->createElement('span',$word);
@@ -123,76 +123,76 @@ class gradenow_renderer extends \plugin_renderer_base {
         $usepassage= $doc->saveHTML();
 
 
-        $ret = \html_writer::div($usepassage,constants::MOD_READALOUD_CLASS . '_grading_passagecont');
+        $ret = \html_writer::div($usepassage,constants::M_CLASS . '_grading_passagecont');
         return $ret;
     }
     public function render_passageactions(){
 
         $gradingbutton = \html_writer::tag('button',
-            get_string('gradingbutton',constants::MOD_READALOUD_LANG),
-            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_gradingbutton','class'=>constants::MOD_READALOUD_CLASS .'_gradingbutton btn btn-primary', 'disabled'=>true));
+            get_string('gradingbutton',constants::M_COMPONENT),
+            array('type'=>'button','id'=>constants::M_CLASS .'_gradingbutton','class'=>constants::M_CLASS .'_gradingbutton btn btn-primary', 'disabled'=>true));
 
         $spotcheckbutton = \html_writer::tag('button',
-            get_string('spotcheckbutton',constants::MOD_READALOUD_LANG),
-            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_spotcheckbutton','class'=>constants::MOD_READALOUD_CLASS .'_spotcheckbutton btn btn-success'));
+            get_string('spotcheckbutton',constants::M_COMPONENT),
+            array('type'=>'button','id'=>constants::M_CLASS .'_spotcheckbutton','class'=>constants::M_CLASS .'_spotcheckbutton btn btn-success'));
 
         $transcriptcheckbutton = \html_writer::tag('button',
-            get_string('transcriptcheckbutton',constants::MOD_READALOUD_LANG),
-            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_transcriptcheckbutton','class'=>constants::MOD_READALOUD_CLASS .'_transcriptcheckbutton btn btn-warning'));
+            get_string('transcriptcheckbutton',constants::M_COMPONENT),
+            array('type'=>'button','id'=>constants::M_CLASS .'_transcriptcheckbutton','class'=>constants::M_CLASS .'_transcriptcheckbutton btn btn-warning'));
 
 
         $clearbutton = \html_writer::tag('button',
-            get_string('doclear',constants::MOD_READALOUD_LANG),
-            array('type'=>'button','id'=>constants::MOD_READALOUD_CLASS .'_clearbutton','class'=>constants::MOD_READALOUD_CLASS .'_clearbutton btn btn-link'));
+            get_string('doclear',constants::M_COMPONENT),
+            array('type'=>'button','id'=>constants::M_CLASS .'_clearbutton','class'=>constants::M_CLASS .'_clearbutton btn btn-link'));
 
         $buttons =  $gradingbutton . $spotcheckbutton . $transcriptcheckbutton . $clearbutton;
 
-        $container = \html_writer::div($buttons,constants::MOD_READALOUD_CLASS . '_grading_passageactions');
+        $container = \html_writer::div($buttons,constants::M_CLASS . '_grading_passageactions');
         return $container;
     }
 
     public function render_audioplayer($audiourl){
         $audioplayer = \html_writer::tag('audio','',
-            array('controls'=>'','src'=>$audiourl,'id'=>constants::MOD_READALOUD_GRADING_PLAYER));
-        $ret = \html_writer::div($audioplayer,constants::MOD_READALOUD_GRADING_PLAYER_CONTAINER,array('id'=>constants::MOD_READALOUD_GRADING_PLAYER_CONTAINER));
+            array('controls'=>'','src'=>$audiourl,'id'=>constants::M_GRADING_PLAYER));
+        $ret = \html_writer::div($audioplayer,constants::M_GRADING_PLAYER_CONTAINER,array('id'=>constants::M_GRADING_PLAYER_CONTAINER));
         return $ret;
     }
 
 
     public function render_hiddenaudioplayer(){
-        $audioplayer = \html_writer::tag('audio','',array('src'=>'','id'=>constants::MOD_READALOUD_HIDDEN_PLAYER,'class'=>constants::MOD_READALOUD_HIDDEN_PLAYER));
+        $audioplayer = \html_writer::tag('audio','',array('src'=>'','id'=>constants::M_HIDDEN_PLAYER,'class'=>constants::M_HIDDEN_PLAYER));
         return $audioplayer;
     }
     public function render_wpmdetails(){
         global $CFG;
-        $title = \html_writer::div(get_string('wpm',constants::MOD_READALOUD_LANG),'panel-heading');
-        $score = \html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>constants::MOD_READALOUD_GRADING_WPM_SCORE));
-        $ret = \html_writer::div($title . $score ,constants::MOD_READALOUD_GRADING_WPM_CONTAINER . ' panel panel-primary',
-            array('id'=>constants::MOD_READALOUD_GRADING_WPM_CONTAINER));
+        $title = \html_writer::div(get_string('wpm',constants::M_COMPONENT),'panel-heading');
+        $score = \html_writer::div('0',constants::M_GRADING_SCORE . ' panel-body',array('id'=>constants::M_GRADING_WPM_SCORE));
+        $ret = \html_writer::div($title . $score ,constants::M_GRADING_WPM_CONTAINER . ' panel panel-primary',
+            array('id'=>constants::M_GRADING_WPM_CONTAINER));
         return $ret;
     }
     public function render_sessionscoredetails(){
         global $CFG;
-        $title = \html_writer::div(get_string('grade_p',constants::MOD_READALOUD_LANG),'panel-heading');
-        $score = \html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>constants::MOD_READALOUD_GRADING_SESSION_SCORE));
-        $ret = \html_writer::div($title . $score ,constants::MOD_READALOUD_GRADING_SESSIONSCORE_CONTAINER . ' panel panel-primary',
-            array('id'=>constants::MOD_READALOUD_GRADING_SESSIONSCORE_CONTAINER));
+        $title = \html_writer::div(get_string('grade_p',constants::M_COMPONENT),'panel-heading');
+        $score = \html_writer::div('0',constants::M_GRADING_SCORE . ' panel-body',array('id'=>constants::M_GRADING_SESSION_SCORE));
+        $ret = \html_writer::div($title . $score ,constants::M_GRADING_SESSIONSCORE_CONTAINER . ' panel panel-primary',
+            array('id'=>constants::M_GRADING_SESSIONSCORE_CONTAINER));
         return $ret;
     }
     public function render_accuracydetails(){
         global $CFG;
-        $title = \html_writer::div(get_string('accuracy_p',constants::MOD_READALOUD_LANG),'panel-heading');
-        $score = \html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>constants::MOD_READALOUD_GRADING_ACCURACY_SCORE));
-        $ret = \html_writer::div($title . $score ,constants::MOD_READALOUD_GRADING_ACCURACY_CONTAINER . ' panel panel-primary',
-            array('id'=>constants::MOD_READALOUD_GRADING_ACCURACY_CONTAINER));
+        $title = \html_writer::div(get_string('accuracy_p',constants::M_COMPONENT),'panel-heading');
+        $score = \html_writer::div('0',constants::M_GRADING_SCORE . ' panel-body',array('id'=>constants::M_GRADING_ACCURACY_SCORE));
+        $ret = \html_writer::div($title . $score ,constants::M_GRADING_ACCURACY_CONTAINER . ' panel panel-primary',
+            array('id'=>constants::M_GRADING_ACCURACY_CONTAINER));
         return $ret;
     }
     public function render_mistakedetails(){
         global $CFG;
-        $title = \html_writer::div(get_string('mistakes',constants::MOD_READALOUD_LANG),'panel-heading');
-        $score = \html_writer::div('0',constants::MOD_READALOUD_GRADING_SCORE . ' panel-body',array('id'=>constants::MOD_READALOUD_GRADING_ERROR_SCORE));
-        $ret = \html_writer::div($title . $score ,constants::MOD_READALOUD_GRADING_ERROR_CONTAINER . ' panel panel-danger',
-            array('id'=>constants::MOD_READALOUD_GRADING_ERROR_CONTAINER));
+        $title = \html_writer::div(get_string('mistakes',constants::M_COMPONENT),'panel-heading');
+        $score = \html_writer::div('0',constants::M_GRADING_SCORE . ' panel-body',array('id'=>constants::M_GRADING_ERROR_SCORE));
+        $ret = \html_writer::div($title . $score ,constants::M_GRADING_ERROR_CONTAINER . ' panel panel-danger',
+            array('id'=>constants::M_GRADING_ERROR_CONTAINER));
         return $ret;
     }
 }

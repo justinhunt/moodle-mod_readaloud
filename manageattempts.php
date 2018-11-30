@@ -60,7 +60,7 @@ $PAGE->set_pagelayout('course');
 
 //is the attempt if OK?
 if ($action=='delete' && $attemptid > 0) {
-    $attempt = $DB->get_record(constants::MOD_READALOUD_USERTABLE, array('id'=>$attemptid,'readaloudid' => $cm->instance), '*', MUST_EXIST);
+    $attempt = $DB->get_record(constants::M_USERTABLE, array('id'=>$attemptid,'readaloudid' => $cm->instance), '*', MUST_EXIST);
 	if(!$attempt){
 		print_error('could not find attempt of id:' . $attemptid);
 	}
@@ -86,11 +86,11 @@ switch($action){
 /////// Delete attempt NOW////////
 	case 'delete':
 		require_sesskey();
-		if (!$DB->delete_records(constants::MOD_READALOUD_USERTABLE, array('id'=>$attemptid))){
+		if (!$DB->delete_records(constants::M_USERTABLE, array('id'=>$attemptid))){
 			print_error("Could not delete attempt");
 		}
 		//delete AI grades for this attempt too
-        $DB->delete_records(constants::MOD_READALOUD_AITABLE, array('attemptid'=>$attemptid));
+        $DB->delete_records(constants::M_AITABLE, array('attemptid'=>$attemptid));
 
 		redirect($redirecturl);
 		return;
@@ -99,11 +99,11 @@ switch($action){
 	/////// Delete ALL attempts ////////
 	case 'deleteall':
 		require_sesskey();
-		if (!$DB->delete_records(constants::MOD_READALOUD_USERTABLE, array('readaloudid'=>$moduleinstance->id))){
+		if (!$DB->delete_records(constants::M_USERTABLE, array('readaloudid'=>$moduleinstance->id))){
 			print_error("Could not delete attempts (all)");
 		}
         //delete AI grades for this activity too
-        $DB->delete_records(constants::MOD_READALOUD_AITABLE, array('readaloudid'=>$moduleinstance->id));
+        $DB->delete_records(constants::M_AITABLE, array('readaloudid'=>$moduleinstance->id));
 
 		redirect($redirecturl);
 		return;

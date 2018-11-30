@@ -27,7 +27,7 @@ class machinegradingbyuser extends basereport
         $ret='';
         if(!$record){return $ret;}
         $user = $this->fetch_cache('user',$record->userid);
-        return get_string('machinegradingbyuserheading',constants::MOD_READALOUD_LANG,fullname($user));
+        return get_string('machinegradingbyuserheading',constants::M_COMPONENT,fullname($user));
 
     }
 
@@ -44,10 +44,10 @@ class machinegradingbyuser extends basereport
 
             case 'audiofile':
                 if ($withlinks) {
-                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
+                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::M_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
 
                 } else {
-                    $ret = get_string('submitted', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('submitted', constants::M_COMPONENT);
                 }
                 break;
 
@@ -68,10 +68,10 @@ class machinegradingbyuser extends basereport
 
                 //FOR NOW WE REFGRADE ... just temp. while fixing bogeys
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'machinereview', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
-                    $ret = \html_writer::link($link, get_string('review', constants::MOD_READALOUD_LANG));
+                    $link = new \moodle_url(constants::M_URL . '/grading.php', array('action' => 'machinereview', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
+                    $ret = \html_writer::link($link, get_string('review', constants::M_COMPONENT));
                 } else {
-                    $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('cannotgradenow', constants::M_COMPONENT);
                 }
                 break;
 
@@ -104,7 +104,7 @@ class machinegradingbyuser extends basereport
 
         $emptydata = array();
         $user_attempt_totals = array();
-        $sql = "SELECT tai.id,tu.userid, tai.wpm, tai.accuracy,tu.timecreated,tai.attemptid, tai.sessionscore,tai.sessiontime,tai.sessionendword, tu.filename, tai.readaloudid  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+        $sql = "SELECT tai.id,tu.userid, tai.wpm, tai.accuracy,tu.timecreated,tai.attemptid, tai.sessionscore,tai.sessiontime,tai.sessionendword, tu.filename, tai.readaloudid  FROM {" . constants::M_AITABLE . "} tai INNER JOIN  {" . constants::M_USERTABLE . "}" .
             " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=? AND tu.userid=? ORDER BY 'tai.id DESC'";
         $alldata = $DB->get_records_sql($sql, array($formdata->readaloudid,$formdata->userid));
 
@@ -112,8 +112,8 @@ class machinegradingbyuser extends basereport
 
             foreach ($alldata as $thedata) {
 
-                $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
-                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+                $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::M_COMPONENT,
+                    constants::M_FILEAREA_SUBMISSIONS, $thedata->id);
                 $this->rawdata[] = $thedata;
             }
 

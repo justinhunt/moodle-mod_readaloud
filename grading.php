@@ -46,13 +46,13 @@ $paging->sort  = optional_param('sort','user', PARAM_TEXT);
 
 
 if ($id) {
-    $cm         = get_coursemodule_from_id(constants::MOD_READALOUD_MODNAME, $id, 0, false, MUST_EXIST);
+    $cm         = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $moduleinstance  = $DB->get_record(constants::MOD_READALOUD_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+    $moduleinstance  = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
 } elseif ($n) {
-    $moduleinstance  = $DB->get_record(constants::MOD_READALOUD_TABLE, array('id' => $n), '*', MUST_EXIST);
+    $moduleinstance  = $DB->get_record(constants::M_TABLE, array('id' => $n), '*', MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance(constants::MOD_READALOUD_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
+    $cm         = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
     print_error('You must specify a course_module ID or an instance ID');
 }
@@ -63,7 +63,7 @@ $modulecontext = context_module::instance($cm->id);
 require_capability('mod/readaloud:manage', $modulecontext);
 
 //Get an admin settings 
-$config = get_config(constants::MOD_READALOUD_FRANKY);
+$config = get_config(constants::M_COMPONENT);
 
 //set per page according to admin setting
 if($paging->perpage==-1){
@@ -77,7 +77,7 @@ $event = \mod_readaloud\event\course_module_viewed::create(array(
 ));
 $event->add_record_snapshot('course_modules', $cm);
 $event->add_record_snapshot('course', $course);
-$event->add_record_snapshot(constants::MOD_READALOUD_MODNAME, $moduleinstance);
+$event->add_record_snapshot(constants::M_MODNAME, $moduleinstance);
 $event->trigger();
 
 
@@ -103,7 +103,7 @@ switch($action){
 				if($attemptid){
 					$action='gradenow';
 					//redirect to clear out form data so we can gradenow on next attempt
-                    $url =  new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
+                    $url =  new \moodle_url(constants::M_URL . '/grading.php',
                             array('id' => $cm->id,'format'=>$format,
                                 'action'=>$action,'userid'=>$userid,
                                 'attemptid'=>$attemptid));
@@ -119,7 +119,7 @@ switch($action){
 }
 
 
-$PAGE->set_url(constants::MOD_READALOUD_URL . '/grading.php',
+$PAGE->set_url(constants::M_URL . '/grading.php',
     array('id' => $cm->id,'format'=>$format,'action'=>$action,'userid'=>$userid,'attemptid'=>$attemptid));
 
 /// Set up the page header
@@ -130,9 +130,9 @@ $PAGE->set_pagelayout('course');
 $PAGE->requires->jquery();
 
 //This puts all our display logic into the renderer.php files in this plugin
-$renderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY);
-$reportrenderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY,'report');
-$gradenowrenderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY,'gradenow');
+$renderer = $PAGE->get_renderer(constants::M_COMPONENT);
+$reportrenderer = $PAGE->get_renderer(constants::M_COMPONENT,'report');
+$gradenowrenderer = $PAGE->get_renderer(constants::M_COMPONENT,'gradenow');
 
 //From here we actually display the page.
 $mode = "grading";
@@ -158,7 +158,7 @@ switch ($action){
 
 		$gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
 		$gradenowform->set_data($setdata);
-		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
+		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
 		echo $gradenowrenderer->render_gradenow($gradenow);
 		$gradenowform->display();
@@ -182,7 +182,7 @@ switch ($action){
         $force_aidata=true;//in this case we are just interested in ai data
         $reviewmode = $reviewmode=constants::REVIEWMODE_MACHINE;
 
-        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
+        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
         echo $gradenowrenderer->render_machinereview($gradenow);
         //if we can grade and manage attempts show the gradenow button
@@ -201,7 +201,7 @@ switch ($action){
         $force_aidata=true;//in this case we are just interested in ai data
         $reviewmode=constants::REVIEWMODE_MACHINE;
 
-        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
+        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
 
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
         echo $gradenowrenderer->render_machinereview($gradenow);
@@ -234,7 +234,7 @@ switch ($action){
         $nextid = $gradenow->get_next_ungraded_id();
         $gradenowform = new \mod_readaloud\gradenowform(null,array('shownext'=>$nextid !== false));
         $gradenowform->set_data($setdata);
-        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
+        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
         echo $gradenowrenderer->render_gradenow($gradenow);
         $gradenowform->display();
@@ -299,7 +299,7 @@ switch ($action){
         break;
 
 	default:
-		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
+		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
 		echo "unknown action.";
 		echo $renderer->footer();
 		return;
@@ -309,11 +309,11 @@ switch ($action){
 //so we need our audio player loaded
 //here we set up any info we need to pass into javascript
 $aph_opts =Array();
-$aph_opts['hiddenplayerclass'] = constants::MOD_READALOUD_HIDDEN_PLAYER;
-$aph_opts['hiddenplayerbuttonclass'] = constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON;
-$aph_opts['hiddenplayerbuttonactiveclass'] =constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON_ACTIVE;
-$aph_opts['hiddenplayerbuttonplayingclass'] =constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PLAYING;
-$aph_opts['hiddenplayerbuttonpausedclass'] =constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON_PAUSED;
+$aph_opts['hiddenplayerclass'] = constants::M_HIDDEN_PLAYER;
+$aph_opts['hiddenplayerbuttonclass'] = constants::M_HIDDEN_PLAYER_BUTTON;
+$aph_opts['hiddenplayerbuttonactiveclass'] =constants::M_HIDDEN_PLAYER_BUTTON_ACTIVE;
+$aph_opts['hiddenplayerbuttonplayingclass'] =constants::M_HIDDEN_PLAYER_BUTTON_PLAYING;
+$aph_opts['hiddenplayerbuttonpausedclass'] =constants::M_HIDDEN_PLAYER_BUTTON_PAUSED;
 
 //this inits the js for the audio players on the list of submissions
 $PAGE->requires->js_call_amd("mod_readaloud/gradinghelper", 'init', array($aph_opts));
@@ -342,7 +342,7 @@ switch($format){
         $perpage_selector = $reportrenderer->show_perpage_selector($PAGE->url,$paging);
 
 
-		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::MOD_READALOUD_LANG));
+		echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
 		echo $gradenowrenderer->render_hiddenaudioplayer();
 		echo $extraheader;
 		echo $pagingbar;

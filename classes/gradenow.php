@@ -45,14 +45,14 @@ class gradenow{
 		global $DB;
        $this->attemptid = $attemptid;
 	   $this->modulecontextid = $modulecontextid;
-	   $attemptdata = $DB->get_record(constants::MOD_READALOUD_USERTABLE,array('id'=>$attemptid));
+	   $attemptdata = $DB->get_record(constants::M_USERTABLE,array('id'=>$attemptid));
 	   if($attemptdata){
 			$this->attemptdata = $attemptdata;
-			$this->activitydata = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$attemptdata->readaloudid));
+			$this->activitydata = $DB->get_record(constants::M_TABLE,array('id'=>$attemptdata->readaloudid));
 			//ai data is useful, but if we don't got it we don't got it.
 			if(utils::can_transcribe($this->activitydata)) {
-                if ($DB->record_exists(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid))) {
-                    $record = $DB->get_record(constants::MOD_READALOUD_AITABLE, array('attemptid' => $attemptid));
+                if ($DB->record_exists(constants::M_AITABLE, array('attemptid' => $attemptid))) {
+                    $record = $DB->get_record(constants::M_AITABLE, array('attemptid' => $attemptid));
                     //we only load aidata if we reallyhave some, the presence of ai record is no longer a good check
                     //do we have a transcript ... is the real check
                     if($record->transcript!='') {
@@ -75,7 +75,7 @@ class gradenow{
    public function get_next_ungraded_id(){
 		global $DB;
 
-       $sql = "SELECT tu.*  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
+       $sql = "SELECT tu.*  FROM {" . constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
            " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
        $records = $DB->get_records_sql($sql, array($this->attemptdata->readaloudid));
        $past=false;
@@ -108,7 +108,7 @@ class gradenow{
         $errorcount = utils::count_sessionerrors($formdata->sessionerrors);
         $updatedattempt->errorcount=$errorcount;
 
-		$DB->update_record(constants::MOD_READALOUD_USERTABLE,$updatedattempt);
+		$DB->update_record(constants::M_USERTABLE,$updatedattempt);
    }
    
    public function attemptdetails($property){
@@ -123,8 +123,8 @@ class gradenow{
 				break;
 			case 'audiourl':
 			    //we need to consider legacy client side URLs and cloud hosted ones
-                $ret = utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, constants::MOD_READALOUD_FRANKY,
-                        constants::MOD_READALOUD_FILEAREA_SUBMISSIONS,
+                $ret = utils::make_audio_URL($this->attemptdata->filename,$this->modulecontextid, constants::M_COMPONENT,
+                        constants::M_FILEAREA_SUBMISSIONS,
                         $this->attemptdata->id);
 
 				break;
@@ -186,7 +186,7 @@ class gradenow{
 		//here we set up any info we need to pass into javascript
 		$gradingopts =Array();
 		$gradingopts['reviewmode'] = $reviewmode;
-		$gradingopts['enabletts'] = get_config(constants::MOD_READALOUD_FRANKY,'enabletts');
+		$gradingopts['enabletts'] = get_config(constants::M_COMPONENT,'enabletts');
 		$gradingopts['allowearlyexit'] = $this->activitydata->allowearlyexit ? true :false;
 		$gradingopts['timelimit'] = $this->activitydata->timelimit;
  		$gradingopts['ttslanguage'] = $this->activitydata->ttslanguage;

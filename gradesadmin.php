@@ -37,18 +37,18 @@ $action = optional_param('action', 'menu', PARAM_TEXT);
 
 
 if ($id) {
-    $cm         = get_coursemodule_from_id(constants::MOD_READALOUD_MODNAME, $id, 0, false, MUST_EXIST);
+    $cm         = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $moduleinstance  = $DB->get_record(constants::MOD_READALOUD_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+    $moduleinstance  = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
 } elseif ($n) {
-    $moduleinstance  = $DB->get_record(constants::MOD_READALOUD_TABLE, array('id' => $n), '*', MUST_EXIST);
+    $moduleinstance  = $DB->get_record(constants::M_TABLE, array('id' => $n), '*', MUST_EXIST);
     $course     = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance(constants::MOD_READALOUD_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
+    $cm         = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
     error('You must specify a course_module ID or an instance ID');
 }
 
-$PAGE->set_url(constants::MOD_READALOUD_URL . '/gradesadmin.php',
+$PAGE->set_url(constants::M_URL . '/gradesadmin.php',
 	array('id' => $cm->id));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
@@ -56,18 +56,18 @@ $modulecontext = context_module::instance($cm->id);
 require_capability('mod/readaloud:manage', $modulecontext);
 
 //Get an admin settings 
-$config = get_config(constants::MOD_READALOUD_FRANKY);
+$config = get_config(constants::M_COMPONENT);
 
 
 switch($action){
 
     case 'machineregradeall':
-        $url =  new \moodle_url(constants::MOD_READALOUD_URL . '/gradesadmin.php',
+        $url =  new \moodle_url(constants::M_URL . '/gradesadmin.php',
             array('id' => $cm->id,
                 'action'=>'menu'));
-        $ai_evals = $DB->get_records(constants::MOD_READALOUD_AITABLE,array('readaloudid'=>$moduleinstance->id));
+        $ai_evals = $DB->get_records(constants::M_AITABLE,array('readaloudid'=>$moduleinstance->id));
         if(!$ai_evals) {
-            redirect($url,get_string('noattemptsregrade',constants::MOD_READALOUD_LANG));
+            redirect($url,get_string('noattemptsregrade',constants::M_COMPONENT));
         }else{
             $skipped=0;
             foreach($ai_evals as $eval){
@@ -81,18 +81,18 @@ switch($action){
             $results=new stdClass();
             $results->done=count($ai_evals)-$skipped;
             $results->skipped=$skipped;
-            redirect($url,get_string('machineregraded',constants::MOD_READALOUD_LANG,$results),5);
+            redirect($url,get_string('machineregraded',constants::M_COMPONENT,$results),5);
         }
         break;
     case 'pushmachinegrades':
-        $url =  new \moodle_url(constants::MOD_READALOUD_URL . '/gradesadmin.php',
+        $url =  new \moodle_url(constants::M_URL . '/gradesadmin.php',
             array('id' => $cm->id,
                 'action'=>'menu'));
         if($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE &&
             utils::can_transcribe($moduleinstance)) {
             readaloud_update_grades($moduleinstance);
         }
-        redirect($url,get_string('machinegradespushed',constants::MOD_READALOUD_LANG),5);
+        redirect($url,get_string('machinegradespushed',constants::M_COMPONENT),5);
         break;
 
     case 'menu':
@@ -108,12 +108,12 @@ $PAGE->set_pagelayout('course');
 $mode = "gradesadmin";
 
 //This puts all our display logic into the renderer.php files in this plugin
-$renderer = $PAGE->get_renderer(constants::MOD_READALOUD_FRANKY);
+$renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 
-echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('gradesadmin', constants::MOD_READALOUD_LANG));
+echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('gradesadmin', constants::M_COMPONENT));
 
-echo $renderer->show_gradesadmin_heading(get_string('gradesadmintitle',constants::MOD_READALOUD_LANG),
-    get_string('gradesadmininstructions',constants::MOD_READALOUD_LANG));
+echo $renderer->show_gradesadmin_heading(get_string('gradesadmintitle',constants::M_COMPONENT),
+    get_string('gradesadmininstructions',constants::M_COMPONENT));
 echo $renderer->show_currenterrorestimate( \mod_readaloud\utils::estimate_errors($moduleinstance->id));
 echo $renderer->show_machineregradeallbutton($moduleinstance);
 echo $renderer->show_pushmachinegradesbutton($moduleinstance);

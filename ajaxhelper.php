@@ -93,7 +93,7 @@ function save_to_moodle($filename,$readaloud){
     $newattempt->wpm=0;
     $newattempt->timecreated=time();
     $newattempt->timemodified=time();
-    $attemptid = $DB->insert_record(constants::MOD_READALOUD_USERTABLE,$newattempt);
+    $attemptid = $DB->insert_record(constants::M_USERTABLE,$newattempt);
     if(!$attemptid){
         return false;
     }

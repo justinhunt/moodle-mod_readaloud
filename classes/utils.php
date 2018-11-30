@@ -103,17 +103,17 @@ class utils{
        //First check that we have an API id and secret
         //refresh token
         $refresh = \html_writer::link($CFG->wwwroot . '/mod/readaloud/refreshtoken.php',
-                get_string('refreshtoken',constants::MOD_READALOUD_LANG)) . '<br>';
+                get_string('refreshtoken',constants::M_COMPONENT)) . '<br>';
 
 
         $message = '';
         $apiuser = trim($apiuser);
         $apisecret = trim($apisecret);
         if(empty($apiuser)){
-           $message .= get_string('noapiuser',constants::MOD_READALOUD_LANG) . '<br>';
+           $message .= get_string('noapiuser',constants::M_COMPONENT) . '<br>';
        }
         if(empty($apisecret)){
-            $message .= get_string('noapisecret',constants::MOD_READALOUD_LANG);
+            $message .= get_string('noapisecret',constants::M_COMPONENT);
         }
 
         if(!empty($message)){
@@ -121,15 +121,15 @@ class utils{
         }
 
         //Fetch from cache and process the results and display
-        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::MOD_READALOUD_FRANKY, 'token');
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
 
         //if we have no token object the creds were wrong ... or something
         if(!($tokenobject)){
-            $message = get_string('notokenincache',constants::MOD_READALOUD_LANG);
+            $message = get_string('notokenincache',constants::M_COMPONENT);
             //if we have an object but its no good, creds werer wrong ..or something
         }elseif(!property_exists($tokenobject,'token') || empty($tokenobject->token)){
-            $message = get_string('credentialsinvalid',constants::MOD_READALOUD_LANG);
+            $message = get_string('credentialsinvalid',constants::M_COMPONENT);
         //if we do not have subs, then we are on a very old token or something is wrong, just get out of here.
         }elseif(!property_exists($tokenobject,'subs')){
             $message = 'No subscriptions found at all';
@@ -141,13 +141,13 @@ class utils{
         //we have enough info to display a report. Lets go.
         foreach ($tokenobject->subs as $sub){
             $sub->expiredate = date('d/m/Y',$sub->expiredate);
-            $message .= get_string('displaysubs',constants::MOD_READALOUD_LANG, $sub) . '<br>';
+            $message .= get_string('displaysubs',constants::M_COMPONENT, $sub) . '<br>';
         }
         //Is app authorised
-        if(in_array(constants::MOD_READALOUD_FRANKY,$tokenobject->apps)){
-            $message .= get_string('appauthorised',constants::MOD_READALOUD_LANG) . '<br>';
+        if(in_array(constants::M_COMPONENT,$tokenobject->apps)){
+            $message .= get_string('appauthorised',constants::M_COMPONENT) . '<br>';
         }else{
-            $message .= get_string('appnotauthorised',constants::MOD_READALOUD_LANG) . '<br>';
+            $message .= get_string('appnotauthorised',constants::M_COMPONENT) . '<br>';
         }
 
         return $refresh . $message;
@@ -158,7 +158,7 @@ class utils{
     public static function fetch_token($apiuser, $apisecret, $force=false)
     {
 
-        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::MOD_READALOUD_FRANKY, 'token');
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
         $tokenuser = $cache->get('recentpoodlluser');
         $apiuser = trim($apiuser);
@@ -319,7 +319,7 @@ class utils{
     //get all the aievaluations for a user
     public static function get_aieval_byuser($readaloudid,$userid){
         global $DB;
-        $sql = "SELECT tai.*  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+        $sql = "SELECT tai.*  FROM {" . constants::M_AITABLE . "} tai INNER JOIN  {" . constants::M_USERTABLE . "}" .
             " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=? AND tu.userid=?";
         $result = $DB->get_records_sql($sql,array($readaloudid,$userid));
         return $result;
@@ -330,7 +330,7 @@ class utils{
     public static function estimate_errors($readaloudid){
         global $DB;
         $errorestimate =0;
-        $sql = "SELECT AVG(tai.errorcount - tu.errorcount) as errorestimate  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+        $sql = "SELECT AVG(tai.errorcount - tu.errorcount) as errorestimate  FROM {" . constants::M_AITABLE . "} tai INNER JOIN  {" . constants::M_USERTABLE . "}" .
             " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.sessiontime > 0 AND tu.readaloudid=?";
         $result = $DB->get_field_sql($sql,array($readaloudid));
         if($result!==false){
@@ -359,7 +359,7 @@ class utils{
                 $instancename = $DB->get_field($modname, 'name', array('id' => $module->instance));
                 if ($instancename) {
                     $ret->url = new \moodle_url('/mod/'.$modname.'/view.php', array('id' => $activitylink));
-                    $ret->label = get_string('activitylinkname',constants::MOD_READALOUD_LANG, $instancename);
+                    $ret->label = get_string('activitylinkname',constants::M_COMPONENT, $instancename);
                 }
             }
         }
@@ -369,51 +369,51 @@ class utils{
     //What to show students after an attempt
     public static function get_postattempt_options(){
         return array(
-            constants::POSTATTEMPT_NONE => get_string("postattempt_none",constants::MOD_READALOUD_LANG),
-            constants::POSTATTEMPT_EVAL  => get_string("postattempt_eval",constants::MOD_READALOUD_LANG),
-            constants::POSTATTEMPT_EVALERRORS  => get_string("postattempt_evalerrors",constants::MOD_READALOUD_LANG)
+            constants::POSTATTEMPT_NONE => get_string("postattempt_none",constants::M_COMPONENT),
+            constants::POSTATTEMPT_EVAL  => get_string("postattempt_eval",constants::M_COMPONENT),
+            constants::POSTATTEMPT_EVALERRORS  => get_string("postattempt_evalerrors",constants::M_COMPONENT)
         );
     }
 
     //for error estimate and accuracy adjustment, we can auto estimate errors, never estimate errors, or use a fixed error estimate
     public static function get_autoaccmethod_options(){
         return array(
-            constants::ACCMETHOD_NONE => get_string("accmethod_none",constants::MOD_READALOUD_LANG),
-            constants::ACCMETHOD_AUTO  => get_string("accmethod_auto",constants::MOD_READALOUD_LANG),
-            constants::ACCMETHOD_FIXED  => get_string("accmethod_fixed",constants::MOD_READALOUD_LANG)
+            constants::ACCMETHOD_NONE => get_string("accmethod_none",constants::M_COMPONENT),
+            constants::ACCMETHOD_AUTO  => get_string("accmethod_auto",constants::M_COMPONENT),
+            constants::ACCMETHOD_FIXED  => get_string("accmethod_fixed",constants::M_COMPONENT)
         );
     }
 
   public static function get_region_options(){
       return array(
-        "useast1" => get_string("useast1",constants::MOD_READALOUD_LANG),
-          "tokyo" => get_string("tokyo",constants::MOD_READALOUD_LANG),
-          "sydney" => get_string("sydney",constants::MOD_READALOUD_LANG),
-          "dublin" => get_string("dublin",constants::MOD_READALOUD_LANG),
-          "ottawa" => get_string("ottawa",constants::MOD_READALOUD_LANG),
-          "frankfurt" => get_string("frankfurt",constants::MOD_READALOUD_LANG),
-          "london" => get_string("london",constants::MOD_READALOUD_LANG),
-          "saopaulo" => get_string("saopaulo",constants::MOD_READALOUD_LANG),
+        "useast1" => get_string("useast1",constants::M_COMPONENT),
+          "tokyo" => get_string("tokyo",constants::M_COMPONENT),
+          "sydney" => get_string("sydney",constants::M_COMPONENT),
+          "dublin" => get_string("dublin",constants::M_COMPONENT),
+          "ottawa" => get_string("ottawa",constants::M_COMPONENT),
+          "frankfurt" => get_string("frankfurt",constants::M_COMPONENT),
+          "london" => get_string("london",constants::M_COMPONENT),
+          "saopaulo" => get_string("saopaulo",constants::M_COMPONENT),
       );
   }
 
     public static function get_machinegrade_options(){
         return array(
-            constants::MACHINEGRADE_NONE => get_string("machinegradenone",constants::MOD_READALOUD_LANG),
-            constants::MACHINEGRADE_MACHINE => get_string("machinegrademachine",constants::MOD_READALOUD_LANG)
+            constants::MACHINEGRADE_NONE => get_string("machinegradenone",constants::M_COMPONENT),
+            constants::MACHINEGRADE_MACHINE => get_string("machinegrademachine",constants::M_COMPONENT)
         );
     }
 
     public static function get_timelimit_options(){
         return array(
-            0 => get_string("notimelimit",constants::MOD_READALOUD_LANG),
-            30 => get_string("xsecs",constants::MOD_READALOUD_LANG,'30'),
-            45 => get_string("xsecs",constants::MOD_READALOUD_LANG,'45'),
-            60 => get_string("onemin",constants::MOD_READALOUD_LANG),
-            90 => get_string("oneminxsecs",constants::MOD_READALOUD_LANG,'30'),
-            120 => get_string("xmins",constants::MOD_READALOUD_LANG,'2'),
-            150 => get_string("xminsecs",constants::MOD_READALOUD_LANG,array('minutes'=>2,'seconds'=>30)),
-            180 => get_string("xmins",constants::MOD_READALOUD_LANG,'3')
+            0 => get_string("notimelimit",constants::M_COMPONENT),
+            30 => get_string("xsecs",constants::M_COMPONENT,'30'),
+            45 => get_string("xsecs",constants::M_COMPONENT,'45'),
+            60 => get_string("onemin",constants::M_COMPONENT),
+            90 => get_string("oneminxsecs",constants::M_COMPONENT,'30'),
+            120 => get_string("xmins",constants::M_COMPONENT,'2'),
+            150 => get_string("xminsecs",constants::M_COMPONENT,array('minutes'=>2,'seconds'=>30)),
+            180 => get_string("xmins",constants::M_COMPONENT,'3')
         );
     }
 
@@ -427,17 +427,17 @@ class utils{
           "180"=>"180",
           "365"=>"365",
           "730"=>"730",
-          "9999"=>get_string('forever',constants::MOD_READALOUD_LANG)
+          "9999"=>get_string('forever',constants::M_COMPONENT)
       );
   }
 
    public static function get_lang_options(){
        return array(
-            'en-US'=>get_string('en-us',constants::MOD_READALOUD_LANG),
-           'en-UK'=>get_string('en-uk',constants::MOD_READALOUD_LANG),
-           'en-AU'=>get_string('en-au',constants::MOD_READALOUD_LANG),
-           'es-US'=>get_string('es-us',constants::MOD_READALOUD_LANG),
-           'fr-CA'=>get_string('fr-ca',constants::MOD_READALOUD_LANG),
+            'en-US'=>get_string('en-us',constants::M_COMPONENT),
+           'en-UK'=>get_string('en-uk',constants::M_COMPONENT),
+           'en-AU'=>get_string('en-au',constants::M_COMPONENT),
+           'es-US'=>get_string('es-us',constants::M_COMPONENT),
+           'fr-CA'=>get_string('fr-ca',constants::M_COMPONENT),
        );
 	/*
       return array(

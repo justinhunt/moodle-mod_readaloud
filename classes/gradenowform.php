@@ -54,7 +54,7 @@ class gradenowform extends \moodleform{
 		$buttonarray[] = &$mform->createElement('cancel');
 		$buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
 		if($shownext){
-			$buttonarray[] = &$mform->createElement('submit', 'submitbutton2', get_string('saveandnext',constants::MOD_READALOUD_LANG));
+			$buttonarray[] = &$mform->createElement('submit', 'submitbutton2', get_string('saveandnext',constants::M_COMPONENT));
 		}
 		$mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
@@ -66,17 +66,17 @@ class gradenowform extends \moodleform{
 		$mform->addElement('hidden', 'attemptid');
 		$mform->addElement('hidden', 'n');
         $mform->addElement('hidden', 'sessiontime',null,
-				array('class'=>constants::MOD_READALOUD_GRADING_FORM_SESSIONTIME,'id'=>constants::MOD_READALOUD_GRADING_FORM_SESSIONTIME));
+				array('class'=>constants::M_GRADING_FORM_SESSIONTIME,'id'=>constants::M_GRADING_FORM_SESSIONTIME));
 		$mform->addElement('hidden', 'sessionerrors',null,
-				array('class'=>constants::MOD_READALOUD_GRADING_FORM_SESSIONERRORS,'id'=>constants::MOD_READALOUD_GRADING_FORM_SESSIONERRORS));
+				array('class'=>constants::M_GRADING_FORM_SESSIONERRORS,'id'=>constants::M_GRADING_FORM_SESSIONERRORS));
 		$mform->addElement('hidden', 'wpm',null,
-				array('class'=>constants::MOD_READALOUD_GRADING_FORM_WPM,'id'=>constants::MOD_READALOUD_GRADING_FORM_WPM));
+				array('class'=>constants::M_GRADING_FORM_WPM,'id'=>constants::M_GRADING_FORM_WPM));
 		$mform->addElement('hidden', 'accuracy',null,
-				array('class'=>constants::MOD_READALOUD_GRADING_FORM_ACCURACY,'id'=>constants::MOD_READALOUD_GRADING_FORM_ACCURACY));
+				array('class'=>constants::M_GRADING_FORM_ACCURACY,'id'=>constants::M_GRADING_FORM_ACCURACY));
 		$mform->addElement('hidden', 'sessionscore',null,
-				array('class'=>constants::MOD_READALOUD_GRADING_FORM_SESSIONSCORE,'id'=>constants::MOD_READALOUD_GRADING_FORM_SESSIONSCORE));
+				array('class'=>constants::M_GRADING_FORM_SESSIONSCORE,'id'=>constants::M_GRADING_FORM_SESSIONSCORE));
 		$mform->addElement('hidden', 'sessionendword',null,
-				array('class'=>constants::MOD_READALOUD_GRADING_FORM_SESSIONENDWORD,'id'=>constants::MOD_READALOUD_GRADING_FORM_SESSIONENDWORD));
+				array('class'=>constants::M_GRADING_FORM_SESSIONENDWORD,'id'=>constants::M_GRADING_FORM_SESSIONENDWORD));
 		$mform->setType('action',PARAM_TEXT);
 		$mform->setType('attemptid',PARAM_INT);
 		$mform->setType('n',PARAM_INT);

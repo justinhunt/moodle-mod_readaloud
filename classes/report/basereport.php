@@ -60,7 +60,7 @@ abstract class basereport {
     public function fetch_head(){
         $head=array();
         foreach($this->fields as $field){
-            $head[]=get_string($field,constants::MOD_READALOUD_LANG);
+            $head[]=get_string($field,constants::M_COMPONENT);
         }
         return $head;
     }

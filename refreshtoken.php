@@ -34,8 +34,8 @@ require_login(0, false);
 $systemcontext = context_system::instance();
 
 if(has_capability('moodle/site:config',$systemcontext)){
-    $apiuser = get_config(constants::MOD_READALOUD_FRANKY,'apiuser');
-    $apisecret=get_config(constants::MOD_READALOUD_FRANKY,'apisecret');
+    $apiuser = get_config(constants::M_COMPONENT,'apiuser');
+    $apisecret=get_config(constants::M_COMPONENT,'apisecret');
     $force=true;
     if($apiuser && $apisecret) {
         utils::fetch_token($apiuser, $apisecret, $force);

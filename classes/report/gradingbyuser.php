@@ -27,7 +27,7 @@ class gradingbyuser extends basereport
         $ret='';
         if(!$record){return $ret;}
         $user = $this->fetch_cache('user',$record->userid);
-        return get_string('gradingbyuserheading',constants::MOD_READALOUD_LANG,fullname($user));
+        return get_string('gradingbyuserheading',constants::M_COMPONENT,fullname($user));
 
     }
 
@@ -46,10 +46,10 @@ class gradingbyuser extends basereport
                     $ret = html_writer::tag('audio','',
                             array('controls'=>'','src'=>$record->audiourl));
                         */
-                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
+                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::M_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
 
                 } else {
-                    $ret = get_string('submitted', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('submitted', constants::M_COMPONENT);
                 }
                 break;
 
@@ -85,20 +85,20 @@ class gradingbyuser extends basereport
 
             case 'grader':
                 if($record->sessiontime ==0 && $record->wpm){
-                    $ret = get_string('grader_ai',constants::MOD_READALOUD_LANG);
+                    $ret = get_string('grader_ai',constants::M_COMPONENT);
                 }else if($record->sessiontime){
-                    $ret = get_string('grader_human',constants::MOD_READALOUD_LANG);
+                    $ret = get_string('grader_human',constants::M_COMPONENT);
                 }else{
-                    $ret =get_string('grader_ungraded',constants::MOD_READALOUD_LANG);
+                    $ret =get_string('grader_ungraded',constants::M_COMPONENT);
                 }
                 break;
 
             case 'gradenow':
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
-                    $ret = \html_writer::link($link, get_string('gradenow', constants::MOD_READALOUD_LANG));
+                    $link = new \moodle_url(constants::M_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
+                    $ret = \html_writer::link($link, get_string('gradenow', constants::M_COMPONENT));
                 } else {
-                    $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('cannotgradenow', constants::M_COMPONENT);
                 }
                 break;
 
@@ -109,10 +109,10 @@ class gradingbyuser extends basereport
 
             case 'deletenow':
                 if ($withlinks) {
-                    $url = new \moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
+                    $url = new \moodle_url(constants::M_URL . '/manageattempts.php',
                         array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id, 'source' => $this->report));
                     $btn = new \single_button($url, get_string('delete'), 'post');
-                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::MOD_READALOUD_LANG));
+                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::M_COMPONENT));
                     $ret = $OUTPUT->render($btn);
                 } else {
                     $ret = '';
@@ -144,21 +144,21 @@ class gradingbyuser extends basereport
 
         $emptydata = array();
         $user_attempt_totals = array();
-        $alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE, array('readaloudid' => $formdata->readaloudid, 'userid' => $formdata->userid), 'id DESC');
+        $alldata = $DB->get_records(constants::M_USERTABLE, array('readaloudid' => $formdata->readaloudid, 'userid' => $formdata->userid), 'id DESC');
 
         //if we are not machine grading the SQL is simpler
-        $human_sql = "SELECT tu.*  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu " .
+        $human_sql = "SELECT tu.*  FROM {" . constants::M_USERTABLE . "} tu " .
             "WHERE tu.readaloudid=? " .
             "ORDER BY tu.id DESC";
 
         //if we are machine grading we need to fetch human and machine so we can get WPM etc from either
-        $hybrid_sql="SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu " .
-            "INNER JOIN {". constants::MOD_READALOUD_AITABLE ."} tai ON tai.attemptid=tu.id " .
+        $hybrid_sql="SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore  FROM {" . constants::M_USERTABLE . "} tu " .
+            "INNER JOIN {". constants::M_AITABLE ."} tai ON tai.attemptid=tu.id " .
             "WHERE tu.readaloudid=? " .
             "ORDER BY tu.id DESC";
 
         //we need a module instance to know which scoring method we are using.
-        $moduleinstance = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$formdata->readaloudid));
+        $moduleinstance = $DB->get_record(constants::M_TABLE,array('id'=>$formdata->readaloudid));
         $cantranscribe = utils::can_transcribe($moduleinstance);
 
         //run the sql and match up WPM/ accuracy and sessionscore if we need to
@@ -180,8 +180,8 @@ class gradingbyuser extends basereport
 
         if ($alldata) {
             foreach ($alldata as $thedata) {
-                $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
-                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+                $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::M_COMPONENT,
+                    constants::M_FILEAREA_SUBMISSIONS, $thedata->id);
                 $this->rawdata[] = $thedata;
             }
 

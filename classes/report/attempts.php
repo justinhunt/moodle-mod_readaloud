@@ -41,10 +41,10 @@ class attempts extends basereport
                             array('controls'=>'','src'=>$record->audiourl));
                         */
                     $ret = \html_writer::div('<i class="fa fa-play-circle"></i>',
-                        constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
+                        constants::M_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
 
                 } else {
-                    $ret = get_string('submitted', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('submitted', constants::M_COMPONENT);
                 }
                 break;
                 break;
@@ -67,10 +67,10 @@ class attempts extends basereport
 
             case 'deletenow':
                 if ($withlinks) {
-                    $url = new \moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
+                    $url = new \moodle_url(constants::M_URL . '/manageattempts.php',
                         array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id, 'source' => $this->report));
                     $btn = new \single_button($url, get_string('delete'), 'post');
-                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::MOD_READALOUD_LANG));
+                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::M_COMPONENT));
                     $ret = $OUTPUT->render($btn);
                 }else {
                     $ret = '';
@@ -91,8 +91,8 @@ class attempts extends basereport
         $record = $this->headingdata;
         $ret='';
         if(!$record){return $ret;}
-        //$ec = $this->fetch_cache(constants::MOD_READALOUD_TABLE,$record->englishcentralid);
-        return get_string('attemptsheading',constants::MOD_READALOUD_LANG);
+        //$ec = $this->fetch_cache(constants::M_TABLE,$record->englishcentralid);
+        return get_string('attemptsheading',constants::M_COMPONENT);
 
     }
 
@@ -103,12 +103,12 @@ class attempts extends basereport
         $this->headingdata = new \stdClass();
 
         $emptydata = array();
-        $alldata = $DB->get_records(constants::MOD_READALOUD_USERTABLE,array('readaloudid'=>$formdata->readaloudid));
+        $alldata = $DB->get_records(constants::M_USERTABLE,array('readaloudid'=>$formdata->readaloudid));
 
         if($alldata){
             foreach($alldata as $thedata){
-                $thedata->audiourl  = \mod_readaloud\utils::make_audio_URL($thedata->filename,$formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
-                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+                $thedata->audiourl  = \mod_readaloud\utils::make_audio_URL($thedata->filename,$formdata->modulecontextid, constants::M_COMPONENT,
+                    constants::M_FILEAREA_SUBMISSIONS, $thedata->id);
                 $this->rawdata[] = $thedata;
             }
             $this->rawdata= $alldata;

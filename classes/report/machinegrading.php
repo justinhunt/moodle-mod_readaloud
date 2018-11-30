@@ -33,7 +33,7 @@ class machinegrading extends basereport
                 $user = $this->fetch_cache('user', $record->userid);
                 $ret = fullname($user);
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
+                    $link = new \moodle_url(constants::M_URL . '/grading.php',
                         array('action' => 'gradingbyuser', 'n' => $record->readaloudid, 'userid' => $record->userid));
                     $ret = \html_writer::link($link, $ret);
                 }
@@ -42,7 +42,7 @@ class machinegrading extends basereport
             case 'totalattempts':
                 $ret = $record->totalattempts;
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
+                    $link = new \moodle_url(constants::M_URL . '/grading.php',
                         array('action' => 'machinegradingbyuser', 'n' => $record->readaloudid, 'userid' => $record->userid));
                     $ret = \html_writer::link($link, $ret);
                 }
@@ -54,10 +54,10 @@ class machinegrading extends basereport
                     $ret = html_writer::tag('audio','',
                             array('controls'=>'','src'=>$record->audiourl));
                         */
-                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
+                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::M_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
 
                 } else {
-                    $ret = get_string('submitted', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('submitted', constants::M_COMPONENT);
                 }
                 break;
 
@@ -88,11 +88,11 @@ class machinegrading extends basereport
             //we took this button away to make some room
             case 'gradenow':
                 if ($withlinks) {
-                    $url = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
-                    $btn = new \single_button($url, get_string('gradenow', constants::MOD_READALOUD_LANG), 'post');
+                    $url = new \moodle_url(constants::M_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
+                    $btn = new \single_button($url, get_string('gradenow', constants::M_COMPONENT), 'post');
                     $ret = $OUTPUT->render($btn);
                 } else {
-                    $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('cannotgradenow', constants::M_COMPONENT);
                 }
                 break;
 
@@ -103,20 +103,20 @@ class machinegrading extends basereport
 
                 //FOR  REGRADE ... when fixing bogeys (replace review link with this one)
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'regradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
-                    $ret = \html_writer::link($link, get_string('regrade', constants::MOD_READALOUD_LANG));
+                    $link = new \moodle_url(constants::M_URL . '/grading.php', array('action' => 'regradenow', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
+                    $ret = \html_writer::link($link, get_string('regrade', constants::M_COMPONENT));
                 } else {
-                    $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('cannotgradenow', constants::M_COMPONENT);
                 }
                 break;
 
             case 'review':
 
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'machinereview', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
-                    $ret = \html_writer::link($link, get_string('review', constants::MOD_READALOUD_LANG));
+                    $link = new \moodle_url(constants::M_URL . '/grading.php', array('action' => 'machinereview', 'n' => $record->readaloudid, 'attemptid' => $record->attemptid));
+                    $ret = \html_writer::link($link, get_string('review', constants::M_COMPONENT));
                 } else {
-                    $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('cannotgradenow', constants::M_COMPONENT);
                 }
                 break;
 
@@ -127,10 +127,10 @@ class machinegrading extends basereport
                 //do we need this..? hid it for now
             case 'deletenow':
                 if ($withlinks) {
-                    $url = new \moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
+                    $url = new \moodle_url(constants::M_URL . '/manageattempts.php',
                         array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id, 'source' => $this->report));
                     $btn = new \single_button($url, get_string('delete'), 'post');
-                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::MOD_READALOUD_LANG));
+                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::M_COMPONENT));
                     $ret = $OUTPUT->render($btn);
                 }else {
                     $ret = '';
@@ -156,7 +156,7 @@ class machinegrading extends basereport
         if (!$record) {
             return $ret;
         }
-        return get_string('machinegradingheading', constants::MOD_READALOUD_LANG);
+        return get_string('machinegradingheading', constants::M_COMPONENT);
 
     }//end of function
 
@@ -174,7 +174,7 @@ class machinegrading extends basereport
         $user_attempt_totals = array();
         $sql = "SELECT tai.id,tu.userid, tai.wpm, tai.accuracy,tu.timecreated,tai.attemptid, tai.sessionerrors," .
             " tai.sessionscore,tai.sessiontime,tai.sessionendword, tu.filename, tai.readaloudid,  u.firstnamephonetic," .
-        "u.lastnamephonetic,u.middlename,u.alternatename,u.firstname,u.lastname  FROM {" . constants::MOD_READALOUD_AITABLE . "} tai INNER JOIN  {" . constants::MOD_READALOUD_USERTABLE . "}" .
+        "u.lastnamephonetic,u.middlename,u.alternatename,u.firstname,u.lastname  FROM {" . constants::M_AITABLE . "} tai INNER JOIN  {" . constants::M_USERTABLE . "}" .
             " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
         " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename, tai.id DESC";
         $alldata = $DB->get_records_sql($sql, array($formdata->readaloudid));
@@ -196,8 +196,8 @@ class machinegrading extends basereport
 
 
                 //make the audio url for the selected attempt data
-                $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
-                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+                $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::M_COMPONENT,
+                    constants::M_FILEAREA_SUBMISSIONS, $thedata->id);
 
 
                 //fetch and poke in the adjusted scores here, though we could also do it from

@@ -33,7 +33,7 @@ class grading extends basereport
                 $user = $this->fetch_cache('user', $record->userid);
                 $ret = fullname($user);
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
+                    $link = new \moodle_url(constants::M_URL . '/grading.php',
                         array('action' => 'gradingbyuser', 'n' => $record->readaloudid, 'userid' => $record->userid));
                     $ret = \html_writer::link($link, $ret);
                 }
@@ -42,7 +42,7 @@ class grading extends basereport
             case 'totalattempts':
                 $ret = $record->totalattempts;
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php',
+                    $link = new \moodle_url(constants::M_URL . '/grading.php',
                         array('action' => 'gradingbyuser', 'n' => $record->readaloudid, 'userid' => $record->userid));
                     $ret = \html_writer::link($link, $ret);
                 }
@@ -54,10 +54,10 @@ class grading extends basereport
                     $ret = html_writer::tag('audio','',
                             array('controls'=>'','src'=>$record->audiourl));
                         */
-                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::MOD_READALOUD_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
+                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::M_HIDDEN_PLAYER_BUTTON, array('data-audiosource' => $record->audiourl));
 
                 } else {
-                    $ret = get_string('submitted', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('submitted', constants::M_COMPONENT);
                 }
                 break;
 
@@ -93,11 +93,11 @@ class grading extends basereport
 
             case 'grader':
                 if($record->sessiontime ==0 && $record->wpm){
-                    $ret = get_string('grader_ai',constants::MOD_READALOUD_LANG);
+                    $ret = get_string('grader_ai',constants::M_COMPONENT);
                 }else if($record->sessiontime){
-                    $ret = get_string('grader_human',constants::MOD_READALOUD_LANG);
+                    $ret = get_string('grader_human',constants::M_COMPONENT);
                 }else{
-                    $ret =get_string('grader_ungraded',constants::MOD_READALOUD_LANG);
+                    $ret =get_string('grader_ungraded',constants::M_COMPONENT);
                 }
                 break;
 
@@ -106,25 +106,25 @@ class grading extends basereport
 
                     if($record->sessiontime ==0) {
                         $buttonclasses= 'btn btn-secondary';
-                        $buttonlabel = get_string('gradenow', constants::MOD_READALOUD_LANG);
+                        $buttonlabel = get_string('gradenow', constants::M_COMPONENT);
                     }else{
                         $buttonclasses= '';
-                        $buttonlabel= get_string('regrade', constants::MOD_READALOUD_LANG);
+                        $buttonlabel= get_string('regrade', constants::M_COMPONENT);
                     }
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
+                    $link = new \moodle_url(constants::M_URL . '/grading.php', array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
                     $ret = \html_writer::link($link, $buttonlabel,array('class'=>$buttonclasses));
                 } else {
-                    $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('cannotgradenow', constants::M_COMPONENT);
                 }
                 break;
 
                 //this will load AI data and start from there, currently hidden from menu to keep it simple.
             case 'aigradenow':
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::MOD_READALOUD_URL . '/grading.php', array('action' => 'aigradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
-                    $ret = \html_writer::link($link, get_string('aigradenow', constants::MOD_READALOUD_LANG));
+                    $link = new \moodle_url(constants::M_URL . '/grading.php', array('action' => 'aigradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
+                    $ret = \html_writer::link($link, get_string('aigradenow', constants::M_COMPONENT));
                 } else {
-                    $ret = get_string('cannotgradenow', constants::MOD_READALOUD_LANG);
+                    $ret = get_string('cannotgradenow', constants::M_COMPONENT);
                 }
                 break;
 
@@ -135,10 +135,10 @@ class grading extends basereport
 
             case 'deletenow':
                 if ($withlinks) {
-                    $url = new \moodle_url(constants::MOD_READALOUD_URL . '/manageattempts.php',
+                    $url = new \moodle_url(constants::M_URL . '/manageattempts.php',
                         array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id, 'source' => $this->report));
                     $btn = new \single_button($url, get_string('delete'), 'post');
-                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::MOD_READALOUD_LANG));
+                    $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::M_COMPONENT));
                     $ret = $OUTPUT->render($btn);
                 } else {
                     $ret = '';
@@ -164,8 +164,8 @@ class grading extends basereport
         if (!$record) {
             return $ret;
         }
-        //$ec = $this->fetch_cache(constants::MOD_READALOUD_TABLE,$record->englishcentralid);
-        return get_string('gradingheading', constants::MOD_READALOUD_LANG);
+        //$ec = $this->fetch_cache(constants::M_TABLE,$record->englishcentralid);
+        return get_string('gradingheading', constants::M_COMPONENT);
 
     }//end of function
 
@@ -180,17 +180,17 @@ class grading extends basereport
         $user_attempt_totals = array();
 
         //if we are not machine grading the SQL is simpler
-        $human_sql = "SELECT tu.*  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
+        $human_sql = "SELECT tu.*  FROM {" . constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
             " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
 
         //if we are machine grading we need to fetch human and machine so we can get WPM etc from either
-        $hybrid_sql="SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore  FROM {" . constants::MOD_READALOUD_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
-            "INNER JOIN {". constants::MOD_READALOUD_AITABLE ."} tai ON tai.attemptid=tu.id " .
+        $hybrid_sql="SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore  FROM {" . constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
+            "INNER JOIN {". constants::M_AITABLE ."} tai ON tai.attemptid=tu.id " .
             "WHERE tu.readaloudid=?" .
             " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
 
         //we need a module instance to know which scoring method we are using.
-        $moduleinstance = $DB->get_record(constants::MOD_READALOUD_TABLE,array('id'=>$formdata->readaloudid));
+        $moduleinstance = $DB->get_record(constants::M_TABLE,array('id'=>$formdata->readaloudid));
         $cantranscribe = utils::can_transcribe($moduleinstance);
 
         //run the sql and match up WPM/ accuracy and sessionscore if we need to
@@ -223,8 +223,8 @@ class grading extends basereport
                 }
                 $user_attempt_totals[$thedata->userid] = 1;
 
-                $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::MOD_READALOUD_FRANKY,
-                    constants::MOD_READALOUD_FILEAREA_SUBMISSIONS, $thedata->id);
+                $thedata->audiourl = \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::M_COMPONENT,
+                    constants::M_FILEAREA_SUBMISSIONS, $thedata->id);
                 $this->rawdata[] = $thedata;
             }
             foreach ($this->rawdata as $thedata) {
