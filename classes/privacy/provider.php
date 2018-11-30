@@ -139,7 +139,7 @@ class provider implements
      * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
      *
      */
-    public static function _get_users_in_context($userlist) {
+    public static function get_users_in_context(userlist $userlist) {
         $context = $userlist->get_context();
 
         if (!is_a($context, \context_module::class)) {
