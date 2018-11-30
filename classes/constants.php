@@ -8,6 +8,7 @@
 
 namespace mod_readaloud;
 
+defined('MOODLE_INTERNAL') || die();
 
 class constants
 {

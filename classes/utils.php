@@ -28,7 +28,7 @@ use \mod_readaloud\constants;
 
 
 /**
- * Event observer for mod_readaloud
+ * Functions used generally across this mod
  *
  * @package    mod_readaloud
  * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)

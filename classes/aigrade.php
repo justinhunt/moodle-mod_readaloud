@@ -10,6 +10,8 @@ namespace mod_readaloud;
 
 use \mod_readaloud\constants;
 
+defined('MOODLE_INTERNAL') || die();
+
 class aigrade
 {
     function __construct($attemptid, $modulecontextid=0) {
