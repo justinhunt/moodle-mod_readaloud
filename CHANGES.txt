@@ -1,5 +1,6 @@
-Version 2.0.3 (Build 2018112600) [not released]
+Version 2.0.3 (Build 2018112600)
 - improved reliability of cron call to fetch token
+- better support for privacy api (incl moodle 3.6)
 
 Version 2.0.2 (Build 2018111800)
 -added support for auth details in token
