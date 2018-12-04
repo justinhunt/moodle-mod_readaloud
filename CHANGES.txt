@@ -1,3 +1,6 @@
+Version 2.0.4 (not released)
+- changed lang string key "NG" to "notok" and English to "Not OK"
+
 Version 2.0.3 (Build 2018112600)
 - improved reliability of cron call to fetch token
 - better support for privacy api (incl moodle 3.6)
