@@ -64,7 +64,9 @@ class diff{
 
         //remove punctuation
         //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
-        $thetext = preg_replace("[[:punct:]]", "", $thetext);
+       // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
+        //https://stackoverflow.com/questions/5689918/php-strip-punctuation
+        $thetext = preg_replace("/[:punct:]+/", "", $thetext);
 
         return $thetext;
     }
