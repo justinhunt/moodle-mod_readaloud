@@ -90,7 +90,7 @@ function save_to_moodle($filename,$rectime, $readaloud){
     $newattempt->status=0;
     $newattempt->filename=$filename;
     $newattempt->sessionscore=0;
-    $newattempt->sessiontime=0; //$rectime  .. this would work. But sessiontime is used as flag of human has graded ...so needs more thought
+    //$newattempt->sessiontime=$rectime;  //.. this would work. But sessiontime is used as flag of human has graded ...so needs more thought
     $newattempt->sessionerrors='';
     $newattempt->errorcount=0;
     $newattempt->wpm=0;
