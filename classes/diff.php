@@ -261,10 +261,10 @@ public static function fetchAlternativesArray($thealternates)
             if($a->tposition == $b->tposition){
                 return 0;
             }else{
-                return ($a->tposition< $b->tposition) ? 1 : -1;
+                return ($a->tposition< $b->tposition) ? -1 : 1;
             }
         }
-        return ($a->length < $b->length) ? -1 : 1;
+        return ($a->length < $b->length) ? 1 : -1;
     }
 
     //returns an array of "diff" results, one for each word(ie position) in passage
