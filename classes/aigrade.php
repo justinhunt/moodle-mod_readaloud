@@ -218,10 +218,16 @@ class aigrade
         if(!$sessiontime){
             if($this->activitydata->timelimit > 0){
                 $sessiontime=$this->activitydata->timelimit;
+            }elseif($this->aidata->sessiontime) {
+                $sessiontime = $this->aidata->sessiontime;
             }else {
-                //this is a guess, but really we need the audio duration. We just don't know it.
-                //well .. we COULD get it from the end_time attribute of the final recognised word in the fulltranscript
-                $sessiontime = 60;
+                //we get the end_time attribute of the final recognised word in the fulltranscript
+                $sessiontime = utils::fetch_duration_from_transcript($this->aidata->fulltranscript);
+
+                if($sessiontime<1) {
+                    //this is a guess now, We just don't know it.
+                    $sessiontime = 60;
+                }
             }
         }
 
@@ -237,6 +243,7 @@ class aigrade
         $record->sessionerrors = $sessionerrors;
         $record->errorcount = $errorcount;
         $record->sessionmatches = $sessionmatches;
+        $record->sessiontime=$sessiontime;
         $record->sessionendword = $sessionendword;
         $record->accuracy = $scores->accuracyscore;
         $record->sessionscore = $scores->sessionscore;

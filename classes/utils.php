@@ -225,6 +225,23 @@ class utils{
         return $token;
     }
 
+    public static function fetch_duration_from_transcript($fulltranscript){
+        $transcript = json_decode($fulltranscript);
+        $titems=$transcript->results->items;
+        $twords=array();
+        foreach($titems as $titem){
+            if($titem->type == 'pronunciation'){
+                $twords[] = $titem;
+            }
+        }
+        $lastindex = count($twords);
+        if($lastindex>0){
+            return $twords[$lastindex-1]->end_time;
+        }else{
+            return 0;
+        }
+    }
+
     //fetch start-time and end-time points for each word
     public static function fetch_audio_points($fulltranscript,$matches,$alternatives){
 

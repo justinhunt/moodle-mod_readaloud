@@ -33,6 +33,7 @@ use \mod_readaloud\aigrade;
 $cmid = required_param('cmid',  PARAM_INT); // course_module ID, or
 //$sessionid = required_param('sessionid',  PARAM_INT); // course_module ID, or
 $filename= required_param('filename',  PARAM_TEXT); // data baby yeah
+$rectime= optional_param('rectime', 0, PARAM_INT);
 $ret =new stdClass();
 
 if ($cmid) {
@@ -52,7 +53,7 @@ $PAGE->set_context($modulecontext);
 //make database items and adhoc tasks
 $success = false;
 $message='';
-$attemptid = save_to_moodle($filename, $readaloud);
+$attemptid = save_to_moodle($filename, $rectime, $readaloud);
 if($attemptid){
     if(\mod_readaloud\utils::can_transcribe($readaloud)) {
         $success = register_aws_task($readaloud->id, $attemptid, $modulecontext->id);
@@ -78,7 +79,7 @@ echo json_encode($ret);
 return;
 
 //save the data to Moodle.
-function save_to_moodle($filename,$readaloud){
+function save_to_moodle($filename,$rectime, $readaloud){
     global $USER,$DB;
 
     //Add a blank attempt with just the filename  and essential details
@@ -89,6 +90,7 @@ function save_to_moodle($filename,$readaloud){
     $newattempt->status=0;
     $newattempt->filename=$filename;
     $newattempt->sessionscore=0;
+    $newattempt->sessiontime=0; //$rectime  .. this would work. But sessiontime is used as flag of human has graded ...so needs more thought
     $newattempt->sessionerrors='';
     $newattempt->errorcount=0;
     $newattempt->wpm=0;

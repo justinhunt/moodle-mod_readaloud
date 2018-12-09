@@ -127,7 +127,11 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/definitions','mod_readalo
            var on_audio_processing= function(eventdata){
                 //at this point we know the submission has been uploaded and we know the fileURL
                //so we send the submission
-               dd.send_submission(eventdata.mediaurl);
+               var rectime = now - dd.rec_time_start;
+               if(rectime > 0){
+                   rectime = Math.ceil(rectime/1000);
+               }
+               dd.send_submission(eventdata.mediaurl,rectime);
               //and let the user know that they are all done
                dd.dofinishedlayout();
             };
@@ -149,7 +153,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/definitions','mod_readalo
 
 
 
-        send_submission: function(filename){
+        send_submission: function(filename,rectime){
 
             //set up our ajax request
             var xhr = new XMLHttpRequest();
@@ -184,7 +188,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/definitions','mod_readalo
                 }
             };
 
-            var params = "cmid=" + that.cmid + "&filename=" + filename;
+            var params = "cmid=" + that.cmid + "&filename=" + filename + "&rectime=" + rectime;
             xhr.open("POST",M.cfg.wwwroot + '/mod/readaloud/ajaxhelper.php', true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.setRequestHeader("Cache-Control", "no-cache");
