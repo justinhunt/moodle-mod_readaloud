@@ -68,6 +68,12 @@ class diff{
         //https://stackoverflow.com/questions/5689918/php-strip-punctuation
         $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
 
+        //remove double spaces
+        //split on spaces into words
+        $textbits = explode(' ',$thetext);
+        //remove any empty elements
+        $textbits = array_filter($textbits, function($value) { return $value !== ''; });
+        $thetext = implode(' ',$textbits);
         return $thetext;
     }
 

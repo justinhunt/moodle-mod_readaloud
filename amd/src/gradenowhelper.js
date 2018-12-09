@@ -113,6 +113,12 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
                 this.options.aidata=opts['aidata'];
                 if(this.options.aidata) {
                     this.options.transcriptwords = opts['aidata'].transcript.split(" ");
+
+                    //remove empty elements ... these can get in there
+                    this.options.transcriptwords = this.options.transcriptwords.filter(function (el) {
+                        return el != '';
+                    });
+
                 }else{
                     this.options.transcriptwords=[];
                 }
