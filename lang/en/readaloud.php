@@ -137,16 +137,17 @@ $string['targetwpm']='Target WPM';
 $string['targetwpm_details']='The default target WPM. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%. The target WPM can also be set at the activity instance level. ';
 $string['targetwpm_help']='The target WPM score. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%.';
 
-$string['accadjust']='Fixed error est.';
-$string['accadjust_details']='This is a fixed estimate of the number of machine transcription errors per attempt. If error estimation is set to "Fixed" then this value will be used to compensate scores for errors in machine transcription.';
-$string['accadjust_help']='This rate should correspond as closely as possible to the estimated error rate.';
+$string['accadjust']='Fixed adjustment.';
+$string['accadjust_details']='This is the number of reading errors to compensate WPM scores for. If WPM adjust is set to "Fixed" then this value will be used to compensate WPM acores. This is a method of mitigating for machine transcription mistakes.';
+$string['accadjust_help']='This rate should correspond as closely as possible to the estimated machine transcription mistake average for a passage.';
 
-$string['accadjustmethod']='Error estimation';
-$string['accadjustmethod_details']='An estimate of the number of machine transcription errors per attempt is used to create adjusted scores that compensate for errors in machine transcription.';
-$string['accadjustmethod_help']='For error estimate and accuracy adjustment, we can: never estimate errors; auto estimate errors(default); or use a fixed error estimate.';
-$string['accmethod_none']='None';
-$string['accmethod_auto']='Auto';
-$string['accmethod_fixed']='Fixed';
+$string['accadjustmethod']='WPM Adjust(AI)';
+$string['accadjustmethod_details']='Adjust the WPM score by ignoring, or discounting some, reading errors found by AI. The default \'No adjustment\' subtracts all reading errors from final WPM score. ';
+$string['accadjustmethod_help']='For WPM adjustment we can: never adjust, adjust by a fixed amount, or ignore errors when calculating WPM';
+$string['accmethod_none']='No adjustment';
+$string['accmethod_auto']='Auto audjustment';
+$string['accmethod_fixed']='Adjust by fixed amount';
+$string['accmethod_noerrors']='Ignore all errors';
 
 $string['apiuser']='Poodll API User ';
 $string['apiuser_details']='The Poodll account username that authorises Poodll on this site.';

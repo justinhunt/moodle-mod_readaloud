@@ -274,11 +274,35 @@ class utils{
 
     //this is a server side implementation of the same name function in gradenowhelper.js
     //we need this when calculating adjusted grades(reports/machinegrading.php) and on making machine grades(aigrade.php)
-    public static function processscores($sessiontime,$sessionendword,$errorcount,$targetwpm){
+    //the WPM adjustment based on accadjust only applies to machine grades, so it is NOT in gradenowhelper
+    public static function processscores($sessiontime,$sessionendword,$errorcount,$activitydata){
 
         ////wpm score
+        $wpmerrors = $errorcount;
+        switch($activitydata->accadjustmethod){
+
+            case constants::ACCMETHOD_FIXED:
+                $wpmerrors = $wpmerrors - $activitydata->accadjust;
+                if($wpmerrors < 0){$wpmerrors=0;}
+                break;
+
+            case constants::ACCMETHOD_NOERRORS:
+                $wpmerrors = 0;
+                break;
+
+            case constants::ACCMETHOD_AUTO:
+                $adjust= \mod_readaloud\utils::estimate_errors($activitydata->id);
+                $wpmerrors = $wpmerrors - $adjust;
+                if($wpmerrors < 0){$wpmerrors=0;}
+                break;
+
+            case constants::ACCMETHOD_NONE:
+            default:
+                $wpmerrors = $errorcount;
+                break;
+        }
         if($sessiontime > 0) {
-            $wpmscore = round(($sessionendword - $errorcount) * 60 / $sessiontime);
+            $wpmscore = round(($sessionendword - $wpmerrors) * 60 / $sessiontime);
         }else{
             $wpmscore =0;
         }
@@ -292,6 +316,7 @@ class utils{
 
         //sessionscore
         $usewpmscore = $wpmscore;
+        $targetwpm = $activitydata->targetwpm;
         if($usewpmscore > $targetwpm){
             $usewpmscore = $targetwpm;
         }
@@ -375,12 +400,13 @@ class utils{
         );
     }
 
-    //for error estimate and accuracy adjustment, we can auto estimate errors, never estimate errors, or use a fixed error estimate
-    public static function get_autoaccmethod_options(){
+    //for error estimate and accuracy adjustment, we can auto estimate errors, never estimate errors, or use a fixed error estimate, or ignore errors
+    public static function get_accadjust_options(){
         return array(
             constants::ACCMETHOD_NONE => get_string("accmethod_none",constants::M_COMPONENT),
-            constants::ACCMETHOD_AUTO  => get_string("accmethod_auto",constants::M_COMPONENT),
-            constants::ACCMETHOD_FIXED  => get_string("accmethod_fixed",constants::M_COMPONENT)
+            //constants::ACCMETHOD_AUTO  => get_string("accmethod_auto",constants::M_COMPONENT),
+            constants::ACCMETHOD_FIXED  => get_string("accmethod_fixed",constants::M_COMPONENT),
+            constants::ACCMETHOD_NOERRORS  => get_string("accmethod_noerrors",constants::M_COMPONENT),
         );
     }
 

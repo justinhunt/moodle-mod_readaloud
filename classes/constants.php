@@ -32,7 +32,8 @@ const M_GRADENONE= 4;
 const ACCMETHOD_NONE =0;
 const ACCMETHOD_AUTO =1;
 const ACCMETHOD_FIXED =2;
-//whot to display to user when reviewing activity options
+const ACCMETHOD_NOERRORS =3;
+//what to display to user when reviewing activity options
 const POSTATTEMPT_NONE=0;
 const POSTATTEMPT_EVAL=1;
 const POSTATTEMPT_EVALERRORS=2;

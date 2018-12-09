@@ -1,9 +1,7 @@
 define(['jquery','core/log','mod_readaloud/cloudpoodllloader'], function($,log, cloudpoodll) {
     "use strict"; // jshint ;_;
 /*
-This file is largely to handle recorder specific tasks, configuring it , loading it, its appearance
-It should not be concerned with anything non recorder'ish like elements on the page around
-Relationships between the recorder and the surrounding elements should be managed via event handlers in activity controller
+This file sets up the cloud poodll recorder and passes on events to registered handlers
  */
 
     log.debug('Readaloud helper: initialising');
@@ -20,7 +18,7 @@ Relationships between the recorder and the surrounding elements should be manage
             cloudpoodll.init(opts['recorderid'],
 
                 function(message){
-                    console.log(message);
+                    //console.log(message);
                     switch(message.type){
                         case 'recording':
                             if(message.action==='started'){
@@ -39,17 +37,18 @@ Relationships between the recorder and the surrounding elements should be manage
                             }
                             that.status='posted';
                             break;
+                        case 'error':
+                            alert('PROBLEM:' + message.message);
+                            break;
                     }
                 }
             );
         },
         stopbuttonclick: function(){
-            var m = this;
             this.status='stopped';
             //do something
         },
         startbuttonclick: function(){
-            var m = this;
             this.status='started';
            //do something
         }

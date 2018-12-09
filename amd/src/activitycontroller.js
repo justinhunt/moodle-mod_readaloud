@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($, jqui, log, audiohelper) {
+define(['jquery','jqueryui', 'core/log','mod_readaloud/definitions','mod_readaloud/recorderhelper'], function($, jqui, log, def, recorderhelper) {
 
     "use strict"; // jshint ;_;
 
@@ -16,6 +16,9 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
         controls: null,
         ra_recorder: null,
         rec_time_start: 0,
+
+        //CSS in this file
+        passagefinished: def.passagefinished,
 
         //for making multiple instances
         clone: function(){
@@ -60,8 +63,9 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
 
         process_html: function(opts){
 
+            //these css classes/ids are all passed in from php in
+            //renderer.php::fetch_activity_amd should maybe just simplify and declare them in definitions.js
             var controls ={
-
                 hider: $('.' + opts['hider']),
                 introbox: $('.' + 'mod_intro_box'),
                 progresscontainer: $('.' +  opts['progresscontainer']),
@@ -129,7 +133,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
             };
 
             //init the recorder
-            audiohelper.init(dd.activitydata,
+            recorderhelper.init(dd.activitydata,
                 on_recording_start,
                 on_recording_end,
                 on_audio_processing);
@@ -198,7 +202,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/audiohelper'], function($
         },
         douploadlayout: function(){
             var m = this;
-            m.controls.passagecontainer.addClass('mod_readaloud_passage_finished');
+            m.controls.passagecontainer.addClass(m.passagefinished);
             m.controls.hider.fadeIn('fast');
             m.controls.progresscontainer.fadeIn('fast');
         },

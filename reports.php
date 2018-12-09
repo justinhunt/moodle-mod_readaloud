@@ -95,14 +95,9 @@ $PAGE->requires->jquery();
 	
 
 $aph_opts =Array();
-$aph_opts['hiddenplayerclass'] = constants::M_HIDDEN_PLAYER;
-$aph_opts['hiddenplayerbuttonclass'] = constants::M_HIDDEN_PLAYER_BUTTON;
-$aph_opts['hiddenplayerbuttonactiveclass'] =constants::M_HIDDEN_PLAYER_BUTTON_ACTIVE;
-$aph_opts['hiddenplayerbuttonplayingclass'] =constants::M_HIDDEN_PLAYER_BUTTON_PLAYING;
-$aph_opts['hiddenplayerbuttonpausedclass'] =constants::M_HIDDEN_PLAYER_BUTTON_PAUSED;
 
 //this inits the grading helper JS
-$PAGE->requires->js_call_amd("mod_readaloud/gradinghelper", 'init', array($aph_opts));
+$PAGE->requires->js_call_amd("mod_readaloud/hiddenplayerhelper", 'init', array($aph_opts));
 
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
@@ -124,7 +119,7 @@ switch ($showreport){
 		return;
 
 	case 'basic':
-		$report = new \mod_readaloud\report\basic();//new mod_readaloud_basic_report();
+		$report = new \mod_readaloud\report\basic();
 		//formdata should only have simple values, not objects
 		//later it gets turned into urls for the export buttons
 		$formdata = new stdClass();

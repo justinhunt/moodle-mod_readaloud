@@ -1,4 +1,4 @@
-define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popoverhelper) {
+define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhelper'], function($,log,def,popoverhelper) {
     "use strict"; // jshint ;_;
 
     log.debug('Readaloud Gradenow helper: initialising');
@@ -19,32 +19,32 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
         //class definitions
         cd: {
 
-            audioplayerclass: 'mod_readaloud_grading_player',
-            wordplayerclass: 'mod_readaloud_hidden_player',
-            wordclass: 'mod_readaloud_grading_passageword',
-            spaceclass: 'mod_readaloud_grading_passagespace',
-            badwordclass: 'mod_readaloud_grading_badword',
-            endspaceclass: 'mod_readaloud_grading_endspace',
-            unreadwordclass:  'mod_readaloud_grading_unreadword',
-            wpmscoreid: 'mod_readaloud_grading_wpm_score',
-            accuracyscoreid: 'mod_readaloud_grading_accuracy_score',
-            sessionscoreid: 'mod_readaloud_grading_session_score',
-            errorscoreid: 'mod_readaloud_grading_error_score',
-            formelementwpmscore: 'mod_readaloud_grading_form_wpm',
-            formelementaccuracy: 'mod_readaloud_grading_form_accuracy',
-            formelementsessionscore: 'mod_readaloud_grading_form_sessionscore',
-            formelementendword: 'mod_readaloud_grading_form_sessionendword',
-            formelementtime: 'mod_readaloud_grading_form_sessiontime',
-            formelementerrors: 'mod_readaloud_grading_form_sessionerrors',
-            modebutton: 'mod_readaloud_modebutton',
+            audioplayerclass: def.audioplayerclass,
+            wordplayerclass: def.wordplayerclass,
+            wordclass: def.wordclass,
+            spaceclass: def.spaceclass,
+            badwordclass: def.badwordclass,
+            endspaceclass: def.endspaceclass,
+            unreadwordclass:  def.unreadwordclass,
+            wpmscoreid: def.wpmscoreid,
+            accuracyscoreid: def.accuracyscoreid,
+            sessionscoreid: def.sessionscoreid,
+            errorscoreid: def.errorscoreid,
+            formelementwpmscore: def.formelementwpmscore,
+            formelementaccuracy: def.formelementaccuracy,
+            formelementsessionscore: def.formelementsessionscore,
+            formelementendword: def.formelementendword,
+            formelementtime: def.formelementtime,
+            formelementerrors: def.formelementerrors,
+            modebutton: def.modebutton,
 
-            spotcheckbutton: 'mod_readaloud_spotcheckbutton',
-            transcriptcheckbutton: 'mod_readaloud_transcriptcheckbutton',
-            gradingbutton: 'mod_readaloud_gradingbutton',
-            clearbutton: 'mod_readaloud_clearbutton',
-            spotcheckmode: 'mod_readaloud_spotcheckmode',
-            aiunmatched: 'mod_readaloud_aiunmatched',
-            passagecontainer: 'mod_readaloud_grading_passagecont'
+            spotcheckbutton: def.spotcheckbutton,
+            transcriptcheckbutton: def.transcriptcheckbutton,
+            gradingbutton: def.gradingbutton,
+            clearbutton: def.clearbutton,
+            spotcheckmode: def.spotcheckmode,
+            aiunmatched: def.aiunmatched,
+            passagecontainer: def.passagecontainer
         },
 
         options: {
@@ -63,8 +63,7 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
             errorwords: {},
             activityid: null,
             attemptid: null,
-            sesskey: null,
-            passagecontainer: 'mod_readaloud_grading_passagecont'
+            sesskey: null
         },
 
 
@@ -479,11 +478,25 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
         doPlaySpotCheck: function(spotcheckindex){
           var playchain = this.fetchPlayChain(spotcheckindex);
           var theplayer = this.controls.audioplayer[0];
-          theplayer.currentTime=playchain.audiostart;
+          //we pad the play audio by 0.5 seconds beginning and end
+            var pad = 0.5;
+            var duration = theplayer.duration;
+            //determine starttime
+            var endtime = playchain.audioend + pad;
+            if(!isNaN(duration) && duration > (playchain.audioend + pad)){
+                endtime = playchain.audioend + pad;
+            }
+            //determine endtime
+            var starttime = playchain.audiostart;
+            if((playchain.audiostart -pad) > 0){
+                starttime - playchain.audiostart -pad;
+            }
+
+          theplayer.currentTime=starttime;
           $(this.controls.audioplayer).off("timeupdate");
           $(this.controls.audioplayer).on("timeupdate",function(e){
               var currenttime = theplayer.currentTime;
-              if(currenttime >= playchain.audioend){
+              if(currenttime >= endtime){
                   $(this).off("timeupdate");
                   theplayer.pause();
               }
@@ -851,6 +864,7 @@ define(['jquery','core/log','mod_readaloud/popoverhelper'], function($,log,popov
             m.controls.errorscorebox.text(errorscore);
 
             //wpm score
+            //we do not apply accuracy adjustment here, that is only for machine grades.
             var wpmscore = Math.round((m.options.endwordnumber - errorscore) * 60 / m.options.totalseconds);
             m.options.wpm = wpmscore;
             m.controls.wpmscorebox.text(wpmscore);

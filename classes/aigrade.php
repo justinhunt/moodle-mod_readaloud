@@ -225,7 +225,11 @@ class aigrade
             }
         }
 
-        $scores = utils::processscores($sessiontime,$sessionendword,$errorcount,$this->activitydata->targetwpm);
+        $scores = utils::processscores($sessiontime,
+            $sessionendword,
+            $errorcount,
+            $this->activitydata
+            );
 
         //save the diff and attempt analysis in the DB
         $record = new \stdClass();

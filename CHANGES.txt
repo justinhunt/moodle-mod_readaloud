@@ -1,5 +1,10 @@
 Version 2.0.4 (not released)
 - changed lang string key "NG" to "notok" and English to "Not OK"
+- renamed audiohelper.js to recorderhelper.js
+- renamed gradinghelper.js to hiddenplayerhelper.js
+- added better error reporting if there is a problem with Auth
+- reinstated accuracy adjustment settings
+- padded spot check audio by 0.5 seconds on either side of start and end
 
 Version 2.0.3 (Build 2018112600)
 - improved reliability of cron call to fetch token

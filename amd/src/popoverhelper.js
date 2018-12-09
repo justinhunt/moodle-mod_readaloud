@@ -1,20 +1,23 @@
-define(['jquery','core/log','mod_readaloud/loader','theme_boost/popover'], function($,log) {
+define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/dependencyloader','theme_boost/popover'], function($,log,def) {
     "use strict"; // jshint ;_;
 
 /*
-This file is largely to handle recorder specific tasks, configuring it , loading it, its appearance
-It should not be concerned with anything non recorder'ish like elements on the page around
-Relationships between the recorder and the surrounding elements should be managed via event handlers in activity controller
+This file is to
  */
 
-    log.debug('Readaloud Popover helper: initialising');
+    log.debug('Read Aloud Popover helper: initialising');
 
     return{
 
         lastitem: false,
-        okbuttonclass: 'mod_readaloud_quickgrade_ok',
-        ngbuttonclass: 'mod_readaloud_quickgrade_ng',
-        dispose: false, //Bv4 = dispose ??? Bv3 = destroy ??
+        okbuttonclass: def.okbuttonclass,
+        ngbuttonclass: def.ngbuttonclass,
+        quickgradecontainer: def.quickgradecontainerclass,
+        quickgradetitle: M.util.get_string('quickgrade',def.component),
+        transcripttitle: M.util.get_string('transcript',def.component),
+        oklabel: M.util.get_string('ok',def.component),
+        nglabel: M.util.get_string('ng',def.component),
+        dispose: false, //Bv4 = dispose  Bv3 = destroy
 
         init: function(){
             this.register_events();
@@ -25,12 +28,13 @@ Relationships between the recorder and the surrounding elements should be manage
             $(document).on('click','.' + this.ngbuttonclass,this.onReject);
         },
 
+        //different bootstrap/popover versions have a different word for "dispose" so this method bridges that.
+        //we can not be sure what version is installed
         disposeWord: function(){
             if(this.dispose){return this.dispose;}
+            var version ='3';
             if($.fn.popover.Constructor.hasOwnProperty('VERSION')){
-                var version = $.fn.popover.Constructor.VERSION.charAt(0);
-            }else{
-                var version ='3';
+                version = $.fn.popover.Constructor.VERSION.charAt(0);
             }
             switch(version){
                 case '4':
@@ -65,17 +69,15 @@ Relationships between the recorder and the surrounding elements should be manage
 
             var thefunc = function(){
                 var wordnumber = $(this).attr("data-wordnumber");
-                var oklabel = M.util.get_string('ok','mod_readaloud');
-                var nglabel = M.util.get_string('ng','mod_readaloud');
-                var okbutton = "<button type='button' class='btn " + that.okbuttonclass + "' data-wordnumber='" + wordnumber + "'><i class='fa fa-check'></i> " + oklabel + "</button>";
-                var ngbutton = "<button type='button' class='btn " + that.ngbuttonclass + "' data-wordnumber='" + wordnumber + "'><i class='fa fa-close'></i> " + nglabel + "</button>";
-                var container = "<div class='mod_readaloud_quickgrade_cont'>" + okbutton + ngbutton + "</div>";
+                var okbutton = "<button type='button' class='btn " + that.okbuttonclass + "' data-wordnumber='" + wordnumber + "'><i class='fa fa-check'></i> " + that.oklabel + "</button>";
+                var ngbutton = "<button type='button' class='btn " + that.ngbuttonclass + "' data-wordnumber='" + wordnumber + "'><i class='fa fa-close'></i> " + that.nglabel + "</button>";
+                var container = "<div class='" + that.quickgradecontainerclass +  "'>" + okbutton + ngbutton + "</div>";
                 return container;
             };
 
             //lets add the popover
             $(item).popover({
-                title: M.util.get_string('quickgrade','mod_readaloud'),
+                title: this.quickgradetitle,
                 content: thefunc,
                 trigger: 'manual',
                 placement: 'top',
@@ -102,7 +104,7 @@ Relationships between the recorder and the surrounding elements should be manage
 
             //lets add the popover
             $(item).popover({
-                title: M.util.get_string('transcript','mod_readaloud'),
+                title: this.transcripttitle,
                 content: transcript,
                 trigger: 'manual',
                 placement: 'top'
@@ -110,8 +112,9 @@ Relationships between the recorder and the surrounding elements should be manage
             $(item).popover('show');
         },
 
-        onAccept: function(){alert($(this).attr('data-wordnumber'))},
-        onReject: function(){alert($(this).attr('data-wordnumber'))},
+        //these two functions are overridden by the calling class
+        onAccept: function(){alert($(this).attr('data-wordnumber'));},
+        onReject: function(){alert($(this).attr('data-wordnumber'));}
 
     };//end of return value
 });

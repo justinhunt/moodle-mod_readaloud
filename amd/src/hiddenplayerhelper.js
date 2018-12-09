@@ -1,20 +1,18 @@
-define(['jquery','core/log'], function($,log) {
+define(['jquery','core/log','mod_readaloud/definitions'], function($,log,def) {
     "use strict"; // jshint ;_;
 
-    log.debug('Readaloud grading helper: initialising');
+    log.debug('Readaloud hidden player helper: initialising');
 
     return {
 
         controls: {},
-        hiddenplayer: 'mod_readaloud_hidden_player',
-        hiddenplayerbutton: 'mod_readaloud_hidden_player_button',
-        activebutton: 'mod_readaloud_hidden_player_button_active',
-        activebuttonpaused: 'mod_readaloud_hidden_player_button_paused',
-        activebuttonplaying: 'mod_readaloud_hidden_player_button_playing',
+        hiddenplayer: def.hiddenplayer,
+        hiddenplayerbutton: def.hiddenplayerbutton,
+        hiddenplayerbuttonactive: def.hiddenplayerbuttonactive,
+        hiddenplayerbuttonpaused: def.hiddenplayerbuttonpaused,
+        hiddenplayerbuttonplaying: def.hiddenplayerbuttonpaused,
 
         init: function (opts) {
-            this.hiddenplayer = opts['hiddenplayerclass'];
-            this.hiddenplayerbutton = opts['hiddenplayerbuttonclass'];
             this.register_controls();
             this.register_events();
         },
@@ -41,7 +39,7 @@ define(['jquery','core/log'], function($,log) {
 
 
         dohiddenplay: function (audiosrc) {
-            var m = this;//M.mod_readaloud.gradinghelper;
+            var m = this;
             var audioplayer = m.controls.hiddenplayer;
             audioplayer.attr('src', audiosrc);
             audioplayer[0].pause();
@@ -57,14 +55,14 @@ define(['jquery','core/log'], function($,log) {
             m.dobuttonicons();
         },
         dohiddenstop: function () {
-            var m = this;// M.mod_readaloud.gradinghelper;
+            var m = this;
             var audioplayer =  m.controls.hiddenplayer;
             audioplayer[0].pause();
             m.dobuttonicons();
         },
 
         dobuttonicons: function (theaudiosrc) {
-            var m = this;//M.mod_readaloud.gradinghelper;
+            var m = this;
             var audioplayer = m.controls.hiddenplayer;
             if (!theaudiosrc) {
                 theaudiosrc = audioplayer.attr('src');
@@ -74,19 +72,19 @@ define(['jquery','core/log'], function($,log) {
                 if (audiosrc == theaudiosrc) {
                     $(this).addClass(m.activebutton);
                     if (audioplayer.prop('paused')) {
-                        $(this).removeClass(m.activebuttonplaying);
-                        $(this).addClass(m.activebuttonpaused);
+                        $(this).removeClass(m.hiddenplayerbuttonplaying);
+                        $(this).addClass(m.hiddenplayerbuttonpaused);
                         //for now we make it look like no button is selected
                         //later we can implement better controls
-                        $(this).removeClass(m.activebutton);
+                        $(this).removeClass(m.hiddenplayerbuttonactive);
                     } else {
-                        $(this).removeClass(m.activebuttonpaused);
-                        $(this).addClass(m.activebuttonplaying);
+                        $(this).removeClass(m.hiddenplayerbuttonpaused);
+                        $(this).addClass(m.hiddenplayerbuttonplaying);
                     }
                 } else {
-                    $(this).removeClass(m.activebutton);
-                    $(this).removeClass(m.activebuttonplaying);
-                    $(this).removeClass(m.activebuttonpaused);
+                    $(this).removeClass(m.hiddenplayerbuttonactive);
+                    $(this).removeClass(m.hiddenplayerbuttonplaying);
+                    $(this).removeClass(m.hiddenplayerbuttonpaused);
                 }
             });
         }

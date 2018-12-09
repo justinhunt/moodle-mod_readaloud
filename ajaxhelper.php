@@ -51,6 +51,7 @@ $PAGE->set_context($modulecontext);
 
 //make database items and adhoc tasks
 $success = false;
+$message='';
 $attemptid = save_to_moodle($filename, $readaloud);
 if($attemptid){
     if(\mod_readaloud\utils::can_transcribe($readaloud)) {

@@ -115,35 +115,11 @@ class mod_readaloud_mod_form extends moodleform_mod {
 		$mform->addElement('advcheckbox', 'allowearlyexit', get_string('allowearlyexit', constants::M_COMPONENT), get_string('allowearlyexit_details', constants::M_COMPONENT));
 		$mform->setDefault('allowearlyexit',$config->allowearlyexit);
 
-        // Error estimate method field ... weremoved this to simplify things ... can bring back as feature later
-        /*
-        $autoacc_options = \mod_readaloud\utils::get_autoaccmethod_options();
-        $mform->addElement('select', 'accadjustmethod', get_string('accadjustmethod', constants::M_COMPONENT),
-            $autoacc_options);
-        $mform->setType('accadjustmethod', PARAM_INT);
-        $mform->setDefault('accadjustmethod',$config->accadjustmethod);
-        $mform->addHelpButton('accadjustmethod', 'accadjustmethod', constants::M_COMPONENT);
-        */
-        $mform->addElement('hidden', 'accadjustmethod',constants::ACCMETHOD_NONE);
-        $mform->setType('accadjustmethod', PARAM_INT);
-
-        // Fixed Error estimate field  ... we removed this to simplify things ... can bring back as feature later
-        /*
-        $mform->addElement('text', 'accadjust', get_string('accadjust', constants::M_COMPONENT), array('size'=>'8'));
-        $mform->setType('accadjust', PARAM_INT);
-        $mform->setDefault('accadjust',$config->accadjust);
-        $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
-        $mform->addHelpButton('accadjust', 'accadjust', constants::M_COMPONENT);
-        */
-        $mform->addElement('hidden', 'accadjust',0);
-        $mform->setType('accadjust', PARAM_INT);
-
 
 		//Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::M_COMPONENT),
                             1 => '1',2 => '2',3 => '3',4 => '4',5 => '5',);
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', constants::M_COMPONENT), $attemptoptions);
-
 
 
 		
@@ -183,6 +159,24 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $expiredaysoptions = \mod_readaloud\utils::get_expiredays_options();
         $mform->addElement('select', 'expiredays', get_string('expiredays', constants::M_COMPONENT), $expiredaysoptions);
         $mform->setDefault('expiredays',$config->expiredays);
+
+        $mform->addElement('static', 'accadjustdetails', get_string('accadjustmethod', constants::M_COMPONENT),
+            get_string('accadjustmethod_details', constants::M_COMPONENT));
+
+        // Error estimate method field
+        $autoacc_options = \mod_readaloud\utils::get_accadjust_options();
+        $mform->addElement('select', 'accadjustmethod', get_string('accadjustmethod', constants::M_COMPONENT),
+            $autoacc_options);
+        $mform->setType('accadjustmethod', PARAM_INT);
+        $mform->setDefault('accadjustmethod',$config->accadjustmethod);
+        $mform->addHelpButton('accadjustmethod', 'accadjustmethod', constants::M_COMPONENT);
+
+        // Fixed Error estimate field
+        $mform->addElement('text', 'accadjust', get_string('accadjust', constants::M_COMPONENT), array('size'=>'8'));
+        $mform->setType('accadjust', PARAM_INT);
+        $mform->setDefault('accadjust',$config->accadjust);
+        $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
+        $mform->addHelpButton('accadjust', 'accadjust', constants::M_COMPONENT);
 
 
         // Post attempt

@@ -210,7 +210,7 @@ class machinegrading extends basereport
                 $adjusted_scores = \mod_readaloud\utils::processscores($thedata->sessiontime,
                     $thedata->sessionendword,
                     $newerrorcount,
-                    $formdata->targetwpm);
+                    $formdata->moduleinstance);
                 $thedata->adjustwpm = $adjusted_scores->wpmscore;
                 $thedata->adjustaccuracy = $adjusted_scores->accuracyscore;
                 $thedata->adjustsessionscore = $adjusted_scores->sessionscore;

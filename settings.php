@@ -53,18 +53,17 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enableai',
         get_string('enableai', constants::M_COMPONENT), get_string('enableai_details',constants::M_COMPONENT), 1));
-/*
- * //we removed this to simplify things, can bring back as feature later
-    $autoacc_options = \mod_readaloud\utils::get_autoaccmethod_options();
+
+    //we removed this to simplify things, can bring back as feature later
+    $accadjust_options = \mod_readaloud\utils::get_accadjust_options();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/accadjustmethod',
         get_string('accadjustmethod', constants::M_COMPONENT),
         get_string('accadjustmethod_details',constants::M_COMPONENT),
-        constants::ACCMETHOD_NONE, $autoacc_options));
-
+        constants::ACCMETHOD_NONE, $accadjust_options));
 
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/accadjust',
         get_string('accadjust', constants::M_COMPONENT), get_string('accadjust_details', constants::M_COMPONENT), 0, PARAM_INT));
-*/
+
     $regions = \mod_readaloud\utils::get_region_options();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/awsregion', get_string('awsregion', constants::M_COMPONENT), '', 'useast1', $regions));
 

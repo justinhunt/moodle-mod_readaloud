@@ -272,6 +272,7 @@ switch ($action){
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
         $formdata->modulecontextid = $modulecontext->id;
+        $formddata->moduleinstance = $moduleinstance;
         switch($moduleinstance->accadjustmethod){
             case constants::ACCMETHOD_NONE:
                 $accadjust=0;
@@ -281,6 +282,10 @@ switch ($action){
                 break;
             case constants::ACCMETHOD_FIXED:
                 $accadjust = $moduleinstance->accadjust;
+                break;
+            case constants::ACCMETHOD_NOERRORS:
+                $accadjust=9999;
+                break;
         }
         $formdata->accadjust=$accadjust;
         $formdata->targetwpm=$moduleinstance->targetwpm;
@@ -309,14 +314,9 @@ switch ($action){
 //so we need our audio player loaded
 //here we set up any info we need to pass into javascript
 $aph_opts =Array();
-$aph_opts['hiddenplayerclass'] = constants::M_HIDDEN_PLAYER;
-$aph_opts['hiddenplayerbuttonclass'] = constants::M_HIDDEN_PLAYER_BUTTON;
-$aph_opts['hiddenplayerbuttonactiveclass'] =constants::M_HIDDEN_PLAYER_BUTTON_ACTIVE;
-$aph_opts['hiddenplayerbuttonplayingclass'] =constants::M_HIDDEN_PLAYER_BUTTON_PLAYING;
-$aph_opts['hiddenplayerbuttonpausedclass'] =constants::M_HIDDEN_PLAYER_BUTTON_PAUSED;
 
 //this inits the js for the audio players on the list of submissions
-$PAGE->requires->js_call_amd("mod_readaloud/gradinghelper", 'init', array($aph_opts));
+$PAGE->requires->js_call_amd("mod_readaloud/hiddenplayerhelper", 'init', array($aph_opts));
 
 
 /*
