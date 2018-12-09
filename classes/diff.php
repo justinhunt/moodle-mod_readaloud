@@ -250,10 +250,10 @@ public static function fetchAlternativesArray($thealternates)
     public static function cmp($a, $b)
     {
         if ($a->length == $b->length) {
-            if($a->tposition == $b->tposition){
+            if($a->pposition == $b->pposition){
                 return 0;
             }else{
-                return ($a->tposition< $b->tposition) ? 1 : -1;
+                return ($a->pposition< $b->pposition) ? 1 : -1;
             }
         }
         return ($a->length < $b->length) ? 1 : -1;
