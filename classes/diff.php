@@ -64,7 +64,7 @@ class diff{
 
         //remove punctuation
         //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
-        $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
+        $thetext = preg_replace("[[:punct:]]", "", $thetext);
 
         return $thetext;
     }
@@ -250,10 +250,10 @@ public static function fetchAlternativesArray($thealternates)
     public static function cmp($a, $b)
     {
         if ($a->length == $b->length) {
-            if($a->pposition == $b->pposition){
+            if($a->tposition == $b->tposition){
                 return 0;
             }else{
-                return ($a->pposition< $b->pposition) ? 1 : -1;
+                return ($a->tposition< $b->tposition) ? 1 : -1;
             }
         }
         return ($a->length < $b->length) ? 1 : -1;
