@@ -482,14 +482,14 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             var pad = 0.5;
             var duration = theplayer.duration;
             //determine starttime
-            var endtime = playchain.audioend + pad;
-            if(!isNaN(duration) && duration > (playchain.audioend + pad)){
-                endtime = playchain.audioend + pad;
+            var endtime = parseFloat(playchain.audioend);
+            if(!isNaN(duration) && duration > (endtime + pad)){
+                endtime = endtime + pad;
             }
             //determine endtime
-            var starttime = playchain.audiostart;
-            if((playchain.audiostart -pad) > 0){
-                starttime - playchain.audiostart -pad;
+            var starttime = parseFloat(playchain.audiostart);
+            if((starttime -pad) > 0){
+                starttime = starttime -pad;
             }
 
           theplayer.currentTime=starttime;
