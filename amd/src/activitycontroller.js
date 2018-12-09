@@ -127,6 +127,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/definitions','mod_readalo
            var on_audio_processing= function(eventdata){
                 //at this point we know the submission has been uploaded and we know the fileURL
                //so we send the submission
+               var now = new Date().getTime();
                var rectime = now - dd.rec_time_start;
                if(rectime > 0){
                    rectime = Math.ceil(rectime/1000);
