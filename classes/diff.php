@@ -156,7 +156,7 @@ public static function fetchAlternativesArray($thealternates)
                 $transcriptword =$transcript[$t_slength + $tstart];
                 $match = $passageword == $transcriptword;
                 $t_matchlength=1;
-
+                
                 //if no direct match is there an alternates match
                 if(!$match && $alternatives){
                     $matchlength = self::check_alternatives_for_match($passageword,
@@ -177,8 +177,24 @@ public static function fetchAlternativesArray($thealternates)
                     //continue building sequence
                     $p_slength++;
                     $t_slength+= $t_matchlength;
+                    
+                    //We add a provisional match here
+                    //this is necessary for an unusual case where two sequences overlap
+                    //at the end of one and the beginning of the other.
+                    //without a provisional match, the shorter will not pass fetchDiffs
+                    //and the unoverlapped part will be marked unmatched
+                    //this occurs with a combination of wildcards and extraneous words in transcript
+                    //eg transcript: home is where the heart resides oligarchy it stomach said ...
+                    //passage: home is where the heart resides Aragaki Tsutomu said ...
+                    //wildcards on Aragaki and Tsutomu caused this overlap problem
+                    $sequence = new \stdClass();
+					 $sequence->length = $p_slength;
+					 $sequence->tlength = $t_slength;
+					 $sequence->tposition = $tstart;
+					 $sequence->pposition = $pstart;
+					 $sequences[] = $sequence;
 
-                    //else: no match or end of transcript/passage,
+                //else: no match or end of transcript/passage,
                 } else {
                     //if we have a match here, then its the last word of passage or transcript...
                     //we build our sequence object, store it in $sequences, and return
@@ -190,7 +206,7 @@ public static function fetchAlternativesArray($thealternates)
                          $sequence->tlength = $t_slength;
                          $sequence->tposition = $tstart;
                          $sequence->pposition = $pstart;
-                         $sequences[] = $sequence;
+                         $sequences[] = $sequence;                            
                          //we bump tstart, which will end this loop
                          $tstart+= $t_slength;
 
@@ -207,7 +223,7 @@ public static function fetchAlternativesArray($thealternates)
                         $sequence->tlength = $t_slength;
                         $sequence->tposition = $tstart;
                         $sequence->pposition = $pstart;
-                        $sequences[] = $sequence;
+                        $sequences[] = $sequence;                        
 
                         //re init transcript loop variables for the next pass
                         $tstart+= $t_slength;
@@ -223,6 +239,20 @@ public static function fetchAlternativesArray($thealternates)
         }//end of "FOR each passage word"
         return $sequences;
     }//end of fetchSequences
+    
+    public static function debug_print_sequence($sequence,$passage,$transcript,$tag){
+    	echo 'THE SEQUENCE: ' . $tag;
+    	echo '<br>';
+		print_r($sequence);
+		$printpassage = 'PASSAGE' .  '<br>';
+		$printtranscript = '<br>TRANSCRIPT' .  '<br>';
+		for($word=0;$word<$sequence->length;$word++){
+			$printpassage  .= ($word . ':' . $passage[$word + $sequence->pposition] . ' ');
+			$printtranscript .= ($word . ':' . $transcript[$word + $sequence->tposition] . ' ');
+		}   
+		echo $printpassage;
+		echo $printtranscript;  
+    }
 
     /*
      * This will run through the list of alternatives for a given passageword, and if any match the transcript,
@@ -235,7 +265,6 @@ public static function fetchAlternativesArray($thealternates)
 
             //loop through all alternatives
             //and then through each alternative->wordset
-
             foreach($alternatives as $alternateset){
                 if($alternateset[0]==$passageword){
                     for($setindex =1;$setindex<count($alternateset);$setindex++) {
@@ -259,7 +288,7 @@ public static function fetchAlternativesArray($thealternates)
     {
         if ($a->length == $b->length) {
             if($a->tposition == $b->tposition){
-                return 0;
+            	return 0;
             }else{
                 return ($a->tposition< $b->tposition) ? -1 : 1;
             }
@@ -289,14 +318,21 @@ public static function fetchAlternativesArray($thealternates)
 
         //record prior sequences for iii)
         $priorsequences=array();
-
+		$sequenceindex=0;
         //iii) loop through sequences
         foreach($sequences as $sequence){
             $bust=false;
+			$sequenceindex++;
+			
             //iii) a) check passage position not already matched
+            //test with these sequences which should both match and not overlap
+            //A seq pposition=63 length=18
+            //B seq pposition=81 length=42
+            //remember that pposition is 0 based and so pposition=0 and length 1, is char 1 only
             for($p=$sequence->pposition; $p < $sequence->pposition + $sequence->length; $p++){
                 if($diffs[$p][0] !=self::UNMATCHED){
                     $bust=true;
+                    break;
                 }
             }
             if(!$bust){
@@ -304,7 +340,7 @@ public static function fetchAlternativesArray($thealternates)
                     //iii) b) check transcript match was not matched elsewhere in passage
                     if($sequence->tposition >= $priorsequence->tposition &&
                         $sequence->tposition  <= $priorsequence->tposition + $priorsequence->length){
-                        $bust=true;
+                        $bust=true;                     
                         break;
                     }
                     //iii) c) check passsage match and transcript match positions are consistent with prev. sequences
@@ -326,15 +362,15 @@ public static function fetchAlternativesArray($thealternates)
             //i) matched and
             //ii) record transcript position so we can play it back.
             //Then store sequence in prior sequences
-            for($p=$sequence->pposition; $p < $sequence->pposition + $sequence->length; $p++){
+            for($p=$sequence->pposition; $p < $sequence->pposition + $sequence->length; $p++){         
                 //word position in sequence ( 0 = first )
                 $wordposition = $p - $sequence->pposition;
                 //NB pposition starts from 1. We adjust tposition to match
                 $tposition = $sequence->tposition + $wordposition + 1;
                 $diffs[$p]=[self::MATCHED,$tposition];
-                $priorsequences[] = $sequence;
             }
-        }
+            $priorsequences[] = $sequence;
+        }        
         return $diffs;
     }
 }
