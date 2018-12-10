@@ -251,8 +251,8 @@ public static function fetchAlternativesArray($thealternates)
         echo 'THE SEQUENCE: ' . $tag;
     	echo '<br>';
 		print_r($sequence);
-		$printpassage = 'PASSAGE' .  '<br>';
-		$printtranscript = '<br>TRANSCRIPT' .  '<br>';
+		$printpassage = '<br>PASSAGE: ';
+		$printtranscript = '<br>TRANSCRIPT: ';
 		for($word=0;$word<$sequence->length;$word++){
 			$printpassage  .= ($word . ':' . $passage[$word + $sequence->pposition] . ' ');
 			$printtranscript .= ($word . ':' . $transcript[$word + $sequence->tposition] . ' ');
