@@ -237,11 +237,18 @@ public static function fetchAlternativesArray($thealternates)
             $tstart=0;
             $altmatchcount = 0;
         }//end of "FOR each passage word"
+/*
+        foreach($sequences as $sequence){
+           self::debug_print_sequence($sequence,$passage,$transcript,'');
+        }
+*/
+
         return $sequences;
     }//end of fetchSequences
     
     public static function debug_print_sequence($sequence,$passage,$transcript,$tag){
-    	echo 'THE SEQUENCE: ' . $tag;
+        echo '<br>';
+        echo 'THE SEQUENCE: ' . $tag;
     	echo '<br>';
 		print_r($sequence);
 		$printpassage = 'PASSAGE' .  '<br>';
@@ -339,7 +346,7 @@ public static function fetchAlternativesArray($thealternates)
                 foreach($priorsequences as $priorsequence){
                     //iii) b) check transcript match was not matched elsewhere in passage
                     if($sequence->tposition >= $priorsequence->tposition &&
-                        $sequence->tposition  <= $priorsequence->tposition + $priorsequence->length){
+                        $sequence->tposition < $priorsequence->tposition + $priorsequence->length){
                         $bust=true;                     
                         break;
                     }
@@ -370,7 +377,15 @@ public static function fetchAlternativesArray($thealternates)
                 $diffs[$p]=[self::MATCHED,$tposition];
             }
             $priorsequences[] = $sequence;
-        }        
+        }
+/*
+        foreach($priorsequences as $sequence){
+            echo '<br>';
+            echo 'PRIOR SEQUENCE: ';
+            print_r($sequence);
+            echo '<br>';
+        }
+*/
         return $diffs;
     }
 }
