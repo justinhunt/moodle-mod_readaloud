@@ -10,6 +10,7 @@ namespace mod_readaloud;
 
 use \mod_readaloud\constants;
 
+
 defined('MOODLE_INTERNAL') || die();
 
 class aigrade
@@ -84,6 +85,8 @@ class aigrade
 
     //we leave it up to the grading logic how/if it adds the ai grades to gradebook
     public function send_to_gradebook(){
+        global $CFG;
+        require_once($CFG->dirroot.'/mod/readaloud/lib.php');
         readaloud_update_grades($this->activitydata, $this->attemptdata->userid);
     }
 
