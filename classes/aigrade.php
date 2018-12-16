@@ -108,7 +108,7 @@ class aigrade
         $data->attemptid=$attemptdata->id;
         $data->courseid=$attemptdata->courseid;
         $data->readaloudid=$attemptdata->readaloudid;
-        $data->sessiontime=$attemptdata->sessiontime ? $attemptdata->sessiontime:$timelimit;
+        $data->sessiontime=isset($attemptdata->sessiontime) ? $attemptdata->sessiontime:$timelimit;
         $data->transcript='';
         $data->sessionerrors='';
         $data->errorcount=0;

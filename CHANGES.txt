@@ -1,3 +1,6 @@
+Version 2.0.5 (Build 2018121400)
+-fixed a bug that could break AI grading
+
 Version 2.0.4 (Build 2018120900)
 - changed lang string key "NG" to "notok" and English to "Not OK"
 - renamed audiohelper.js to recorderhelper.js
