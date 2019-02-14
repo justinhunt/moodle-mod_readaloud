@@ -97,9 +97,10 @@ class gradenow_renderer extends \plugin_renderer_base {
         $h_transcript = $this->output->heading('transcript',5);
         $h_sequences = $this->output->heading('sequences',5);
         $h_fulltranscript = $this->output->heading('full transcript',5);
-        $ret = \html_writer::div($h_transcript .$div_transcript .
-            $h_sequences . $div_sequences .
-            $h_fulltranscript . $div_fulltranscript,constants::M_CLASS . '_grading_debuginfo');
+        $ret = \html_writer::div($h_transcript .$div_transcript
+            . $h_sequences . $div_sequences
+        //. $h_fulltranscript . $div_fulltranscript,constants::M_CLASS . '_grading_debuginfo'
+        );
         return $ret;
     }
 

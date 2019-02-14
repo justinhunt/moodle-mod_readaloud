@@ -163,11 +163,11 @@ class aigrade
        $passagecount = count($passagebits);
        $sequences = diff::fetchSequences($passagebits,$transcriptbits,$alternatives);
 
-       $debughtml="";
+       $debugsequences=array();
        if($debug) {
            $diff_info = diff::fetchDiffs($sequences, $passagecount,$debug);
            $diffs=$diff_info[0];
-           $debughtml=$diff_info[1];
+           $debugsequences=$diff_info[1];
        }else{
            $diffs = diff::fetchDiffs($sequences, $passagecount);
        }
@@ -275,7 +275,7 @@ class aigrade
 
        //if debugging we return some data
        if($debug){
-           return $debughtml;
+           return $debugsequences;
        }
     }
 
