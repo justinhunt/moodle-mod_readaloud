@@ -74,11 +74,32 @@ class gradenow_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function render_debuginfo($debuginfo,$transcript,$fulltranscript){
+    public function render_debuginfo($debugsequences,$transcript,$fulltranscript){
         $div_fulltranscript = \html_writer::div('<pre>' . print_r(json_decode($fulltranscript),true) . '</pre>',constants::M_CLASS . '_grading_debugfulltranscript');
-        $div_transcript = \html_writer::div($transcript,constants::M_CLASS . '_grading_debugtranscript');
-        $div_sequences = \html_writer::div($debuginfo,constants::M_CLASS . '_grading_debugsequences');
-        $ret = \html_writer::div($div_transcript. $div_sequences .  $div_fulltranscript,constants::M_CLASS . '_grading_debuginfo');
+        //sequences
+        $debug_sequences = '';
+        foreach($debugsequences as $sequence){
+            $debug_sequences  .=\html_writer::tag( 'span','<pre>' . print_r($sequence,true) . '</pre>',array('class'=>constants::M_CLASS . '_debugsequence'));
+        }
+        $div_sequences = \html_writer::div($debug_sequences ,constants::M_CLASS . '_grading_debugsequences');
+
+        //transcript words
+        $t_words = explode(' ',$transcript);
+        $t_usewords =[];
+        $t_count=0;
+        foreach($t_words as $t_word){
+            $t_count++;
+            $t_usewords[] = \html_writer::tag('span',$t_word,array('class'=>constants::M_CLASS . '_debug_transcriptword','data-wordnumber'=>$t_count));
+        }
+        $div_transcript = \html_writer::div(implode(' ',$t_usewords),constants::M_CLASS . '_grading_debugtranscript');
+
+
+        $h_transcript = $this->output->heading('transcript',5);
+        $h_sequences = $this->output->heading('sequences',5);
+        $h_fulltranscript = $this->output->heading('full transcript',5);
+        $ret = \html_writer::div($h_transcript .$div_transcript .
+            $h_sequences . $div_sequences .
+            $h_fulltranscript . $div_fulltranscript,constants::M_CLASS . '_grading_debuginfo');
         return $ret;
     }
 

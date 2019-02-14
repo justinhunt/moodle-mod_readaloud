@@ -381,14 +381,7 @@ public static function fetchAlternativesArray($thealternates)
 
     //we are debugging return an arry with some data we can look at
      if($debug){
-            $debughtml = '';
-            foreach($priorsequences as $sequence){
-                $debughtml .= '<br>';
-                $debughtml .= 'PRIOR SEQUENCE: ';
-                $debughtml .= '<pre>' . print_r($sequence,true) . '</pre>';
-                $debughtml .= '<br>';
-            }
-        return [$diffs,$debughtml];
+        return [$diffs,$priorsequences];
     }else{
         return $diffs;
     }
