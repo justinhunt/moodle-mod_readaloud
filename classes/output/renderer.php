@@ -280,7 +280,7 @@ class renderer extends \plugin_renderer_base {
     /**
      * The html part of the recorder (js is in the fetch_activity_amd)
      */
-    public function show_recorder($moduleinstance, $token){
+    public function show_recorder($moduleinstance, $token,$debug=false){
         global $CFG;
 
         //recorder
@@ -298,9 +298,9 @@ class renderer extends \plugin_renderer_base {
                 'data-localloader'=>'/mod/readaloud/poodllloader.html',
                 'data-media'=>"audio",
                 'data-appid'=>constants::M_COMPONENT,
-                'data-type'=>"readaloud",
-                'data-width'=>"360",
-                'data-height'=>"210",
+                'data-type'=> $debug ? "upload" : "readaloud",
+                'data-width'=> $debug ? "500":"360",
+                'data-height'=>$debug ? "500":"210",
                 //'data-iframeclass'=>"letsberesponsive",
                 'data-updatecontrol'=>constants::M_UPDATE_CONTROL,
                 'data-timelimit'=> $moduleinstance->timelimit,

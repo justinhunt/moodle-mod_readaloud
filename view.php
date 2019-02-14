@@ -36,6 +36,7 @@ use \mod_readaloud\constants;
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $retake = optional_param('retake', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // readaloud instance ID - it should be named as the first character of the module
+$debug  = optional_param('debug', 0, PARAM_INT);
 
 if ($id) {
     $cm         = get_coursemodule_from_id('readaloud', $id, 0, false, MUST_EXIST);
@@ -98,6 +99,11 @@ if(!$canpreview && $moduleinstance->maxattempts > 0){
 	if($attempts && count($attempts)>=$moduleinstance->maxattempts){
 		$canattempt=false;
 	}
+}
+
+//debug mode is for teachers only
+if(!$canpreview){
+    $debug=false;
 }
 
 //reset our retake flag if we cant reatempt
@@ -201,7 +207,7 @@ echo $renderer->show_welcome($moduleinstance->welcome,$moduleinstance->name);
 echo $renderer->show_feedback($moduleinstance,$moduleinstance->name);
 echo $renderer->show_error($moduleinstance,$cm);
 echo $renderer->show_passage($moduleinstance,$cm);
-echo $renderer->show_recorder($moduleinstance,$token);
+echo $renderer->show_recorder($moduleinstance,$token,$debug);
 echo $renderer->show_progress($moduleinstance,$cm);
 echo $renderer->show_wheretonext($moduleinstance);
 

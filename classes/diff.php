@@ -143,7 +143,6 @@ public static function fetchAlternativesArray($thealternates)
         $p_slength=0; //sequence length (in the passage)
         $tstart =0; //transcript sequence match search start index
 
-
         //loop through passage word by word
         for($pstart =0; $pstart < $p_length; $pstart++){
             //loop through transcript finding matches starting from current passage word
@@ -151,6 +150,7 @@ public static function fetchAlternativesArray($thealternates)
             while($t_slength + $tstart < $t_length &&
                 $p_slength + $pstart < $p_length
             ) {
+
                 //check for a direct match
                 $passageword= $passage[$p_slength + $pstart];
                 $transcriptword =$transcript[$t_slength + $tstart];
@@ -194,6 +194,7 @@ public static function fetchAlternativesArray($thealternates)
 					 $sequence->pposition = $pstart;
 					 $sequences[] = $sequence;
 
+
                 //else: no match or end of transcript/passage,
                 } else {
                     //if we have a match here, then its the last word of passage or transcript...
@@ -209,6 +210,10 @@ public static function fetchAlternativesArray($thealternates)
                          $sequences[] = $sequence;                            
                          //we bump tstart, which will end this loop
                          $tstart+= $t_slength;
+
+                         // and we reset our sequence lengths because the outer loop may yet continue
+                         $p_slength = 0;
+                         $t_slength = 0;
 
 
                          //if we never even had a sequence we just move to next word in transcript

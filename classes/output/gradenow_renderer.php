@@ -48,7 +48,7 @@ class gradenow_renderer extends \plugin_renderer_base {
         $ret .= $actionheader;
         if($debug) {
             $passage=$this->render_passage($gradenow->attemptdetails('passage'));
-            $ret .= \html_writer::tag('span',$passage,array('class'=>'mod_readaloud_debug'));
+            $ret .= \html_writer::tag('span',$passage,array('class'=>constants::M_CLASS .'_debug'));
         }else{
             $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
         }
