@@ -141,7 +141,9 @@ public static function fetchAlternativesArray($thealternates)
         $sequences = array();
         $t_slength=0; //sequence length (in the transcript)
         $p_slength=0; //sequence length (in the passage)
+        $alt_count=0; //we count alternate matches in sequence
         $tstart =0; //transcript sequence match search start index
+
 
         //loop through passage word by word
         for($pstart =0; $pstart < $p_length; $pstart++){
@@ -150,13 +152,12 @@ public static function fetchAlternativesArray($thealternates)
             while($t_slength + $tstart < $t_length &&
                 $p_slength + $pstart < $p_length
             ) {
-
                 //check for a direct match
                 $passageword= $passage[$p_slength + $pstart];
                 $transcriptword =$transcript[$t_slength + $tstart];
                 $match = $passageword == $transcriptword;
                 $t_matchlength=1;
-                
+
                 //if no direct match is there an alternates match
                 if(!$match && $alternatives){
                     $matchlength = self::check_alternatives_for_match($passageword,
@@ -165,7 +166,7 @@ public static function fetchAlternativesArray($thealternates)
                     if($matchlength){
                         $match= true;
                         $t_matchlength = $matchlength;
-
+                        $alt_count+=$matchlength;
                     }
                 }//end of if no direct match
 
@@ -177,7 +178,7 @@ public static function fetchAlternativesArray($thealternates)
                     //continue building sequence
                     $p_slength++;
                     $t_slength+= $t_matchlength;
-                    
+
                     //We add a provisional match here
                     //this is necessary for an unusual case where two sequences overlap
                     //at the end of one and the beginning of the other.
@@ -188,65 +189,63 @@ public static function fetchAlternativesArray($thealternates)
                     //passage: home is where the heart resides Aragaki Tsutomu said ...
                     //wildcards on Aragaki and Tsutomu caused this overlap problem
                     $sequence = new \stdClass();
-					 $sequence->length = $p_slength;
-					 $sequence->tlength = $t_slength;
-					 $sequence->tposition = $tstart;
-					 $sequence->pposition = $pstart;
-					 $sequences[] = $sequence;
+                    $sequence->length = $p_slength;
+                    $sequence->tlength = $t_slength;
+                    $sequence->tposition = $tstart;
+                    $sequence->pposition = $pstart;
+                    $sequence->altcount = $alt_count;
+                    $sequences[] = $sequence;
 
-
-                //else: no match or end of transcript/passage,
+                    //else: no match or end of transcript/passage,
                 } else {
                     //if we have a match here, then its the last word of passage or transcript...
                     //we build our sequence object, store it in $sequences, and return
-                     if($match){
-                         $p_slength++;
-                         $t_slength+= $t_matchlength;
-                         $sequence = new \stdClass();
-                         $sequence->length = $p_slength;
-                         $sequence->tlength = $t_slength;
-                         $sequence->tposition = $tstart;
-                         $sequence->pposition = $pstart;
-                         $sequences[] = $sequence;                            
-                         //we bump tstart, which will end this loop
-                         $tstart+= $t_slength;
+                    if($match){
+                        $p_slength++;
+                        $t_slength+= $t_matchlength;
+                        $sequence = new \stdClass();
+                        $sequence->length = $p_slength;
+                        $sequence->tlength = $t_slength;
+                        $sequence->tposition = $tstart;
+                        $sequence->pposition = $pstart;
+                        $sequence->altcount = $alt_count;
+                        $sequences[] = $sequence;
 
-                         // and we reset our sequence lengths because the outer loop may yet continue
-                         $p_slength = 0;
-                         $t_slength = 0;
+                        //we bump tstart, which will end this loop
+                        //and we reset our sequence lengths because the outer loop may yet continue
+                        $tstart+= $t_slength;
+                        $p_slength = 0;
+                        $t_slength = 0;
+                        $alt_count =0;
 
-
-                         //if we never even had a sequence we just move to next word in transcript
+                        //if we never even had a sequence we just move to next word in transcript
                     }elseif ($p_slength == 0) {
                         $tstart++;
 
-                    //if we had a sequence but this is not a match, we build the sequence object, store it in $sequences,
-                     //step transcript index and look for next sequence
+                        //if we had a sequence but this is not a match, we build the sequence object, store it in $sequences,
+                        //step transcript index and look for next sequence
                     } else {
                         $sequence = new \stdClass();
                         $sequence->length = $p_slength;
                         $sequence->tlength = $t_slength;
                         $sequence->tposition = $tstart;
                         $sequence->pposition = $pstart;
-                        $sequences[] = $sequence;                        
+                        $sequence->altcount = $alt_count;
+                        $sequences[] = $sequence;
 
                         //re init transcript loop variables for the next pass
                         $tstart+= $t_slength;
                         $p_slength = 0;
                         $t_slength = 0;
+                        $alt_count =0;
+
                     }//end of "IF slength=0"
                 }//end of "IF match"
             }//end of "WHILE Transcript Index < t_length"
             //reset transcript loop variables for each pass of passageword loop
-            $slength=0;
             $tstart=0;
-            $altmatchcount = 0;
+
         }//end of "FOR each passage word"
-/*
-        foreach($sequences as $sequence){
-           self::debug_print_sequence($sequence,$passage,$transcript,'');
-        }
-*/
 
         return $sequences;
     }//end of fetchSequences
@@ -316,11 +315,12 @@ public static function fetchAlternativesArray($thealternates)
     //   b)- check transcript match in sequence[tpos -> tpos+length] was not already allocated to another part of passage in previous sequence
     //   c)- check passage match position and transcript position are consistent with previous sequences
     //     inconsistent example: If T position 3 was matched to P position 5, T position 4 could not match with P position 2
+    //iv) we do various adhoc checks based on common problems we find in the wild
     //
     //NB aborted supporting "multiple word alternatives" at this point. We know the sequence length in transcript
     //but we can not add a valid tposition for a pposition in the final diff array when the pposition occurs
     // after an alternate match in the same sequence. At that point gave up ... for now. Justin 2018/08
-    public static function fetchDiffs($sequences, $passagelength, $debug=false){
+    public static function fetchDiffs($sequences, $passagelength,$transcriptlength, $debug=false){
         //i) default passage positions to unmatched and transcript position -1
         $diffs=array_fill(0, $passagelength, [self::UNMATCHED,-1]);
 
@@ -368,6 +368,27 @@ public static function fetchAlternativesArray($thealternates)
                     }
                 }
             }
+
+            //we do a fuzzy check for various anomalies that can occur
+            if(!$bust){
+                //distance from passage location to transcript location
+                $matchdistance =$sequence->pposition - $sequence->tposition;
+
+                //distance between passage location and transcript length
+                $enddistance =$sequence->pposition - $transcriptlength;
+
+                //ratio of alternates to full matches
+                $altratio = $sequence->length / $sequence->altcount;
+
+                //common is short matches after speaking ends
+                //particularly dangerous are wildcards and alternates
+                if(($altratio >= 0.5) && $enddistance > 0){
+                    $bust=true;
+                }elseif($sequence->length < $enddistance){
+                    $bust=true;
+                }
+            }
+
             if($bust){continue;}
 
             //record sequence as :

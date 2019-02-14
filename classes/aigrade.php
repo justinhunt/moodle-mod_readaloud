@@ -161,15 +161,16 @@ class aigrade
        //fetch sequences of transcript/pattern matched words
        // then prepare an array of "differences"
        $passagecount = count($passagebits);
+       $transcriptcount = count($transcriptbits);
        $sequences = diff::fetchSequences($passagebits,$transcriptbits,$alternatives);
 
        $debugsequences=array();
        if($debug) {
-           $diff_info = diff::fetchDiffs($sequences, $passagecount,$debug);
+           $diff_info = diff::fetchDiffs($sequences, $passagecount,$transcriptcount,$debug);
            $diffs=$diff_info[0];
            $debugsequences=$diff_info[1];
        }else{
-           $diffs = diff::fetchDiffs($sequences, $passagecount);
+           $diffs = diff::fetchDiffs($sequences, $passagecount,$transcriptcount,$debug);
        }
 
        //from the array of differences build error data, match data, markers, scores and metrics
