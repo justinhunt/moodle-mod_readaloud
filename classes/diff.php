@@ -378,8 +378,11 @@ public static function fetchAlternativesArray($thealternates)
                 $enddistance =$sequence->pposition - $transcriptlength;
 
                 //ratio of alternates to full matches
-                $altratio = $sequence->length / $sequence->altcount;
-
+                if($sequence->altcount) {
+                    $altratio = $sequence->length / $sequence->altcount;
+                }else{
+                    $altratio=0;
+                }
                 //common is short matches after speaking ends
                 //particularly dangerous are wildcards and alternates
                 if(($altratio >= 0.5) && $enddistance > 0){
