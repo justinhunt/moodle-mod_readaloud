@@ -36,6 +36,7 @@ $action = optional_param('action', 'grading', PARAM_TEXT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // user id
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // attemptid
 $saveandnext = optional_param('submitbutton2', 'false', PARAM_TEXT); //Is this a savebutton2
+$debug  = optional_param('debug', 0, PARAM_INT);
 
 
 //paging details
@@ -175,8 +176,11 @@ switch ($action){
         //this forces the regrade using any changes in the diff algorythm, or alternatives
         //must be done before instant. $gradenow which also  aigrade object internally
         $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
-        $debug =true;
-        $debugsequences = $aigrade->do_diff($debug);
+        if($debug) {
+            $debugsequences = $aigrade->do_diff($debug);
+        }else{
+            $aigrade->do_diff();
+        }
 
         //fetch attempt and ai data
         $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
@@ -189,7 +193,9 @@ switch ($action){
         //if we can grade and manage attempts show the gradenow button
         if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
             echo $gradenowrenderer->render_machinereview_buttons($gradenow);
-            echo $gradenowrenderer->render_debuginfo($debugsequences,$aigrade->aidetails('transcript'),$aigrade->aidetails('fulltranscript'));
+            if($debug) {
+                echo $gradenowrenderer->render_debuginfo($debugsequences, $aigrade->aidetails('transcript'), $aigrade->aidetails('fulltranscript'));
+            }
         }
         echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$mode);
         echo $renderer->footer();
