@@ -16,8 +16,8 @@
 }
 
 /* debugging */
-.mod_readaloud_debug  .mod_readaloud_grading_passageword::before,
-.mod_readaloud_debug_transcriptword::before {
+.mod_readaloud_debug  .mod_readaloud_grading_passageword::after,
+.mod_readaloud_debug_transcriptword::after {
 	content: attr(data-wordnumber);
 	border: 1px solid blue;
 	font-size: 10px;
