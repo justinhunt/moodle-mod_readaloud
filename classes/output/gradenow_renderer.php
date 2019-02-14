@@ -42,11 +42,16 @@ class gradenow_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function render_machinereview($gradenow) {
+    public function render_machinereview($gradenow,$debug=false) {
         $actionheader = $this->render_attempt_scoresheader($gradenow);
         $ret = $this->render_machinegrade_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
-        $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
+        if($debug) {
+            $passage=$this->render_passage($gradenow->attemptdetails('passage'));
+            $ret .= \html_writer::tag('span',$passage,array('class'=>'mod_readaloud_debug'));
+        }else{
+            $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
+        }
         return $ret;
     }
 
@@ -66,6 +71,14 @@ class gradenow_renderer extends \plugin_renderer_base {
             array('type'=>'button','id'=>constants::M_CLASS .'_transcriptcheckbutton','class'=>constants::M_CLASS .'_transcriptcheckbutton btn btn-warning'));
 
         $ret = \html_writer::div($gradenowbutton . $spotcheckbutton . $transcriptcheckbutton,constants::M_CLASS . '_grading_passageactions');
+        return $ret;
+    }
+
+    public function render_debuginfo($debuginfo,$transcript,$fulltranscript){
+        $div_fulltranscript = \html_writer::div('<pre>' . print_r(json_decode($fulltranscript),true) . '</pre>',constants::M_CLASS . '_grading_debugfulltranscript');
+        $div_transcript = \html_writer::div($transcript,constants::M_CLASS . '_grading_debugtranscript');
+        $div_sequences = \html_writer::div($debuginfo,constants::M_CLASS . '_grading_debugsequences');
+        $ret = \html_writer::div($div_transcript. $div_sequences .  $div_fulltranscript,constants::M_CLASS . '_grading_debuginfo');
         return $ret;
     }
 

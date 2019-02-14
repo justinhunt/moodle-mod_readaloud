@@ -15,6 +15,14 @@
 	float: right;
 }
 
+.mod_readaloud_debug  .mod_readaloud_grading_passageword::before {
+	content: attr(data-wordnumber);
+	border: 1px solid blue;
+	font-size: 10px;
+	border-radius: 5px;
+	padding: 1px;
+}
+
 .mod_readaloud_recording_cont {
 	display: block;
 	margin: auto;

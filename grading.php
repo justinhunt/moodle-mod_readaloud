@@ -175,7 +175,8 @@ switch ($action){
         //this forces the regrade using any changes in the diff algorythm, or alternatives
         //must be done before instant. $gradenow which also  aigrade object internally
         $aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
-        $aigrade->do_diff();
+        $debug =true;
+        $debugsequences = $aigrade->do_diff($debug);
 
         //fetch attempt and ai data
         $gradenow = new \mod_readaloud\gradenow($attemptid,$modulecontext->id);
@@ -184,10 +185,11 @@ switch ($action){
 
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
-        echo $gradenowrenderer->render_machinereview($gradenow);
+        echo $gradenowrenderer->render_machinereview($gradenow,$debug);
         //if we can grade and manage attempts show the gradenow button
         if(has_capability('mod/readaloud:manageattempts',$modulecontext )) {
             echo $gradenowrenderer->render_machinereview_buttons($gradenow);
+            echo $gradenowrenderer->render_debuginfo($debugsequences,$aigrade->aidetails('transcript'),$aigrade->aidetails('fulltranscript'));
         }
         echo $reportrenderer->show_grading_footer($moduleinstance,$cm,$mode);
         echo $renderer->footer();

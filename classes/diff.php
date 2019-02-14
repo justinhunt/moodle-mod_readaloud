@@ -315,7 +315,7 @@ public static function fetchAlternativesArray($thealternates)
     //NB aborted supporting "multiple word alternatives" at this point. We know the sequence length in transcript
     //but we can not add a valid tposition for a pposition in the final diff array when the pposition occurs
     // after an alternate match in the same sequence. At that point gave up ... for now. Justin 2018/08
-    public static function fetchDiffs($sequences, $passagelength){
+    public static function fetchDiffs($sequences, $passagelength, $debug=false){
         //i) default passage positions to unmatched and transcript position -1
         $diffs=array_fill(0, $passagelength, [self::UNMATCHED,-1]);
 
@@ -378,15 +378,22 @@ public static function fetchAlternativesArray($thealternates)
             }
             $priorsequences[] = $sequence;
         }
-/*
-        foreach($priorsequences as $sequence){
-            echo '<br>';
-            echo 'PRIOR SEQUENCE: ';
-            print_r($sequence);
-            echo '<br>';
-        }
-*/
+
+    //we are debugging return an arry with some data we can look at
+     if($debug){
+            $debughtml = '';
+            foreach($priorsequences as $sequence){
+                $debughtml .= '<br>';
+                $debughtml .= 'PRIOR SEQUENCE: ';
+                $debughtml .= '<pre>' . print_r($sequence,true) . '</pre>';
+                $debughtml .= '<br>';
+            }
+        return [$diffs,$debughtml];
+    }else{
         return $diffs;
+    }
+
+
     }
 }
 

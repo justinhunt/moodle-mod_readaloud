@@ -72,6 +72,9 @@ class aigrade
             case 'sessionmatches':
                 $ret = $this->aidata->sessionmatches;
                 break;
+
+            default:
+                $ret = $this->aidata->{$property};
         }
         return $ret;
     }
@@ -147,7 +150,7 @@ class aigrade
     }
 
     //this is the serious stuff, this is the high level function that manages the comparison of transcript and passage
-   public function do_diff(){
+   public function do_diff($debug=false){
         global $DB;
 
         //turn the passage and transcript into an array of words
@@ -159,7 +162,15 @@ class aigrade
        // then prepare an array of "differences"
        $passagecount = count($passagebits);
        $sequences = diff::fetchSequences($passagebits,$transcriptbits,$alternatives);
-       $diffs = diff::fetchDiffs($sequences,$passagecount);
+
+       $debughtml="";
+       if($debug) {
+           $diff_info = diff::fetchDiffs($sequences, $passagecount,$debug);
+           $diffs=$diff_info[0];
+           $debughtml=$diff_info[1];
+       }else{
+           $diffs = diff::fetchDiffs($sequences, $passagecount);
+       }
 
        //from the array of differences build error data, match data, markers, scores and metrics
         $errors = new \stdClass();
@@ -261,6 +272,11 @@ class aigrade
        $this->aidata->accuracy = $scores->accuracyscore;
        $this->aidata->sessionscore = $scores->sessionscore;
        $this->aidata->wpm = $scores->wpmscore;
+
+       //if debugging we return some data
+       if($debug){
+           return $debughtml;
+       }
     }
 
 }
