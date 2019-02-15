@@ -96,6 +96,8 @@ $string['feedbacklabel_details'] ='The default text to show in the feedback fiel
 $string['welcomelabel'] = 'Welcome Message';
 $string['feedbacklabel'] = 'Feedback Message';
 $string['alternatives']='Alternatives';
+$string['alternatives_descr']='Specify matching options for specific passage words. 1 word set per line. e.g their|there|they\'re See <a href="https://support.poodll.com/support/solutions/articles/19000096937-tuning-your-read-aloud-activity">docs</a> for more details.';
+
 $string['defaultwelcome'] = 'To begin the activity first test your microphone. When we can hear sound from your microphone a start button will appear. After you press the start button, a reading passage will appear. Read the passage aloud as clearly as you can.';
 $string['defaultfeedback'] = 'Thanks for reading. Please be patient until your attempt has been evaluated.';
 $string['timelimit'] = 'Time Limit';

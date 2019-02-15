@@ -162,7 +162,8 @@ class aigrade
        // then prepare an array of "differences"
        $passagecount = count($passagebits);
        $transcriptcount = count($transcriptbits);
-       $sequences = diff::fetchSequences($passagebits,$transcriptbits,$alternatives);
+       $language = $this->activitydata->ttslanguage;
+       $sequences = diff::fetchSequences($passagebits,$transcriptbits,$alternatives,$language);
 
        $debugsequences=array();
        if($debug) {

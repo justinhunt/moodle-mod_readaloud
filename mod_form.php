@@ -89,6 +89,8 @@ class mod_readaloud_mod_form extends moodleform_mod {
             'wrap="virtual" rows="20" cols="50"');
         $mform->setDefault('alternatives','');
         $mform->setType('alternatives',PARAM_RAW);
+        $mform->addElement('static', 'alternativesdescr', '',
+            get_string('alternatives_descr', constants::M_COMPONENT));
 
 		//welcome and feedback
 		$opts = array('rows'=>'6', 'columns'=>'80');

@@ -68,6 +68,16 @@ class diff{
         //https://stackoverflow.com/questions/5689918/php-strip-punctuation
         $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
 
+        //remove bad chars
+        $b_open="“";
+        $b_close="”";
+        $b_sopen='‘';
+        $b_sclose='’';
+        $bads= array($b_open,$b_close,$b_sopen,$b_sclose);
+        foreach($bads as $bad){
+            $thetext=str_replace($bad,'',$thetext);
+        }
+
         //remove double spaces
         //split on spaces into words
         $textbits = explode(' ',$thetext);
@@ -77,48 +87,86 @@ class diff{
         return $thetext;
     }
 
-/*
- * This function parses and replaces {{view|alternate}} strings from text passages
- * It is used to prepare for comparison
- *
- * TO DO: For this whole alternates thing ...optimize so we only parse the passage once when its saved
- *  and store the index of a word with alternates, so we do not need to loop through the alternates array on checking
- *
- */
-public static function fetchAlternativesArray($thealternates)
-{
-    //return empty if input data is useless
-    if(trim($thealternates)==''){
-        return [];
-    }
-    //regexp from https://stackoverflow.com/questions/7058168/explode-textarea-php-at-new-lines
-    $lines = preg_split('/\r\n|[\r\n]/', $thealternates);
-    $alternatives = [];
+    /*
+     * This function parses and replaces {{view|alternate}} strings from text passages
+     * It is used to prepare for comparison
+     *
+     * an alternates string like this
+     * "cat|cuts|cats is
+     * dog|doggies|dogs is"
+     *
+     * is parsed into an array where:
+     * array([words,forwardmatches],[words,forwardmatches])
+     * so in this case
+     * array([[cat,cut,cats],[cats=>is]] , [[dog,doggies,dogs],[dogs=>is]]
+     * When processing, the first item in the word array is matched to the passage word. If it matches, the subsequent items
+     * in the word array are matched to the transcript. If we have a transcript match, yay. If we have a transcript match AND
+     * it has a forward match. That will be returned so that the next pass of the match loop will accept that forward match
+     * as a match on the next passage word. This allows a passage "Dog" to be matched to "Dog's" and not flag the leftover "is" in the passage as incorrect.
+     *
+     * TO DO: For this whole alternates thing ...optimize so we only parse the passage once when its saved
+     *  and store the index of a word with alternates, so we do not need to loop through the alternates array on checking
+     *
+     */
+    public static function fetchAlternativesArray($thealternates)
+    {
+        //return empty if input data is useless
+        if(trim($thealternates)==''){
+            return [];
+        }
+        //regexp from https://stackoverflow.com/questions/7058168/explode-textarea-php-at-new-lines
+        $lines = preg_split('/\r\n|[\r\n]/', $thealternates);
+        $alternatives = [];
 
-    foreach($lines as $line){
-        if(!empty(trim($line))) {
-            $set = explode('|', $line);
-            switch(count($set)){
-                case 0:
-                case 1:
-                    continue;
-                case 2:
-                default:
-                    //clean each word in set
-                    $words= [];
-                    foreach($set as $word){
-                        $word = trim($word);
-                        if($word !='*') {
-                            $word = self::cleanText($word);
+        foreach($lines as $line){
+            if(!empty(trim($line))) {
+                $set = explode('|', $line);
+                switch(count($set)){
+                    case 0:
+                    case 1:
+                        continue;
+                    case 2:
+                    default:
+                        //clean each word in set
+                        $forwardmatches= [];
+                        $words= [];
+                        foreach($set as $wordstring){
+                            $wordstring = trim($wordstring);
+                            if($wordstring==''){continue;}
+                            $wordsarray=explode(' ',$wordstring);
+
+                            $word = $wordsarray[0];
+                            if($word !='*') {
+                                $word = self::cleanText($word);
+                            }
+                            $words[]=$word;
+
+                            if(count($wordsarray)>1 && $word !='*' && !is_number($word)){
+                                $forwardmatches[$word]=self::cleanText($wordsarray[1]);
+                            }
                         }
-                        $words[]=$word;
-                    }
-                    $alternatives[] = $words;
+                        $alternatives[] = [$words,$forwardmatches];
+                }
             }
         }
+        return $alternatives;
     }
-    return $alternatives;
-}
+
+    //Do some adhoc match judgement based on common language transcription errors by AI
+    public static function generous_match($passageword,$transcriptword,$language){
+        switch($language){
+            case constants::M_LANG_ENUS:
+            case constants::M_LANG_ENUK:
+            case constants::M_LANG_ENAU:
+                if($passageword . 's' == $transcriptword){return true;}
+                if($passageword . 'ed' == $transcriptword){return true;}
+                break;
+            default:
+                return false;
+        }
+        return false;
+    }
+
 
 
     //Loop through passage, nest looping through transcript building collections of sequences (passage match records)
@@ -134,7 +182,7 @@ public static function fetchAlternativesArray($thealternates)
     // so we could have another go at this if needed
     //
     //returns array of sequences
-    public static function fetchSequences($passage, $transcript, $alternatives)
+    public static function fetchSequences($passage, $transcript, $alternatives, $language)
     {
         $p_length = count($passage);
         $t_length = count($transcript);
@@ -143,6 +191,7 @@ public static function fetchAlternativesArray($thealternates)
         $p_slength=0; //sequence length (in the passage)
         $alt_count=0; //we count alternate matches in sequence
         $tstart =0; //transcript sequence match search start index
+        $forwardmatch=false; //if any alternates declare a forward match we keep that here
 
 
         //loop through passage word by word
@@ -152,32 +201,48 @@ public static function fetchAlternativesArray($thealternates)
             while($t_slength + $tstart < $t_length &&
                 $p_slength + $pstart < $p_length
             ) {
-                //check for a direct match
+                //get words to compare
                 $passageword= $passage[$p_slength + $pstart];
                 $transcriptword =$transcript[$t_slength + $tstart];
-                $match = $passageword == $transcriptword;
-                $t_matchlength=1;
+                $match=false;
+
+                //check for a forward match
+                if($forwardmatch){
+                    $match = $passageword == $forwardmatch;
+                    //we matched a passage word + but did not use the next transcript word, so roll back t_slength
+                    $t_slength--;
+                }
+                $forwardmatch=false;
+
+                //check for a direct match
+                if(!$match) {
+                    $match = $passageword == $transcriptword;
+                }
+                //else check for a generous match(eg for english +s and +ed we give it to them)
+                if(!$match){
+                    $match= self::generous_match($passageword,$transcriptword,$language);
+                }
 
                 //if no direct match is there an alternates match
                 if(!$match && $alternatives){
-                    $matchlength = self::check_alternatives_for_match($passageword,
+                    $altsearch_result = self::check_alternatives_for_match($passageword,
                         $transcriptword,
                         $alternatives);
-                    if($matchlength){
+                    if($altsearch_result->match){
                         $match= true;
-                        $t_matchlength = $matchlength;
-                        $alt_count+=$matchlength;
+                        $forwardmatch=$altsearch_result->match;
+                        $alt_count++;
                     }
                 }//end of if no direct match
 
                 //if we have a match and the passage and transcript each have another word, we will continue
                 //(ie to try to match the next word)
                 if ($match &&
-                    ($t_slength + $tstart + $t_matchlength) < $t_length &&
+                    ($t_slength + $tstart + 1) < $t_length &&
                     ($p_slength + $pstart + 1) < $p_length ) {
                     //continue building sequence
                     $p_slength++;
-                    $t_slength+= $t_matchlength;
+                    $t_slength++;
 
                     //We add a provisional match here
                     //this is necessary for an unusual case where two sequences overlap
@@ -202,7 +267,7 @@ public static function fetchAlternativesArray($thealternates)
                     //we build our sequence object, store it in $sequences, and return
                     if($match){
                         $p_slength++;
-                        $t_slength+= $t_matchlength;
+                        $t_slength++;
                         $sequence = new \stdClass();
                         $sequence->length = $p_slength;
                         $sequence->tlength = $t_slength;
@@ -266,30 +331,36 @@ public static function fetchAlternativesArray($thealternates)
     }
 
     /*
-     * This will run through the list of alternatives for a given passageword, and if any match the transcript,
-     * will return the length of the match. Anything greater than 0 is a full match.
-     * We just look for single word matches currently, but still return length of match (ie its always 1)
+     * This will run through the list of alternatives for a given passageword
      */
     public static function check_alternatives_for_match($passageword,$transcriptword,$alternatives){
-            $match =false;
-            $matchlength=0;
+        $ret= new \stdClass();
+        $ret->match =false;
+        $ret->matchlength=0;
+        $ret->forwardmatch=false;
 
-            //loop through all alternatives
-            //and then through each alternative->wordset
-            foreach($alternatives as $alternateset){
-                if($alternateset[0]==$passageword){
-                    for($setindex =1;$setindex<count($alternateset);$setindex++) {
-                        if ($alternateset[$setindex] == $transcriptword || $alternateset[$setindex] == '*') {
-                            $match = true;
-                            $matchlength = 1;
-                            break;
+        //loop through all alternatives
+        //and then through each alternative->wordset
+        foreach($alternatives as $alternateset){
+            $wordset=$alternateset[0];
+            $forwardmatches=$alternateset[1];
+            if($wordset[0]==$passageword){
+                for($setindex =1;$setindex<count($wordset);$setindex++) {
+                    if ($wordset[$setindex] == $transcriptword || $wordset[$setindex] == '*') {
+                        $ret->match = true;
+                        $ret->matchlength = 1;
+                        if(array_key_exists($wordset[$setindex],$forwardmatches)){
+                            $ret->forwardmatch=$forwardmatches[$wordset[$setindex]];
                         }
+                        break;
                     }
-                }//end of if alternatesset[0]
-                if($match==true){break;}
-            }//end of for each alternatives
+                }
+            }//end of if alternatesset[0]
+            if($ret->match){break;}
+        }//end of for each alternatives
         //we return the matchlength
-        return $matchlength;
+
+        return $ret;
     }
 
     //for use with PHP usort and arrays of sequences

@@ -473,11 +473,11 @@ class utils{
 
    public static function get_lang_options(){
        return array(
-            'en-US'=>get_string('en-us',constants::M_COMPONENT),
-           'en-UK'=>get_string('en-uk',constants::M_COMPONENT),
-           'en-AU'=>get_string('en-au',constants::M_COMPONENT),
-           'es-US'=>get_string('es-us',constants::M_COMPONENT),
-           'fr-CA'=>get_string('fr-ca',constants::M_COMPONENT),
+           constants::M_LANG_ENUS=>get_string('en-us',constants::M_COMPONENT),
+           constants::M_LANG_ENUK=>get_string('en-uk',constants::M_COMPONENT),
+           constants::M_LANG_ENAU=>get_string('en-au',constants::M_COMPONENT),
+           constants::M_LANG_ESUS=>get_string('es-us',constants::M_COMPONENT),
+           constants::M_LANG_FRCA=>get_string('fr-ca',constants::M_COMPONENT),
        );
 	/*
       return array(

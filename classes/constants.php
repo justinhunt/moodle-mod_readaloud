@@ -97,4 +97,11 @@ const M_HIDDEN_PLAYER_BUTTON_ACTIVE='mod_readaloud_hidden_player_button_active';
 const M_HIDDEN_PLAYER_BUTTON_PAUSED='mod_readaloud_hidden_player_button_paused';
 const M_HIDDEN_PLAYER_BUTTON_PLAYING='mod_readaloud_hidden_player_button_playing';
 const M_EVALUATED_MESSAGE='mod_readaloud_evaluated_message';
+
+//languages
+const M_LANG_ENUS = 'en-US';
+const M_LANG_ENUK = 'en-UK';
+const M_LANG_ENAU = 'en-AU';
+const M_LANG_ESUS = 'es-US';
+const M_LANG_FRCA = 'fr-CA';
 }
