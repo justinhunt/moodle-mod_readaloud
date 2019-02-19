@@ -207,20 +207,18 @@ class diff{
                 $match=false;
 
                 //check for a forward match
-                if($forwardmatch){
-                    $match = $passageword == $forwardmatch;
+                if($forwardmatch!==false){
+                    $match = ($passageword == $forwardmatch);
                     //we matched a passage word + but did not use the next transcript word, so roll back t_slength
-                    $t_slength--;
+                    if($match) {
+                        $t_slength--;
+                    }
                 }
                 $forwardmatch=false;
 
                 //check for a direct match
                 if(!$match) {
                     $match = $passageword == $transcriptword;
-                }
-                //else check for a generous match(eg for english +s and +ed we give it to them)
-                if(!$match){
-                    $match= self::generous_match($passageword,$transcriptword,$language);
                 }
 
                 //if no direct match is there an alternates match
@@ -230,10 +228,15 @@ class diff{
                         $alternatives);
                     if($altsearch_result->match){
                         $match= true;
-                        $forwardmatch=$altsearch_result->match;
+                        $forwardmatch=$altsearch_result->forwardmatch;
                         $alt_count++;
                     }
                 }//end of if no direct match
+
+                //else check for a generous match(eg for english +s and +ed we give it to them)
+                if(!$match){
+                    $match= self::generous_match($passageword,$transcriptword,$language);
+                }
 
                 //if we have a match and the passage and transcript each have another word, we will continue
                 //(ie to try to match the next word)

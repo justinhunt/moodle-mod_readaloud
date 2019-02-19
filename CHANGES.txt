@@ -1,3 +1,7 @@
+Version 2.0.7 (Build 2019021800)
+-improved adhoc task logic
+-tweaks to diff algorythm
+
 Version 2.0.7 (Build 2019021600)
 -added more powerful alternates implementation
 -fixed matching algorythm bugs

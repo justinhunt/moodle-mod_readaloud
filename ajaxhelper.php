@@ -123,6 +123,7 @@ function register_aws_task($activityid, $attemptid,$modulecontextid){
     $customdata->activityid = $activityid;
     $customdata->attemptid = $attemptid;
     $customdata->modulecontextid = $modulecontextid;
+    $customdata->taskcreationtime = time();
 
     $s3_task->set_custom_data($customdata);
     // queue it
