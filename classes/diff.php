@@ -554,7 +554,7 @@ class diff{
         for($p=0;$p<=$last_p;$p++){
             if($diffs[$p][0]==self::UNMATCHED && array_key_exists($passagebits[$p],$wildcards)){
                 $diffs[$p]=[self::MATCHED,$last_tposition];
-            }else if($diffs[$p]==self::MATCHED){
+            }else if($diffs[$p][0]==self::MATCHED){
                 $last_tposition=$diffs[$p][1];
             }
         }
