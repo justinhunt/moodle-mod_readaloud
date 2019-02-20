@@ -1,4 +1,7 @@
-Version 2.0.7 (Build 2019021800)
+Version 2.0.9 (Build 2019022000)
+-implemented better wildcard support
+
+Version 2.0.8 (Build 2019021800)
 -improved adhoc task logic
 -tweaks to diff algorythm
 

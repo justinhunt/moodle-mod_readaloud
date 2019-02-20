@@ -349,7 +349,9 @@ class diff{
             $forwardmatches=$alternateset[1];
             if($wordset[0]==$passageword){
                 for($setindex =1;$setindex<count($wordset);$setindex++) {
-                    if ($wordset[$setindex] == $transcriptword || $wordset[$setindex] == '*') {
+                    //we no longer process wildcards while matching (we just reverse errors later)
+                    //if ($wordset[$setindex] == $transcriptword || $wordset[$setindex] == '*') {
+                    if ($wordset[$setindex] == $transcriptword) {
                         $ret->match = true;
                         $ret->matchlength = 1;
                         if(array_key_exists($wordset[$setindex],$forwardmatches)){
@@ -364,6 +366,29 @@ class diff{
         //we return the matchlength
 
         return $ret;
+    }
+
+    /*
+     * This will run through the alternatives and compile the wildcard words
+     * We put the passageword as array key , so later we can search for it by array_key_exists .. uurrgh
+     */
+    public static function fetchWildcardsArray($alternatives){
+        $wildcards=array();
+
+        //loop through all alternatives
+        //and then through each alternative->wordset
+        foreach($alternatives as $alternateset){
+            $wordset=$alternateset[0];
+            $passageword = $wordset[0];
+            for($setindex =1;$setindex<count($wordset);$setindex++) {
+                if ($wordset[$setindex] == '*') {
+                    $wildcards[$passageword]=true;
+                    break;
+                }
+            }//end of for setindex
+        }//end of for each alternatives
+        //we return the wildczrds
+        return $wildcards;
     }
 
     //for use with PHP usort and arrays of sequences
@@ -482,14 +507,58 @@ class diff{
             $priorsequences[] = $sequence;
         }
 
-    //we are debugging return an arry with some data we can look at
-     if($debug){
-        return [$diffs,$priorsequences];
-    }else{
-        return $diffs;
+        //we are debugging return an arry with some data we can look at
+         if($debug){
+            return [$diffs,$priorsequences];
+        }else{
+            return $diffs;
+        }
+
+
     }
 
+    /*
+    * We apply wildcards after all is done.
+    * If we do it during the sequence building it can mess things up when a wildcard
+    * matches a passage word to a transcript word that should match elsewhere.
+    * e.g [passage] The big green butcher
+    * [transcript] The green butcher
+    * [alternatives] big|*
+    * In this case [transcript]green can be matched against [passage]big
+    * If the sequence containing this match is selected, then "green" can be marked as missing, and hence an error
+    *
+    * The sequence loop may or may not select the faulty sequence. Rather than patch this up with forward matches and
+    * tricks,  we now leave wildcards out of sequence building and just patch up the diffs array here
+    *
+    * The same situation might occur with alternatives too, but the missed word is likely similar to the matched word
+    * e.g "The artists are this close to us." so we can accept it.
+    */
+    public static function applyWildcards($diffs,$passagebits,$wildcards){
+        $last_tposition=1;
+        $last_p=0;
 
+        //we do not want to go more than one beyond the last true matched passage word
+        //here we find the last passage match
+        for($p=count($diffs)-1;$p>=0;$p--){
+            if($diffs[$p][0]==self::MATCHED){
+                $last_p=$p;
+                break;
+            }
+        }
+        //If there is another passage word after that, it becomes the last possible wildcard match
+        if($last_p + 1<count($diffs)){
+            $last_p = $last_p + 1;
+        }
+
+        //loop through to last acceptable passage word looking for wildcards
+        for($p=0;$p<=$last_p;$p++){
+            if($diffs[$p][0]==self::UNMATCHED && array_key_exists($passagebits[$p],$wildcards)){
+                $diffs[$p]=[self::MATCHED,$last_tposition];
+            }else if($diffs[$p]==self::MATCHED){
+                $last_tposition=$diffs[$p][1];
+            }
+        }
+        return $diffs;
     }
 }
 
