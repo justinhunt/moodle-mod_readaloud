@@ -40,7 +40,7 @@ class renderer extends \plugin_renderer_base {
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
 
-        if (has_capability('mod/readaloud:manage', $context)) {
+        if (has_capability('mod/readaloud:manageattempts', $context)) {
             //   $output .= $this->output->heading_with_help($activityname, 'overview', constants::M_COMPONENT);
 
             if (!empty($currenttab)) {
@@ -112,9 +112,12 @@ class renderer extends \plugin_renderer_base {
     /**
      *
      */
-    public function show_pushmachinegradesbutton($moduleinstance){
+    public function show_pushmachinegrades($moduleinstance){
 
-        if(utils::can_transcribe(moduleinstance) && $moduleinstance->machgrademethod==constants::MACHINEGRADE_MACHINE){
+        $sectiontitle= get_string("pushmachinegrades",constants::M_COMPONENT);
+        $heading = $this->output->heading($sectiontitle, 4);
+
+        if(utils::can_transcribe($moduleinstance) && $moduleinstance->machgrademethod==constants::MACHINEGRADE_MACHINE){
             $options=[];
         }else{
             $options=array('disabled'=>'disabled');
@@ -122,8 +125,87 @@ class renderer extends \plugin_renderer_base {
         $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/gradesadmin.php',
             array('n'=>$moduleinstance->id, 'action'=>'pushmachinegrades')),get_string('pushmachinegrades',constants::M_COMPONENT),'post',$options);
 
-        $ret = \html_writer::div($button ,constants::M_GRADESADMIN_CONTAINER);
+        $ret = \html_writer::div($heading . $button ,constants::M_GRADESADMIN_CONTAINER);
         return $ret;
+    }
+
+    /**
+     * @param array an array of mistranscription objects (passageindex, passageword, mistranscription summary)
+     * @return string an html table
+     */
+    public function show_all_mistranscriptions($items){
+
+            global $CFG;
+
+            //set up our table
+            $tableattributes = array('class' => 'generaltable ' . constants::M_CLASS . '_table');
+
+            $htmltable = new \html_table();
+            $tableid = \html_writer::random_id(constants::M_COMPONENT);
+            $htmltable->id = $tableid;
+            $htmltable->attributes = $tableattributes;
+
+            $head=array(get_string('passageindex',constants::M_COMPONENT),
+                get_string('passageword',constants::M_COMPONENT),
+                get_string('mistrans_count',constants::M_COMPONENT),
+                get_string('mistranscriptions',constants::M_COMPONENT));
+
+            $htmltable->head = $head;
+            $rowcount=0;
+            $total_mistranscriptions=0;
+            foreach ($items as $row) {
+                //if this was not a mistranscription, skip
+                if(!$row->mistranscriptions){continue;}
+                $rowcount++;
+                $htr = new \html_table_row();
+
+                $cell = new \html_table_cell($row->passageindex);
+                $cell->attributes = array('class' => constants::M_CLASS . '_cell_passageindex');
+                $htr->cells[] = $cell;
+
+                $cell = new \html_table_cell($row->passageword);
+                $cell->attributes = array('class' => constants::M_CLASS . '_cell_passageword');
+                $htr->cells[] = $cell;
+
+                $showmistranscriptions = "";
+                $mistrans_count = 0;
+                foreach($row->mistranscriptions as $badword=>$count){
+                    if($showmistranscriptions != ""){$showmistranscriptions .= " | ";}
+                    $showmistranscriptions .= $badword . "(" . $count . ")";
+                    $mistrans_count+=$count;
+                }
+                $total_mistranscriptions+=$mistrans_count;
+
+                $cell = new \html_table_cell($mistrans_count);
+                $cell->attributes = array('class' => constants::M_CLASS . '_cell_mistrans_count');
+                $htr->cells[] = $cell;
+
+                $cell = new \html_table_cell($showmistranscriptions);
+                $cell->attributes = array('class' => constants::M_CLASS . '_cell_mistranscriptions');
+                $htr->cells[] = $cell;
+
+
+                $htmltable->data[] = $htr;
+            }
+            $tabletitle= get_string("mistranscriptions_summary",constants::M_COMPONENT);
+            $html = $this->output->heading($tabletitle, 4);
+            if ($rowcount==0) {
+                $html .= get_string("nomistranscriptions",constants::M_COMPONENT);
+            }else{
+                $html .= \html_writer::tag('span',get_string("total_mistranscriptions",
+                    constants::M_COMPONENT,$total_mistranscriptions),array('class'=>constants::M_CLASS . '_totalmistranscriptions'));
+                $html .= \html_writer::table($htmltable);
+
+                //set up datatables
+                $tableprops = new \stdClass();
+                $opts =Array();
+                $opts['tableid']=$tableid;
+                $opts['tableprops']=$tableprops;
+                $this->page->requires->js_call_amd( constants::M_COMPONENT. "/datatables", 'init', array($opts));
+                $this->page->requires->css( new \moodle_url('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css'));
+
+            }
+            return $html;
     }
 
     /**

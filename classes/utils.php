@@ -378,6 +378,144 @@ class utils{
         return $errorestimate;
     }
 
+    /*
+  * Per passageword, an object with mistranscriptions and their frequency will be returned
+    * To be consistent with how data is stored in matches/errors, we return a 1 based array of mistranscriptions
+     * @return array an array of stdClass (1 item per passage word) with the passage index(1 based), passage word and array of mistranscription=>count
+   */
+    public static function fetch_all_mistranscriptions($readaloudid)
+    {
+        global $DB;
+        $attempts = $DB->get_records(constants::M_AITABLE ,array('readaloudid'=>$readaloudid));
+        $activity = $DB->get_record(constants::M_TABLE,array('id'=>$readaloudid));
+        $passagewords = diff::fetchWordArray($activity->passage);
+        $passagecount = count($passagewords);
+        //$alternatives = diff::fetchAlternativesArray($activity->alternatives);
+
+        $results= array();
+        $mistranscriptions= array();
+        foreach($attempts as $attempt){
+            $transcriptwords = diff::fetchWordArray($attempt->transcript);
+            $matches = json_decode($attempt->sessionmatches);
+            $mistranscriptions[]= self::fetch_attempt_mistranscriptions($passagewords,$transcriptwords,$matches);
+        }
+        //aggregate results
+        for($wordnumber=1;$wordnumber<=$passagecount;$wordnumber++){
+           $aggregate_set = array();
+           foreach($mistranscriptions as $mistranscript){
+               if(!$mistranscript[$wordnumber]){continue;}
+               if(array_key_exists($mistranscript[$wordnumber],$aggregate_set)){
+                   $aggregate_set[$mistranscript[$wordnumber]]++;
+               }else{
+                   $aggregate_set[$mistranscript[$wordnumber]]=1;
+               }
+           }
+           $result= new \stdClass();
+           $result->mistranscriptions=$aggregate_set;
+           $result->passageindex=$wordnumber;
+           $result->passageword=$passagewords[$wordnumber-1];
+           $results[] = $result;
+        }//end of for loop
+        return $results;
+    }
+
+
+    /*
+   * This will return an array of mistranscript strings for a single attemot. 1 entry per passageword.
+     * To be consistent with how data is stored in matches/errors, we return a 1 based array of mistranscriptions
+     * @return array a 1 based array of mistranscriptions(string) or false. i item for each passage word
+    */
+    public static function fetch_attempt_mistranscriptions($passagewords,$transcriptwords,$matches)
+    {
+        $passagecount = count($passagewords);
+        if(!$passagecount){return false;}
+        $mistranscriptions=array();
+        for($wordnumber=1;$wordnumber<=$passagecount;$wordnumber++){
+            $mistranscription = self::fetch_one_mistranscription($wordnumber,$transcriptwords,$matches);
+            if($mistranscription){
+                $mistranscriptions[$wordnumber]=$mistranscription;
+            }else{
+                $mistranscriptions[$wordnumber]=false;
+            }
+        }//end of for loop
+        return $mistranscriptions;
+    }
+
+    /*
+   * This will take a wordindex and find the previous and next transcript indexes that were matched and
+   * return all the transcript words in between those.
+     *
+     * @return a string which is the transcript match of a passage word, or false if the transcript=passage
+    */
+    public static function fetch_one_mistranscription($passageindex,$transcriptwords,$matches){
+
+            //count transcript words
+            $transcriptlength= count($transcriptwords);
+            if($transcriptlength==0){
+                return false;
+            }
+
+            //build a quick to search array of matched words
+            $passagematches=array();
+            foreach($matches as $match){
+                $passagematches[$match->pposition]=$match->word;
+            }
+
+            //find startindex
+            $startindex=-1;
+            for($wordnumber=$passageindex;$wordnumber>0;$wordnumber--){
+
+                $ismatched =array_key_exists($wordnumber,$passagematches);
+                if($ismatched){
+                    $startindex=$matches->{$wordnumber}->tposition+1;
+                    break;
+                }
+            }//end of for loop
+
+            //find endindex
+            $endindex=-1;
+            for($wordnumber=$passageindex;$wordnumber<=$transcriptlength;$wordnumber++){
+
+                $ismatched =array_key_exists($wordnumber,$passagematches);
+                //if we matched then the previous transcript word is the last unmatched one in the checkindex sequence
+                if($ismatched){
+                    $endindex=$matches->{$wordnumber}->tposition-1;
+                    break;
+                }
+            }//end of for loop --
+
+            //if there was no previous matched word, we set start to 1
+            if($startindex==-1){$startindex=1;}
+            //if there was no subsequent matched word we flag the end as the -1
+            if($endindex==$transcriptlength){
+                $endindex=-1;
+                //an edge case is where the first word is not in transcript and first match is the second or later passage
+                //word. It might not be possible for endindex to be lower than start index, but we don't want it anyway
+            }else if($endindex==0 || $endindex < $startindex){
+                return false;
+            }
+
+            //up until this point the indexes have started from 1, since the passage word numbers start from 1
+            //but the transcript array is 0 based so we adjust. array_slice function does not include item and endindex
+            ///so it needs to be one more then start index. hence we do not adjust that
+            $startindex--;
+
+            //finally we return the section of transcript
+            if($endindex>0) {
+                $chunklength = $endindex-$startindex;
+                $retarray = array_slice($transcriptwords,$startindex, $chunklength);
+            }else{
+                $retarray = array_slice($transcriptwords,$startindex);
+            }
+
+            $ret = implode(" ",$retarray);
+            if(trim($ret)==''){
+                return false;
+            }else{
+                return $ret;
+            }
+    }
+
     /**
      * Returns the link for the related activity
      * @return string

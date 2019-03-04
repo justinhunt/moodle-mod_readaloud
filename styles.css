@@ -332,5 +332,6 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 	background-color: grey;
 }
 div.mod_readaloud_gradesadmin_cont {
-	margin: 8px;
+	margin-bottom: 20px;
+	margin-top: 20px;
 }

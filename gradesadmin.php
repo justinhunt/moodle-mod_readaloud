@@ -45,7 +45,7 @@ if ($id) {
     $course     = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    print_error('You must specify a course_module ID or an instance ID');
 }
 
 $PAGE->set_url(constants::M_URL . '/gradesadmin.php',
@@ -57,6 +57,14 @@ require_capability('mod/readaloud:manage', $modulecontext);
 
 //Get an admin settings 
 $config = get_config(constants::M_COMPONENT);
+
+//if the alternatives form was submittes
+$alternatives_form = new \mod_readaloud\form\alternatives();
+$adata=$alternatives_form->get_data();
+if($adata){
+    $DB->update_record(constants::M_TABLE,array('id'=>$adata->n,'alternatives'=>$adata->alternatives));
+    $action='machineregradeall';
+}
 
 
 switch($action){
@@ -110,14 +118,31 @@ $mode = "gradesadmin";
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 
+//fetch mistranscriptions and html table for them (need to do this before head is printed because of AMD/CSS in table)
+$mistranscriptions = utils::fetch_all_mistranscriptions($moduleinstance->id);
+$table_of_mistranscriptions= $renderer->show_all_mistranscriptions($mistranscriptions);
+
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('gradesadmin', constants::M_COMPONENT));
 
 echo $renderer->show_gradesadmin_heading(get_string('gradesadmintitle',constants::M_COMPONENT),
     get_string('gradesadmininstructions',constants::M_COMPONENT));
-echo $renderer->show_currenterrorestimate( \mod_readaloud\utils::estimate_errors($moduleinstance->id));
-echo $renderer->show_machineregradeallbutton($moduleinstance);
-echo $renderer->show_pushmachinegradesbutton($moduleinstance);
 
+//This is the estimate of errors based on comparing human grades to machine grades
+//echo $renderer->show_currenterrorestimate(utils::estimate_errors($moduleinstance->id));
+
+$mform = new \mod_readaloud\form\alternatives();
+//id is cmid on this page, so we use n as the id of the instance, so to make sure we arrive back here ok, we add n
+$moduleinstance->n=$moduleinstance->id;
+$mform->set_data($moduleinstance);
+$mform->display();
+
+//echo $renderer->show_machineregradeallbutton($moduleinstance);
+
+
+echo $table_of_mistranscriptions;
+
+//This shows button that pushes all updated machine grades to gradebook
+echo $renderer->show_pushmachinegrades($moduleinstance);
 
 echo $renderer->footer();
 return;
