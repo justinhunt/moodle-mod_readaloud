@@ -9,6 +9,7 @@
 namespace mod_readaloud\output;
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 
 class gradenow_renderer extends \plugin_renderer_base {
@@ -38,7 +39,8 @@ class gradenow_renderer extends \plugin_renderer_base {
         $actionheader = $this->render_attempt_scoresheader($gradenow);
         $ret = $this->render_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
-        $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
+        $thepassage = $this->render_passage($gradenow->attemptdetails('passage'));
+        $ret .= \html_writer::div($thepassage,constants::M_CLASS . '_postattempt');
         return $ret;
     }
 
@@ -134,9 +136,18 @@ class gradenow_renderer extends \plugin_renderer_base {
             //This resulted in ai selected error words, having different index to their passage text counterpart
             $seperator = ' ';
             //$words = explode($seperator, $node->nodeValue);
-            $words = preg_split('/\s+/', $node->nodeValue);
+
+            $nodevalue = utils::lines_to_brs($node->nodeValue,$seperator);
+            $words = preg_split('/\s+/', $nodevalue);
 
             foreach($words as $word){
+                //if its a new line character from lines_to_brs we add it, but not as a word
+                if($word=='<br>'){
+                    $newnode = $doc->createElement('br',$word);
+                    $node->parentNode->appendChild($newnode);
+                    continue;
+                }
+
                 $wordcount++;
                 $newnode = $doc->createElement('span',$word);
                 $spacenode = $doc->createElement('span',$seperator);
@@ -156,7 +167,6 @@ class gradenow_renderer extends \plugin_renderer_base {
         }
 
         $usepassage= $doc->saveHTML();
-
 
         $ret = \html_writer::div($usepassage,constants::M_CLASS . '_grading_passagecont');
         return $ret;

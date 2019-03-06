@@ -280,7 +280,8 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_passage_postattempt($readaloud){
         $ret = "";
-        $ret .= \html_writer::div( $readaloud->passage ,constants::M_PASSAGE_CONTAINER . ' ' . constants::M_POSTATTEMPT,
+        $displaypassage =  utils::lines_to_brs($readaloud->passage);
+        $ret .= \html_writer::div( $displaypassage ,constants::M_PASSAGE_CONTAINER . ' ' . constants::M_POSTATTEMPT,
             array('id'=>constants::M_PASSAGE_CONTAINER));
         return $ret;
     }
@@ -291,7 +292,8 @@ class renderer extends \plugin_renderer_base {
     public function show_passage($readaloud,$cm){
 
         $ret = "";
-        $ret .= \html_writer::div( $readaloud->passage ,constants::M_PASSAGE_CONTAINER,
+        $displaypassage =  utils::lines_to_brs($readaloud->passage);
+        $ret .= \html_writer::div( $displaypassage ,constants::M_PASSAGE_CONTAINER,
             array('id'=>constants::M_PASSAGE_CONTAINER));
         return $ret;
     }

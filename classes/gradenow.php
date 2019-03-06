@@ -177,7 +177,7 @@ class gradenow{
        }
    }
    
-   public function prepare_javascript($reviewmode=false,$force_aimode=false){
+   public function prepare_javascript($reviewmode=false,$force_aimode=false,$readonly=false){
 		global $PAGE;
 
 		//if we are editing and no human has saved, we load AI data to begin with.
@@ -195,6 +195,7 @@ class gradenow{
 		$gradingopts['targetwpm'] = $this->activitydata->targetwpm;
 		$gradingopts['sesskey'] = sesskey();
 		$gradingopts['attemptid'] = $this->attemptdata->id;
+        $gradingopts['readonly'] = $readonly;
 		if($loading_aidata){
             $gradingopts['sessiontime'] = $this->aidata->sessiontime;
             $gradingopts['sessionerrors'] = $this->aidata->sessionerrors;
@@ -219,7 +220,6 @@ class gradenow{
             $gradingopts['aidata'] = false;
             $gradingopts['sessionmatches'] = false;
         }
-
        $gradingopts['opts_id'] = 'mod_readaloud_gradenowopts';
 
 

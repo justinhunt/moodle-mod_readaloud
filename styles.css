@@ -152,6 +152,14 @@ div.mod_readaloud_passage_cont.mod_readaloud_postattempt {
 .mod_readaloud_grading_passagespace{
 	padding: 2px;
 }
+div.mod_readaloud_postattempt .mod_readaloud_grading_unreadword {
+	text-decoration: none;
+	background-color: lightgrey;
+}
+div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
+	background-color: lightgrey;
+	padding: 0px;
+}
 .mod_readaloud_grading_unreadword {
 	font-style: italic;
 	text-decoration: line-through;

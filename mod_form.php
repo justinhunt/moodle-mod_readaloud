@@ -86,7 +86,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
 
 		//The alternatives declaration
         $mform->addElement('textarea','alternatives',get_string("alternatives", constants::M_COMPONENT),
-            'wrap="virtual" rows="20" cols="50"');
+            'wrap="virtual" rows="15" cols="50"');
         $mform->setDefault('alternatives','');
         $mform->setType('alternatives',PARAM_RAW);
         $mform->addElement('static', 'alternativesdescr', '',

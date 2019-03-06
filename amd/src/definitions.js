@@ -30,6 +30,7 @@ This file contains class and ID definitions.
         badwordclass: 'mod_readaloud_grading_badword',
         endspaceclass: 'mod_readaloud_grading_endspace',
         unreadwordclass:  'mod_readaloud_grading_unreadword',
+        unreadspaceclass: 'mod_readaloud_grading_unreadspace',
         wpmscoreid: 'mod_readaloud_grading_wpm_score',
         accuracyscoreid: 'mod_readaloud_grading_accuracy_score',
         sessionscoreid: 'mod_readaloud_grading_session_score',

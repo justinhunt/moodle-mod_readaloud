@@ -126,6 +126,7 @@ if($attempts && $retake==0){
         $latest_aigrade =false;
     }
 
+    $readonly=true;
     $have_humaneval = $latestattempt->sessiontime!=null;
     $have_aieval = $latest_aigrade && $latest_aigrade->has_transcripts();
 
@@ -148,9 +149,11 @@ if($attempts && $retake==0){
                 }
                 $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
                 $reviewmode =constants::REVIEWMODE_SCORESONLY;
-                echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
-                echo $gradenowrenderer->render_attempt_scoresheader($gradenow);
-                echo $renderer->show_passage_postattempt($moduleinstance);
+
+
+
+                echo $gradenow->prepare_javascript($reviewmode,$force_aidata,$readonly);
+                echo $gradenowrenderer->render_userreview($gradenow);
 
                 break;
 
@@ -166,7 +169,7 @@ if($attempts && $retake==0){
                     $force_aidata=true;
                 }
                 $gradenow = new \mod_readaloud\gradenow($latestattempt->id,$modulecontext->id);
-                echo $gradenow->prepare_javascript($reviewmode,$force_aidata);
+                echo $gradenow->prepare_javascript($reviewmode,$force_aidata, $readonly);
                 echo $gradenowrenderer->render_hiddenaudioplayer();
                 echo $gradenowrenderer->render_userreview($gradenow);
                 break;

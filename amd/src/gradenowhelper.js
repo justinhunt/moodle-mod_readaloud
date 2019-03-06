@@ -26,6 +26,7 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             badwordclass: def.badwordclass,
             endspaceclass: def.endspaceclass,
             unreadwordclass:  def.unreadwordclass,
+            unreadspaceclass:  def.unreadspaceclass,
             wpmscoreid: def.wpmscoreid,
             accuracyscoreid: def.accuracyscoreid,
             sessionscoreid: def.sessionscoreid,
@@ -94,6 +95,7 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             this.options.allowearlyexit = opts['allowearlyexit'];
             this.options.timelimit = opts['timelimit'];
             this.options.reviewmode = opts['reviewmode'];
+            this.options.readonly = opts['readonly'];
             this.options.totalwordcount = $('.' + this.cd.wordclass).length ;
 
             if(opts['sessiontime']>0){
@@ -281,7 +283,12 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
 
 
             //in review mode, do nuffink though ... thats for the student
-            if(this.options.reviewmode == this.constants.REVIEWMODE_MACHINE){
+            if(this.options.readonly){
+                //do nothing
+
+            //here we will put real options for playing the model reading and user reading etc
+            //}else if(this.options.reviewmode === this.constants.REVIEWMODE_MACHINE){
+            }else if(false){
                 /*
                 if(this.enabletts && this.options.ttslanguage != 'none'){
                     this.controls.eachword.click(this.playword);
@@ -297,7 +304,7 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
                 this.controls.eachword.click(
                     function() {
                         //if we are in spotcheck mode just return, we do not grade
-                        if (that.currentmode == 'spotcheck') {
+                        if (that.currentmode === 'spotcheck') {
                             return;
                         }
 
@@ -305,7 +312,7 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
                         var wordnumber = $(this).attr('data-wordnumber');
                         var theword = $(this).text();
 
-                        if (that.currentmode == 'transcriptcheck') {
+                        if (that.currentmode === 'transcriptcheck') {
                             var chunk = that.fetchTranscriptChunk(wordnumber);
                             if(chunk){
                                 popoverhelper.addTranscript(this,chunk);
@@ -800,10 +807,12 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
         redrawgradestate: function(){
             var m = this;
             this.processunread();
-            $.each(m.options.errorwords,function(index){
-                    $('#' + m.cd.wordclass + '_' + m.options.errorwords[index].wordnumber).addClass(m.cd.badwordclass);
-                }
-            );
+            if(this.options.reviewmode!==this.constants.REVIEWMODE_SCORESONLY) {
+                $.each(m.options.errorwords, function (index) {
+                        $('#' + m.cd.wordclass + '_' + m.options.errorwords[index].wordnumber).addClass(m.cd.badwordclass);
+                    }
+                );
+            }
 
         },
         adderrorword: function(wordnumber,word) {
@@ -852,8 +861,11 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             var m = this;// M.mod_readaloud.gradenowhelper;
             m.controls.eachword.each(function(index){
                 var wordnumber = $(this).attr('data-wordnumber');
+                var thespace = $('#' + m.cd.spaceclass + '_' + wordnumber);
+
                 if(Number(wordnumber)>Number(m.options.endwordnumber)){
                     $(this).addClass(m.cd.unreadwordclass);
+                    thespace.addClass(m.cd.unreadspaceclass);
                     //this will clear badwords after the endmarker
                     if(m.options.enforcemarker && wordnumber in m.options.errorwords){
                         delete m.options.errorwords[wordnumber];
@@ -861,6 +873,7 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
                     }
                 }else{
                     $(this).removeClass(m.cd.unreadwordclass);
+                    thespace.removeClass(m.cd.unreadspaceclass);
                 }
             });
         },

@@ -222,6 +222,20 @@ class utils{
         return $token;
     }
 
+    /*
+    * Turn a passage with text "lines" into html "brs"
+    *
+    * @param String The passage of text to convert
+    * @param String An optional pad on each replacement (needed for processing when marking up words as spans in passage)
+    * @return String The converted passage of text
+    */
+    public static function lines_to_brs($passage,$seperator=''){
+        //see https://stackoverflow.com/questions/5946114/how-to-replace-newline-or-r-n-with-br
+        return str_replace("\r\n",$seperator . '<br>' . $seperator,$passage);
+        //this is better but we can not pad the replacement and we need that
+        //return nl2br($passage);
+    }
+
     public static function fetch_duration_from_transcript($fulltranscript){
         $transcript = json_decode($fulltranscript);
         $titems=$transcript->results->items;
