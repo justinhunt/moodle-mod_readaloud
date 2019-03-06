@@ -158,7 +158,7 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadword {
 }
 div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
 	background-color: lightgrey;
-	padding: 0px;
+	padding: 0px 2px;
 }
 .mod_readaloud_grading_unreadword {
 	font-style: italic;
