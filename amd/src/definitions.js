@@ -9,6 +9,7 @@ This file contains class and ID definitions.
 
     return{
         component: 'mod_readaloud',
+        componentpath: 'mod/readaloud',
         //hidden player
         hiddenplayer: 'mod_readaloud_hidden_player',
         hiddenplayerbutton: 'mod_readaloud_hidden_player_button',
@@ -42,6 +43,14 @@ This file contains class and ID definitions.
         formelementtime: 'mod_readaloud_grading_form_sessiontime',
         formelementerrors: 'mod_readaloud_grading_form_sessionerrors',
         modebutton: 'mod_readaloud_modebutton',
+
+        //running records features
+        maybeselfcorrectclass: 'mod_readaloud_grading_maybeselfcorrect',
+        selfcorrectclass: 'mod_readaloud_grading_selfcorrect',
+        structuralclass: 'mod_readaloud_grading_structural',
+        meaningclass: 'mod_readaloud_grading_meaning',
+        visualclass: 'mod_readaloud_grading_visual',
+        notesclass: 'mod_readaloud_grading_notes',
 
         //activity
         passagefinished: 'mod_readaloud_passage_finished',

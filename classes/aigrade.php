@@ -202,6 +202,7 @@ class aigrade
                     $match->tposition = $diff[1];
                     $match->audiostart=0;//we will assess this from full transcript shortly
                     $match->audioend=0;//we will assess this from full transcript shortly
+                    $match->altmatch=$diff[2];//was this match an alternatives match?
                     $matches->{$currentword}=$match;
                     $lastunmodified = $currentword;
                     break;

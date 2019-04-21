@@ -21,6 +21,8 @@ class diff{
     // define the constants
     const MATCHED = 0;
     const UNMATCHED = 1;
+    const ALTERNATEMATCH= 1;
+    const NOTALTERNATEMATCH= 0;
 
 
     /*
@@ -44,14 +46,14 @@ class diff{
         return $textbits;
     }
 
- /*
- * Clean word of things that might prevent a match
-  * i) lowercase it
-  * ii) remove html characters
-  * iii) replace any line ends with spaces (so we can "split" later)
-  * iv) remove punctuation
- *
- */
+    /*
+    * Clean word of things that might prevent a match
+     * i) lowercase it
+     * ii) remove html characters
+     * iii) replace any line ends with spaces (so we can "split" later)
+     * iv) remove punctuation
+    *
+    */
     public static function cleanText($thetext){
         //lowercaseify
         $thetext=strtolower($thetext);
@@ -64,7 +66,7 @@ class diff{
 
         //remove punctuation
         //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
-       // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
+        // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
         //https://stackoverflow.com/questions/5689918/php-strip-punctuation
         $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
 
@@ -167,8 +169,6 @@ class diff{
         return false;
     }
 
-
-
     //Loop through passage, nest looping through transcript building collections of sequences (passage match records)
     //one sequence = sequence_length[length] + sequence_start(transcript)[tposition] + sequence_start(passage)[pposition]
     //we do not discriminate over length or position of sequence at this stage. All sequences are saved
@@ -189,7 +189,7 @@ class diff{
         $sequences = array();
         $t_slength=0; //sequence length (in the transcript)
         $p_slength=0; //sequence length (in the passage)
-        $alt_count=0; //we count alternate matches in sequence
+        $alt_positions=[]; //we record alternate usages in sequence
         $tstart =0; //transcript sequence match search start index
         $forwardmatch=false; //if any alternates declare a forward match we keep that here
 
@@ -229,7 +229,7 @@ class diff{
                     if($altsearch_result->match){
                         $match= true;
                         $forwardmatch=$altsearch_result->forwardmatch;
-                        $alt_count++;
+                        $alt_positions[]=($p_slength + $pstart);
                     }
                 }//end of if no direct match
 
@@ -247,10 +247,11 @@ class diff{
                     $p_slength++;
                     $t_slength++;
 
-                    //We add a provisional match here
+                    //We add a provisional match here. This means lots of shorter sequences added to sequences[]
+                    // on the way to building the final sequence
                     //this is necessary for an unusual case where two sequences overlap
                     //at the end of one and the beginning of the other.
-                    //without a provisional match, the shorter will not pass fetchDiffs
+                    //without a provisional match, the shorter seq. will lose the election and be unselected at fetchDiffs()
                     //and the unoverlapped part will be marked unmatched
                     //this occurs with a combination of wildcards and extraneous words in transcript
                     //eg transcript: home is where the heart resides oligarchy it stomach said ...
@@ -261,7 +262,7 @@ class diff{
                     $sequence->tlength = $t_slength;
                     $sequence->tposition = $tstart;
                     $sequence->pposition = $pstart;
-                    $sequence->altcount = $alt_count;
+                    $sequence->altpositions = $alt_positions;
                     $sequences[] = $sequence;
 
                     //else: no match or end of transcript/passage,
@@ -276,7 +277,7 @@ class diff{
                         $sequence->tlength = $t_slength;
                         $sequence->tposition = $tstart;
                         $sequence->pposition = $pstart;
-                        $sequence->altcount = $alt_count;
+                        $sequence->altpositions = $alt_positions;
                         $sequences[] = $sequence;
 
                         //we bump tstart, which will end this loop
@@ -284,7 +285,7 @@ class diff{
                         $tstart+= $t_slength;
                         $p_slength = 0;
                         $t_slength = 0;
-                        $alt_count =0;
+                        $alt_positions =[];
 
                         //if we never even had a sequence we just move to next word in transcript
                     }elseif ($p_slength == 0) {
@@ -298,14 +299,14 @@ class diff{
                         $sequence->tlength = $t_slength;
                         $sequence->tposition = $tstart;
                         $sequence->pposition = $pstart;
-                        $sequence->altcount = $alt_count;
+                        $sequence->altpositions = $alt_positions;
                         $sequences[] = $sequence;
 
                         //re init transcript loop variables for the next pass
                         $tstart+= $t_slength;
                         $p_slength = 0;
                         $t_slength = 0;
-                        $alt_count =0;
+                        $alt_positions =[];
 
                     }//end of "IF slength=0"
                 }//end of "IF match"
@@ -317,20 +318,20 @@ class diff{
 
         return $sequences;
     }//end of fetchSequences
-    
+
     public static function debug_print_sequence($sequence,$passage,$transcript,$tag){
         echo '<br>';
         echo 'THE SEQUENCE: ' . $tag;
-    	echo '<br>';
-		print_r($sequence);
-		$printpassage = '<br>PASSAGE: ';
-		$printtranscript = '<br>TRANSCRIPT: ';
-		for($word=0;$word<$sequence->length;$word++){
-			$printpassage  .= ($word . ':' . $passage[$word + $sequence->pposition] . ' ');
-			$printtranscript .= ($word . ':' . $transcript[$word + $sequence->tposition] . ' ');
-		}   
-		echo $printpassage;
-		echo $printtranscript;  
+        echo '<br>';
+        print_r($sequence);
+        $printpassage = '<br>PASSAGE: ';
+        $printtranscript = '<br>TRANSCRIPT: ';
+        for($word=0;$word<$sequence->length;$word++){
+            $printpassage  .= ($word . ':' . $passage[$word + $sequence->pposition] . ' ');
+            $printtranscript .= ($word . ':' . $transcript[$word + $sequence->tposition] . ' ');
+        }
+        echo $printpassage;
+        echo $printtranscript;
     }
 
     /*
@@ -364,7 +365,6 @@ class diff{
             if($ret->match){break;}
         }//end of for each alternatives
         //we return the matchlength
-
         return $ret;
     }
 
@@ -398,7 +398,7 @@ class diff{
     {
         if ($a->length == $b->length) {
             if($a->tposition == $b->tposition){
-            	return 0;
+                return 0;
             }else{
                 return ($a->tposition< $b->tposition) ? -1 : 1;
             }
@@ -421,20 +421,20 @@ class diff{
     // after an alternate match in the same sequence. At that point gave up ... for now. Justin 2018/08
     public static function fetchDiffs($sequences, $passagelength,$transcriptlength, $debug=false){
         //i) default passage positions to unmatched and transcript position -1
-        $diffs=array_fill(0, $passagelength, [self::UNMATCHED,-1]);
+        $diffs=array_fill(0, $passagelength, [self::UNMATCHED,-1,self::NOTALTERNATEMATCH]);
 
         //ii) sort sequences by length, transcript posn
         //long sequences sort higher, and are placed in the diff array first
-        usort($sequences, array('\mod_readaloud\diff','cmp'));
+        usort($sequences, array('\mod_readseed\diff','cmp'));
 
         //record prior sequences for iii)
         $priorsequences=array();
-		$sequenceindex=0;
+        $sequenceindex=0;
         //iii) loop through sequences
         foreach($sequences as $sequence){
             $bust=false;
-			$sequenceindex++;
-			
+            $sequenceindex++;
+
             //iii) a) check passage position not already matched
             //test with these sequences which should both match and not overlap
             //A seq pposition=63 length=18
@@ -451,7 +451,7 @@ class diff{
                     //iii) b) check transcript match was not matched elsewhere in passage
                     if($sequence->tposition >= $priorsequence->tposition &&
                         $sequence->tposition < $priorsequence->tposition + $priorsequence->length){
-                        $bust=true;                     
+                        $bust=true;
                         break;
                     }
                     //iii) c) check passsage match and transcript match positions are consistent with prev. sequences
@@ -477,11 +477,13 @@ class diff{
                 $enddistance =$sequence->pposition - $transcriptlength;
 
                 //ratio of alternates to full matches
-                if($sequence->altcount) {
-                    $altratio = $sequence->length / $sequence->altcount;
+                $altcount = count($sequence->altpositions);
+                if($altcount) {
+                    $altratio = $sequence->length / $altcount;
                 }else{
                     $altratio=0;
                 }
+
                 //common is short matches after speaking ends
                 //particularly dangerous are wildcards and alternates
                 if(($altratio >= 0.5) && $enddistance > 0){
@@ -497,42 +499,47 @@ class diff{
             //i) matched and
             //ii) record transcript position so we can play it back.
             //Then store sequence in prior sequences
-            for($p=$sequence->pposition; $p < $sequence->pposition + $sequence->length; $p++){         
+            for($p=$sequence->pposition; $p < $sequence->pposition + $sequence->length; $p++){
                 //word position in sequence ( 0 = first )
                 $wordposition = $p - $sequence->pposition;
                 //NB pposition starts from 1. We adjust tposition to match
                 $tposition = $sequence->tposition + $wordposition + 1;
-                $diffs[$p]=[self::MATCHED,$tposition];
+                //was this an alternatives match?
+                if(in_array($p,$sequence->altpositions)){
+                    $altmatch=self::ALTERNATEMATCH;
+                }else{
+                    $altmatch=self::NOTALTERNATEMATCH;
+                }
+
+                $diffs[$p]=[self::MATCHED,$tposition,$altmatch];
             }
             $priorsequences[] = $sequence;
         }
 
-        //we are debugging return an arry with some data we can look at
-         if($debug){
+        //we are debugging return an array with some data we can look at
+        if($debug){
             return [$diffs,$priorsequences];
         }else{
             return $diffs;
         }
-
-
     }
 
     /*
-    * We apply wildcards after all is done.
-    * If we do it during the sequence building it can mess things up when a wildcard
-    * matches a passage word to a transcript word that should match elsewhere.
-    * e.g [passage] The big green butcher
-    * [transcript] The green butcher
-    * [alternatives] big|*
-    * In this case [transcript]green can be matched against [passage]big
-    * If the sequence containing this match is selected, then "green" can be marked as missing, and hence an error
-    *
-    * The sequence loop may or may not select the faulty sequence. Rather than patch this up with forward matches and
-    * tricks,  we now leave wildcards out of sequence building and just patch up the diffs array here
-    *
-    * The same situation might occur with alternatives too, but the missed word is likely similar to the matched word
-    * e.g "The artists are this close to us." so we can accept it.
-    */
+     * We apply wildcards after all is done.
+     * If we do it during the sequence building it can mess things up when a wildcard
+     * matches a passage word to a transcript word that should match elsewhere.
+     * e.g [passage] The big green butcher
+     * [transcript] The green butcher
+     * [alternatives] big|*
+     * In this case [transcript]green can be matched against [passage]big
+     * If the sequence containing this match is selected, then "green" can be marked as missing, and hence an error
+     *
+     * The sequence loop may or may not select the faulty sequence. Rather than patch this up with forward matches and
+     * tricks,  we now leave wildcards out of sequence building and just patch up the diffs array here
+     *
+     * The same situation might occur with alternatives too, but the missed word is likely similar to the matched word
+     * e.g "The artists are this close to us." so we can accept it.
+     */
     public static function applyWildcards($diffs,$passagebits,$wildcards){
         $last_tposition=1;
         $last_p=0;
@@ -553,7 +560,7 @@ class diff{
         //loop through to last acceptable passage word looking for wildcards
         for($p=0;$p<=$last_p;$p++){
             if($diffs[$p][0]==self::UNMATCHED && array_key_exists($passagebits[$p],$wildcards)){
-                $diffs[$p]=[self::MATCHED,$last_tposition];
+                $diffs[$p]=[self::MATCHED,$last_tposition,self::ALTERNATEMATCH];
             }else if($diffs[$p][0]==self::MATCHED){
                 $last_tposition=$diffs[$p][1];
             }

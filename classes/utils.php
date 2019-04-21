@@ -630,6 +630,9 @@ class utils{
            constants::M_LANG_ENAU=>get_string('en-au',constants::M_COMPONENT),
            constants::M_LANG_ESUS=>get_string('es-us',constants::M_COMPONENT),
            constants::M_LANG_FRCA=>get_string('fr-ca',constants::M_COMPONENT),
+           constants::M_LANG_FRFR => get_string('fr-fr', constants::M_COMPONENT),
+            constants::M_LANG_ITIT => get_string('it-it', constants::M_COMPONENT),
+            constants::M_LANG_PTBR => get_string('pt-br', constants::M_COMPONENT)
        );
 	/*
       return array(

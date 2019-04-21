@@ -104,4 +104,7 @@ const M_LANG_ENUK = 'en-UK';
 const M_LANG_ENAU = 'en-AU';
 const M_LANG_ESUS = 'es-US';
 const M_LANG_FRCA = 'fr-CA';
+const M_LANG_FRFR = 'fr-FR';
+const M_LANG_ITIT = 'it-IT';
+const M_LANG_PTBR = 'pt-BR';
 }

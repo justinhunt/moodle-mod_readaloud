@@ -1,7 +1,7 @@
 define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhelper'], function($,log,def,popoverhelper) {
     "use strict"; // jshint ;_;
 
-    log.debug('Readaloud Gradenow helper: initialising');
+    log.debug('Gradenow helper: initialising');
 
     return{
         //controls
@@ -45,7 +45,15 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             clearbutton: def.clearbutton,
             spotcheckmode: def.spotcheckmode,
             aiunmatched: def.aiunmatched,
-            passagecontainer: def.passagecontainer
+            passagecontainer: def.passagecontainer,
+
+            maybeselfcorrectclass: def.maybeselfcorrectclass,
+            selfcorrectclass: def.selfcorrectclass,
+            notesclass: def.notesclass,
+            structuralclass: def.structuralclass,
+            meaningclass: def.meaningclass,
+            visualclass: def.visualclass,
+
         },
 
         options: {
@@ -287,7 +295,6 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
                 //do nothing
 
             //here we will put real options for playing the model reading and user reading etc
-            //}else if(this.options.reviewmode === this.constants.REVIEWMODE_MACHINE){
             }else if(false){
                 /*
                 if(this.enabletts && this.options.ttslanguage != 'none'){
@@ -814,6 +821,8 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
                 );
             }
 
+            this.markup_maybeselfcorrects();
+
         },
         adderrorword: function(wordnumber,word) {
             this.options.errorwords[wordnumber] = {word: word, wordnumber: wordnumber};
@@ -821,7 +830,7 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             return;
         },
         processword: function() {
-            var m = this;// M.mod_readaloud.gradenowhelper;
+            var m = this;
             var wordnumber = $(this).attr('data-wordnumber');
             var theword = $(this).text();
             //this will disallow badwords after the endmarker
@@ -838,10 +847,11 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             }
             m.processscores();
         },
+        //this function is never called it seems ....
         processspace: function() {
             //this event is entered by  click on space
             //it relies on attr data-wordnumber being set correctly
-            var m = this;// M.mod_readaloud.gradenowhelper;
+            var m = this;
             var wordnumber = $(this).attr('data-wordnumber');
             var thespace = $('#' + m.cd.spaceclass + '_' + wordnumber);
 
@@ -857,8 +867,41 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             m.processunread();
             m.processscores();
         },
+
+        markup_maybeselfcorrects: function(){
+            var that =this;
+            if(this.options.sessionmatches){
+                var prevmatch=false;
+                //loop through matches checking for insertions prior to matches
+                $.each(this.options.sessionmatches,function(index,match){
+                    var maybe=false; // insertions exist between this match and prev match
+                    var verymaybe=false; //this word is matched and prev word is matched, but insertions exist
+
+                    if(prevmatch){
+                        if(match.tposition - prevmatch.tposition > 1 && match.pposition - prevmatch.pposition == 1){
+                            maybe=true;
+                            verymaybe=true;
+                        }else{
+                            if(match.tposition - prevmatch.tposition > 1){
+                                maybe=true;
+                            }
+                        }
+                    }else if(prevmatch ===false){
+                        if(match.pposition<match.tposition){
+                            maybe=true;
+                        }
+                    }
+                    //for now we will just work with very maybes, but we could do maybes
+                    if(verymaybe){
+                        $('#' + that.cd.wordclass + '_' + match.pposition).addClass(that.cd.maybeselfcorrectclass);
+                    }
+                    prevmatch =match;
+                });
+            }
+        },
+
         processunread: function(){
-            var m = this;// M.mod_readaloud.gradenowhelper;
+            var m = this;
             m.controls.eachword.each(function(index){
                 var wordnumber = $(this).attr('data-wordnumber');
                 var thespace = $('#' + m.cd.spaceclass + '_' + wordnumber);
@@ -866,6 +909,7 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
                 if(Number(wordnumber)>Number(m.options.endwordnumber)){
                     $(this).addClass(m.cd.unreadwordclass);
                     thespace.addClass(m.cd.unreadspaceclass);
+
                     //this will clear badwords after the endmarker
                     if(m.options.enforcemarker && wordnumber in m.options.errorwords){
                         delete m.options.errorwords[wordnumber];
@@ -878,7 +922,7 @@ define(['jquery','core/log','mod_readaloud/definitions','mod_readaloud/popoverhe
             });
         },
         processscores: function(){
-            var m = this;//M.mod_readaloud.gradenowhelper;
+            var m = this;
             var errorscore = Object.keys(m.options.errorwords).length;
             m.controls.errorscorebox.text(errorscore);
 
