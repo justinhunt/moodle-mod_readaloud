@@ -371,7 +371,11 @@ class renderer extends \plugin_renderer_base {
         //=======================================
         $hints = new \stdClass();
         $hints->allowearlyexit = $moduleinstance->allowearlyexit;
+        if ( $moduleinstance->transcriber == constants::TRANSCRIBER_GOOGLECLOUDSPEECH) {
+            $hints->encoder='stereoaudio';
+        }
         $string_hints = base64_encode (json_encode($hints));
+
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
         $transcribe = $can_transcribe  ? $moduleinstance->transcriber : "0";
         $recorderdiv= \html_writer::div('', constants::M_CLASS  . '_center',

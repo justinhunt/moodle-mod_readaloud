@@ -266,21 +266,32 @@ class utils{
         }
     }
 
-    //fetch start-time and end-time points for each word
-    public static function fetch_audio_points($fulltranscript,$matches,$alternatives){
+
+    public static function fetch_audio_points($fulltranscript,$matches,$alternatives) {
 
         //first check if we have a fulltranscript (we might only have a transcript in some cases)
         //if not we just return dummy audio points. Que sera sera
-        if(!self::is_json($fulltranscript)){
+        if (!self::is_json($fulltranscript)) {
             foreach ($matches as $matchitem) {
                 $matchitem->audiostart = 0;
                 $matchitem->audioend = 0;
             }
             return $matches;
         }
+        $transcript =  json_decode($fulltranscript);
+        if(isset($transcript->results)){
+            $matches = self::fetch_audio_points_json($transcript,$matches,$alternatives);
+        }else{
+            $matches = self::fetch_audio_points_gjson($transcript,$matches,$alternatives);
+        }
+        return $matches;
+    }
+
+
+    //fetch start-time and end-time points for each word
+    public static function fetch_audio_points_json($transcript,$matches,$alternatives){
 
        //get type 'pronunciation' items from full transcript. The other type is 'punctuation'.
-        $transcript = json_decode($fulltranscript);
         $titems=$transcript->results->items;
         $twords=array();
         foreach($titems as $titem){
@@ -320,6 +331,53 @@ class utils{
                 }
             }
         }
+        return $matches;
+    }
+
+    //fetch start-time and end-time points for each word
+    public static function fetch_audio_points_gjson($transcript,$matches,$alternatives){
+        $twords=[];
+        //create a big array of 'words' from gjson sentences
+        foreach($transcript as $sentence) {
+            $twords = array_merge($twords,$sentence->words);
+
+        }//end of sentence
+        $twordcount=count($twords);
+
+        //loop through matches and fetch audio start from word item
+            foreach ($matches as $matchitem) {
+                if ($matchitem->tposition <= $twordcount) {
+                    //pull the word data object from the full transcript, at the index of the match
+                    $tword = $twords[$matchitem->tposition - 1];
+                    //make startTime and endTime match the regular format
+                    $start_time = $tword->startTime->seconds + round(floatval($tword->startTime->nanos * .000000001),2);
+                    $end_time = $tword->endTime->seconds + round(floatval($tword->endTime->nanos * .000000001),2);
+
+                    //trust or be sure by matching ...
+                    $trust = false;
+                    if ($trust) {
+                        $matchitem->audiostart = $start_time;
+                        $matchitem->audioend = $end_time;
+                    } else {
+                        //format the text of the word to lower case no punc, to match the word in the matchitem
+                        $tword_text = strtolower($tword->word);
+                        $tword_text = preg_replace("#[[:punct:]]#", "", $tword_text);
+                        //if we got it, fetch the audio position from the word data object
+                        if ($matchitem->word == $tword_text) {
+                            $matchitem->audiostart = $start_time;
+                            $matchitem->audioend = $end_time;
+
+                            //do alternatives search for match
+                        } else if (diff::check_alternatives_for_match($matchitem->word,
+                                $tword_text,
+                                $alternatives)) {
+                            $matchitem->audiostart = $start_time;
+                            $matchitem->audioend = $end_time;
+                        }
+                    }
+                }
+            }//end of words
+
         return $matches;
     }
 
@@ -485,6 +543,11 @@ class utils{
      * @return a string which is the transcript match of a passage word, or false if the transcript=passage
     */
     public static function fetch_one_mistranscription($passageindex,$transcriptwords,$matches){
+
+           //if we have a problem with matches (bad data?) just return
+        if(!$matches){
+            return false;
+        }
 
             //count transcript words
             $transcriptlength= count($transcriptwords);

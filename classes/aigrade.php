@@ -135,7 +135,11 @@ class aigrade
             if(strpos($transcript,"<Error><Code>AccessDenied</Code>")>0){
                 return false;
             }
+            //we should actually just determine if its fast or normal transcoding here
             $fulltranscript = utils::curl_fetch($this->attemptdata->filename . '.json');
+            if(!utils::is_json($fulltranscript)){
+                $fulltranscript = utils::curl_fetch($this->attemptdata->filename . '.gjson');
+            }
         }
         if(!utils::is_json($fulltranscript)){
             $fulltranscript='';

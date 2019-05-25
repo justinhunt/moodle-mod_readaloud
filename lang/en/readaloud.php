@@ -299,5 +299,5 @@ $string['transcriber'] = 'Transcriber';
 $string['transcriber_details'] = 'The transcription engine to use';
 $string['transcriber_none'] = 'No transcription';
 $string['transcriber_amazontranscribe'] = 'Regular Transcription';
-$string['transcriber_googlecloud'] = 'Fast Transcription (no spot check)';
+$string['transcriber_googlecloud'] = 'Fast Transcription (< 60s only)';
 
