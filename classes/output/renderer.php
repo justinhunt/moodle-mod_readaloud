@@ -373,7 +373,7 @@ class renderer extends \plugin_renderer_base {
         $hints->allowearlyexit = $moduleinstance->allowearlyexit;
         $string_hints = base64_encode (json_encode($hints));
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
-        $transcribe = $can_transcribe  ? "1" : "0";
+        $transcribe = $can_transcribe  ? $moduleinstance->transcriber : "0";
         $recorderdiv= \html_writer::div('', constants::M_CLASS  . '_center',
             array('id'=>constants::M_RECORDERID,
                 'data-id'=>'therecorder',

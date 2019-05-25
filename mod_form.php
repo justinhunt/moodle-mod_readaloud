@@ -152,6 +152,14 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->setDefault('ttslanguage',$config->ttslanguage);
 
 
+        //transcriber options
+        $name = 'transcriber';
+        $label = get_string($name, constants::M_COMPONENT);
+        $options = \mod_readaloud\utils::fetch_options_transcribers();
+        $mform->addElement('select', $name, $label, $options);
+        $mform->setDefault($name, $config->{$name});
+
+
         //region
         $regionoptions = \mod_readaloud\utils::get_region_options();
         $mform->addElement('select', 'region', get_string('region', constants::M_COMPONENT), $regionoptions);

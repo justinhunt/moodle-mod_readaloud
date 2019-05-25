@@ -95,10 +95,10 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 
         $data = (object)$data;
         $oldid = $data->id;
-
+        $data->courseid = $this->get_courseid();
         $data->timecreated = $this->apply_date_offset($data->timecreated);
-
-		
+        $data->timemodified = $this->apply_date_offset($data->timemodified);
+        $data->userid = $this->get_mappingid('user', $data->userid);
         $data->{constants::M_MODNAME . 'id'} = $this->get_new_parentid(constants::M_MODNAME);
         $newitemid = $DB->insert_record(constants::M_USERTABLE, $data);
 		
@@ -114,10 +114,9 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 
         $data = (object)$data;
         $oldid = $data->id;
-
+        $data->courseid = $this->get_courseid();
         $data->timecreated = $this->apply_date_offset($data->timecreated);
-
-
+        $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->{constants::M_MODNAME . 'id'} = $this->get_new_parentid(constants::M_MODNAME);
         $data->attemptid = $this->get_new_parentid(constants::M_USERTABLE);
         $newitemid = $DB->insert_record(constants::M_AITABLE, $data);

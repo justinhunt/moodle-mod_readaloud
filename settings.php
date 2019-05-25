@@ -48,9 +48,6 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/apisecret',
         get_string('apisecret', constants::M_COMPONENT),$tokeninfo , '', PARAM_TEXT));
 
-
-
-
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enableai',
         get_string('enableai', constants::M_COMPONENT), get_string('enableai_details',constants::M_COMPONENT), 1));
 
@@ -74,15 +71,24 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/allowearlyexit',
 	 get_string('allowearlyexit', constants::M_COMPONENT), get_string('allowearlyexit_defaultdetails',constants::M_COMPONENT), 0));
 
-    $machinegradeoptions = \mod_readaloud\utils::get_machinegrade_options();
-    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/machinegrademethod', get_string('machinegrademethod', constants::M_COMPONENT),
-        get_string('machinegrademethod_help', constants::M_COMPONENT), constants::MACHINEGRADE_MACHINE, $machinegradeoptions));
+   //machine grade method
+    $name = 'machinegrademethod';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details =get_string($name . '_details',constants::M_COMPONENT);
+    $default = constants::MACHINEGRADE_MACHINE;
+    $options = \mod_readaloud\utils::get_machinegrade_options();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
+            $label, $details, $default, $options));
 
-    $postattempt_options = \mod_readaloud\utils::get_postattempt_options();
-    $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/humanpostattempt',
-        get_string('evaluationview', constants::M_COMPONENT),
-        get_string('evaluationview_details',constants::M_COMPONENT),
-        constants::POSTATTEMPT_EVALERRORS, $postattempt_options));
+
+    //Evaluation view (what students see after an attempt)
+    $name = 'humanpostattempt';
+    $label = get_string('evaluationview', constants::M_COMPONENT);
+    $details =get_string('evaluationview_details',constants::M_COMPONENT);
+    $default = constants::POSTATTEMPT_EVALERRORS;
+    $options = \mod_readaloud\utils::get_postattempt_options();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
+            $label, $details, $default, $options));
 /*
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/machinepostattempt',
         get_string('machinepostattempt', constants::M_COMPONENT),
@@ -95,10 +101,30 @@ if ($ADMIN->fulltree) {
 	 get_string('enabletts', constants::M_COMPONENT), get_string('enabletts_details',constants::M_COMPONENT), 0));
 	 */
 
-	 $langoptions = \mod_readaloud\utils::get_lang_options();
-	 $settings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/ttslanguage', get_string('ttslanguage', constants::M_COMPONENT), '', 'en', $langoptions));
-	 
-	 $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/itemsperpage',
-        get_string('itemsperpage', constants::M_COMPONENT), get_string('itemsperpage_details', constants::M_COMPONENT), 10, PARAM_INT));
+    //Language options
+    $name = 'ttslanguage';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details ="";
+    $default = constants::M_LANG_ENUS;
+    $options = \mod_readaloud\utils::get_lang_options();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
+            $label, $details, $default, $options));
+
+    // Transcriber options
+    $name = 'transcriber';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = get_string($name . '_details', constants::M_COMPONENT);
+    $default = constants::TRANSCRIBER_AMAZONTRANSCRIBE;
+    $options = utils::fetch_options_transcribers();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
+            $label, $details, $default, $options));
+
+    // Items per page options
+    $name = 'itemsperpage';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = get_string($name . '_details', constants::M_COMPONENT);
+    $default = 10;
+	$settings->add(new admin_setting_configtext(constants::M_COMPONENT .  "/$name",
+        $label, $details, $default, PARAM_INT));
 
 }

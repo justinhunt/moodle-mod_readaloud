@@ -46,9 +46,8 @@ class event_observer{
     public static function course_deleted(\core\event\course_deleted $event) {
        global $DB;
 		//constants::M_TABLE should be deleted elsewhere
-		//this is just to demonstrate how to handle an event. 
-		//It is probably not even necessary to clear data from here when a course is deleted.
 		$ret = $DB->delete_records(constants::M_USERTABLE,array('courseid'=>$event->objectid));
+        $ret = $DB->delete_records(constants::M_AITABLE,array('courseid'=>$event->objectid));
 		return $ret;
 	}
 }

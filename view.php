@@ -106,7 +106,7 @@ if(!$canpreview){
     $debug=false;
 }
 
-//reset our retake flag if we cant reatempt
+//reset our retake flag if we cant reattempt
 if(!$canattempt){$retake=0;}
 
 //display the most recent previous attempt if we have one

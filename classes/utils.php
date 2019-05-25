@@ -76,6 +76,14 @@ class utils{
         return $ret;
     }
 
+    //see if this is truly json or some error
+    public static function is_json($string) {
+     if(!$string){return false;}
+     if(empty($string)){return false;}
+     json_decode($string);
+     return (json_last_error() == JSON_ERROR_NONE);
+    }
+
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
@@ -237,6 +245,11 @@ class utils{
     }
 
     public static function fetch_duration_from_transcript($fulltranscript){
+        //if we do not have the full transcript return 0
+        if(!$fulltranscript || empty($fulltranscript)){
+            return 0;
+        }
+
         $transcript = json_decode($fulltranscript);
         $titems=$transcript->results->items;
         $twords=array();
@@ -255,6 +268,16 @@ class utils{
 
     //fetch start-time and end-time points for each word
     public static function fetch_audio_points($fulltranscript,$matches,$alternatives){
+
+        //first check if we have a fulltranscript (we might only have a transcript in some cases)
+        //if not we just return dummy audio points. Que sera sera
+        if(!self::is_json($fulltranscript)){
+            foreach ($matches as $matchitem) {
+                $matchitem->audiostart = 0;
+                $matchitem->audioend = 0;
+            }
+            return $matches;
+        }
 
        //get type 'pronunciation' items from full transcript. The other type is 'punctuation'.
         $transcript = json_decode($fulltranscript);
@@ -623,14 +646,23 @@ class utils{
       );
   }
 
+    public static function fetch_options_transcribers() {
+        $options = array(constants::TRANSCRIBER_AMAZONTRANSCRIBE => get_string("transcriber_amazontranscribe", constants::M_COMPONENT),
+                constants::TRANSCRIBER_GOOGLECLOUDSPEECH => get_string("transcriber_googlecloud", constants::M_COMPONENT));
+        return $options;
+    }
+
    public static function get_lang_options(){
        return array(
            constants::M_LANG_ENUS=>get_string('en-us',constants::M_COMPONENT),
            constants::M_LANG_ENUK=>get_string('en-uk',constants::M_COMPONENT),
            constants::M_LANG_ENAU=>get_string('en-au',constants::M_COMPONENT),
+           constants::M_LANG_ENIN=>get_string('en-in',constants::M_COMPONENT),
            constants::M_LANG_ESUS=>get_string('es-us',constants::M_COMPONENT),
+           constants::M_LANG_ESES=>get_string('es-es',constants::M_COMPONENT),
            constants::M_LANG_FRCA=>get_string('fr-ca',constants::M_COMPONENT),
            constants::M_LANG_FRFR => get_string('fr-fr', constants::M_COMPONENT),
+           constants::M_LANG_DEDE => get_string('de-de', constants::M_COMPONENT),
             constants::M_LANG_ITIT => get_string('it-it', constants::M_COMPONENT),
             constants::M_LANG_PTBR => get_string('pt-br', constants::M_COMPONENT)
        );

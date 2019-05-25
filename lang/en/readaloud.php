@@ -168,6 +168,7 @@ $string['frankfurt']='Frankfurt, Germany (no AI)';
 $string['london']='London, U.K (no AI)';
 $string['saopaulo']='Sao Paulo, Brazil (no AI)';
 $string['forever']='Never expire';
+
 $string['en-us']='English (US)';
 $string['es-us']='Spanish (US)';
 $string['en-au']='English (Aus.)';
@@ -176,6 +177,11 @@ $string['fr-ca']='French (Can.)';
 $string['fr-fr']='French (FR)';
 $string['it-it']='Italian (IT)';
 $string['pt-br']='Portuguese (BR)';
+$string['en-in']='English (IN)';
+$string['es-es']='Spanish (ES)';
+$string['fr-fr'] = 'French (FR)';
+$string['de-de'] = 'German(DE)';
+
 $string['awsregion']='AWS Region';
 $string['region']='AWS Region';
 $string['expiredays']='Days to keep file';
@@ -222,6 +228,7 @@ $string['ok']="OK";
 $string['ng']="Not OK";
 $string['notok']="Not OK";
 $string['machinegrademethod']="Human/Machine Grading";
+$string['machinegrademethod_details']="Use machine evaluations or human evaluations as grades in grade book.";
 $string['machinegrademethod_help']="Use machine evaluations or human evaluations as grades in grade book.";
 $string['machinegradenone']="Never use machine eval. for grade";
 $string['machinegrademachine']="Use human or machine eval. for grade";
@@ -287,3 +294,10 @@ $string['passageword']='Passage Word';
 $string['mistranscriptions']='Mistranscriptions';
 $string['mistrans_count']='Count';
 $string['total_mistranscriptions']='Total mistranscriptions: {$a}';
+
+$string['transcriber'] = 'Transcriber';
+$string['transcriber_details'] = 'The transcription engine to use';
+$string['transcriber_none'] = 'No transcription';
+$string['transcriber_amazontranscribe'] = 'Regular Transcription';
+$string['transcriber_googlecloud'] = 'Fast Transcription (no spot check)';
+
