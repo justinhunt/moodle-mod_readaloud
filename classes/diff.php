@@ -434,7 +434,7 @@ class diff{
 
         //ii) sort sequences by length, transcript posn
         //long sequences sort higher, and are placed in the diff array first
-        usort($sequences, array('\mod_readseed\diff','cmp'));
+        usort($sequences, array('\mod_readaloud\diff','cmp'));
 
         //record prior sequences for iii)
         $priorsequences=array();
