@@ -160,8 +160,8 @@ class diff{
             case constants::M_LANG_ENUS:
             case constants::M_LANG_ENUK:
             case constants::M_LANG_ENAU:
-                if($passageword . 's' == $transcriptword){return true;}
-                if($passageword . 'ed' == $transcriptword){return true;}
+                if(self::mb_strequals($passageword . 's', $transcriptword)){return true;}
+                if(self::mb_strequals($passageword . 'ed', $transcriptword)){return true;}
                 break;
             default:
                 return false;
@@ -208,7 +208,7 @@ class diff{
 
                 //check for a forward match
                 if($forwardmatch!==false){
-                    $match = ($passageword == $forwardmatch);
+                    $match = self::mb_strequals($passageword, $forwardmatch);
                     //we matched a passage word + but did not use the next transcript word, so roll back t_slength
                     if($match) {
                         $t_slength--;
@@ -218,7 +218,7 @@ class diff{
 
                 //check for a direct match
                 if(!$match) {
-                    $match = $passageword == $transcriptword;
+                    $match =self::mb_strequals( $passageword,$transcriptword);
                 }
 
                 //if no direct match is there an alternates match
@@ -348,11 +348,11 @@ class diff{
         foreach($alternatives as $alternateset){
             $wordset=$alternateset[0];
             $forwardmatches=$alternateset[1];
-            if($wordset[0]==$passageword){
+            if(self::mb_strequals($wordset[0],$passageword)){
                 for($setindex =1;$setindex<count($wordset);$setindex++) {
                     //we no longer process wildcards while matching (we just reverse errors later)
                     //if ($wordset[$setindex] == $transcriptword || $wordset[$setindex] == '*') {
-                    if ($wordset[$setindex] == $transcriptword) {
+                    if (self::mb_strequals($wordset[$setindex], $transcriptword)) {
                         $ret->match = true;
                         $ret->matchlength = 1;
                         if(array_key_exists($wordset[$setindex],$forwardmatches)){
@@ -389,6 +389,15 @@ class diff{
         }//end of for each alternatives
         //we return the wildczrds
         return $wildcards;
+    }
+
+    public static function mb_strequals($str1, $str2, $encoding = null) {
+        if (null === $encoding) { $encoding = mb_internal_encoding(); }
+        if (strcmp(mb_strtoupper($str1, $encoding), mb_strtoupper($str2, $encoding))==0) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     //for use with PHP usort and arrays of sequences
