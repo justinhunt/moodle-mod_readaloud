@@ -28,7 +28,7 @@ define(['jquery','core/log','mod_readaloud/definitions'], function($,log,def) {
             //handle the button click
             this.controls.hiddenplayerbutton.click(function(e){
                 var audiosrc = $(this).attr('data-audiosource');
-                if (audiosrc == audioplayer.attr('src') && !(audioplayer.prop('paused'))) {
+                if (audiosrc === audioplayer.attr('src') && !(audioplayer.prop('paused'))) {
                     that.dohiddenstop();
                 } else {
                     that.dohiddenplay(audiosrc);
@@ -69,7 +69,7 @@ define(['jquery','core/log','mod_readaloud/definitions'], function($,log,def) {
             }
             m.controls.hiddenplayerbutton.each(function (index) {
                 var audiosrc = $(this).attr('data-audiosource');
-                if (audiosrc == theaudiosrc) {
+                if (audiosrc === theaudiosrc) {
                     $(this).addClass(m.activebutton);
                     if (audioplayer.prop('paused')) {
                         $(this).removeClass(m.hiddenplayerbuttonplaying);

@@ -89,7 +89,7 @@ This file is to
         addTranscript: function(item,transcript){
 
             //if we are already showing this item then dispose of it, set last item to null and go home
-            if(this.lastitem == item) {
+            if(this.lastitem === item) {
                 $(this.lastitem).popover(this.disposeWord());
                 this.lastitem = false;
                 return;

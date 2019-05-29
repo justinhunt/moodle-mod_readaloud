@@ -32,7 +32,7 @@ This file sets up the cloud poodll recorder and passes on events to registered h
                             break;
                         case 'awaitingprocessing':
                             //awaitingprocessing fires often, but we only want to post once
-                            if(that.status!='posted') {
+                            if(that.status!=='posted') {
                                 on_audio_processing(message);
                             }
                             that.status='posted';

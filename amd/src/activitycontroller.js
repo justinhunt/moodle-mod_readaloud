@@ -163,7 +163,7 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/definitions','mod_readalo
             //set up our handler for the response
             xhr.onreadystatechange = function(e){
                 if(this.readyState===4){
-                    if(xhr.status==200){
+                    if(xhr.status===200){
                         log.debug('ok we got an attempt submission response');
                         //get a yes or forgetit or tryagain
                         var payload = xhr.responseText;
