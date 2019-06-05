@@ -1,3 +1,7 @@
+Version 2.0.13 (Build 2019052001)'
+-fixed unencoded url in post activity ajax submission
+
+
 Version 2.0.12 (Build 2019052000)
 -Fixed up backup restore bug where userid not mapped correctly
 -Improved course deleted event
