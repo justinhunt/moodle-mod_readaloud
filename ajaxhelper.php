@@ -82,6 +82,9 @@ return;
 function save_to_moodle($filename,$rectime, $readaloud){
     global $USER,$DB;
 
+    //correct filename which has probably been massaged to get through mod_security
+    $filename = str_replace('https___','https://',$filename);
+
     //Add a blank attempt with just the filename  and essential details
     $newattempt = new stdClass();
     $newattempt->courseid=$readaloud->course;

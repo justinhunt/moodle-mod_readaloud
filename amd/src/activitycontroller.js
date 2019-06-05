@@ -189,6 +189,8 @@ define(['jquery','jqueryui', 'core/log','mod_readaloud/definitions','mod_readalo
                 }
             };
 
+            //to get through mod_security environments
+            filename = filename.replace(/^https:\/\//i, 'https___');
             var params = "cmid=" + that.cmid + "&filename=" + encodeURIComponent(filename) + "&rectime=" + rectime;
             xhr.open("POST",M.cfg.wwwroot + '/mod/readaloud/ajaxhelper.php', true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
