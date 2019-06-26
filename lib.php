@@ -341,13 +341,19 @@ function readaloud_get_completion_state($course,$cm,$userid,$type) {
 //this is called internally only 
 function readaloud_is_complete($course,$cm,$userid,$type) {
 	 global $CFG,$DB;
-	 
-	  global $CFG,$DB;
+
+
 
 	// Get module object
     if(!($moduleinstance=$DB->get_record(constants::M_TABLE,array('id'=>$cm->instance)))) {
         throw new Exception("Can't find module with cmid: {$cm->instance}");
     }
+
+    if(!($moduleinstance->mingrade>0)){
+        return $type;
+    }
+
+
 	$idfield = 'a.' . constants::M_MODNAME . 'id';
 	$params = array('moduleid'=>$moduleinstance->id, 'userid'=>$userid);
 	$sql = "SELECT  MAX( sessionscore  ) AS grade
@@ -401,6 +407,13 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
     $readaloud->timecreated = time();
 	$readaloud = readaloud_process_editors($readaloud,$mform);
     $instanceid = $DB->insert_record(constants::M_TABLE, $readaloud);
+
+    readaloud_grade_item_update($readaloud);
+    if (class_exists('\core_completion\api')) {
+        $completionexpected = (empty($readaloud->completionexpected) ? null : $readaloud->completionexpected);
+        \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id, $completionexpected);
+    }
+
 	return $instanceid;
 }
 
@@ -432,10 +445,27 @@ function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $
 function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $mform = null) {
     global $DB;
 
+
+    $params = array('id' => $readaloud->instance);
+    $oldgradefield = $DB->get_field(constants::M_TABLE, 'grade', $params);
+
     $readaloud->timemodified = time();
     $readaloud->id = $readaloud->instance;
 	$readaloud = readaloud_process_editors($readaloud,$mform);
 	$success = $DB->update_record(constants::M_TABLE, $readaloud);
+
+    readaloud_grade_item_update($readaloud);
+    if (class_exists('\core_completion\api')) {
+        $completionexpected = (empty($readaloud->completionexpected) ? null : $readaloud->completionexpected);
+        \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id, $completionexpected);
+    }
+
+
+    $update_grades = ($readaloud->grade === $oldgradefield ? false : true);
+    if ($update_grades) {
+        readaloud_update_grades($readaloud, 0, false);
+    }
+
 	return $success;
 }
 
