@@ -1,3 +1,6 @@
+Version 2.0.14 (Build 2019062600)
+-Fixed broken gradebook integration and completion settings
+
 Version 2.0.13 (Build 2019052001)'
 -fixed unencoded url in post activity ajax submission
 

@@ -342,8 +342,6 @@ function readaloud_get_completion_state($course,$cm,$userid,$type) {
 function readaloud_is_complete($course,$cm,$userid,$type) {
 	 global $CFG,$DB;
 
-
-
 	// Get module object
     if(!($moduleinstance=$DB->get_record(constants::M_TABLE,array('id'=>$cm->instance)))) {
         throw new Exception("Can't find module with cmid: {$cm->instance}");
@@ -353,23 +351,27 @@ function readaloud_is_complete($course,$cm,$userid,$type) {
         return $type;
     }
 
-
-	$idfield = 'a.' . constants::M_MODNAME . 'id';
-	$params = array('moduleid'=>$moduleinstance->id, 'userid'=>$userid);
-	$sql = "SELECT  MAX( sessionscore  ) AS grade
-                      FROM {". constants::M_USERTABLE ."}
+    $cantranscribe = utils::can_transcribe($moduleinstance);
+	$params = array('userid'=>$userid,'moduleid'=>$moduleinstance->id);
+    if($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+        //choose greater or  ai or human score
+        $sql = "SELECT  GREATEST(MAX(ai.sessionscore), MAX(a.sessionscore)) AS grade
+                      FROM {" . constants::M_AITABLE . "} ai
+                      INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
+                     WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
+    }else {
+        //choose human grades only
+        $sql = "SELECT  MAX( sessionscore  ) AS grade
+                      FROM {" . constants::M_USERTABLE . "}
                      WHERE userid = :userid AND " . constants::M_MODNAME . "id = :moduleid";
+    }
+
 	$result = $DB->get_field_sql($sql, $params);
 	if($result===false){return false;}
 	 
 	//check completion reqs against satisfied conditions
-	switch ($type){
-		case COMPLETION_AND:
-			$success = $result >= $moduleinstance->mingrade;
-			break;
-		case COMPLETION_OR:
-			$success = $result >= $moduleinstance->mingrade;
-	}
+	$success = $result >= $moduleinstance->mingrade;
+
 	//return our success flag
 	return $success;
 }
@@ -406,7 +408,7 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
 
     $readaloud->timecreated = time();
 	$readaloud = readaloud_process_editors($readaloud,$mform);
-    $instanceid = $DB->insert_record(constants::M_TABLE, $readaloud);
+    $readaloud->id = $DB->insert_record(constants::M_TABLE, $readaloud);
 
     readaloud_grade_item_update($readaloud);
     if (class_exists('\core_completion\api')) {
@@ -414,7 +416,7 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
         \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id, $completionexpected);
     }
 
-	return $instanceid;
+	return $readaloud->id;
 }
 
 

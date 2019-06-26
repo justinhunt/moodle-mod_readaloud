@@ -685,6 +685,7 @@ class utils{
     public static function get_timelimit_options(){
         return array(
             0 => get_string("notimelimit",constants::M_COMPONENT),
+            15 => get_string("xsecs",constants::M_COMPONENT,'15'),
             30 => get_string("xsecs",constants::M_COMPONENT,'30'),
             45 => get_string("xsecs",constants::M_COMPONENT,'45'),
             60 => get_string("onemin",constants::M_COMPONENT),
