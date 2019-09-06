@@ -181,6 +181,7 @@ $string['en-in']='English (IN)';
 $string['es-es']='Spanish (ES)';
 $string['fr-fr'] = 'French (FR)';
 $string['de-de'] = 'German(DE)';
+$string['da-dk'] = 'Danish(DK)';
 
 $string['awsregion']='AWS Region';
 $string['region']='AWS Region';

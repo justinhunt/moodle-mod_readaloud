@@ -110,6 +110,7 @@ const M_LANG_FRFR = 'fr-FR';
 const M_LANG_DEDE = 'de-DE';
 const M_LANG_ITIT = 'it-IT';
 const M_LANG_PTBR = 'pt-BR';
+const M_LANG_DADK = 'da-DK';
 
 const TRANSCRIBER_NONE = 0;
 const TRANSCRIBER_AMAZONTRANSCRIBE = 1;

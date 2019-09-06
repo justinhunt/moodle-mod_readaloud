@@ -728,7 +728,8 @@ class utils{
            constants::M_LANG_FRFR => get_string('fr-fr', constants::M_COMPONENT),
            constants::M_LANG_DEDE => get_string('de-de', constants::M_COMPONENT),
             constants::M_LANG_ITIT => get_string('it-it', constants::M_COMPONENT),
-            constants::M_LANG_PTBR => get_string('pt-br', constants::M_COMPONENT)
+            constants::M_LANG_PTBR => get_string('pt-br', constants::M_COMPONENT),
+               constants::M_LANG_DADK => get_string('da-dk', constants::M_COMPONENT)
        );
 	/*
       return array(
