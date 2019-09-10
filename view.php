@@ -95,7 +95,7 @@ $ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id,$USER->i
 $canattempt = true;
 $canpreview = has_capability('mod/readaloud:preview',$modulecontext);
 if(!$canpreview && $moduleinstance->maxattempts > 0){
-	$attempts =  $DB->get_records(constants::M_USERTABLE,array('userid'=>$USER->id, constants::M_MODNAME.'id'=>$moduleinstance->id));
+	$attempts =  $DB->get_records(constants::M_USERTABLE,array('userid'=>$USER->id, constants::M_MODNAME.'id'=>$moduleinstance->id),'timecreated DESC');
 	if($attempts && count($attempts)>=$moduleinstance->maxattempts){
 		$canattempt=false;
 	}

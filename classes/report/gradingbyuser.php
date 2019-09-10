@@ -143,18 +143,18 @@ class gradingbyuser extends basereport
         $this->headingdata->userid = $formdata->userid;
 
         $emptydata = array();
-        $user_attempt_totals = array();
-        $alldata = $DB->get_records(constants::M_USERTABLE, array('readaloudid' => $formdata->readaloudid, 'userid' => $formdata->userid), 'id DESC');
 
         //if we are not machine grading the SQL is simpler
         $human_sql = "SELECT tu.*  FROM {" . constants::M_USERTABLE . "} tu " .
             "WHERE tu.readaloudid=? " .
+            "AND tu.userid=? " .
             "ORDER BY tu.id DESC";
 
         //if we are machine grading we need to fetch human and machine so we can get WPM etc from either
         $hybrid_sql="SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore  FROM {" . constants::M_USERTABLE . "} tu " .
             "INNER JOIN {". constants::M_AITABLE ."} tai ON tai.attemptid=tu.id " .
             "WHERE tu.readaloudid=? " .
+            "AND tu.userid=? " .
             "ORDER BY tu.id DESC";
 
         //we need a module instance to know which scoring method we are using.
@@ -163,7 +163,7 @@ class gradingbyuser extends basereport
 
         //run the sql and match up WPM/ accuracy and sessionscore if we need to
         if($moduleinstance->machgrademethod==constants::MACHINEGRADE_MACHINE && $cantranscribe) {
-            $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid));
+            $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid, $formdata->userid));
             if($alldata) {
                 //sessiontime is our indicator that a human grade has been saved.
                 foreach ($alldata as $result) {
@@ -175,7 +175,7 @@ class gradingbyuser extends basereport
                 }
             }
         }else{
-            $alldata =$DB->get_records_sql($human_sql, array($formdata->readaloudid));
+            $alldata =$DB->get_records_sql($human_sql, array($formdata->readaloudid, $formdata->userid));
         }
 
         if ($alldata) {
