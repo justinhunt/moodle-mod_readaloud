@@ -260,7 +260,7 @@ class utils{
         }
         $lastindex = count($twords);
         if($lastindex>0){
-            return $twords[$lastindex-1]->end_time;
+            return round($twords[$lastindex-1]->end_time,0);
         }else{
             return 0;
         }

@@ -152,8 +152,16 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             //TODO: really should get audio duration at recording time.
             var m = this;
             var processloadedaudio = function () {
-                if (m.options.allowearlyexit) {
-                    m.options.totalseconds = Math.round($('#' + m.cd.audioplayerclass).prop('duration'));
+                if (m.options.allowearlyexit){
+                    //using the audio player duration is actually more accurate than aidata.sessiontime
+                    //but it will give diff results to score used in autograding which when allowing earlyexit uses aiddata.sessiontime
+                    // (aidata.sessiontime is the end time of last recognised word.)
+                    //So to ensure consistency we also use the aidata.sessiontime here
+                    if(m.options.aidata && m.options.aidata.sessiontime) {
+                        m.options.totalseconds = m.options.aidata.sessiontime;
+                    }else {
+                        m.options.totalseconds = Math.round($('#' + m.cd.audioplayerclass).prop('duration'));
+                    }
                 } else {
                     m.options.totalseconds = m.options.timelimit;
                 }

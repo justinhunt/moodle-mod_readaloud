@@ -241,18 +241,25 @@ class aigrade
        $sessionmatches = json_encode($matches);
 
        //session time
+       //if we have a human eval sessiontime, use that.
         $sessiontime = $this->attemptdata->sessiontime;
         if(!$sessiontime){
-            if($this->activitydata->timelimit > 0){
-                $sessiontime=$this->activitydata->timelimit;
-            }elseif($this->aidata->sessiontime) {
+            //else if we have a time limit and not allowing early exit, we use the time limit
+            if($this->activitydata->timelimit > 0 && !$this->activitydata->allowearlyexit ){
+                $sessiontime = $this->activitydata->timelimit;
+
+                //else if we have stored an ai data sessiontime we use that
+                //(currently disabling this to force resync on recalc grades)
+            }elseif(false && $this->aidata->sessiontime) {
                 $sessiontime = $this->aidata->sessiontime;
+
+                //else we get it from transcript (it will be stored as aidata sessiontime for next time)
             }else {
                 //we get the end_time attribute of the final recognised word in the fulltranscript
                 $sessiontime = utils::fetch_duration_from_transcript($this->aidata->fulltranscript);
 
                 if($sessiontime<1) {
-                    //this is a guess now, We just don't know it.
+                    //this is a guess now, We just don't know it. And should not really get here.
                     $sessiontime = 60;
                 }
             }
