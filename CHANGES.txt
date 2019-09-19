@@ -1,3 +1,6 @@
+2.0.16 (Build 2019091900)
+-Fixed bug where student-review and grading pages, would show different results to grading report, when allowearlyexit was true
+
 Version 2.0.15 (Build 2019091000)
 -Fixed bug where non admins and limited attempts would not show correctly on student review page
 -Fixed bug where user attempts report showed all user results
