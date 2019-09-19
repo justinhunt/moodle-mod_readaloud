@@ -23,11 +23,22 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use \mod_readseed\constants;
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 
 $id = required_param('id', PARAM_INT);          // Course module ID
 $itemnumber = optional_param('itemnumber', 0, PARAM_INT); // Item number, may be != 0 for activities that allow more than one grade per user
 $userid = optional_param('userid', 0, PARAM_INT); // Graded user ID (optional)
 
-//in the simplest case just redirect to the view page
-redirect('view.php?id='.$id);
+$cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
+$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+$module = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+require_login($course, false, $cm);
+
+if(has_capability('mod/readaloud:manageattempts',context_module::instance($cm->id))){
+    redirect('grading.php?id='.$id);
+}else{
+    redirect('view.php?id='.$id);
+}
+
+
