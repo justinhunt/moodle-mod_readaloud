@@ -1,3 +1,7 @@
+2.0.17 (Build 2019091901)
+-Fixed bug where allow early exit and fast transcode would cause errors when fetching audio duration
+
+
 2.0.16 (Build 2019091900)
 -Fixed bug where student-review and grading pages, would show different results to grading report, when allowearlyexit was true
 

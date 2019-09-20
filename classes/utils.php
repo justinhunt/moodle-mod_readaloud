@@ -244,7 +244,23 @@ class utils{
         //return nl2br($passage);
     }
 
-    public static function fetch_duration_from_transcript($fulltranscript){
+    public static function fetch_duration_from_transcript($fulltranscript) {
+        //if we do not have the full transcript return 0
+        if(!$fulltranscript || empty($fulltranscript)){
+            return 0;
+        }
+
+        $transcript =  json_decode($fulltranscript);
+        if(isset($transcript->results)){
+            $duration = self::fetch_duration_from_transcript_json($fulltranscript);
+        }else{
+            $duration = self::fetch_duration_from_transcript_gjson($fulltranscript);
+        }
+        return $duration;
+
+    }
+
+    public static function fetch_duration_from_transcript_json($fulltranscript){
         //if we do not have the full transcript return 0
         if(!$fulltranscript || empty($fulltranscript)){
             return 0;
@@ -261,6 +277,29 @@ class utils{
         $lastindex = count($twords);
         if($lastindex>0){
             return round($twords[$lastindex-1]->end_time,0);
+        }else{
+            return 0;
+        }
+    }
+
+    public static function fetch_duration_from_transcript_gjson($fulltranscript){
+        //if we do not have the full transcript return 0
+        if(!$fulltranscript || empty($fulltranscript)){
+            return 0;
+        }
+
+        $transcript =  json_decode($fulltranscript);
+        $twords=[];
+        //create a big array of 'words' from gjson sentences
+        foreach($transcript as $sentence) {
+            $twords = array_merge($twords,$sentence->words);
+
+        }//end of sentence
+        $twordcount=count($twords);
+        if($twordcount>0){
+            $tword = $twords[$twordcount-1];
+            $ms =round(floatval($tword->endTime->nanos * .000000001),2);
+            return round($tword->endTime->seconds + $ms,0);
         }else{
             return 0;
         }
