@@ -23,7 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use \mod_readseed\constants;
+use \mod_readaloud\constants;
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 
 $id = required_param('id', PARAM_INT);          // Course module ID
