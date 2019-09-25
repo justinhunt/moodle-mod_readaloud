@@ -38,9 +38,13 @@ defined('MOODLE_INTERNAL') || die();
 
 //3.3 user_provider not backported so we use this switch to avoid errors when using same codebase for 3.3 and higher
 if (interface_exists('\core_privacy\local\request\core_userlist_provider')) {
-    interface the_user_provider extends \core_privacy\local\request\core_userlist_provider{}
+    interface the_user_provider extends \core_privacy\local\request\core_userlist_provider {
+    }
 } else {
-    interface the_user_provider {};
+    interface the_user_provider {
+    }
+
+    ;
 }
 
 /**
@@ -50,12 +54,12 @@ if (interface_exists('\core_privacy\local\request\core_userlist_provider')) {
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements
-    // This plugin does store personal user data.
-    \core_privacy\local\metadata\provider,
-    // This plugin is a core_user_data_provider.
-    \core_privacy\local\request\plugin\provider,
-    //user provider 3.4 and above
-    the_user_provider{
+        // This plugin does store personal user data.
+        \core_privacy\local\metadata\provider,
+        // This plugin is a core_user_data_provider.
+        \core_privacy\local\request\plugin\provider,
+        //user provider 3.4 and above
+        the_user_provider {
 
     use \core_privacy\local\legacy_polyfill;
 
@@ -68,43 +72,42 @@ class provider implements
     public static function _get_metadata(collection $collection) {
 
         $userdetail = [
-            'id' => 'privacy:metadata:attemptid',
-            'readaloudid' => 'privacy:metadata:readaloudid',
-            'userid' => 'privacy:metadata:userid',
-            'filename' => 'privacy:metadata:filename',
-            'wpm' => 'privacy:metadata:wpm',
-            'accuracy' => 'privacy:metadata:accuracy',
-            'sessionscore' => 'privacy:metadata:sessionscore',
-            'sessiontime' => 'privacy:metadata:sessiontime',
-            'sessionerrors' => 'privacy:metadata:sessionerrors',
-            'sessionendword' => 'privacy:metadata:sessionendword',
-            'errorcount' => 'privacy:metadata:errorcount',
-            'timemodified' => 'privacy:metadata:timemodified'
+                'id' => 'privacy:metadata:attemptid',
+                'readaloudid' => 'privacy:metadata:readaloudid',
+                'userid' => 'privacy:metadata:userid',
+                'filename' => 'privacy:metadata:filename',
+                'wpm' => 'privacy:metadata:wpm',
+                'accuracy' => 'privacy:metadata:accuracy',
+                'sessionscore' => 'privacy:metadata:sessionscore',
+                'sessiontime' => 'privacy:metadata:sessiontime',
+                'sessionerrors' => 'privacy:metadata:sessionerrors',
+                'sessionendword' => 'privacy:metadata:sessionendword',
+                'errorcount' => 'privacy:metadata:errorcount',
+                'timemodified' => 'privacy:metadata:timemodified'
         ];
         $collection->add_database_table(constants::M_USERTABLE, $userdetail, 'privacy:metadata:attempttable');
 
         $aidetail = [
-            'attemptid' => 'privacy:metadata:attemptid',
-            'readaloudid' => 'privacy:metadata:readaloudid',
-            'wpm' => 'privacy:metadata:wpm',
-            'accuracy' => 'privacy:metadata:accuracy',
-            'sessionscore' => 'privacy:metadata:sessionscore',
-            'sessiontime' => 'privacy:metadata:sessiontime',
-            'sessionerrors' => 'privacy:metadata:sessionerrors',
-            'sessionendword' => 'privacy:metadata:sessionendword',
-            'errorcount' => 'privacy:metadata:errorcount',
-            'transcript' => 'privacy:metadata:transcriptpurpose',
-            'fulltranscript' => 'privacy:metadata:fulltranscriptpurpose',
-            'timemodified' => 'privacy:metadata:timemodified'
+                'attemptid' => 'privacy:metadata:attemptid',
+                'readaloudid' => 'privacy:metadata:readaloudid',
+                'wpm' => 'privacy:metadata:wpm',
+                'accuracy' => 'privacy:metadata:accuracy',
+                'sessionscore' => 'privacy:metadata:sessionscore',
+                'sessiontime' => 'privacy:metadata:sessiontime',
+                'sessionerrors' => 'privacy:metadata:sessionerrors',
+                'sessionendword' => 'privacy:metadata:sessionendword',
+                'errorcount' => 'privacy:metadata:errorcount',
+                'transcript' => 'privacy:metadata:transcriptpurpose',
+                'fulltranscript' => 'privacy:metadata:fulltranscriptpurpose',
+                'timemodified' => 'privacy:metadata:timemodified'
         ];
         $collection->add_database_table(constants::M_AITABLE, $aidetail, 'privacy:metadata:aitable');
 
         $collection->add_external_location_link('cloud.poodll.com', [
-            'userid' => 'privacy:metadata:cloudpoodllcom:userid'
+                'userid' => 'privacy:metadata:cloudpoodllcom:userid'
         ], 'privacy:metadata:cloudpoodllcom');
         return $collection;
     }
-
 
     /**
      * Get the list of contexts that contain user information for the specified user.
@@ -125,7 +128,7 @@ class provider implements
                 'contextlevel' => CONTEXT_MODULE,
                 'modname' => constants::M_MODNAME,
                 'theuserid' => $userid
-            ] ;
+        ];
 
         $contextlist = new contextlist();
         $contextlist->add_from_sql($sql, $params);
@@ -136,7 +139,7 @@ class provider implements
     /**
      * Get the list of users who have data within a context.
      *
-     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     * @param   userlist $userlist The userlist containing the list of users who have data in this context/plugin combination.
      *
      */
     public static function get_users_in_context(userlist $userlist) {
@@ -156,9 +159,9 @@ class provider implements
                  WHERE c.id = :contextid";
 
         $params = [
-            'contextid' => $context->id,
-            'contextlevel' => CONTEXT_MODULE,
-            'modname' => constants::M_MODNAME,
+                'contextid' => $context->id,
+                'contextlevel' => CONTEXT_MODULE,
+                'modname' => constants::M_MODNAME,
         ];
 
         $userlist->add_from_sql('userid', $sql, $params);
@@ -207,18 +210,17 @@ class provider implements
                    AND usert.userid = :userid
                ORDER BY usert.id, cm.id";
         $params = [
-                'userid' => $user->id,
-                'modulename' => constants::M_MODNAME,
-                'contextlevel' => CONTEXT_MODULE
-            ] + $contextparams;
+                        'userid' => $user->id,
+                        'modulename' => constants::M_MODNAME,
+                        'contextlevel' => CONTEXT_MODULE
+                ] + $contextparams;
 
         $attempts = $DB->get_recordset_sql($sql, $params);
 
-
         foreach ($attempts as $attempt) {
-                $attempt->timemodified =\core_privacy\local\request\transform::datetime($attempt->timemodified);
-                $context = \context_module::instance($attempt->cmid);
-                self::export_attempt_data_for_user($attempt, $context, $user);
+            $attempt->timemodified = \core_privacy\local\request\transform::datetime($attempt->timemodified);
+            $context = \context_module::instance($attempt->cmid);
+            self::export_attempt_data_for_user($attempt, $context, $user);
         }
         $attempts->close();
     }
@@ -235,7 +237,7 @@ class provider implements
         $contextdata = helper::get_context_data($context, $user);
 
         // Merge with choice data and write it.
-        $contextdata = (object)array_merge((array)$contextdata, $attemptdata);
+        $contextdata = (object) array_merge((array) $contextdata, $attemptdata);
         writer::with_context($context)->export_data([], $contextdata);
 
         // Write generic module intro files.
@@ -288,7 +290,7 @@ class provider implements
                 $instanceid = $DB->get_field('course_modules', 'instance', ['id' => $context->instanceid], MUST_EXIST);
 
                 $entries = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $instanceid, 'userid' => $userid],
-                    '', 'id');
+                        '', 'id');
 
                 if (!$entries) {
                     continue;
@@ -307,7 +309,7 @@ class provider implements
     /**
      * Delete multiple users within a single context.
      *
-     * @param   approved_userlist    $userlist The approved context and user information to delete information for.
+     * @param   approved_userlist $userlist The approved context and user information to delete information for.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
@@ -335,7 +337,6 @@ class provider implements
 
         // Delete related entry aliases.
         $DB->delete_records_list(constants::M_AITABLE, 'attemptid', $attempts);
-
 
         // Now delete all AI attempt evals.
         $deletewhere = "readaloudid = :instanceid AND userid {$userinsql}";

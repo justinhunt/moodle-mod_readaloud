@@ -28,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 // List of observers.
 $observers = array(
 
-    array(
-        'eventname'   => '\core\event\course_deleted',
-        'callback'    => '\mod_readaloud\event_observer::course_deleted',
-    )
+        array(
+                'eventname' => '\core\event\course_deleted',
+                'callback' => '\mod_readaloud\event_observer::course_deleted',
+        )
 );

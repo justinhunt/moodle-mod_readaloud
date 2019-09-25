@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 
 use \mod_readaloud\constants;
 
-
 /**
  * A mod_readaloud adhoc task to fetch back transcriptions from Amazon S3
  *
@@ -38,50 +37,56 @@ use \mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class readaloud_s3_adhoc extends \core\task\adhoc_task {
-                                                                     
-   	 /**
+
+    /**
      *  Run the tasks
      */
-	 public function execute(){
-	     global $DB;
-		$trace = new \text_progress_trace();
+    public function execute() {
+        global $DB;
+        $trace = new \text_progress_trace();
 
-		//CD should contain activityid / attemptid and modulecontextid
-		$cd =  $this->get_custom_data();
-		//$trace->output($cd->somedata)
+        //CD should contain activityid / attemptid and modulecontextid
+        $cd = $this->get_custom_data();
+        //$trace->output($cd->somedata)
 
-         $activity = $DB->get_record(constants::M_TABLE,array('id'=>$cd->activityid));
-         if(!\mod_readaloud\utils::can_transcribe($activity)){
-             $this->do_forever_fail('This activity does not support transcription',$trace);
-             return;
-         }
+        $activity = $DB->get_record(constants::M_TABLE, array('id' => $cd->activityid));
+        if (!\mod_readaloud\utils::can_transcribe($activity)) {
+            if (!$activity) {
+                $this->do_forever_fail('This activity has been deleted or can not be fetched', $trace);
+                return;
+            }
+        }
+        if (!\mod_readaloud\utils::can_transcribe($activity)) {
+            $this->do_forever_fail('This activity does not support transcription', $trace);
+            return;
+        }
 
-         $aigrade = new \mod_readaloud\aigrade($cd->attemptid,$cd->modulecontextid);
-         if($aigrade){
-             if(!$aigrade->has_attempt()){
-                 $this->do_forever_fail('No attempt could be found',$trace);
-                 return;
-             }
+        $aigrade = new \mod_readaloud\aigrade($cd->attemptid, $cd->modulecontextid);
+        if ($aigrade) {
+            if (!$aigrade->has_attempt()) {
+                $this->do_forever_fail('No attempt could be found', $trace);
+                return;
+            }
 
-             if(!$aigrade->has_transcripts()){
-                 $this->do_retry_soon('Transcript appears to not be ready yet',$trace,$cd);
-                 return;
-             }else{
-                 //if we got here, we have transcripts and we do not need to come back
-                 $trace->output("Transcripts are fetched for " . $cd->attemptid . " ...all ok");
-                 return;
-             }
+            if (!$aigrade->has_transcripts()) {
+                $this->do_retry_soon('Transcript appears to not be ready yet for ' . $cd->attemptid, $trace, $cd);
+                return;
+            } else {
+                //if we got here, we have transcripts and we do not need to come back
+                $trace->output("Transcripts are fetched for " . $cd->attemptid . " ...all ok");
+                return;
+            }
 
-         }else{
-             $this->do_forever_fail('Unable to create AI grade for some reason',$trace);
-             return;
-         }
-	}
+        } else {
+            $this->do_forever_fail('Unable to create AI grade for some reason for ' . $cd->attemptid, $trace);
+            return;
+        }
+    }
 
-    protected function do_retry_soon($reason,$trace,$customdata){
-        if($customdata->taskcreationtime + (MINSECS * 15) < time()){
-            $this->do_retry_delayed($reason,$trace);
-        }else {
+    protected function do_retry_soon($reason, $trace, $customdata) {
+        if ($customdata->taskcreationtime + (MINSECS * 15) < time()) {
+            $this->do_retry_delayed($reason, $trace);
+        } else {
             $trace->output($reason . ": will try again next cron ");
             $s3_task = new \mod_readaloud\task\readaloud_s3_adhoc();
             $s3_task->set_component('mod_readaloud');
@@ -91,14 +96,14 @@ class readaloud_s3_adhoc extends \core\task\adhoc_task {
         }
     }
 
-    protected function do_retry_delayed($reason,$trace){
+    protected function do_retry_delayed($reason, $trace) {
         $trace->output($reason . ": will retry after a delay ");
         throw new \file_exception('retrievefileproblem', 'could not fetch transcripts.');
     }
 
-    protected function do_forever_fail($reason,$trace){
+    protected function do_forever_fail($reason, $trace) {
         $trace->output($reason . ": will not retry ");
-	}
-		
+    }
+
 }
 

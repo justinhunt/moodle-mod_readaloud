@@ -1,5 +1,9 @@
-2.0.19 (Build unreleases)
+2.0.18 (Build 2019092501)
 - Fixed a misten ref. to another plugin readseed in grade.php
+- Changed fetch_transcripts and has_ transcripts to look at full transcript. Because plain transcript might exist AND be empty.
+- Changed grading and gradingby user reports to look at fulltranscript and not wpm to see if it was ai graded.
+- fixed gradenowhelper.js to show correct wpm and accuracy if user truly scores 0
+- Added grade by highest attempt score
 
 
 

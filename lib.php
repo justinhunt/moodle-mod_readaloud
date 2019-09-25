@@ -46,15 +46,23 @@ use \mod_readaloud\utils;
  * @return mixed true if the feature is supported, null if unknown
  */
 function readaloud_supports($feature) {
-    switch($feature) {
-        case FEATURE_MOD_INTRO:         return true;
-        case FEATURE_SHOW_DESCRIPTION:  return true;
-		case FEATURE_COMPLETION_HAS_RULES: return true;
-        case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
-        case FEATURE_GRADE_HAS_GRADE:         return true;
-        case FEATURE_GRADE_OUTCOMES:          return true;
-        case FEATURE_BACKUP_MOODLE2:          return true;
-        default:                        return null;
+    switch ($feature) {
+        case FEATURE_MOD_INTRO:
+            return true;
+        case FEATURE_SHOW_DESCRIPTION:
+            return true;
+        case FEATURE_COMPLETION_HAS_RULES:
+            return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS:
+            return true;
+        case FEATURE_GRADE_HAS_GRADE:
+            return true;
+        case FEATURE_GRADE_OUTCOMES:
+            return true;
+        case FEATURE_BACKUP_MOODLE2:
+            return true;
+        default:
+            return null;
     }
 }
 
@@ -66,26 +74,26 @@ function readaloud_supports($feature) {
  */
 function readaloud_reset_course_form_definition(&$mform) {
     $mform->addElement('header', constants::M_MODNAME . 'header', get_string('modulenameplural', constants::M_COMPONENT));
-    $mform->addElement('advcheckbox', 'reset_' . constants::M_MODNAME , get_string('deletealluserdata',constants::M_COMPONENT));
+    $mform->addElement('advcheckbox', 'reset_' . constants::M_MODNAME, get_string('deletealluserdata', constants::M_COMPONENT));
 }
 
 /**
  * Course reset form defaults.
+ *
  * @param object $course
  * @return array
  */
 function readaloud_reset_course_form_defaults($course) {
-    return array('reset_' . constants::M_MODNAME =>1);
+    return array('reset_' . constants::M_MODNAME => 1);
 }
 
-
-function readaloud_editor_with_files_options($context){
-	return array('maxfiles' => EDITOR_UNLIMITED_FILES,
-               'noclean' => true, 'context' => $context, 'subdirs' => true);
+function readaloud_editor_with_files_options($context) {
+    return array('maxfiles' => EDITOR_UNLIMITED_FILES,
+            'noclean' => true, 'context' => $context, 'subdirs' => true);
 }
 
-function readaloud_editor_no_files_options($context){
-	return array('maxfiles' => 0, 'noclean' => true,'context'=>$context);
+function readaloud_editor_no_files_options($context) {
+    return array('maxfiles' => 0, 'noclean' => true, 'context' => $context);
 }
 
 /**
@@ -96,14 +104,14 @@ function readaloud_editor_no_files_options($context){
  * @param int $courseid
  * @param string optional type
  */
-function readaloud_reset_gradebook($courseid, $type='') {
+function readaloud_reset_gradebook($courseid, $type = '') {
     global $CFG, $DB;
 
     $sql = "SELECT l.*, cm.idnumber as cmidnumber, l.course as courseid
               FROM {" . constants::M_TABLE . "} l, {course_modules} cm, {modules} m
              WHERE m.name='" . constants::M_MODNAME . "' AND m.id=cm.module AND cm.instance=l.id AND l.course=:course";
-    $params = array ("course" => $courseid);
-    if ($moduleinstances = $DB->get_records_sql($sql,$params)) {
+    $params = array("course" => $courseid);
+    if ($moduleinstances = $DB->get_records_sql($sql, $params)) {
         foreach ($moduleinstances as $moduleinstance) {
             readaloud_grade_item_update($moduleinstance, 'reset');
         }
@@ -127,10 +135,10 @@ function readaloud_reset_userdata($data) {
 
     if (!empty($data->{'reset_' . constants::M_MODNAME})) {
         $sql = "SELECT l.id
-                         FROM {".constants::M_TABLE."} l
+                         FROM {" . constants::M_TABLE . "} l
                         WHERE l.course=:course";
 
-        $params = array ("course" => $data->courseid);
+        $params = array("course" => $data->courseid);
         $DB->delete_records_select(constants::M_USERTABLE, constants::M_MODNAME . "id IN ($sql)", $params);
         //delete AI grades
         $DB->delete_records_select(constants::M_AITABLE, constants::M_MODNAME . "id IN ($sql)", $params);
@@ -140,20 +148,18 @@ function readaloud_reset_userdata($data) {
             readaloud_reset_gradebook($data->courseid);
         }
 
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('deletealluserdata', constants::M_COMPONENT), 'error'=>false);
+        $status[] = array('component' => $componentstr, 'item' => get_string('deletealluserdata', constants::M_COMPONENT),
+                'error' => false);
     }
 
     /// updating dates - shift may be negative too
     if ($data->timeshift) {
         shift_course_mod_dates(constants::M_MODNAME, array('available', 'deadline'), $data->timeshift, $data->courseid);
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('datechanged'), 'error'=>false);
+        $status[] = array('component' => $componentstr, 'item' => get_string('datechanged'), 'error' => false);
     }
 
     return $status;
 }
-
-
-
 
 /**
  * Create grade item for activity instance
@@ -165,34 +171,34 @@ function readaloud_reset_userdata($data) {
  * @param array|object $grades optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok, error code otherwise
  */
-function readaloud_grade_item_update($moduleinstance, $grades=null) {
+function readaloud_grade_item_update($moduleinstance, $grades = null) {
     global $CFG;
     if (!function_exists('grade_update')) { //workaround for buggy PHP versions
-        require_once($CFG->libdir.'/gradelib.php');
+        require_once($CFG->libdir . '/gradelib.php');
     }
 
     if (array_key_exists('cmidnumber', $moduleinstance)) { //it may not be always present
-        $params = array('itemname'=>$moduleinstance->name, 'idnumber'=>$moduleinstance->cmidnumber);
+        $params = array('itemname' => $moduleinstance->name, 'idnumber' => $moduleinstance->cmidnumber);
     } else {
-        $params = array('itemname'=>$moduleinstance->name);
+        $params = array('itemname' => $moduleinstance->name);
     }
 
     //if we are machine grading we need to fetch the error estimate
     //hard coded to no error estimate since we turned off the feature
-    if(false && $moduleinstance->machgrademethod=constants::MACHINEGRADE_MACHINE &&
-        utils::can_transcribe($moduleinstance) && $moduleinstance->accadjustmethod != constants::ACCMETHOD_NONE) {
+    if (false && $moduleinstance->machgrademethod = constants::MACHINEGRADE_MACHINE &&
+                    utils::can_transcribe($moduleinstance) && $moduleinstance->accadjustmethod != constants::ACCMETHOD_NONE) {
         $errorestimate = \mod_readaloud\utils::estimate_errors($moduleinstance->id);
-    }else{
-        $errorestimate =0;
+    } else {
+        $errorestimate = 0;
     }
 
     if ($moduleinstance->grade > 0) {
-        $params['gradetype']  = GRADE_TYPE_VALUE;
-        $params['grademax']   = $moduleinstance->grade;
-        $params['grademin']   = 0;
+        $params['gradetype'] = GRADE_TYPE_VALUE;
+        $params['grademax'] = $moduleinstance->grade;
+        $params['grademin'] = 0;
     } else if ($moduleinstance->grade < 0) {
-        $params['gradetype']  = GRADE_TYPE_SCALE;
-        $params['scaleid']   = -$moduleinstance->grade;
+        $params['gradetype'] = GRADE_TYPE_SCALE;
+        $params['scaleid'] = -$moduleinstance->grade;
 
         // Make sure current grade fetched correctly from $grades
         $currentgrade = null;
@@ -206,14 +212,15 @@ function readaloud_grade_item_update($moduleinstance, $grades=null) {
 
         // When converting a score to a scale, use scale's grade maximum to calculate it.
         if (!empty($currentgrade) && $currentgrade->rawgrade !== null) {
-            $grade = grade_get_grades($moduleinstance->course, 'mod', constants::M_MODNAME, $moduleinstance->id, $currentgrade->userid);
-            $params['grademax']   = reset($grade->items)->grademax;
+            $grade = grade_get_grades($moduleinstance->course, 'mod', constants::M_MODNAME, $moduleinstance->id,
+                    $currentgrade->userid);
+            $params['grademax'] = reset($grade->items)->grademax;
         }
     } else {
-        $params['gradetype']  = GRADE_TYPE_NONE;
+        $params['gradetype'] = GRADE_TYPE_NONE;
     }
 
-    if ($grades  === 'reset') {
+    if ($grades === 'reset') {
         $params['reset'] = true;
         $grades = null;
     } else if (!empty($grades)) {
@@ -237,7 +244,8 @@ function readaloud_grade_item_update($moduleinstance, $grades=null) {
         }
     }
 
-    return grade_update('mod/' . constants::M_MODNAME, $moduleinstance->course, 'mod', constants::M_MODNAME, $moduleinstance->id, 0, $grades, $params);
+    return grade_update('mod/' . constants::M_MODNAME, $moduleinstance->course, 'mod', constants::M_MODNAME, $moduleinstance->id, 0,
+            $grades, $params);
 }
 
 /**
@@ -248,9 +256,9 @@ function readaloud_grade_item_update($moduleinstance, $grades=null) {
  * @param int $userid specific user only, 0 means all
  * @param bool $nullifnone
  */
-function readaloud_update_grades($moduleinstance, $userid=0, $nullifnone=true) {
+function readaloud_update_grades($moduleinstance, $userid = 0, $nullifnone = true) {
     global $CFG, $DB;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     if ($moduleinstance->grade == 0) {
         readaloud_grade_item_update($moduleinstance);
@@ -260,7 +268,7 @@ function readaloud_update_grades($moduleinstance, $userid=0, $nullifnone=true) {
 
     } else if ($userid and $nullifnone) {
         $grade = new stdClass();
-        $grade->userid   = $userid;
+        $grade->userid = $userid;
         $grade->rawgrade = null;
         readaloud_grade_item_update($moduleinstance, $grade);
 
@@ -278,7 +286,7 @@ function readaloud_update_grades($moduleinstance, $userid=0, $nullifnone=true) {
  * @param int $userid optional user id, 0 means all users
  * @return array array of grades, false if none
  */
-function readaloud_get_user_grades($moduleinstance, $userid=0) {
+function readaloud_get_user_grades($moduleinstance, $userid = 0) {
     global $CFG, $DB;
 
     $params = array("moduleid" => $moduleinstance->id);
@@ -287,95 +295,135 @@ function readaloud_get_user_grades($moduleinstance, $userid=0) {
     if (!empty($userid)) {
         $params["userid"] = $userid;
         $user = "AND u.id = :userid";
-    }
-    else {
-        $user="";
+    } else {
+        $user = "";
 
     }
 
-    //aigrades sql
-    $ai_sql = "SELECT u.id, u.id AS userid, ai.sessionscore AS rawgrade
-                  FROM {user} u, {". constants::M_AITABLE ."} ai INNER JOIN {". constants::M_USERTABLE ."} attempt ON ai.attemptid = attempt.id
-                 WHERE attempt.id= (SELECT max(id) FROM {". constants::M_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
-                       $user
-              GROUP BY u.id, ai.sessionscore";
+    switch ($moduleinstance->gradeoptions) {
+        case constants::M_GRADEHIGHEST:
 
-    //human_sql
-    $human_sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
-                      FROM {user} u, {". constants::M_USERTABLE ."} a
-                     WHERE a.id= (SELECT max(id) FROM {". constants::M_USERTABLE ."} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid)  AND u.id = a.userid AND a.readaloudid = :moduleid
-                           $user
-                  GROUP BY u.id";
-
-    //hybrid sql
-    $hybrid_sql = "SELECT u.id, attempt.sessiontime as sessiontime, attempt.sessionscore as humangrade, u.id AS userid, ai.sessionscore AS aigrade
-                  FROM {user} u, {". constants::M_AITABLE ."} ai INNER JOIN {". constants::M_USERTABLE ."} attempt ON ai.attemptid = attempt.id
-                 WHERE attempt.id= (SELECT max(id) FROM {". constants::M_USERTABLE ."} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
+            //aigrades sql
+            $ai_sql = "SELECT u.id, u.id AS userid,MAX(ai.sessionscore) AS rawgrade
+                  FROM {user} u, {" . constants::M_AITABLE . "} ai INNER JOIN {" . constants::M_USERTABLE . "} attempt ON ai.attemptid = attempt.id
+                 WHERE  u.id = attempt.userid AND ai.readaloudid = :moduleid
                        $user
               GROUP BY u.id";
 
-    //from which table do we get these grades..
-    if($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
-        $results = $DB->get_records_sql($hybrid_sql, $params);
-        //sessiontime is our indicator that a human grade has been saved.
-        foreach ($results as $result) {
-            if ($result->sessiontime > 0) {
-                $result->rawgrade = $result->humangrade;
+            $human_sql = "SELECT u.id, u.id AS userid,MAX(a.sessionscore) AS rawgrade
+                  FROM {user} u,  {" . constants::M_USERTABLE . "} a 
+                 WHERE  u.id = a.userid AND a.readaloudid = :moduleid
+                       $user
+              GROUP BY u.id";
+
+            //from which table do we get these grades..
+            if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+                $airesults = $DB->get_records_sql($ai_sql, $params);
+                $results = $DB->get_records_sql($human_sql, $params);
+                //here we loop through and choose the higher of the ai or human grades
+                foreach ($results as $result) {
+                    foreach ($airesults as $airesult) {
+                        if ($airesult->id == $result->id) {
+                            if ($airesult->rawgrade > $result->rawgrade) {
+                                $result->rawgrade = $airesult->rawgrade;
+                            }
+                            break;
+                        }
+                    }
+                }
             } else {
-                $result->rawgrade = $result->aigrade;
+                $results = $DB->get_records_sql($human_sql, $params);
             }
-        }
-    }else{
-        $results = $DB->get_records_sql($human_sql, $params);
+
+            break;
+
+        case constants::M_GRADELATEST:
+        default;
+
+            //aigrades sql
+            $ai_sql = "SELECT u.id, u.id AS userid, ai.sessionscore AS rawgrade
+                      FROM {user} u, {" . constants::M_AITABLE . "} ai INNER JOIN {" . constants::M_USERTABLE . "} attempt ON ai.attemptid = attempt.id
+                     WHERE attempt.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
+                           $user
+                  GROUP BY u.id, ai.sessionscore";
+
+            //human_sql
+            $human_sql = "SELECT u.id, u.id AS userid, a.sessionscore AS rawgrade
+                          FROM {user} u, {" . constants::M_USERTABLE . "} a
+                         WHERE a.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid)  AND u.id = a.userid AND a.readaloudid = :moduleid
+                               $user
+                      GROUP BY u.id";
+
+            //hybrid sql
+            $hybrid_sql = "SELECT u.id, attempt.sessiontime as sessiontime, attempt.sessionscore as humangrade, u.id AS userid, ai.sessionscore AS aigrade
+                      FROM {user} u, {" . constants::M_AITABLE . "} ai INNER JOIN {" . constants::M_USERTABLE . "} attempt ON ai.attemptid = attempt.id
+                     WHERE attempt.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
+                           $user
+                  GROUP BY u.id";
+
+            //from which table do we get these grades..
+            if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+                $results = $DB->get_records_sql($hybrid_sql, $params);
+                //sessiontime is our indicator that a human grade has been saved.
+                foreach ($results as $result) {
+                    if ($result->sessiontime > 0) {
+                        $result->rawgrade = $result->humangrade;
+                    } else {
+                        $result->rawgrade = $result->aigrade;
+                    }
+                }
+            } else {
+                $results = $DB->get_records_sql($human_sql, $params);
+            }
     }
+
     //return results
     return $results;
 }
 
-
-function readaloud_get_completion_state($course,$cm,$userid,$type) {
-	return readaloud_is_complete($course,$cm,$userid,$type);
+function readaloud_get_completion_state($course, $cm, $userid, $type) {
+    return readaloud_is_complete($course, $cm, $userid, $type);
 }
 
+//this is called internally only
+function readaloud_is_complete($course, $cm, $userid, $type) {
+    global $CFG, $DB;
 
-//this is called internally only 
-function readaloud_is_complete($course,$cm,$userid,$type) {
-	 global $CFG,$DB;
-
-	// Get module object
-    if(!($moduleinstance=$DB->get_record(constants::M_TABLE,array('id'=>$cm->instance)))) {
+    // Get module object
+    if (!($moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance)))) {
         throw new Exception("Can't find module with cmid: {$cm->instance}");
     }
 
-    if(!($moduleinstance->mingrade>0)){
+    if (!($moduleinstance->mingrade > 0)) {
         return $type;
     }
 
     $cantranscribe = utils::can_transcribe($moduleinstance);
-	$params = array('userid'=>$userid,'moduleid'=>$moduleinstance->id);
-    if($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+    $params = array('userid' => $userid, 'moduleid' => $moduleinstance->id);
+    if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
         //choose greater or  ai or human score
         $sql = "SELECT  GREATEST(MAX(ai.sessionscore), MAX(a.sessionscore)) AS grade
                       FROM {" . constants::M_AITABLE . "} ai
                       INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
                      WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
-    }else {
+    } else {
         //choose human grades only
         $sql = "SELECT  MAX( sessionscore  ) AS grade
                       FROM {" . constants::M_USERTABLE . "}
                      WHERE userid = :userid AND " . constants::M_MODNAME . "id = :moduleid";
     }
 
-	$result = $DB->get_field_sql($sql, $params);
-	if($result===false){return false;}
-	 
-	//check completion reqs against satisfied conditions
-	$success = $result >= $moduleinstance->mingrade;
+    $result = $DB->get_field_sql($sql, $params);
+    if ($result === false) {
+        return false;
+    }
 
-	//return our success flag
-	return $success;
+    //check completion reqs against satisfied conditions
+    $success = $result >= $moduleinstance->mingrade;
+
+    //return our success flag
+    return $success;
 }
-
 
 /**
  * A task called from scheduled or adhoc
@@ -387,8 +435,8 @@ function readaloud_dotask(progress_trace $trace) {
     $trace->output('executing dotask');
 }
 
-function readaloud_get_editornames(){
-	return array('passage','welcome','feedback');
+function readaloud_get_editornames() {
+    return array('passage', 'welcome', 'feedback');
 }
 
 /**
@@ -407,30 +455,31 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
     global $DB;
 
     $readaloud->timecreated = time();
-	$readaloud = readaloud_process_editors($readaloud,$mform);
+    $readaloud = readaloud_process_editors($readaloud, $mform);
     $readaloud->id = $DB->insert_record(constants::M_TABLE, $readaloud);
 
     readaloud_grade_item_update($readaloud);
     if (class_exists('\core_completion\api')) {
         $completionexpected = (empty($readaloud->completionexpected) ? null : $readaloud->completionexpected);
-        \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id, $completionexpected);
+        \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id,
+                $completionexpected);
     }
 
-	return $readaloud->id;
+    return $readaloud->id;
 }
 
-
 function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $mform = null) {
-	global $DB;
-    $cmid = $readaloud->coursemodule; 
+    global $DB;
+    $cmid = $readaloud->coursemodule;
     $context = context_module::instance($cmid);
-	$editors = readaloud_get_editornames();
-	$itemid=0;
-	$edoptions = readaloud_editor_no_files_options($context);
-	foreach($editors as $editor){
-		$readaloud = file_postupdate_standard_editor( $readaloud, $editor, $edoptions,$context,constants::M_COMPONENT,$editor,$itemid);
-	}
-	return $readaloud;
+    $editors = readaloud_get_editornames();
+    $itemid = 0;
+    $edoptions = readaloud_editor_no_files_options($context);
+    foreach ($editors as $editor) {
+        $readaloud = file_postupdate_standard_editor($readaloud, $editor, $edoptions, $context, constants::M_COMPONENT, $editor,
+                $itemid);
+    }
+    return $readaloud;
 }
 
 /**
@@ -447,28 +496,27 @@ function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $
 function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $mform = null) {
     global $DB;
 
-
     $params = array('id' => $readaloud->instance);
     $oldgradefield = $DB->get_field(constants::M_TABLE, 'grade', $params);
 
     $readaloud->timemodified = time();
     $readaloud->id = $readaloud->instance;
-	$readaloud = readaloud_process_editors($readaloud,$mform);
-	$success = $DB->update_record(constants::M_TABLE, $readaloud);
+    $readaloud = readaloud_process_editors($readaloud, $mform);
+    $success = $DB->update_record(constants::M_TABLE, $readaloud);
 
     readaloud_grade_item_update($readaloud);
     if (class_exists('\core_completion\api')) {
         $completionexpected = (empty($readaloud->completionexpected) ? null : $readaloud->completionexpected);
-        \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id, $completionexpected);
+        \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id,
+                $completionexpected);
     }
-
 
     $update_grades = ($readaloud->grade === $oldgradefield ? false : true);
     if ($update_grades) {
         readaloud_update_grades($readaloud, 0, false);
     }
 
-	return $success;
+    return $success;
 }
 
 /**
@@ -484,7 +532,7 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
 function readaloud_delete_instance($id) {
     global $DB;
 
-    if (! $readaloud = $DB->get_record(constants::M_TABLE, array('id' => $id))) {
+    if (!$readaloud = $DB->get_record(constants::M_TABLE, array('id' => $id))) {
         return false;
     }
 
@@ -552,12 +600,12 @@ function readaloud_print_recent_activity($course, $viewfullnames, $timestart) {
  * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
  * @return void adds items into $activities and increases $index
  */
-function readaloud_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0) {
+function readaloud_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0) {
 }
 
 /**
  * Prints single activity item prepared by {@see readaloud_get_recent_mod_activity()}
-
+ *
  * @return void
  */
 function readaloud_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
@@ -571,7 +619,7 @@ function readaloud_print_recent_mod_activity($activity, $courseid, $detail, $mod
  * @return boolean
  * @todo Finish documenting this function
  **/
-function readaloud_cron () {
+function readaloud_cron() {
     return true;
 }
 
@@ -630,8 +678,6 @@ function readaloud_scale_used_anywhere($scaleid) {
     }
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // File API                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
@@ -686,16 +732,16 @@ function readaloud_get_file_info($browser, $areas, $course, $cm, $context, $file
  * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
  */
-function readaloud_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array()) {
-       global $DB, $CFG;
+function readaloud_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array()) {
+    global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
         send_file_not_found();
     }
 
     require_login($course, true, $cm);
-	
-	$itemid = (int)array_shift($args);
+
+    $itemid = (int) array_shift($args);
 
     require_course_login($course, true, $cm);
 
@@ -703,17 +749,16 @@ function readaloud_pluginfile($course, $cm, $context, $filearea, array $args, $f
         return false;
     }
 
+    $fs = get_file_storage();
+    $relativepath = implode('/', $args);
+    $fullpath = "/$context->id/mod_readaloud/$filearea/$itemid/$relativepath";
 
-        $fs = get_file_storage();
-        $relativepath = implode('/', $args);
-        $fullpath = "/$context->id/mod_readaloud/$filearea/$itemid/$relativepath";
+    if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
+        return false;
+    }
 
-        if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
-          return false;
-        }
-
-        // finally send the file
-        send_stored_file($file, null, 0, $forcedownload, $options);
+    // finally send the file
+    send_stored_file($file, null, 0, $forcedownload, $options);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -742,5 +787,5 @@ function readaloud_extend_navigation(navigation_node $navref, stdclass $course, 
  * @param settings_navigation $settingsnav {@link settings_navigation}
  * @param navigation_node $readaloudnode {@link navigation_node}
  */
-function readaloud_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $readaloudnode=null) {
+function readaloud_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $readaloudnode = null) {
 }

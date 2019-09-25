@@ -1,19 +1,19 @@
-define(['jquery','core/log','https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'], function($,log, datatables) {
+define(['jquery', 'core/log', 'https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'], function ($, log, datatables) {
     "use strict"; // jshint ;_;
 
-/*
-This file contains class and ID definitions.
- */
+    /*
+    This file contains class and ID definitions.
+     */
 
     log.debug('Readaloud Teacher Datatables helper: initialising');
 
-    return{
+    return {
         //pass in config, amd set up table
-        init: function(props){
+        init: function (props) {
             //pick up opts from html
-            var that=this;
-            var thetable=$('#' + props.tableid);
-            this.dt=thetable.DataTable(props.tableprops);
+            var that = this;
+            var thetable = $('#' + props.tableid);
+            this.dt = thetable.DataTable(props.tableprops);
         }
 
 

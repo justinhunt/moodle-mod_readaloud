@@ -57,7 +57,7 @@ class backup_readaloud_activity_task extends backup_activity_task {
     static public function encode_content_links($content) {
         global $CFG;
 
-        $base = preg_quote($CFG->wwwroot,"/");
+        $base = preg_quote($CFG->wwwroot, "/");
 
         // Link to the list of modules
         $search = "/(" . $base . "\/mod\/readaloud\/index.php\?id\=)([0-9]+)/";
@@ -65,7 +65,7 @@ class backup_readaloud_activity_task extends backup_activity_task {
 
         //Link to view.pphp by moduleid
         $search = "/(" . $base . "\/mod\/readaloud\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@READALOUDVIEWBYID*$2@$', $content);
+        $content = preg_replace($search, '$@READALOUDVIEWBYID*$2@$', $content);
 
         return $content;
     }

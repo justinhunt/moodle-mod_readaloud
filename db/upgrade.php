@@ -43,7 +43,6 @@ function xmldb_readaloud_upgrade($oldversion) {
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
-
     // Add allowearlyexit field
     if ($oldversion < 2015071501) {
 
@@ -58,7 +57,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2015071501, 'readaloud');
     }
 
-	// Add allowearlyexit field
+    // Add allowearlyexit field
     if ($oldversion < 2015071502) {
 
         // Define field grade to be added to readaloud
@@ -71,8 +70,8 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
         upgrade_mod_savepoint(true, 2015071502, 'readaloud');
     }
-	
-	// Add wcpm field
+
+    // Add wcpm field
     if ($oldversion < 2015072201) {
 
         // Define field wpcm to be added to readaloud_attempt
@@ -85,8 +84,8 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
         upgrade_mod_savepoint(true, 2015072201, 'readaloud');
     }
-	
-	// Add accuracy and targetwpm fields
+
+    // Add accuracy and targetwpm fields
     if ($oldversion < 2015072701) {
 
         // Define field wpcm to be added to readaloud_attempt
@@ -97,8 +96,8 @@ function xmldb_readaloud_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-		
-		// Define field wpcm to be added to readaloud_attempt
+
+        // Define field wpcm to be added to readaloud_attempt
         $table = new xmldb_table('readaloud');
         $field = new xmldb_field('targetwpm', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '100');
 
@@ -108,7 +107,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
         upgrade_mod_savepoint(true, 2015072701, 'readaloud');
     }
-    	// Rename fedbackformat to feedbackformat
+    // Rename fedbackformat to feedbackformat
     if ($oldversion < 2016022102) {
 
         // Define field wpcm to be added to readaloud_attempt
@@ -117,13 +116,13 @@ function xmldb_readaloud_upgrade($oldversion) {
 
         // Rename field to feedbackformat
         if ($dbman->field_exists($table, $field)) {
-            $dbman->rename_field($table, $field,'feedbackformat');
+            $dbman->rename_field($table, $field, 'feedbackformat');
         }
 
         upgrade_mod_savepoint(true, 2016022102, 'readaloud');
     }
 
-    if ($oldversion < 2018060900){
+    if ($oldversion < 2018060900) {
         $table = new xmldb_table('readaloud_ai_result');
 
         // Adding fields to table tool_dataprivacy_contextlist.
@@ -171,7 +170,6 @@ function xmldb_readaloud_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
 
         // Define field expiredays to be added to readaloud
         $field = new xmldb_field('region', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'useast1');
@@ -246,7 +244,6 @@ function xmldb_readaloud_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-
         upgrade_mod_savepoint(true, 2018082402, 'readaloud');
     }
     // Add humanpostattempt and machinepostattempt to readaloud table
@@ -272,7 +269,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table = new xmldb_table('readaloud');
 
         //This adds the post attempt display options for each of the evaluation methods (machine and human)
-        $field = new xmldb_field('alternatives',XMLDB_TYPE_TEXT, null, null, null, null);
+        $field = new xmldb_field('alternatives', XMLDB_TYPE_TEXT, null, null, null, null);
 
         // add fields to readaloud table
         if (!$dbman->field_exists($table, $field)) {

@@ -15,7 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Defines the version of readaloud
  *
@@ -29,8 +28,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019091901;
-$plugin->requires  = 2016052300;      // Requires Moodle 3.1
+$plugin->version = 2019092501;
+$plugin->requires = 2016052300;      // Requires Moodle 3.1
 $plugin->component = 'mod_readaloud';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.0.17 (Build 2019091901)';
+$plugin->release = '2.0.18 (Build 2019092501)';

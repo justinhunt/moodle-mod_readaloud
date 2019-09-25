@@ -1,95 +1,99 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <XMLDB PATH="mod/readaloud/db" VERSION="20101203" COMMENT="XMLDB file for Moodle mod/readaloud"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
-  <TABLES>
-    <TABLE NAME="readaloud" COMMENT="Default comment for readaloud, please edit me">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" />
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to" />
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances" />
-        <FIELD NAME="intro" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the readaloud activity" />
-        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
-		<FIELD NAME="passage" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The passage to be read." />
-        <FIELD NAME="passageformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the passage field (MOODLE, HTML, MARKDOWN...)"/>
-          <FIELD NAME="alternatives" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Alternatives" />
-          <FIELD NAME="welcome" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Welcome text" />
-        <FIELD NAME="welcomeformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the welcome field (MOODLE, HTML, MARKDOWN...)"/>
-		<FIELD NAME="feedback" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Feedback text" />
-        <FIELD NAME="feedbackformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the feedback field (MOODLE, HTML, MARKDOWN...)"/>
-		<FIELD NAME="timelimit" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" />
-		<FIELD NAME="targetwpm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="100" SEQUENCE="false" />
-          <FIELD NAME="accadjustmethod" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" />
-          <FIELD NAME="accadjust" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" />
-          <FIELD NAME="humanpostattempt" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="2" SEQUENCE="false" />
-          <FIELD NAME="machinepostattempt" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" />
-		<FIELD NAME="grade" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-		<FIELD NAME="gradeoptions" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" COMMENT="gradeoptions" />
-          <FIELD NAME="machgrademethod" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" COMMENT="machgrademethod" />
-		<FIELD NAME="maxattempts" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="maxattempts" />
-		<FIELD NAME="mingrade" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="completion condition mingrade" />
-		<FIELD NAME="ttslanguage" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="none" COMMENT="the audio filename"/>
-          <FIELD NAME="transcriber" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="transcriber"/>
-          <FIELD NAME="enableai" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"  DEFAULT="0" COMMENT="Whether to use AI on this activity" />
-          <FIELD NAME="allowearlyexit" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="allow early exit"/>
-          <FIELD NAME="expiredays" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="100" SEQUENCE="false" />
-          <FIELD NAME="region" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" DEFAULT="useast1" COMMENT="aws region" />
-          <FIELD NAME="activitylink" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-          <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" />
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-      <INDEXES>
-        <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
-      </INDEXES>
-    </TABLE>
-	 <TABLE NAME="readaloud_attempt" COMMENT="user attempt data for readaloud">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" />
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to" />
-		<FIELD NAME="readaloudid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="readaloud activity this data belongs to" />
-		<FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to" />
-        <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="status " />
-		<FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="the audio filename"/>
-		<FIELD NAME="wpm" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="word count per minute"/>
-		<FIELD NAME="accuracy" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="word count per minute"/>
-		<FIELD NAME="sessionscore" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="the score for this session"/>
-        <FIELD NAME="sessiontime" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" />
-		<FIELD NAME="sessionerrors" TYPE="text" LENGTH="8192" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="json string of errors"/>
-		<FIELD NAME="sessionendword" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" />
-        <FIELD NAME="errorcount" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
-		<FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" />
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-      <TABLE NAME="readaloud_ai_result" COMMENT="ai scoring data for readaloud">
-          <FIELDS>
-              <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" />
-              <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to" />
-              <FIELD NAME="readaloudid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="readaloud activity this data belongs to" />
-              <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to" />
-              <FIELD NAME="transcript" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The text transcript." />
-              <FIELD NAME="fulltranscript" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The full TTS result (JSON)" />
-              <FIELD NAME="wpm" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="word count per minute"/>
-              <FIELD NAME="accuracy" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="word count per minute"/>
-              <FIELD NAME="sessionscore" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="the score for this session"/>
-              <FIELD NAME="sessiontime" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" />
-              <FIELD NAME="sessionerrors" TYPE="text" LENGTH="8192" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="json string of errors"/>
-              <FIELD NAME="sessionmatches" TYPE="text" LENGTH="8192" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="json string of matches"/>
-              <FIELD NAME="sessionendword" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" />
-              <FIELD NAME="errorcount" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
-              <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" />
-              <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
-          </FIELDS>
-          <KEYS>
-              <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-          </KEYS>
-      </TABLE>
-  </TABLES>
+    <TABLES>
+        <TABLE NAME="readaloud" COMMENT="Default comment for readaloud, please edit me">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+                <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for moodle instances"/>
+                <FIELD NAME="intro" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the readaloud activity"/>
+                <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"
+                       COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
+                <FIELD NAME="passage" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The passage to be read."/>
+                <FIELD NAME="passageformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"
+                       COMMENT="Format of the passage field (MOODLE, HTML, MARKDOWN...)"/>
+                <FIELD NAME="alternatives" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Alternatives"/>
+                <FIELD NAME="welcome" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Welcome text"/>
+                <FIELD NAME="welcomeformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"
+                       COMMENT="Format of the welcome field (MOODLE, HTML, MARKDOWN...)"/>
+                <FIELD NAME="feedback" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="Feedback text"/>
+                <FIELD NAME="feedbackformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"
+                       COMMENT="Format of the feedback field (MOODLE, HTML, MARKDOWN...)"/>
+                <FIELD NAME="timelimit" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="targetwpm" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="100" SEQUENCE="false"/>
+                <FIELD NAME="accadjustmethod" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="accadjust" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="humanpostattempt" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="2" SEQUENCE="false"/>
+                <FIELD NAME="machinepostattempt" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false"/>
+                <FIELD NAME="grade" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="gradeoptions" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="gradeoptions"/>
+                <FIELD NAME="machgrademethod" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="machgrademethod"/>
+                <FIELD NAME="maxattempts" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="maxattempts"/>
+                <FIELD NAME="mingrade" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="completion condition mingrade"/>
+                <FIELD NAME="ttslanguage" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="none" COMMENT="the audio filename"/>
+                <FIELD NAME="transcriber" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="transcriber"/>
+                <FIELD NAME="enableai" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0" COMMENT="Whether to use AI on this activity"/>
+                <FIELD NAME="allowearlyexit" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="allow early exit"/>
+                <FIELD NAME="expiredays" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="100" SEQUENCE="false"/>
+                <FIELD NAME="region" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" DEFAULT="useast1" COMMENT="aws region"/>
+                <FIELD NAME="activitylink" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="readaloud_attempt" COMMENT="user attempt data for readaloud">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to"/>
+                <FIELD NAME="readaloudid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="readaloud activity this data belongs to"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to"/>
+                <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="status "/>
+                <FIELD NAME="filename" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="the audio filename"/>
+                <FIELD NAME="wpm" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="word count per minute"/>
+                <FIELD NAME="accuracy" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="word count per minute"/>
+                <FIELD NAME="sessionscore" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="the score for this session"/>
+                <FIELD NAME="sessiontime" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="sessionerrors" TYPE="text" LENGTH="8192" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="json string of errors"/>
+                <FIELD NAME="sessionendword" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="errorcount" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+        <TABLE NAME="readaloud_ai_result" COMMENT="ai scoring data for readaloud">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to"/>
+                <FIELD NAME="readaloudid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="readaloud activity this data belongs to"/>
+                <FIELD NAME="attemptid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course readaloud activity belongs to"/>
+                <FIELD NAME="transcript" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The text transcript."/>
+                <FIELD NAME="fulltranscript" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The full TTS result (JSON)"/>
+                <FIELD NAME="wpm" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="word count per minute"/>
+                <FIELD NAME="accuracy" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="word count per minute"/>
+                <FIELD NAME="sessionscore" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="the score for this session"/>
+                <FIELD NAME="sessiontime" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="sessionerrors" TYPE="text" LENGTH="8192" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="json string of errors"/>
+                <FIELD NAME="sessionmatches" TYPE="text" LENGTH="8192" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="json string of matches"/>
+                <FIELD NAME="sessionendword" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="errorcount" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+        </TABLE>
+    </TABLES>
 </XMLDB>

@@ -1,13 +1,13 @@
-define(['jquery','core/log'], function($,log) {
+define(['jquery', 'core/log'], function ($, log) {
     "use strict"; // jshint ;_;
 
-/*
-This file contains class and ID definitions.
- */
+    /*
+    This file contains class and ID definitions.
+     */
 
     log.debug('Readaloud definitions: initialising');
 
-    return{
+    return {
         component: 'mod_readaloud',
         componentpath: 'mod/readaloud',
         //hidden player
@@ -30,7 +30,7 @@ This file contains class and ID definitions.
         spaceclass: 'mod_readaloud_grading_passagespace',
         badwordclass: 'mod_readaloud_grading_badword',
         endspaceclass: 'mod_readaloud_grading_endspace',
-        unreadwordclass:  'mod_readaloud_grading_unreadword',
+        unreadwordclass: 'mod_readaloud_grading_unreadword',
         unreadspaceclass: 'mod_readaloud_grading_unreadspace',
         wpmscoreid: 'mod_readaloud_grading_wpm_score',
         accuracyscoreid: 'mod_readaloud_grading_accuracy_score',

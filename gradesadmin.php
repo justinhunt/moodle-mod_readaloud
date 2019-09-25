@@ -24,32 +24,29 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
 use \mod_readaloud\constants;
 use \mod_readaloud\utils;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$n  = optional_param('n', 0, PARAM_INT);  // readaloud instance ID
+$n = optional_param('n', 0, PARAM_INT);  // readaloud instance ID
 $action = optional_param('action', 'menu', PARAM_TEXT);
 
-
-
 if ($id) {
-    $cm         = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $moduleinstance  = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
-} elseif ($n) {
-    $moduleinstance  = $DB->get_record(constants::M_TABLE, array('id' => $n), '*', MUST_EXIST);
-    $course     = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
-    $cm         = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
+    $cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+} else if ($n) {
+    $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $n), '*', MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
     print_error('You must specify a course_module ID or an instance ID');
 }
 
 $PAGE->set_url(constants::M_URL . '/gradesadmin.php',
-	array('id' => $cm->id));
+        array('id' => $cm->id));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -60,47 +57,46 @@ $config = get_config(constants::M_COMPONENT);
 
 //if the alternatives form was submittes
 $alternatives_form = new \mod_readaloud\form\alternatives();
-$adata=$alternatives_form->get_data();
-if($adata){
-    $DB->update_record(constants::M_TABLE,array('id'=>$adata->n,'alternatives'=>$adata->alternatives));
-    $action='machineregradeall';
+$adata = $alternatives_form->get_data();
+if ($adata) {
+    $DB->update_record(constants::M_TABLE, array('id' => $adata->n, 'alternatives' => $adata->alternatives));
+    $action = 'machineregradeall';
 }
 
-
-switch($action){
+switch ($action) {
 
     case 'machineregradeall':
-        $url =  new \moodle_url(constants::M_URL . '/gradesadmin.php',
-            array('id' => $cm->id,
-                'action'=>'menu'));
-        $ai_evals = $DB->get_records(constants::M_AITABLE,array('readaloudid'=>$moduleinstance->id));
-        if(!$ai_evals) {
-            redirect($url,get_string('noattemptsregrade',constants::M_COMPONENT));
-        }else{
-            $skipped=0;
-            foreach($ai_evals as $eval){
-                $aigrade = new \mod_readaloud\aigrade($eval->attemptid,$modulecontext->id);
-                if($aigrade->has_transcripts()) {
+        $url = new \moodle_url(constants::M_URL . '/gradesadmin.php',
+                array('id' => $cm->id,
+                        'action' => 'menu'));
+        $ai_evals = $DB->get_records(constants::M_AITABLE, array('readaloudid' => $moduleinstance->id));
+        if (!$ai_evals) {
+            redirect($url, get_string('noattemptsregrade', constants::M_COMPONENT));
+        } else {
+            $skipped = 0;
+            foreach ($ai_evals as $eval) {
+                $aigrade = new \mod_readaloud\aigrade($eval->attemptid, $modulecontext->id);
+                if ($aigrade->has_transcripts()) {
                     $aigrade->do_diff();
-                }else{
+                } else {
                     $skipped++;
                 }
             }
-            $results=new stdClass();
-            $results->done=count($ai_evals)-$skipped;
-            $results->skipped=$skipped;
-            redirect($url,get_string('machineregraded',constants::M_COMPONENT,$results),5);
+            $results = new stdClass();
+            $results->done = count($ai_evals) - $skipped;
+            $results->skipped = $skipped;
+            redirect($url, get_string('machineregraded', constants::M_COMPONENT, $results), 5);
         }
         break;
     case 'pushmachinegrades':
-        $url =  new \moodle_url(constants::M_URL . '/gradesadmin.php',
-            array('id' => $cm->id,
-                'action'=>'menu'));
-        if($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE &&
-            utils::can_transcribe($moduleinstance)) {
+        $url = new \moodle_url(constants::M_URL . '/gradesadmin.php',
+                array('id' => $cm->id,
+                        'action' => 'menu'));
+        if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE &&
+                utils::can_transcribe($moduleinstance)) {
             readaloud_update_grades($moduleinstance);
         }
-        redirect($url,get_string('machinegradespushed',constants::M_COMPONENT),5);
+        redirect($url, get_string('machinegradespushed', constants::M_COMPONENT), 5);
         break;
 
     case 'menu':
@@ -120,24 +116,23 @@ $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 
 //fetch mistranscriptions and html table for them (need to do this before head is printed because of AMD/CSS in table)
 $mistranscriptions = utils::fetch_all_mistranscriptions($moduleinstance->id);
-$table_of_mistranscriptions= $renderer->show_all_mistranscriptions($mistranscriptions);
+$table_of_mistranscriptions = $renderer->show_all_mistranscriptions($mistranscriptions);
 
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('gradesadmin', constants::M_COMPONENT));
 
-echo $renderer->show_gradesadmin_heading(get_string('gradesadmintitle',constants::M_COMPONENT),
-    get_string('gradesadmininstructions',constants::M_COMPONENT));
+echo $renderer->show_gradesadmin_heading(get_string('gradesadmintitle', constants::M_COMPONENT),
+        get_string('gradesadmininstructions', constants::M_COMPONENT));
 
 //This is the estimate of errors based on comparing human grades to machine grades
 //echo $renderer->show_currenterrorestimate(utils::estimate_errors($moduleinstance->id));
 
 $mform = new \mod_readaloud\form\alternatives();
 //id is cmid on this page, so we use n as the id of the instance, so to make sure we arrive back here ok, we add n
-$moduleinstance->n=$moduleinstance->id;
+$moduleinstance->n = $moduleinstance->id;
 $mform->set_data($moduleinstance);
 $mform->display();
 
 //echo $renderer->show_machineregradeallbutton($moduleinstance);
-
 
 echo $table_of_mistranscriptions;
 

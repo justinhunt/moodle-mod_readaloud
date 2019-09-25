@@ -32,8 +32,8 @@ defined('MOODLE_INTERNAL') || die();
 global $DB;
 
 $logs = array(
-    array('module'=>'readaloud', 'action'=>'add', 'mtable'=>'readaloud', 'field'=>'name'),
-    array('module'=>'readaloud', 'action'=>'update', 'mtable'=>'readaloud', 'field'=>'name'),
-    array('module'=>'readaloud', 'action'=>'view', 'mtable'=>'readaloud', 'field'=>'name'),
-    array('module'=>'readaloud', 'action'=>'view all', 'mtable'=>'readaloud', 'field'=>'name')
+        array('module' => 'readaloud', 'action' => 'add', 'mtable' => 'readaloud', 'field' => 'name'),
+        array('module' => 'readaloud', 'action' => 'update', 'mtable' => 'readaloud', 'field' => 'name'),
+        array('module' => 'readaloud', 'action' => 'view', 'mtable' => 'readaloud', 'field' => 'name'),
+        array('module' => 'readaloud', 'action' => 'view all', 'mtable' => 'readaloud', 'field' => 'name')
 );

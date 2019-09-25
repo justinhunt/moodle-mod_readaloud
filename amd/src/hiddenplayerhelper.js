@@ -1,4 +1,4 @@
-define(['jquery','core/log','mod_readaloud/definitions'], function($,log,def) {
+define(['jquery', 'core/log', 'mod_readaloud/definitions'], function ($, log, def) {
     "use strict"; // jshint ;_;
 
     log.debug('Readaloud hidden player helper: initialising');
@@ -17,16 +17,16 @@ define(['jquery','core/log','mod_readaloud/definitions'], function($,log,def) {
             this.register_events();
         },
 
-        register_controls: function(){
+        register_controls: function () {
             this.controls.hiddenplayer = $('.' + this.hiddenplayer);
             this.controls.hiddenplayerbutton = $('.' + this.hiddenplayerbutton);
         },
 
-        register_events: function(){
+        register_events: function () {
             var that = this;
             var audioplayer = this.controls.hiddenplayer;
             //handle the button click
-            this.controls.hiddenplayerbutton.click(function(e){
+            this.controls.hiddenplayerbutton.click(function (e) {
                 var audiosrc = $(this).attr('data-audiosource');
                 if (audiosrc === audioplayer.attr('src') && !(audioplayer.prop('paused'))) {
                     that.dohiddenstop();
@@ -46,9 +46,9 @@ define(['jquery','core/log','mod_readaloud/definitions'], function($,log,def) {
             audioplayer[0].load();
             var pp = audioplayer[0].play();
             if (pp !== undefined) {
-                pp.then(function() {
+                pp.then(function () {
                     // Yay we are playing
-                }).catch(function(error) {
+                }).catch(function (error) {
                     // somethings up ... but we can ignore it
                 });
             }
@@ -56,7 +56,7 @@ define(['jquery','core/log','mod_readaloud/definitions'], function($,log,def) {
         },
         dohiddenstop: function () {
             var m = this;
-            var audioplayer =  m.controls.hiddenplayer;
+            var audioplayer = m.controls.hiddenplayer;
             audioplayer[0].pause();
             m.dobuttonicons();
         },

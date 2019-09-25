@@ -35,20 +35,20 @@ use \mod_readaloud\constants;
  * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class readaloud_scheduled extends \core\task\scheduled_task {    
-		
-	public function get_name() {
+class readaloud_scheduled extends \core\task\scheduled_task {
+
+    public function get_name() {
         // Shown in admin screens
         return get_string('readaloudtask', constants::M_COMPONENT);
     }
-	
-	 /**
+
+    /**
      *  Run all the tasks
      */
-	 public function execute(){
-		$trace = new \text_progress_trace();
-        	//readaloud_dotask($trace);
-	}
+    public function execute() {
+        $trace = new \text_progress_trace();
+        //readaloud_dotask($trace);
+    }
 
 }
 

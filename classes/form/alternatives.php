@@ -59,12 +59,12 @@ class alternatives extends \moodleform {
         $mform->addElement('header', 'alternatesheading', get_string("alternatives", constants::M_COMPONENT));
 
         //The alternatives declaration
-        $mform->addElement('textarea','alternatives',get_string("alternatives", constants::M_COMPONENT),
-            'wrap="virtual" rows="20" cols="50"');
-        $mform->setDefault('alternatives','');
-        $mform->setType('alternatives',PARAM_RAW);
+        $mform->addElement('textarea', 'alternatives', get_string("alternatives", constants::M_COMPONENT),
+                'wrap="virtual" rows="20" cols="50"');
+        $mform->setDefault('alternatives', '');
+        $mform->setType('alternatives', PARAM_RAW);
         $mform->addElement('static', 'alternativesdescr', '',
-            get_string('alternatives_descr', constants::M_COMPONENT));
+                get_string('alternatives_descr', constants::M_COMPONENT));
         //('n'=>$moduleinstance->id, 'action'=>'machineregradeall'
 
         $mform->addElement('hidden', 'n');
