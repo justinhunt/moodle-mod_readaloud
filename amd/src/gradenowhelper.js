@@ -209,11 +209,13 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
                     if (!(wordindex in that.options.errorwords)) {
                         var theword = $('#' + that.cd.wordclass + '_' + wordindex);
                         var thespace = $('#' + that.cd.spaceclass + '_' + wordindex);
-                        that.adderrorword(wordindex, theword.text());
-                        theword.addClass(that.cd.badwordclass);
-                        theword.addClass(that.cd.spotcheckmode);
-                        if (wordindex !== playchain.endword) {
-                            thespace.addClass(that.cd.spotcheckmode);
+                        if(wordindex==clickwordnumber) {
+                            that.adderrorword(wordindex, theword.text());
+                            theword.addClass(that.cd.badwordclass);
+                            theword.addClass(that.cd.spotcheckmode);
+                            if (wordindex !== playchain.endword) {
+                                thespace.addClass(that.cd.spotcheckmode);
+                            }
                         }
                     }
                 }
@@ -237,12 +239,14 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
                 var playchain = that.fetchPlayChain(clickwordnumber);
                 for (var wordindex = playchain.startword; wordindex <= playchain.endword; wordindex++) {
                     if (wordindex in that.options.errorwords) {
-                        delete that.options.errorwords[wordindex];
-                        var theword = $('#' + that.cd.wordclass + '_' + wordindex);
-                        var thespace = $('#' + that.cd.spaceclass + '_' + wordindex);
-                        theword.removeClass(that.cd.badwordclass);
-                        theword.removeClass(that.cd.spotcheckmode);
-                        thespace.removeClass(that.cd.spotcheckmode);
+                        if(wordindex==clickwordnumber) {
+                            delete that.options.errorwords[wordindex];
+                            var theword = $('#' + that.cd.wordclass + '_' + wordindex);
+                            var thespace = $('#' + that.cd.spaceclass + '_' + wordindex);
+                            theword.removeClass(that.cd.badwordclass);
+                            theword.removeClass(that.cd.spotcheckmode);
+                            thespace.removeClass(that.cd.spotcheckmode);
+                        }
                     }
                 }
                 //that.markup_badspaces();
@@ -607,9 +611,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             }
             var playchain = {};
             playchain.startword = startindex;
-            playchain.endword = endindex;
+            playchain.endword = parseInt(endindex);
             playchain.audiostart = starttime;
-            playchain.audioend = endtime;
+            playchain.audioend = parseInt(endtime);
             //console.log('audiostart:' + starttime);
             //console.log('audioend:' + endtime);
 

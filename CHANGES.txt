@@ -1,3 +1,6 @@
+2.0.19 (Build xx)
+-Removed chaining of click actions across playchain in spotcheck mode
+
 2.0.18 (Build 2019092501)
 - Fixed a misten ref. to another plugin readseed in grade.php
 - Changed fetch_transcripts and has_ transcripts to look at full transcript. Because plain transcript might exist AND be empty.
