@@ -78,6 +78,10 @@ if ($ADMIN->fulltree) {
             get_string('allowearlyexit', constants::M_COMPONENT),
             get_string('allowearlyexit_defaultdetails', constants::M_COMPONENT), 0));
 
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/submitrawaudio',
+            get_string('submitrawaudio', constants::M_COMPONENT), get_string('submitrawaudio_details', constants::M_COMPONENT), 0));
+
+
     //machine grade method
     $name = 'machinegrademethod';
     $label = get_string($name, constants::M_COMPONENT);

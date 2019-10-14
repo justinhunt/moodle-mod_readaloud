@@ -188,6 +188,11 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
         $mform->addHelpButton('accadjust', 'accadjust', constants::M_COMPONENT);
 
+        //Submit Raw Audio
+        $mform->addElement('advcheckbox', 'submitrawaudio', get_string('submitrawaudio', constants::M_COMPONENT),
+                get_string('submitrawaudio_details', constants::M_COMPONENT));
+        $mform->setDefault('submitrawaudio', $config->submitrawaudio);
+
         // Post attempt
         $mform->addElement('header', 'postattemptheader', get_string('postattemptheader', constants::M_COMPONENT));
 

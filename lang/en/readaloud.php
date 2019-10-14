@@ -317,3 +317,5 @@ $string['transcriber_none'] = 'No transcription';
 $string['transcriber_amazontranscribe'] = 'Regular Transcription';
 $string['transcriber_googlecloud'] = 'Fast Transcription (< 60s only)';
 
+$string['submitrawaudio'] = 'Submit uncompressed audio';
+$string['submitrawaudio_details'] = 'Submitting uncompressed audio may increase transcription accuracy, but at the expense of upload speed and reliability.';

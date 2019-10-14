@@ -375,7 +375,10 @@ class renderer extends \plugin_renderer_base {
         //=======================================
         $hints = new \stdClass();
         $hints->allowearlyexit = $moduleinstance->allowearlyexit;
-        if ($moduleinstance->transcriber == constants::TRANSCRIBER_GOOGLECLOUDSPEECH) {
+
+        //perhaps we want to force stereoaudio
+        if ($moduleinstance->transcriber == constants::TRANSCRIBER_GOOGLECLOUDSPEECH ||
+                $moduleinstance->submitrawaudio) {
             $hints->encoder = 'stereoaudio';
         }
         $string_hints = base64_encode(json_encode($hints));
