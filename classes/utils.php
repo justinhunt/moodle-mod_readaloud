@@ -689,6 +689,65 @@ class utils {
         return $ret;
     }
 
+    public static function fetch_attempt_summary($moduleinstance,$userid=0){
+        global $DB, $USER;
+
+        //use current user if not passed in
+        if($userid==0){$userid = $USER->id;}
+        //init return value
+        $attemptsummary = false;
+
+        $sql =
+                "SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore,tai.fulltranscript as fulltranscript FROM {" .
+                constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
+                "INNER JOIN {" . constants::M_AITABLE . "} tai ON tai.attemptid=tu.id " .
+                "WHERE tu.readaloudid=? AND u.id=?" .
+                " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
+
+        $alldata = $DB->get_records_sql($sql, array($moduleinstance->id, $userid));
+
+        //if we have data, yay
+        if ($alldata) {
+
+            //initialise our return object
+            $attemptsummary = new \stdClass();
+            $attemptsummary->totalattempts = count($alldata);
+            $attemptsummary->total_wpm = 0;
+            $attemptsummary->h_wpm = 0;
+            $attemptsummary->total_accuracy = 0;
+            $attemptsummary->h_accuracy = 0;
+            $attemptsummary->total_sessionscore = 0;
+            $attemptsummary->h_sessionscore = 0;
+
+
+           //loop through each attempt
+            foreach ($alldata as $thedata) {
+
+                //sessiontime is our indicator that a human grade has been saved.
+                //use aidata if no human grade or machinegrades only
+                if (!$thedata->sessiontime || $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY) {
+                    $thedata->wpm = $thedata->aiwpm;
+                    $thedata->accuracy = $thedata->aiaccuracy;
+                    $thedata->sessionscore = $thedata->aisessionscore;
+                }
+                //calc totals and highest
+                $attemptsummary->total_wpm += $thedata->wpm;
+                $attemptsummary->h_wpm = max($attemptsummary->h_wpm, $thedata->wpm);
+                $attemptsummary->total_accuracy += $thedata->accuracy;
+                $attemptsummary->h_accuracy = max($attemptsummary->h_accuracy, $thedata->accuracy);
+                $attemptsummary->total_sessionscore += $thedata->sessionscore;
+                $attemptsummary->h_sessionscore = max($attemptsummary->h_sessionscore, $thedata->sessionscore);
+
+            }
+            //finally calc averages
+            $attemptsummary->av_wpm = round($attemptsummary->total_wpm / $attemptsummary->totalattempts,1);
+            $attemptsummary->av_accuracy = round($attemptsummary->total_accuracy / $attemptsummary->totalattempts,1);
+            $attemptsummary->av_sessionscore = round($attemptsummary->total_sessionscore / $attemptsummary->totalattempts,1);
+
+        }
+        return $attemptsummary;
+    }
+
     //What to show students after an attempt
     public static function get_postattempt_options() {
         return array(
@@ -732,7 +791,8 @@ class utils {
     public static function get_machinegrade_options() {
         return array(
                 constants::MACHINEGRADE_NONE => get_string("machinegradenone", constants::M_COMPONENT),
-                constants::MACHINEGRADE_MACHINE => get_string("machinegrademachine", constants::M_COMPONENT)
+                constants::MACHINEGRADE_HYBRID => get_string("machinegradehybrid", constants::M_COMPONENT),
+                constants::MACHINEGRADE_MACHINEONLY => get_string("machinegrademachineonly", constants::M_COMPONENT)
         );
     }
 

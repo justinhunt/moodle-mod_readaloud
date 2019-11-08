@@ -164,7 +164,9 @@ class gradingbyuser extends basereport {
         $cantranscribe = utils::can_transcribe($moduleinstance);
 
         //run the sql and match up WPM/ accuracy and sessionscore if we need to
-        if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+        if (($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
+                        $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY)
+                && $cantranscribe){
             $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid, $formdata->userid));
             if ($alldata) {
                 //sessiontime is our indicator that a human grade has been saved.

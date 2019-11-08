@@ -29,6 +29,7 @@
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $retake = optional_param('retake', 0, PARAM_INT); // course_module ID, or
@@ -114,9 +115,21 @@ if ($attempts && $retake == 0) {
     } else {
         echo $renderer->notabsheader();
     }
+
+    //show activity title
+    echo $renderer->show_title($moduleinstance->name);
+    echo $renderer->show_feedback_postattempt($moduleinstance);
+
+    //show an attempt summary if we have more than one attempt
+    if(count($attempts)>1) {
+        $attemptsummary = utils::fetch_attempt_summary($moduleinstance);
+        echo $renderer->show_attempt_summary($attemptsummary);
+    }
+
+
+
     $latestattempt = array_shift($attempts);
 
-    //========================================
     if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
         $latest_aigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
     } else {
@@ -132,11 +145,9 @@ if ($attempts && $retake == 0) {
         // /and just use the human value for all
         switch ($moduleinstance->humanpostattempt) {
             case constants::POSTATTEMPT_NONE:
-                echo $renderer->show_feedback_postattempt($moduleinstance, $moduleinstance->name);
                 echo $renderer->show_passage_postattempt($moduleinstance);
                 break;
             case constants::POSTATTEMPT_EVAL:
-                echo $renderer->show_feedback_postattempt($moduleinstance, $moduleinstance->name);
                 if ($have_humaneval) {
                     echo $renderer->show_humanevaluated_message();
                     $force_aidata = false;
@@ -153,7 +164,6 @@ if ($attempts && $retake == 0) {
                 break;
 
             case constants::POSTATTEMPT_EVALERRORS:
-                echo $renderer->show_feedback_postattempt($moduleinstance, $moduleinstance->name);
                 if ($have_humaneval) {
                     echo $renderer->show_humanevaluated_message();
                     $reviewmode = constants::REVIEWMODE_HUMAN;
@@ -170,7 +180,6 @@ if ($attempts && $retake == 0) {
                 break;
         }
     } else {
-        echo $renderer->show_feedback_postattempt($moduleinstance, $moduleinstance->name);
         echo $renderer->show_ungradedyet();
         echo $renderer->show_passage_postattempt($moduleinstance);
     }

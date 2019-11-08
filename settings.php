@@ -86,7 +86,7 @@ if ($ADMIN->fulltree) {
     $name = 'machinegrademethod';
     $label = get_string($name, constants::M_COMPONENT);
     $details = get_string($name . '_details', constants::M_COMPONENT);
-    $default = constants::MACHINEGRADE_MACHINE;
+    $default = constants::MACHINEGRADE_HYBRID;
     $options = \mod_readaloud\utils::get_machinegrade_options();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
             $label, $details, $default, $options));

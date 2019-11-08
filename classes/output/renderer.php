@@ -63,6 +63,67 @@ class renderer extends \plugin_renderer_base {
         return $this->output->header();
     }
 
+    public function show_attempt_summary($attemptsummary){
+
+        //set up our table
+        $tableattributes = array('class' => 'generaltable ' . constants::M_CLASS . '_table');
+
+        $htmltable = new \html_table();
+        $tableid = \html_writer::random_id(constants::M_COMPONENT);
+        $htmltable->id = $tableid;
+        $htmltable->attributes = $tableattributes;
+
+        $head = array('',
+                get_string('wpm', constants::M_COMPONENT),
+                get_string('accuracy_p', constants::M_COMPONENT),
+                get_string('grade_p', constants::M_COMPONENT));
+
+        $htmltable->head = $head;
+        $htr = new \html_table_row();
+        $cell = new \html_table_cell(get_string('averages', constants::M_COMPONENT));
+        // $cell->attributes = array('class' => constants::M_CLASS . '_cell_passageindex');
+        $htr->cells[] = $cell;
+
+        $cell = new \html_table_cell( $attemptsummary->av_wpm);
+       // $cell->attributes = array('class' => constants::M_CLASS . '_cell_passageindex');
+        $htr->cells[] = $cell;
+
+        $cell = new \html_table_cell( $attemptsummary->av_accuracy);
+        $htr->cells[] = $cell;
+
+        $cell = new \html_table_cell( $attemptsummary->av_sessionscore);
+        $htr->cells[] = $cell;
+
+        $htmltable->data[] = $htr;
+
+        $htr = new \html_table_row();
+        $cell = new \html_table_cell(get_string('highest', constants::M_COMPONENT));
+        $htr->cells[] = $cell;
+        $cell = new \html_table_cell( $attemptsummary->h_wpm);
+        // $cell->attributes = array('class' => constants::M_CLASS . '_cell_passageindex');
+        $htr->cells[] = $cell;
+
+        $cell = new \html_table_cell( $attemptsummary->h_accuracy);
+        $htr->cells[] = $cell;
+
+        $cell = new \html_table_cell( $attemptsummary->h_sessionscore);
+        $htr->cells[] = $cell;
+        $htmltable->data[] = $htr;
+
+
+        $tabletitle = get_string("myattemptssummary", constants::M_COMPONENT, $attemptsummary->totalattempts);
+        $htmltitle = $this->output->heading($tabletitle, 5);
+        $html = \html_writer::div($htmltitle, constants::M_CLASS . '_center');
+        $html .= \html_writer::div(get_string("summaryexplainer", constants::M_COMPONENT),
+                constants::M_CLASS . '_center');
+        $thetable = \html_writer::table($htmltable);
+        $html .= \html_writer::div($thetable, constants::M_CLASS . '_attemptsummarytable');
+
+        return  \html_writer::div($html, constants::M_CLASS . '_attemptsummary');
+
+
+    }
+
     /**
      *
      */
@@ -116,7 +177,9 @@ class renderer extends \plugin_renderer_base {
         $sectiontitle = get_string("pushmachinegrades", constants::M_COMPONENT);
         $heading = $this->output->heading($sectiontitle, 4);
 
-        if (utils::can_transcribe($moduleinstance) && $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE) {
+        if (utils::can_transcribe($moduleinstance) &&
+                ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
+                $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY)) {
             $options = [];
         } else {
             $options = array('disabled' => 'disabled');
@@ -339,13 +402,18 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
+    public function show_title($title){
+        $thetitle = $this->output->heading($title, 3, 'main');
+        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
+        return $displaytext;
+    }
+
     /**
      * Show the feedback set in the activity settings
      */
-    public function show_feedback_postattempt($readaloud, $showtitle) {
-        $thetitle = $this->output->heading($showtitle, 3, 'main');
-        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
-        $displaytext .= $this->output->box_start();
+    public function show_feedback_postattempt($readaloud) {
+
+        $displaytext = $this->output->box_start();
         $displaytext .= \html_writer::div($readaloud->feedback, constants::M_CLASS . '_center');
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext, constants::M_FEEDBACK_CONTAINER . ' ' . constants::M_POSTATTEMPT,

@@ -377,3 +377,13 @@ div.mod_readaloud_gradesadmin_cont {
     margin-bottom: 20px;
     margin-top: 20px;
 }
+
+div.mod_readaloud_attemptsummary {
+    margin-top: 5px;
+}
+
+div.mod_readaloud_attemptsummarytable {
+    border: 1px solid lightgrey;
+    max-width: 450px;
+    margin: auto;
+}

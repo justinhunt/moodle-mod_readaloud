@@ -92,8 +92,9 @@ switch ($action) {
         $url = new \moodle_url(constants::M_URL . '/gradesadmin.php',
                 array('id' => $cm->id,
                         'action' => 'menu'));
-        if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE &&
-                utils::can_transcribe($moduleinstance)) {
+        if (($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
+                        $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY)
+            && utils::can_transcribe($moduleinstance)) {
             readaloud_update_grades($moduleinstance);
         }
         redirect($url, get_string('machinegradespushed', constants::M_COMPONENT), 5);

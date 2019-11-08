@@ -185,7 +185,7 @@ function readaloud_grade_item_update($moduleinstance, $grades = null) {
 
     //if we are machine grading we need to fetch the error estimate
     //hard coded to no error estimate since we turned off the feature
-    if (false && $moduleinstance->machgrademethod = constants::MACHINEGRADE_MACHINE &&
+    if (false && $moduleinstance->machgrademethod = constants::MACHINEGRADE_HYBRID &&
                     utils::can_transcribe($moduleinstance) && $moduleinstance->accadjustmethod != constants::ACCMETHOD_NONE) {
         $errorestimate = \mod_readaloud\utils::estimate_errors($moduleinstance->id);
     } else {
@@ -317,7 +317,7 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
               GROUP BY u.id";
 
             //from which table do we get these grades..
-            if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+            if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID && $cantranscribe) {
                 $airesults = $DB->get_records_sql($ai_sql, $params);
                 $results = $DB->get_records_sql($human_sql, $params);
                 //here we loop through and choose the higher of the ai or human grades
@@ -331,6 +331,9 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
                         }
                     }
                 }
+            } elseif($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe){
+                $results = $DB->get_records_sql($ai_sql, $params);
+
             } else {
                 $results = $DB->get_records_sql($human_sql, $params);
             }
@@ -362,7 +365,7 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
                   GROUP BY u.id";
 
             //from which table do we get these grades..
-            if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+            if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID && $cantranscribe) {
                 $results = $DB->get_records_sql($hybrid_sql, $params);
                 //sessiontime is our indicator that a human grade has been saved.
                 foreach ($results as $result) {
@@ -372,6 +375,10 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
                         $result->rawgrade = $result->aigrade;
                     }
                 }
+
+            } elseif($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe){
+                $results = $DB->get_records_sql($ai_sql, $params);
+
             } else {
                 $results = $DB->get_records_sql($human_sql, $params);
             }
@@ -400,12 +407,20 @@ function readaloud_is_complete($course, $cm, $userid, $type) {
 
     $cantranscribe = utils::can_transcribe($moduleinstance);
     $params = array('userid' => $userid, 'moduleid' => $moduleinstance->id);
-    if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINE && $cantranscribe) {
+    if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID && $cantranscribe) {
         //choose greater or  ai or human score
         $sql = "SELECT  GREATEST(MAX(ai.sessionscore), MAX(a.sessionscore)) AS grade
                       FROM {" . constants::M_AITABLE . "} ai
                       INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
                      WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
+
+    } elseif($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe) {
+
+        //choose AI grades only
+        $sql = "SELECT  MAX( sessionscore  ) AS grade
+                      FROM {" . constants::M_AITABLE . "}
+                     WHERE userid = :userid AND " . constants::M_MODNAME . "id = :moduleid";
+
     } else {
         //choose human grades only
         $sql = "SELECT  MAX( sessionscore  ) AS grade

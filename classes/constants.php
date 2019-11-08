@@ -43,7 +43,8 @@ class constants {
     const REVIEWMODE_SCORESONLY = 3;
     //to use or not use machine grades
     const MACHINEGRADE_NONE = 0;
-    const MACHINEGRADE_MACHINE = 1;
+    const MACHINEGRADE_HYBRID = 1;
+    const MACHINEGRADE_MACHINEONLY = 2;
 
     //CSS ids/classes
     const M_RECORD_BUTTON = 'mod_readaloud_record_button';

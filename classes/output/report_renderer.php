@@ -13,19 +13,30 @@ use \mod_readaloud\constants;
 class report_renderer extends \plugin_renderer_base {
 
     public function render_reportmenu($moduleinstance, $cm) {
-
+        $reports = [];
+/*
         $basic = new \single_button(
                 new \moodle_url(constants::M_URL . '/reports.php',
                         array('report' => 'basic', 'id' => $cm->id, 'n' => $moduleinstance->id)),
                 get_string('basicreport', constants::M_COMPONENT), 'get');
+        $reports[]=$this->render($basic);
 
         $attempts = new \single_button(
                 new \moodle_url(constants::M_URL . '/reports.php',
                         array('report' => 'attempts', 'id' => $cm->id, 'n' => $moduleinstance->id)),
                 get_string('attemptsreport', constants::M_COMPONENT), 'get');
+        $reports[]=$this->render($attempts);
+*/
 
-        $ret = \html_writer::div($this->render($basic) . '<br />' . $this->render($attempts) . '<br />',
-                constants::M_CLASS . '_listbuttons');
+        $attemptssummary = new \single_button(
+                new \moodle_url(constants::M_URL . '/reports.php',
+                        array('report' => 'attemptssummary', 'id' => $cm->id, 'n' => $moduleinstance->id)),
+                get_string('attemptssummaryreport', constants::M_COMPONENT), 'get');
+        $reports[]=$this->render($attemptssummary);
+
+
+
+        $ret = \html_writer::div(implode('<br />',$reports), constants::M_CLASS . '_listbuttons');
 
         return $ret;
     }

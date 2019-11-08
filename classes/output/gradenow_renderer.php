@@ -36,8 +36,7 @@ class gradenow_renderer extends \plugin_renderer_base {
 
     public function render_userreview($gradenow) {
         $actionheader = $this->render_attempt_scoresheader($gradenow);
-        $ret = $this->render_attempt_header($gradenow->attemptdetails('userfullname'));
-        $ret .= $actionheader;
+        $ret = $actionheader;
         $thepassage = $this->render_passage($gradenow->attemptdetails('passage'));
         $ret .= \html_writer::div($thepassage, constants::M_CLASS . '_postattempt');
         return $ret;
@@ -112,7 +111,7 @@ class gradenow_renderer extends \plugin_renderer_base {
     }
 
     public function render_attempt_header($username) {
-        $ret = $this->output->heading(get_string('showingattempt', constants::M_COMPONENT, $username), 3);
+        $ret = $this->output->heading(get_string('showingattempt', constants::M_COMPONENT, $username), 4);
         return $ret;
     }
 
