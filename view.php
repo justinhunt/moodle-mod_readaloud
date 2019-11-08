@@ -118,13 +118,16 @@ if ($attempts && $retake == 0) {
 
     //show activity title
     echo $renderer->show_title($moduleinstance->name);
-    echo $renderer->show_feedback_postattempt($moduleinstance);
+
 
     //show an attempt summary if we have more than one attempt
     if(count($attempts)>1) {
         $attemptsummary = utils::fetch_attempt_summary($moduleinstance);
         echo $renderer->show_attempt_summary($attemptsummary);
     }
+
+    //show feedback summary
+    echo $renderer->show_feedback_postattempt($moduleinstance);
 
 
 

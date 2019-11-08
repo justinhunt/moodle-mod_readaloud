@@ -414,7 +414,7 @@ class renderer extends \plugin_renderer_base {
     public function show_feedback_postattempt($readaloud) {
 
         $displaytext = $this->output->box_start();
-        $displaytext .= \html_writer::div($readaloud->feedback, constants::M_CLASS . '_center');
+        $displaytext .= \html_writer::div($readaloud->feedback);
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext, constants::M_FEEDBACK_CONTAINER . ' ' . constants::M_POSTATTEMPT,
                 array('id' => constants::M_FEEDBACK_CONTAINER));
