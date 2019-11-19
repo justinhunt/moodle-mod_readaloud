@@ -1,3 +1,6 @@
+2.0.21 (Build 2019xxxxx)
+-Added better reporting to user of invalid creds
+
 2.0.20(Build 2019110700))
 -added attempts summary report for admin/teachers
 -added attempt summary table to view.php if 2 or more attempts

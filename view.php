@@ -207,15 +207,35 @@ if (has_capability('mod/readaloud:preview', $modulecontext)) {
     echo $renderer->notabsheader();
 }
 
-//fetch token
-$token = \mod_readaloud\utils::fetch_token($config->apiuser, $config->apisecret);
+
 
 //show all the main parts. Many will be hidden and displayed by JS
 echo $renderer->show_welcome($moduleinstance->welcome, $moduleinstance->name);
 echo $renderer->show_feedback($moduleinstance, $moduleinstance->name);
 echo $renderer->show_error($moduleinstance, $cm);
 echo $renderer->show_passage($moduleinstance, $cm);
-echo $renderer->show_recorder($moduleinstance, $token, $debug);
+
+//we show the recorder if we can, but if the token or API creds are invalid we report that
+if(empty($config->apiuser) || empty($config->apisecret)){
+    $message = get_string('nocredentials',constants::M_COMPONENT,
+            $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+    echo $renderer->show_problembox($message);
+}else {
+    //fetch token
+    $token = utils::fetch_token($config->apiuser, $config->apisecret);
+
+    //check token authenticated and no errors in it
+    $errormessage = utils::fetch_token_error($token);
+    if(!empty($errormessage)){
+        echo $renderer->show_problembox($errormessage);
+
+    }else{
+        //All good. So lets fetch recorder
+        echo $renderer->show_recorder($moduleinstance, $token, $debug);
+    }
+}
+
+
 echo $renderer->show_progress($moduleinstance, $cm);
 echo $renderer->show_wheretonext($moduleinstance);
 

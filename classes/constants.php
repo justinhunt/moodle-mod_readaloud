@@ -20,6 +20,7 @@ class constants {
     const M_MODNAME = 'readaloud';
     const M_URL = '/mod/readaloud';
     const M_CLASS = 'mod_readaloud';
+    const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
 
     //grading options
     const M_GRADEHIGHEST = 0;
@@ -100,7 +101,7 @@ class constants {
 
     //languages
     const M_LANG_ENUS = 'en-US';
-    const M_LANG_ENUK = 'en-UK';
+    const M_LANG_ENUK = 'en-GB';
     const M_LANG_ENAU = 'en-AU';
     const M_LANG_ENIN = 'en-IN';
     const M_LANG_ESUS = 'es-US';

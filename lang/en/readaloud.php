@@ -294,6 +294,10 @@ $string['appauthorised'] = "Poodll Read Aloud is authorised for this site.";
 $string['appnotauthorised'] = "Poodll Read Aloud is NOT authorised for this site.";
 $string['refreshtoken'] = "Refresh license information";
 $string['notokenincache'] = "Refresh to see license information. Contact Poodll support if there is a problem.";
+//these errors are displayed on activity page
+$string['nocredentials'] = 'API user and secret not entered. Please enter them on <a href="{$a}">the settings page.</a> You can get them from <a href="https://poodll.com/member">Poodll.com.</a>';
+$string['novalidcredentials'] = 'API user and secret were rejected and could not gain access. Please check them on <a href="{$a}">the settings page.</a> You can get them from <a href="https://poodll.com/member">Poodll.com.</a>';
+$string['nosubscriptions'] = "There is no current subscription for this site/plugin.";
 
 $string['privacy:metadata:attemptid'] = 'The unique identifier of a users Read aloud attempt.';
 $string['privacy:metadata:readaloudid'] = 'The unique identifier of a Read Aloud activity instance.';

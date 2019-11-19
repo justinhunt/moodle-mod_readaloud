@@ -230,6 +230,48 @@ class utils {
         return $token;
     }
 
+    //check token and tokenobject(from cache)
+    //return error message or blank if its all ok
+    public static function fetch_token_error($token){
+        global $CFG;
+
+        //check token authenticated
+        if(empty($token)) {
+            $message = get_string('novalidcredentials', constants::M_COMPONENT,
+                    $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+            return $message;
+        }
+
+        // Fetch from cache and process the results and display.
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
+        $tokenobject = $cache->get('recentpoodlltoken');
+
+        //we should not get here if there is no token, but lets gracefully die, [v unlikely]
+        if (!($tokenobject)) {
+            $message = get_string('notokenincache', constants::M_COMPONENT);
+            return $message;
+        }
+
+        //We have an object but its no good, creds were wrong ..or something. [v unlikely]
+        if (!property_exists($tokenobject, 'token') || empty($tokenobject->token)) {
+            $message = get_string('credentialsinvalid', constants::M_COMPONENT);
+            return $message;
+        }
+        // if we do not have subs.
+        if (!property_exists($tokenobject, 'subs')) {
+            $message = get_string('nosubscriptions', constants::M_COMPONENT);
+            return $message;
+        }
+        // Is app authorised?
+        if (!property_exists($tokenobject, 'apps') || !in_array(constants::M_COMPONENT, $tokenobject->apps)) {
+            $message = get_string('appnotauthorised', constants::M_COMPONENT);
+            return $message;
+        }
+
+        //just return empty if there is no error.
+        return '';
+    }
+
     /*
     * Turn a passage with text "lines" into html "brs"
     *
