@@ -1,5 +1,7 @@
 2.0.21 (Build 2019112100)
 -Added better reporting to user of invalid creds
+-Optimisations of cron task
+-Removed empty scheduled task
 
 2.0.20(Build 2019110700))
 -added attempts summary report for admin/teachers
