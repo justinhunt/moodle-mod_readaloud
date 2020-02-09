@@ -52,19 +52,15 @@ class utils {
 
     //are we willing and able to transcribe submissions?
     public static function can_transcribe($instance) {
+
         //we default to true
         //but it only takes one no ....
         $ret = true;
 
         //The regions that can transcribe
-        switch ($instance->region) {
-            case "useast1":
-            case "dublin":
-            case "sydney":
-            case "ottawa":
-                break;
+        switch($instance->region){
             default:
-                $ret = false;
+                $ret = true;
         }
 
         //if user disables ai, we do not transcribe
@@ -109,7 +105,7 @@ class utils {
 
         //First check that we have an API id and secret
         //refresh token
-        $refresh = \html_writer::link($CFG->wwwroot . '/mod/readaloud/refreshtoken.php',
+        $refresh = \html_writer::link($CFG->wwwroot . constants::M_URL . '/refreshtoken.php',
                         get_string('refreshtoken', constants::M_COMPONENT)) . '<br>';
 
         $message = '';
@@ -827,6 +823,8 @@ class utils {
                 "frankfurt" => get_string("frankfurt", constants::M_COMPONENT),
                 "london" => get_string("london", constants::M_COMPONENT),
                 "saopaulo" => get_string("saopaulo", constants::M_COMPONENT),
+                "singapore" => get_string("singapore",constants::M_COMPONENT),
+                "mumbai" => get_string("mumbai",constants::M_COMPONENT)
         );
     }
 
@@ -875,18 +873,38 @@ class utils {
 
     public static function get_lang_options() {
         return array(
+                constants::M_LANG_ARAE => get_string('ar-ae', constants::M_COMPONENT),
+                constants::M_LANG_ARSA => get_string('ar-sa', constants::M_COMPONENT),
+                constants::M_LANG_DADK => get_string('da-dk', constants::M_COMPONENT),
+                constants::M_LANG_DEDE => get_string('de-de', constants::M_COMPONENT),
+                constants::M_LANG_DECH => get_string('de-ch', constants::M_COMPONENT),
                 constants::M_LANG_ENUS => get_string('en-us', constants::M_COMPONENT),
-                constants::M_LANG_ENUK => get_string('en-uk', constants::M_COMPONENT),
+                constants::M_LANG_ENGB => get_string('en-gb', constants::M_COMPONENT),
                 constants::M_LANG_ENAU => get_string('en-au', constants::M_COMPONENT),
                 constants::M_LANG_ENIN => get_string('en-in', constants::M_COMPONENT),
+                constants::M_LANG_ENIE => get_string('en-ie', constants::M_COMPONENT),
+                constants::M_LANG_ENWL => get_string('en-wl', constants::M_COMPONENT),
+                constants::M_LANG_ENAB => get_string('en-ab', constants::M_COMPONENT),
                 constants::M_LANG_ESUS => get_string('es-us', constants::M_COMPONENT),
                 constants::M_LANG_ESES => get_string('es-es', constants::M_COMPONENT),
+                constants::M_LANG_FAIR => get_string('fa-ir', constants::M_COMPONENT),
                 constants::M_LANG_FRCA => get_string('fr-ca', constants::M_COMPONENT),
                 constants::M_LANG_FRFR => get_string('fr-fr', constants::M_COMPONENT),
-                constants::M_LANG_DEDE => get_string('de-de', constants::M_COMPONENT),
+                constants::M_LANG_HIIN => get_string('hi-in', constants::M_COMPONENT),
+                constants::M_LANG_HEIL => get_string('he-il', constants::M_COMPONENT),
+                constants::M_LANG_IDID => get_string('id-id', constants::M_COMPONENT),
                 constants::M_LANG_ITIT => get_string('it-it', constants::M_COMPONENT),
+                constants::M_LANG_JAJP => get_string('ja-jp', constants::M_COMPONENT),
+                constants::M_LANG_KOKR => get_string('ko-kr', constants::M_COMPONENT),
+                constants::M_LANG_MSMY => get_string('ms-my', constants::M_COMPONENT),
+                constants::M_LANG_NLNL => get_string('nl-nl', constants::M_COMPONENT),
                 constants::M_LANG_PTBR => get_string('pt-br', constants::M_COMPONENT),
-                constants::M_LANG_DADK => get_string('da-dk', constants::M_COMPONENT)
+                constants::M_LANG_PTPT => get_string('pt-pt', constants::M_COMPONENT),
+                constants::M_LANG_RURU => get_string('ru-ru', constants::M_COMPONENT),
+                constants::M_LANG_TAIN => get_string('ta-in', constants::M_COMPONENT),
+                constants::M_LANG_TEIN => get_string('te-in', constants::M_COMPONENT),
+                constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
+                constants::M_LANG_ZHCN => get_string('zh-cn', constants::M_COMPONENT)
         );
         /*
           return array(

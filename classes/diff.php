@@ -162,7 +162,7 @@ class diff {
     public static function generous_match($passageword, $transcriptword, $language) {
         switch ($language) {
             case constants::M_LANG_ENUS:
-            case constants::M_LANG_ENUK:
+            case constants::M_LANG_ENGB:
             case constants::M_LANG_ENAU:
                 if (self::mb_strequals($passageword . 's', $transcriptword)) {
                     return true;

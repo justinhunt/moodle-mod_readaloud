@@ -1,3 +1,7 @@
+2.0.22 (Build 2020012300)
+-added languages(arabic, chinese, portuguese, japanese, tamil, telegu, dutch, farsi, wales english, ireland english, scotland english, russian, turkish, malay, indonesian,hebrew, swiss german)
+-added user tagging
+
 2.0.21 (Build 2019112100)
 -Added better reporting to user of invalid creds
 -Optimisations of cron task

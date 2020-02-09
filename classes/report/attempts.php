@@ -44,7 +44,6 @@ class attempts extends basereport {
                     $ret = get_string('submitted', constants::M_COMPONENT);
                 }
                 break;
-                break;
 
             case 'wpm':
                 $ret = $record->wpm;

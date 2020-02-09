@@ -101,7 +101,7 @@ class constants {
 
     //languages
     const M_LANG_ENUS = 'en-US';
-    const M_LANG_ENUK = 'en-GB';
+    const M_LANG_ENGB = 'en-GB';
     const M_LANG_ENAU = 'en-AU';
     const M_LANG_ENIN = 'en-IN';
     const M_LANG_ESUS = 'es-US';
@@ -111,7 +111,29 @@ class constants {
     const M_LANG_DEDE = 'de-DE';
     const M_LANG_ITIT = 'it-IT';
     const M_LANG_PTBR = 'pt-BR';
+
     const M_LANG_DADK = 'da-DK';
+
+    const M_LANG_KOKR = 'ko-KR';
+    const M_LANG_HIIN = 'hi-IN';
+    const M_LANG_ARAE ='ar-AE';
+    const M_LANG_ARSA ='ar-SA';
+    const M_LANG_ZHCN ='zh-CN';
+    const M_LANG_NLNL ='nl-NL';
+    const M_LANG_ENIE ='en-IE';
+    const M_LANG_ENWL ='en-WL';
+    const M_LANG_ENAB ='en-AB';
+    const M_LANG_FAIR ='fa-IR';
+    const M_LANG_DECH ='de-CH';
+    const M_LANG_HEIL ='he-IL';
+    const M_LANG_IDID ='id-ID';
+    const M_LANG_JAJP ='ja-JP';
+    const M_LANG_MSMY ='ms-MY';
+    const M_LANG_PTPT ='pt-PT';
+    const M_LANG_RURU ='ru-RU';
+    const M_LANG_TAIN ='ta-IN';
+    const M_LANG_TEIN ='te-IN';
+    const M_LANG_TRTR ='tr-TR';
 
     const TRANSCRIBER_NONE = 0;
     const TRANSCRIBER_AMAZONTRANSCRIBE = 1;

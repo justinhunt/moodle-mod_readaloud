@@ -437,7 +437,7 @@ class renderer extends \plugin_renderer_base {
      * The html part of the recorder (js is in the fetch_activity_amd)
      */
     public function show_recorder($moduleinstance, $token, $debug = false) {
-        global $CFG;
+        global $CFG,$USER;
 
         //recorder
         //=======================================
@@ -461,6 +461,7 @@ class renderer extends \plugin_renderer_base {
                         'data-localloader' => '/mod/readaloud/poodllloader.html',
                         'data-media' => "audio",
                         'data-appid' => constants::M_COMPONENT,
+                        'data-owner' => hash('md5',$USER->username),
                         'data-type' => $debug ? "upload" : "readaloud",
                         'data-width' => $debug ? "500" : "360",
                         'data-height' => $debug ? "500" : "210",
