@@ -361,5 +361,6 @@ $string['submitrawaudio_details'] = 'Submitting uncompressed audio may increase 
 
 $string['sessionscoremethod'] = 'Grade Calculation';
 $string['sessionscoremethod_details'] = 'How the value(%) for gradebook is calculated.';
+$string['sessionscoremethod_help'] = 'The value(%) for gradebook is calculated as a percentage, either WPM / Target_WPM (normal) or (WPM - Errors)/ Target_WPM (strict)';
 $string['sessionscorenormal'] = 'Normal: WPM / Target_WPM';
 $string['sessionscorestrict'] = 'Strict: (WPM - Errors) /Target WPM';
