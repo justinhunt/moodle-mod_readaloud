@@ -133,6 +133,15 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->setDefault('gradeoptions', constants::M_GRADELATEST);
         $mform->addHelpButton('gradeoptions', 'gradeoptions', constants::M_COMPONENT);
 
+
+        //sessionscore options
+        $sessionscoreoptions = \mod_readaloud\utils::get_sessionscore_options();
+        $mform->addElement('select', 'sessionscoremethod', get_string('sessionscoremethod', constants::M_COMPONENT),
+                $sessionscoreoptions);
+        $mform->setDefault('sessionscoremethod', $config->sessionscoremethod);
+        $mform->addHelpButton('sessionscoremethod', 'sessionscoremethod', constants::M_COMPONENT);
+
+
         //human vs machine grade options
         $machinegradeoptions = \mod_readaloud\utils::get_machinegrade_options();
         $mform->addElement('select', 'machgrademethod', get_string('machinegrademethod', constants::M_COMPONENT),

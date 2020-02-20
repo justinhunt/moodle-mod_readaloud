@@ -47,6 +47,10 @@ class constants {
     const MACHINEGRADE_HYBRID = 1;
     const MACHINEGRADE_MACHINEONLY = 2;
 
+    //Session Score
+    const SESSIONSCORE_NORMAL = 0; //Normal = WPM / Targetwpm * 100
+    const SESSIONSCORE_STRICT = 1; //Strict = (WPM - Errors) / Targetwpm * 100
+
     //CSS ids/classes
     const M_RECORD_BUTTON = 'mod_readaloud_record_button';
     const M_START_BUTTON = 'mod_readaloud_start_button';

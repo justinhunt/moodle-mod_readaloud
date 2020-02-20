@@ -358,3 +358,8 @@ $string['transcriber_googlecloud'] = 'Fast Transcription (< 60s only)';
 
 $string['submitrawaudio'] = 'Submit uncompressed audio';
 $string['submitrawaudio_details'] = 'Submitting uncompressed audio may increase transcription accuracy, but at the expense of upload speed and reliability.';
+
+$string['sessionscoremethod'] = 'Grade Calculation';
+$string['sessionscoremethod_details'] = 'How the value(%) for gradebook is calculated.';
+$string['sessionscorenormal'] = 'Normal: WPM / Target_WPM';
+$string['sessionscorestrict'] = 'Strict: (WPM - Errors) /Target WPM';

@@ -1,6 +1,10 @@
+2.0.23 (Build 2020021800)
+-added sessionscoremethod setting for strict and normal grading modes
+
 2.0.22 (Build 2020012300)
 -added languages(arabic, chinese, portuguese, japanese, tamil, telegu, dutch, farsi, wales english, ireland english, scotland english, russian, turkish, malay, indonesian,hebrew, swiss german)
 -added user tagging
+-fixed SQL bug in grading which occurs if FULL_GROUP_BY is set in mysql or in postgresql
 
 2.0.21 (Build 2019112100)
 -Added better reporting to user of invalid creds

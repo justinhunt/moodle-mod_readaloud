@@ -197,6 +197,7 @@ class gradenow {
         $gradingopts['sesskey'] = sesskey();
         $gradingopts['attemptid'] = $this->attemptdata->id;
         $gradingopts['readonly'] = $readonly;
+        $gradingopts['sessionscoremethod'] = $this->activitydata->sessionscoremethod;
         if ($loading_aidata) {
             $gradingopts['sessiontime'] = $this->aidata->sessiontime;
             $gradingopts['sessionerrors'] = $this->aidata->sessionerrors;

@@ -82,6 +82,16 @@ if ($ADMIN->fulltree) {
             get_string('submitrawaudio', constants::M_COMPONENT), get_string('submitrawaudio_details', constants::M_COMPONENT), 0));
 
 
+    //session score method
+    $name = 'sessionscoremethod';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = get_string($name . '_details', constants::M_COMPONENT);
+    $default = constants::SESSIONSCORE_NORMAL;
+    $options = \mod_readaloud\utils::get_sessionscore_options();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
+            $label, $details, $default, $options));
+
+
     //machine grade method
     $name = 'machinegrademethod';
     $label = get_string($name, constants::M_COMPONENT);

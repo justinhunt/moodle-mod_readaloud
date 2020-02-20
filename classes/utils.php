@@ -503,7 +503,13 @@ class utils {
         }
 
         //sessionscore
-        $usewpmscore = $wpmscore;
+        if($activitydata->sessionscoremethod == constants::SESSIONSCORE_STRICT) {
+            $usewpmscore = $wpmscore - $errorcount;
+            if($usewpmscore < 0){$usewpmscore =0;}
+        }else{
+            $usewpmscore = $wpmscore;
+        }
+
         $targetwpm = $activitydata->targetwpm;
         if ($usewpmscore > $targetwpm) {
             $usewpmscore = $targetwpm;
@@ -833,6 +839,13 @@ class utils {
                 constants::MACHINEGRADE_NONE => get_string("machinegradenone", constants::M_COMPONENT),
                 constants::MACHINEGRADE_HYBRID => get_string("machinegradehybrid", constants::M_COMPONENT),
                 constants::MACHINEGRADE_MACHINEONLY => get_string("machinegrademachineonly", constants::M_COMPONENT)
+        );
+    }
+
+    public static function get_sessionscore_options() {
+        return array(
+                constants::SESSIONSCORE_NORMAL => get_string("sessionscorenormal", constants::M_COMPONENT),
+                constants::SESSIONSCORE_STRICT => get_string("sessionscorestrict", constants::M_COMPONENT)
         );
     }
 

@@ -13,7 +13,8 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             REVIEWMODE_NONE: 0,
             REVIEWMODE_MACHINE: 1,
             REVIEWMODE_HUMAN: 2,
-            REVIEWMODE_SCORESONLY: 3
+            REVIEWMODE_SCORESONLY: 3,
+            SESSIONSCORE_STRICT: 1
         },
 
         //class definitions
@@ -67,6 +68,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             wpm: 0,
             accuracy: 0,
             sessionscore: 0,
+            sessionscoremethod: 0,
             endwordnumber: 0,
             errorwords: {},
             activityid: null,
@@ -99,6 +101,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             this.options.enabletts = opts['enabletts'];
             this.options.ttslanguage = opts['ttslanguage'];
             this.options.targetwpm = opts['targetwpm'];
+            this.options.sessionscoremethod = opts['sessionscoremethod'];
             this.options.allowearlyexit = opts['allowearlyexit'];
             this.options.timelimit = opts['timelimit'];
             this.options.reviewmode = opts['reviewmode'];
@@ -961,7 +964,15 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             m.controls.accuracyscorebox.text(accuracyscore);
 
             //sessionscore
-            var usewpmscore = wpmscore;
+
+            if(m.options.sessionscoremethod == m.constants.SESSIONSCORE_STRICT) {
+                var usewpmscore = wpmscore - errorscore;
+                if(usewpmscore < 0){usewpmscore =0;}
+            }else{
+                var usewpmscore = wpmscore;
+            }
+
+
             if (usewpmscore > m.options.targetwpm) {
                 usewpmscore = m.options.targetwpm;
             }
