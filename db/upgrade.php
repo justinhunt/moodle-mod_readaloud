@@ -351,6 +351,32 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020021800, 'readaloud');
     }
 
+    // Add sessionscoremethod to readaloud table.
+    if ($oldversion < 2020022000) {
+        $table = new xmldb_table('readaloud');
+
+        $fields=array();
+        //Model Audio URL
+        $fields[] = new xmldb_field('modelaudiourl', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, null);
+        //Model audio breaks (JSON)
+        $fields[] = new xmldb_field('modelaudiobreaks', XMLDB_TYPE_TEXT, null, null, null, null);
+        //TTS Voice
+        $fields[] = new xmldb_field('ttsvoice', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'Amy');
+        //Enable preview mode
+        $fields[] = new xmldb_field('enablepreview', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        //Enable shadow mode
+        $fields[] = new xmldb_field('enableshadow', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // add fields to readaloud table
+        foreach($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2020022000, 'readaloud');
+    }
+
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

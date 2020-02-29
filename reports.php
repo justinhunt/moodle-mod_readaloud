@@ -119,7 +119,7 @@ switch ($showreport) {
 
     case 'attempts':
         $report = new \mod_readaloud\report\attempts();
-        echo $gradenowrenderer->render_hiddenaudioplayer();
+        echo $renderer->render_hiddenaudioplayer();
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
         $formdata->modulecontextid = $modulecontext->id;
@@ -134,7 +134,7 @@ switch ($showreport) {
 
     case 'grading':
         $report = new \mod_readaloud\report\grading();
-        echo $gradenowrenderer->render_hiddenaudioplayer();
+        echo $renderer->render_hiddenaudioplayer();
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
         $formdata->modulecontextid = $modulecontext->id;

@@ -119,6 +119,14 @@ class mod_readaloud_mod_form extends moodleform_mod {
                 get_string('allowearlyexit_details', constants::M_COMPONENT));
         $mform->setDefault('allowearlyexit', $config->allowearlyexit);
 
+        $mform->addElement('advcheckbox', 'enablepreview', get_string('enablepreview', constants::M_COMPONENT),
+                get_string('enablepreview_details', constants::M_COMPONENT));
+        $mform->setDefault('enablepreview', $config->enablepreview);
+
+        $mform->addElement('advcheckbox', 'enableshadow', get_string('enableshadow', constants::M_COMPONENT),
+                get_string('enableshadow_details', constants::M_COMPONENT));
+        $mform->setDefault('enableshadow', $config->enablepreview);
+
         //Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::M_COMPONENT),
                 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5',);
@@ -161,6 +169,11 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $langoptions = \mod_readaloud\utils::get_lang_options();
         $mform->addElement('select', 'ttslanguage', get_string('ttslanguage', constants::M_COMPONENT), $langoptions);
         $mform->setDefault('ttslanguage', $config->ttslanguage);
+
+        //tts voice
+        $langoptions = \mod_readaloud\utils::fetch_ttsvoice_options();
+        $mform->addElement('select', 'ttsvoice', get_string('ttsvoice', constants::M_COMPONENT), $langoptions);
+        $mform->setDefault('ttsvoice', $config->ttsvoice);
 
         //transcriber options
         $name = 'transcriber';

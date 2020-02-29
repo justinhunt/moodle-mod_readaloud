@@ -35,8 +35,13 @@
                 <FIELD NAME="maxattempts" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="maxattempts"/>
                 <FIELD NAME="mingrade" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="completion condition mingrade"/>
                 <FIELD NAME="ttslanguage" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="none" COMMENT="the audio filename"/>
+                <FIELD NAME="ttsvoice" TYPE="char" LENGTH="255" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="Amy" COMMENT="the TTS voice name"/>
                 <FIELD NAME="transcriber" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="transcriber"/>
+                <FIELD NAME="modelaudiourl" TYPE="char" LENGTH="255" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" DEFAULT="none" COMMENT="the model audio URL"/>
+                <FIELD NAME="modelaudiobreaks" TYPE="text" LENGTH="8192" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="json string of model audio breaks"/>
                 <FIELD NAME="enableai" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0" COMMENT="Whether to use AI on this activity"/>
+                <FIELD NAME="enablepreview" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0" COMMENT="Enable preview mode on this activity"/>
+                <FIELD NAME="enableshadow" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DEFAULT="0" COMMENT="Enable shadow mode on this activity"/>
                 <FIELD NAME="allowearlyexit" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="allow early exit"/>
                 <FIELD NAME="expiredays" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="100" SEQUENCE="false"/>
                 <FIELD NAME="region" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" DEFAULT="useast1" COMMENT="aws region"/>

@@ -62,6 +62,16 @@ define(['jquery', 'core/log'], function ($, log) {
         spotcheckmode: 'mod_readaloud_spotcheckmode',
         aiunmatched: 'mod_readaloud_aiunmatched',
 
+        menuinstructions: 'mod_readaloud_menuinstructions_const',
+        activityinstructions: 'mod_readaloud_activityinstructions_const',
+        menubuttons: 'mod_readaloud_menubuttons_cont',
 
+        //model audio
+        modelaudioplayerclass: 'mod_readaloud_modelaudio_player',
+        modelaudiobreaksfield: 'mod_readaloud_modelaudio_form_breaksfield',
+        modelaudiourlfield: 'mod_readaloud_modelaudio_form_urlfield',
+        activesentence: 'mod_readaloud_modelaudio_activesentence',
+        modeltranscriptbutton: 'mod_readaloud_modeltranscript_button',
+        modeltranscript: 'mod_readaloud_modeltranscript'
     };//end of return value
 });

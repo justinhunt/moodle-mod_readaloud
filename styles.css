@@ -2,7 +2,8 @@
     text-align: center;
 }
 
-.mod_readaloud_center > div, .mod_readaloud_center > table /* insert any other block-level elements here */
+.mod_readaloud_center > div,
+.mod_readaloud_center > table /* insert any other block-level elements here */
 {
     margin-left: auto;
     margin-right: auto;
@@ -35,7 +36,6 @@ span.mod_readaloud_debugsequence {
 }
 
 .mod_readaloud_recording_cont {
-    display: block;
     margin: auto;
     text-align: center;
     width: 100%;
@@ -183,11 +183,29 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
     padding: 2px;
 }
 
+.mod_readaloud_instructions_cont {
+    display: block;
+}
+.mod_readaloud_menuinstructions_const {
+    display: none;
+}
+.mod_readaloud_activityinstructions_const {
+    display: none;
+}
+
+.mod_readaloud_recording_cont {
+    display: none;
+}
+
 .mod_readaloud_feedback_cont {
     display: none;
 }
 
 .mod_readaloud_wheretonext_cont {
+    display: none;
+}
+
+.mod_readaloud_startmenu_cont {
     display: none;
 }
 
@@ -212,6 +230,14 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 }
 
 .mod_readaloud_hidden_player {
+    display: none;
+}
+
+#mod_readaloud_button_returnmenu {
+    display: none;
+}
+
+.mod_readaloud_menubuttons_cont {
     display: none;
 }
 
@@ -273,12 +299,18 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 
 .mod_readaloud_afterattempt_cont,
 .mod_readaloud_wheretonext_cont,
+.mod_readaloud_menubuttons_cont,
 .mod_readaloud_ungraded_cont {
     margin-left: auto;
     margin-right: auto;
     width: 40%;
     text-align: center;
     margin-top: 30px;
+}
+
+.mod_readaloud_menubuttons_cont button {
+    margin-top: 20px;
+    width: 100%;
 }
 
 #mod_readaloud_hider {
@@ -308,7 +340,6 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
     height: 120px;
     margin-top: -60px; /*set to a negative number 1/2 of your height*/
     margin-left: -150px; /*set to a negative number 1/2 of your width*/
-    border: 1px solid #ccc;
     border: 2px solid black;
     z-index: 100;
     background-color: white;
@@ -387,4 +418,17 @@ div.mod_readaloud_attemptsummarytable {
     border: 1px solid lightgrey;
     max-width: 450px;
     margin: auto;
+}
+.mod_readaloud_modelaudio_activesentence {
+    background-color: lightyellow;
+}
+
+.mod_readaloud_passage_cont.collapsespaces .mod_readaloud_grading_passagespace:not(.mod_readaloud_grading_endspace) {
+    display: none;
+}
+
+.mod_readaloud_modeltranscript {
+    background-color: #ddd;
+    border: 1px solid darkgrey;
+    padding: 5px;
 }

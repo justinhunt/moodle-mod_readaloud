@@ -81,6 +81,7 @@ $config = get_config(constants::M_COMPONENT);
 //Get our renderers
 $renderer = $PAGE->get_renderer('mod_readaloud');
 $gradenowrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'gradenow');
+$modelaudiorenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'modelaudio');
 
 //if we are in review mode, lets review
 $attempts = $DB->get_records(constants::M_USERTABLE, array('userid' => $USER->id, 'readaloudid' => $moduleinstance->id), 'id DESC');
@@ -107,6 +108,9 @@ if (!$canattempt) {
     $retake = 0;
 }
 
+//init our token variable
+$token=false;
+
 //display the most recent previous attempt if we have one
 if ($attempts && $retake == 0) {
     //if we are teacher we see tabs. If student we just see the quiz
@@ -129,6 +133,21 @@ if ($attempts && $retake == 0) {
     //show feedback summary
     echo $renderer->show_feedback_postattempt($moduleinstance);
 
+    //we show the recorder if we can, but if the token or API creds are invalid we report that
+    if(empty($config->apiuser) || empty($config->apisecret)){
+        $message = get_string('nocredentials',constants::M_COMPONENT,
+                $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+        echo $renderer->show_problembox($message);
+    }else {
+        //fetch token
+        $token = utils::fetch_token($config->apiuser, $config->apisecret);
+
+        //check token authenticated and no errors in it
+        $errormessage = utils::fetch_token_error($token);
+        if(!empty($errormessage)){
+            echo $renderer->show_problembox($errormessage);
+        }
+    }
 
 
     $latestattempt = array_shift($attempts);
@@ -143,12 +162,17 @@ if ($attempts && $retake == 0) {
     $have_humaneval = $latestattempt->sessiontime != null;
     $have_aieval = $latest_aigrade && $latest_aigrade->has_transcripts();
 
+    //Are we showing spaces between characters/words. JP/Chinese etc may not
+    $collapsespaces=true;
+
     if ($have_humaneval || $have_aieval) {
         //we useed to distingush between humanpostattempt and machinepostattempt but we simplified it,
         // /and just use the human value for all
         switch ($moduleinstance->humanpostattempt) {
             case constants::POSTATTEMPT_NONE:
-                echo $renderer->show_passage_postattempt($moduleinstance);
+                echo $renderer->show_passage_postattempt($moduleinstance,$collapsespaces);
+                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+                echo $renderer->render_hiddenaudioplayer();
                 break;
             case constants::POSTATTEMPT_EVAL:
                 if ($have_humaneval) {
@@ -162,7 +186,9 @@ if ($attempts && $retake == 0) {
                 $reviewmode = constants::REVIEWMODE_SCORESONLY;
 
                 echo $gradenow->prepare_javascript($reviewmode, $force_aidata, $readonly);
-                echo $gradenowrenderer->render_userreview($gradenow);
+                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+                echo $renderer->render_hiddenaudioplayer();
+                echo $gradenowrenderer->render_userreview($gradenow,$collapsespaces);
 
                 break;
 
@@ -178,13 +204,16 @@ if ($attempts && $retake == 0) {
                 }
                 $gradenow = new \mod_readaloud\gradenow($latestattempt->id, $modulecontext->id);
                 echo $gradenow->prepare_javascript($reviewmode, $force_aidata, $readonly);
-                echo $gradenowrenderer->render_hiddenaudioplayer();
-                echo $gradenowrenderer->render_userreview($gradenow);
+                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+                echo $renderer->render_hiddenaudioplayer();
+                echo $gradenowrenderer->render_userreview($gradenow,$collapsespaces);
                 break;
         }
     } else {
         echo $renderer->show_ungradedyet();
-        echo $renderer->show_passage_postattempt($moduleinstance);
+        echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+        echo $renderer->render_hiddenaudioplayer();
+        echo $renderer->show_passage_postattempt($moduleinstance,$collapsespaces);
     }
 
     //show  button or a label depending on of can retake
@@ -207,33 +236,63 @@ if (has_capability('mod/readaloud:preview', $modulecontext)) {
     echo $renderer->notabsheader();
 }
 
-
-
 //show all the main parts. Many will be hidden and displayed by JS
-echo $renderer->show_welcome($moduleinstance->welcome, $moduleinstance->name);
-echo $renderer->show_feedback($moduleinstance, $moduleinstance->name);
-echo $renderer->show_error($moduleinstance, $cm);
-echo $renderer->show_passage($moduleinstance, $cm);
+echo $renderer->show_title($moduleinstance->name);
+echo $renderer->show_welcome_menu(get_string('welcomemenu',constants::M_COMPONENT));
 
-//we show the recorder if we can, but if the token or API creds are invalid we report that
-if(empty($config->apiuser) || empty($config->apisecret)){
-    $message = get_string('nocredentials',constants::M_COMPONENT,
-            $CFG->wwwroot . constants::M_PLUGINSETTINGS);
-    echo $renderer->show_problembox($message);
-}else {
-    //fetch token
-    $token = utils::fetch_token($config->apiuser, $config->apisecret);
+//get our token
+if(!$token){
+    //we show the recorder if we can, but if the token or API creds are invalid we report that
+    if(empty($config->apiuser) || empty($config->apisecret)){
+        $message = get_string('nocredentials',constants::M_COMPONENT,
+                $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+        echo $renderer->show_problembox($message);
+        // Finish the page
+        echo $renderer->footer();
+        return;
+    }else {
+        //fetch token
+        $token = utils::fetch_token($config->apiuser, $config->apisecret);
 
-    //check token authenticated and no errors in it
-    $errormessage = utils::fetch_token_error($token);
-    if(!empty($errormessage)){
-        echo $renderer->show_problembox($errormessage);
-
-    }else{
-        //All good. So lets fetch recorder
-        echo $renderer->show_recorder($moduleinstance, $token, $debug);
+        //check token authenticated and no errors in it
+        $errormessage = utils::fetch_token_error($token);
+        if(!empty($errormessage)){
+            echo $renderer->show_problembox($errormessage);
+            // Finish the page
+            echo $renderer->footer();
+            return;
+        }
     }
 }
+
+
+
+echo $renderer->show_welcome_activity($moduleinstance->welcome);
+
+echo $renderer->show_feedback($moduleinstance);
+echo $renderer->show_error($moduleinstance, $cm);
+
+//show menu buttons
+echo $renderer->show_menubuttons($moduleinstance);
+
+//Show model audio player
+$visible=false;
+echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $visible);
+
+//for Japanese (and later other languages we collapse spaces)
+$collapsespaces=$moduleinstance->ttslanguage==constants::M_LANG_JAJP;
+
+//changing to marked up passage, so we can handle events better
+//echo $renderer->show_passage($moduleinstance, $cm);
+
+echo $gradenowrenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $collapsespaces);
+
+//return to menu button
+echo $renderer->show_returntomenu_button();
+
+//lets fetch recorder
+echo $renderer->show_recorder($moduleinstance, $token, $debug);
+
 
 
 echo $renderer->show_progress($moduleinstance, $cm);

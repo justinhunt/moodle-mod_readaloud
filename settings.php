@@ -81,6 +81,14 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/submitrawaudio',
             get_string('submitrawaudio', constants::M_COMPONENT), get_string('submitrawaudio_details', constants::M_COMPONENT), 0));
 
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enablepreview',
+            get_string('enablepreview', constants::M_COMPONENT),
+            get_string('enablepreview_details', constants::M_COMPONENT), 0));
+
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enableshadow',
+            get_string('enableshadow', constants::M_COMPONENT),
+            get_string('enableshadow_details', constants::M_COMPONENT), 0));
+
 
     //session score method
     $name = 'sessionscoremethod';
@@ -127,6 +135,15 @@ if ($ADMIN->fulltree) {
     $details = "";
     $default = constants::M_LANG_ENUS;
     $options = \mod_readaloud\utils::get_lang_options();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
+            $label, $details, $default, $options));
+
+    //TTS voice
+    $name = 'ttsvoice';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = "";
+    $default = "Amy";
+    $options = \mod_readaloud\utils::fetch_ttsvoice_options();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
             $label, $details, $default, $options));
 

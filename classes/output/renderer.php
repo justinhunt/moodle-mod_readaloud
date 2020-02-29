@@ -127,6 +127,34 @@ class renderer extends \plugin_renderer_base {
     /**
      *
      */
+    public function show_menubuttons ($moduleinstance) {
+
+        $menubuttons= array();
+        if($moduleinstance->enablepreview){
+            $menubuttons[]=  \html_writer::tag('button', get_string("previewreading", constants::M_COMPONENT),
+                    array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTPREVIEW,'type'=>'button','id'=>constants::M_STARTPREVIEW));
+        }
+        if($moduleinstance->enableshadow){
+            $menubuttons[]=  \html_writer::tag('button', get_string("startshadowreading", constants::M_COMPONENT),
+                    array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTSHADOW,'type'=>'button','id'=>constants::M_STARTSHADOW));
+        }
+        $menubuttons[]=  \html_writer::tag('button', get_string("startreading", constants::M_COMPONENT),
+                    array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTNOSHADOW,'type'=>'button','id'=>constants::M_STARTNOSHADOW));
+
+        $ret = \html_writer::div( implode('<br>',$menubuttons), constants::M_MENUBUTTONS_CONTAINER);
+        return $ret;
+
+    }
+
+    public function show_returntomenu_button(){
+        $returnbutton =  \html_writer::tag('button', get_string("returnmenu", constants::M_COMPONENT),
+                array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_RETURNMENU,'type'=>'button','id'=>constants::M_RETURNMENU));
+        return $returnbutton;
+    }
+
+    /**
+     *
+     */
     public function reattemptbutton($moduleinstance) {
 
         $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
@@ -148,9 +176,12 @@ class renderer extends \plugin_renderer_base {
             $button = $this->output->single_button($nextactivity->url, $nextactivity->label);
             //else lets show a back to top link
         } else {
-            $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
-                    array('n' => $moduleinstance->id)), get_string('backtotop', constants::M_COMPONENT));
+
+            $button =  \html_writer::link(new \moodle_url(constants::M_URL . '/view.php',
+                    array('n' => $moduleinstance->id)), get_string("backtotop", constants::M_COMPONENT),
+                    array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_BACKTOTOP,'id'=>constants::M_BACKTOTOP));
         }
+
         $ret = \html_writer::div($button, constants::M_WHERETONEXT_CONTAINER);
         return $ret;
 
@@ -314,17 +345,35 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
+    public function show_title($title){
+        $thetitle = $this->output->heading($title, 3, 'main');
+        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
+        return $displaytext;
+    }
+
     /**
      *  Show instructions/welcome
      */
-    public function show_welcome($showtext, $showtitle) {
-        $thetitle = $this->output->heading($showtitle, 3, 'main');
-        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
-        $displaytext .= $this->output->box_start();
-        $displaytext .= \html_writer::div($showtext, constants::M_CLASS . '_center');
+    public function show_welcome_activity($showtext) {
+        $displaytext = $this->output->box_start();
+        $displaytext .= \html_writer::div($showtext,
+                constants::M_CLASS . '_center ' . constants::M_INSTRUCTIONS);
         $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext, constants::M_INSTRUCTIONS_CONTAINER,
-                array('id' => constants::M_INSTRUCTIONS_CONTAINER));
+        $ret = \html_writer::div($displaytext, constants::M_ACTIVITYINSTRUCTIONS_CONTAINER,
+                array('id' => constants::M_ACTIVITYINSTRUCTIONS_CONTAINER));
+        return $ret;
+    }
+
+    /**
+     *  Show instructions/welcome
+     */
+    public function show_welcome_menu() {
+        $displaytext = $this->output->box_start();
+        $displaytext .= \html_writer::div(get_string('welcomemenu', constants::M_COMPONENT),
+                constants::M_CLASS . '_center ' . constants::M_INSTRUCTIONS);
+        $displaytext .= $this->output->box_end();
+        $ret = \html_writer::div($displaytext, constants::M_MENUINSTRUCTIONS_CONTAINER,
+                array('id' => constants::M_MENUINSTRUCTIONS_CONTAINER));
         return $ret;
     }
 
@@ -344,13 +393,27 @@ class renderer extends \plugin_renderer_base {
     /**
      * Show the reading passage after the attempt, basically set it to display on load and give it a background color
      */
-    public function show_passage_postattempt($readaloud) {
+    public function show_passage_postattempt($readaloud, $collapsespaces=false) {
         $ret = "";
         $displaypassage = utils::lines_to_brs($readaloud->passage);
-        $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER . ' ' . constants::M_POSTATTEMPT,
+
+        //for some languages we do not want spaces. Japanese, Chinese. For now this is manual
+        //TODO auto determine when to use collapsespaces
+        $collapsespaces = $collapsespaces ? ' collapsespaces' : '';
+
+        $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER . ' '
+                . constants::M_POSTATTEMPT . $collapsespaces,
                 array('id' => constants::M_PASSAGE_CONTAINER));
         return $ret;
     }
+
+    public function render_hiddenaudioplayer($audiourl=false) {
+        $src = $audiourl? $audiourl : '';
+        $audioplayer = \html_writer::tag('audio', '',
+                array('src' => $src, 'id' => constants::M_HIDDEN_PLAYER, 'class' => constants::M_HIDDEN_PLAYER));
+        return $audioplayer;
+    }
+
 
     /**
      * Show the reading passage
@@ -379,33 +442,25 @@ class renderer extends \plugin_renderer_base {
 
     public function show_humanevaluated_message() {
         $displaytext = get_string('humanevaluatedmessage', constants::M_COMPONENT);
-        $ret = \html_writer::div($displaytext, constants::M_EVALUATED_MESSAGE, array('id' => constants::M_EVALUATED_MESSAGE));
+        $ret = \html_writer::div($displaytext, constants::M_EVALUATED_MESSAGE. ' ' . constants::M_CLASS . '_center', array('id' => constants::M_EVALUATED_MESSAGE));
         return $ret;
     }
 
     public function show_machineevaluated_message() {
         $displaytext = get_string('machineevaluatedmessage', constants::M_COMPONENT);
-        $ret = \html_writer::div($displaytext, constants::M_EVALUATED_MESSAGE, array('id' => constants::M_EVALUATED_MESSAGE));
+        $ret = \html_writer::div($displaytext, constants::M_EVALUATED_MESSAGE . ' ' . constants::M_CLASS . '_center', array('id' => constants::M_EVALUATED_MESSAGE));
         return $ret;
     }
 
     /**
      * Show the feedback set in the activity settings
      */
-    public function show_feedback($readaloud, $showtitle) {
-        $thetitle = $this->output->heading($showtitle, 3, 'main');
-        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
-        $displaytext .= $this->output->box_start();
+    public function show_feedback($readaloud) {
+        $displaytext = $this->output->box_start();
         $displaytext .= \html_writer::div($readaloud->feedback, constants::M_CLASS . '_center');
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext, constants::M_FEEDBACK_CONTAINER, array('id' => constants::M_FEEDBACK_CONTAINER));
         return $ret;
-    }
-
-    public function show_title($title){
-        $thetitle = $this->output->heading($title, 3, 'main');
-        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
-        return $displaytext;
     }
 
     /**
@@ -414,7 +469,7 @@ class renderer extends \plugin_renderer_base {
     public function show_feedback_postattempt($readaloud) {
 
         $displaytext = $this->output->box_start();
-        $displaytext .= \html_writer::div($readaloud->feedback);
+        $displaytext .= \html_writer::div($readaloud->feedback, constants::M_CLASS . '_center');
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext, constants::M_FEEDBACK_CONTAINER . ' ' . constants::M_POSTATTEMPT,
                 array('id' => constants::M_FEEDBACK_CONTAINER));
@@ -515,7 +570,20 @@ class renderer extends \plugin_renderer_base {
         $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
         $recopts['wheretonextcontainer'] = constants::M_WHERETONEXT_CONTAINER;
         $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
+        $recopts['menubuttonscontainer'] = constants::M_MENUBUTTONS_CONTAINER;
+        $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
+        $recopts['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
+        $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
+        $recopts['enableshadow'] = $moduleinstance->enablepreview ? true : false;
+        $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;
         $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
+        $recopts['breaks'] = $moduleinstance->modelaudiobreaks;
+        $recopts['audioplayerclass'] = constants::M_MODELAUDIO_PLAYER;
+        $recopts['startpreviewbutton'] = constants::M_STARTPREVIEW;
+        $recopts['startreadingbutton'] = constants::M_STARTNOSHADOW;
+        $recopts['startshadowbutton'] = constants::M_STARTSHADOW;
+        $recopts['returnmenubutton'] = constants::M_RETURNMENU;
+
 
         //we need an update control tp hold the recorded filename, and one for draft item id
         $ret_html = $ret_html . \html_writer::tag('input', '', array('id' => constants::M_UPDATE_CONTROL, 'type' => 'hidden'));
@@ -538,6 +606,26 @@ class renderer extends \plugin_renderer_base {
         //these need to be returned and echo'ed to the page
         return $ret_html;
     }
+
+    function fetch_clicktohear_amd($moduleinstance,$token) {
+        global $USER;
+        //any html we want to return to be sent to the page
+        $ret_html = "";
+        $opts = array('token'=>$token,'owner' => hash('md5',$USER->username),
+                'region' => $moduleinstance->region, 'ttsvoice'=>$moduleinstance->ttsvoice);
+        $this->page->requires->js_call_amd("mod_readaloud/clicktohear", 'init', array($opts));
+
+        //these need to be returned and echo'ed to the page
+        return "";
+    }
+
+    function fetch_clicktohear($moduleinstance,$token) {
+        //any html we want to return to be sent to the page
+        $ret_html = $this->render_hiddenaudioplayer();
+        $ret_html .= $this->fetch_clicktohear_amd($moduleinstance,$token);
+        return $ret_html;
+    }
+
 
     /**
      * Return HTML to display message about problem

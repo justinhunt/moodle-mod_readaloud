@@ -78,6 +78,10 @@ $event->add_record_snapshot('course', $course);
 $event->add_record_snapshot(constants::M_MODNAME, $moduleinstance);
 $event->trigger();
 
+//for Japanese (and later other languages we collapse spaces)
+$collapsespaces=$moduleinstance->ttslanguage==constants::M_LANG_JAJP;
+
+
 //process form submission
 switch ($action) {
     case 'gradenowsubmit':
@@ -155,7 +159,7 @@ switch ($action) {
         $gradenowform->set_data($setdata);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $gradenow->prepare_javascript($reviewmode, $force_aidata);
-        echo $gradenowrenderer->render_gradenow($gradenow);
+        echo $gradenowrenderer->render_gradenow($gradenow,$collapsespaces);
         $gradenowform->display();
         echo $reportrenderer->show_grading_footer($moduleinstance, $cm, $mode);
         echo $renderer->footer();
@@ -238,7 +242,7 @@ switch ($action) {
         $gradenowform->set_data($setdata);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $gradenow->prepare_javascript($reviewmode, $force_aidata);
-        echo $gradenowrenderer->render_gradenow($gradenow);
+        echo $gradenowrenderer->render_gradenow($gradenow),$collapsespaces;
         $gradenowform->display();
         echo $reportrenderer->show_grading_footer($moduleinstance, $cm, $mode);
         echo $renderer->footer();
@@ -344,7 +348,7 @@ switch ($format) {
         $perpage_selector = $reportrenderer->show_perpage_selector($PAGE->url, $paging);
 
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
-        echo $gradenowrenderer->render_hiddenaudioplayer();
+        echo $renderer->render_hiddenaudioplayer();
         echo $extraheader;
         echo $pagingbar;
         echo $perpage_selector;

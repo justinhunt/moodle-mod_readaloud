@@ -24,20 +24,21 @@ class gradenow_renderer extends \plugin_renderer_base {
         return $actionheader;
     }
 
-    public function render_gradenow($gradenow) {
+    public function render_gradenow($gradenow,$collapsespaces=false) {
         $actionheader = $this->render_attempt_scoresheader($gradenow);
         $ret = $this->render_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
-        $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
+        $ret .= $this->render_passage($gradenow->attemptdetails('passage'),false,$collapsespaces);
         $ret .= $this->render_passageactions();
 
         return $ret;
     }
 
-    public function render_userreview($gradenow) {
+    public function render_userreview($gradenow, $collapsespaces=false) {
         $actionheader = $this->render_attempt_scoresheader($gradenow);
         $ret = $actionheader;
-        $thepassage = $this->render_passage($gradenow->attemptdetails('passage'));
+
+        $thepassage = $this->render_passage($gradenow->attemptdetails('passage'),false,$collapsespaces);
         $ret .= \html_writer::div($thepassage, constants::M_CLASS . '_postattempt');
         return $ret;
     }
@@ -47,10 +48,10 @@ class gradenow_renderer extends \plugin_renderer_base {
         $ret = $this->render_machinegrade_attempt_header($gradenow->attemptdetails('userfullname'));
         $ret .= $actionheader;
         if ($debug) {
-            $passage = $this->render_passage($gradenow->attemptdetails('passage'));
+            $passage = $this->render_passage($gradenow->attemptdetails('passage'),false,false);
             $ret .= \html_writer::tag('span', $passage, array('class' => constants::M_CLASS . '_debug'));
         } else {
-            $ret .= $this->render_passage($gradenow->attemptdetails('passage'));
+            $ret .= $this->render_passage($gradenow->attemptdetails('passage'),false,false);
         }
         return $ret;
     }
@@ -120,18 +121,20 @@ class gradenow_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function render_passage($passage) {
+    public function render_passage($passage, $containerclass=false, $collapsespaces=false) {
         // load the HTML document
         $doc = new \DOMDocument;
         // it will assume ISO-8859-1  encoding, so we need to hint it:
         //see: http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
         @$doc->loadHTML(mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8'));
 
+
         // select all the text nodes
         $xpath = new \DOMXPath($doc);
         $nodes = $xpath->query('//text()');
         //init the text count
         $wordcount = 0;
+
         foreach ($nodes as $node) {
             $trimmednode = trim($node->nodeValue);
             if (empty($trimmednode)) {
@@ -144,7 +147,10 @@ class gradenow_renderer extends \plugin_renderer_base {
             //$words = explode($seperator, $node->nodeValue);
 
             $nodevalue = utils::lines_to_brs($node->nodeValue, $seperator);
-            $words = preg_split('/\s+/', $nodevalue);
+            //split each node(line) on words. preg_split messed up with double byte characters
+            //$words = preg_split('/\s+/', $nodevalue);
+            //so we use mb_split
+            $words = mb_split('\s+', $nodevalue);
 
             foreach ($words as $word) {
                 //if its a new line character from lines_to_brs we add it, but not as a word
@@ -172,9 +178,16 @@ class gradenow_renderer extends \plugin_renderer_base {
             $node->nodeValue = "";
         }
 
-        $usepassage = $doc->saveHTML();
+        $usepassage = $doc->saveHTML($doc->documentElement);
 
-        $ret = \html_writer::div($usepassage, constants::M_CLASS . '_grading_passagecont');
+        //for some languages we do not want spaces. Japanese, Chinese. For now this is manual
+        //TODO auto determine when to use collapsespaces
+        $collapsespaces = $collapsespaces ? ' collapsespaces' : '';
+        if($containerclass) {
+            $ret = \html_writer::div($usepassage, $containerclass . $collapsespaces);
+        }else{
+            $ret = \html_writer::div($usepassage, constants::M_CLASS . '_grading_passagecont' . $collapsespaces);
+        }
         return $ret;
     }
 
@@ -212,12 +225,6 @@ class gradenow_renderer extends \plugin_renderer_base {
         $ret = \html_writer::div($audioplayer, constants::M_GRADING_PLAYER_CONTAINER,
                 array('id' => constants::M_GRADING_PLAYER_CONTAINER));
         return $ret;
-    }
-
-    public function render_hiddenaudioplayer() {
-        $audioplayer = \html_writer::tag('audio', '',
-                array('src' => '', 'id' => constants::M_HIDDEN_PLAYER, 'class' => constants::M_HIDDEN_PLAYER));
-        return $audioplayer;
     }
 
     public function render_wpmdetails() {

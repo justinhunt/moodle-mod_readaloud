@@ -350,6 +350,11 @@ $string['mistranscriptions'] = 'Mistranscriptions';
 $string['mistrans_count'] = 'Count';
 $string['total_mistranscriptions'] = 'Total mistranscriptions: {$a}';
 
+$string['previewreading'] = 'Preview Reading';
+$string['startreading'] = 'Start Reading (Normal Mode)';
+$string['startshadowreading'] = 'Start Reading (Shadow Mode)';
+
+
 $string['transcriber'] = 'Transcriber';
 $string['transcriber_details'] = 'The transcription engine to use';
 $string['transcriber_none'] = 'No transcription';
@@ -364,3 +369,22 @@ $string['sessionscoremethod_details'] = 'How the value(%) for gradebook is calcu
 $string['sessionscoremethod_help'] = 'The value(%) for gradebook is calculated as a percentage, either WPM / Target_WPM (normal) or (WPM - Errors)/ Target_WPM (strict)';
 $string['sessionscorenormal'] = 'Normal: WPM / Target_WPM';
 $string['sessionscorestrict'] = 'Strict: (WPM - Errors) /Target WPM';
+$string['modelaudio'] = 'Model Audio';
+$string['ttsvoice'] = 'TTS Voice';
+$string['enablepreview'] = 'Enable Preview';
+$string['enablepreview_details'] = 'Preview mode shows the reading and model audio to student before the activity commences';
+$string['enableshadow'] = 'Enable Shadowing';
+$string['enableshadow_details'] = 'Shadowing mode plays the model audio as students are reading aloud.';
+$string['savemodelaudio'] = 'Save Recording';
+$string['uploadmodelaudio'] = 'Upload Audio File';
+$string['modelaudioclear'] = 'Clear Audio';
+$string['modelaudio_recordinstructions'] = 'Record audio here to be used as the model audio. You can optionally choose to upload audio by pressing the upload audio button, If you do not upload audio, then the model audio will be auto generated using the TTS language and TTS voice from the activity settings.';
+$string['modelaudio_playerinstructions'] = 'The current model audio can be played using the player below.';
+$string['modelaudio_breaksinstructions'] = 'While playing the model audio using the player above, tap words to insert markers in the text. Text between the markers will be highlighted for the reader in preview and shadow modes.';
+$string['modelaudio_recordtitle'] = 'Record Model Audio';
+$string['modelaudio_playertitle'] = 'Play Model Audio';
+$string['modelaudio_breakstitle'] = 'Mark-up Model Audio';
+$string['viewmodeltranscript'] = 'View Model Transcript';
+
+$string['welcomemenu'] = 'Choose from the options below.';
+$string['returnmenu'] = 'Return to Start Menu.';

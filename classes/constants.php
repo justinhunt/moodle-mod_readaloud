@@ -70,6 +70,12 @@ class constants {
     const M_RECORDER_INSTRUCTIONS_RIGHT = 'mod_readaloud_recorder_instr_right';
     const M_RECORDER_INSTRUCTIONS_LEFT = 'mod_readaloud_recorder_instr_left';
     const M_INSTRUCTIONS_CONTAINER = 'mod_readaloud_instructions_cont';
+    const M_INSTRUCTIONS = 'mod_readaloud_instructions';
+    const M_ACTIVITYINSTRUCTIONS_CONTAINER = 'mod_readaloud_activityinstructions_const';
+    const M_MENUINSTRUCTIONS_CONTAINER = 'mod_readaloud_menuinstructions_const';
+    const M_MENUBUTTONS_CONTAINER = 'mod_readaloud_menubuttons_cont';
+
+
     const M_PASSAGE_CONTAINER = 'mod_readaloud_passage_cont';
     const M_POSTATTEMPT = 'mod_readaloud_postattempt';
     const M_FEEDBACK_CONTAINER = 'mod_readaloud_feedback_cont';
@@ -102,6 +108,11 @@ class constants {
     const M_HIDDEN_PLAYER_BUTTON_PAUSED = 'mod_readaloud_hidden_player_button_paused';
     const M_HIDDEN_PLAYER_BUTTON_PLAYING = 'mod_readaloud_hidden_player_button_playing';
     const M_EVALUATED_MESSAGE = 'mod_readaloud_evaluated_message';
+    const M_MODELAUDIO_FORM_URLFIELD = 'mod_readaloud_modelaudio_form_urlfield';
+    const M_MODELAUDIO_FORM_BREAKSFIELD = 'mod_readaloud_modelaudio_form_breaksfield';
+    const M_MODELAUDIO_PLAYER = 'mod_readaloud_modelaudio_player';
+    const M_VIEWMODELTRANSCRIPT = 'mod_readaloud_modeltranscript_button';
+    const M_MODELTRANSCRIPT = 'mod_readaloud_modeltranscript';
 
     //languages
     const M_LANG_ENUS = 'en-US';
@@ -143,5 +154,11 @@ class constants {
     const TRANSCRIBER_AMAZONTRANSCRIBE = 1;
     const TRANSCRIBER_GOOGLECLOUDSPEECH = 2;
     const TRANSCRIBER_GOOGLECHROME = 3;
+
+    const M_STARTPREVIEW= 'mod_readaloud_button_startpreview';
+    const M_STARTSHADOW= 'mod_readaloud_button_startshadow';
+    const M_STARTNOSHADOW= 'mod_readaloud_button_startnoshadow';
+    const M_RETURNMENU= 'mod_readaloud_button_returnmenu';
+    const M_BACKTOTOP= 'mod_readaloud_button_backtotop';
 
 }

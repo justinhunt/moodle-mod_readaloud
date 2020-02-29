@@ -57,6 +57,7 @@ if (has_capability('mod/readaloud:manage', $context)) {
 }
 //$row[] = new tabobject('machinegrading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id&action=machinegrading", get_string('machinegrading', constants::M_COMPONENT), get_string('viewmachinegrading', constants::M_COMPONENT));
 $row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', constants::M_COMPONENT), get_string('viewreports', constants::M_COMPONENT));
+$row[] = new tabobject('modelaudio', "$CFG->wwwroot/mod/readaloud/modelaudio.php?id=$cm->id", get_string('modelaudio', constants::M_COMPONENT), get_string('modelaudio', constants::M_COMPONENT));
 $tabs[] = $row;
 
 print_tabs($tabs, $currenttab, $inactive, $activated);

@@ -97,6 +97,46 @@ class utils {
         return $result;
     }
 
+    //fetch the MP3 URL of the text we want transcribed
+    public static function fetch_polly_url($token,$region,$speaktext,$texttype, $voice) {
+        global $USER;
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_fetch_polly_url';
+
+        //log.debug(params);
+        $params = array();
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['text'] = urlencode($speaktext);
+        $params['texttype'] = $texttype;
+        $params['voice'] = $voice;
+        $params['appid'] = 'mod_readaloud';
+        $params['owner'] = hash('md5',$USER->username);
+        $params['region'] = $region;
+        $serverurl = 'https://cloud.poodll.com/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if ($payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0) {
+            $pollyurl = $payloadobject->returnMessage;
+            return $pollyurl;
+        } else {
+            return false;
+        }
+    }
+
+
+
+
     //This is called from the settings page and we do not want to make calls out to cloud.poodll.com on settings
     //page load, for performance and stability issues. So if the cache is empty and/or no token, we just show a
     //"refresh token" links
@@ -882,6 +922,54 @@ class utils {
                 array(constants::TRANSCRIBER_AMAZONTRANSCRIBE => get_string("transcriber_amazontranscribe", constants::M_COMPONENT),
                         constants::TRANSCRIBER_GOOGLECLOUDSPEECH => get_string("transcriber_googlecloud", constants::M_COMPONENT));
         return $options;
+    }
+    
+    public static function fetch_ttsvoice_options($langcode=''){
+        $alllang= array(
+                constants::M_LANG_ARAE => ['Zeina'],
+                //constants::M_LANG_ARSA => [],
+                constants::M_LANG_DADK => ["Naja"=>"Naja","Mads"=>"Mads"],
+                constants::M_LANG_DEDE => ['Hans'=>'Hans','Marlene'=>'Marlene', 'Vicki'=>'Vicki'],
+                //constants::M_LANG_DECH => [],
+                constants::M_LANG_ENUS => ['Joey'=>'Joey','Justin'=>'Justin','Matthew'=>'Matthew','Ivy'=>'Ivy',
+                'Joanna'=>'Joanna','Kendra'=>'Kendra','Kimberly'=>'Kimberly','Salli'=>'Salli'],
+                constants::M_LANG_ENGB => ['Brian'=>'Brian','Amy'=>'Amy', 'Emma'=>'Emma'],
+                constants::M_LANG_ENAU => ['Russell'=>'Russell','Nicole'=>'Nicole'],
+                constants::M_LANG_ENIN => ['Aditi'=>'Aditi', 'Raveena'=>'Raveena'],
+               // constants::M_LANG_ENIE => [],
+                constants::M_LANG_ENWL => ["Geraint"=>"Geraint"],
+               // constants::M_LANG_ENAB => [],
+                constants::M_LANG_ESUS => ['Miguel'=>'Miguel','Penelope'=>'Penelope'],
+                constants::M_LANG_ESES => [ 'Enrique'=>'Enrique', 'Conchita'=>'Conchita', 'Lucia'=>'Lucia'],
+                //constants::M_LANG_FAIR => [],
+                constants::M_LANG_FRCA => ['Chantal'=>'Chantal'],
+                constants::M_LANG_FRFR => ['Mathieu'=>'Mathieu','Celine'=>'Celine', 'Léa'=>'Léa'],
+                constants::M_LANG_HIIN => ["Aditi"=>"Aditi"],
+                //constants::M_LANG_HEIL => [],
+                //constants::M_LANG_IDID => [],
+                constants::M_LANG_ITIT => ['Carla'=>'Carla',  'Bianca'=>'Bianca', 'Giorgio'=>'Giorgio'],
+                constants::M_LANG_JAJP => ['Takumi'=>'Takumi','Mizuki'=>'Mizuki'],
+                constants::M_LANG_KOKR => ['Seoyan'=>'Seoyan'],
+                //constants::M_LANG_MSMY => [],
+                constants::M_LANG_NLNL => ["Ruben"=>"Ruben","Lotte"=>"Lotte"],
+                constants::M_LANG_PTBR => ['Ricardo'=>'Ricardo', 'Vitoria'=>'Vitoria'],
+                constants::M_LANG_PTPT => ["Ines"=>"Ines",'Cristiano'=>'Cristiano'],
+                constants::M_LANG_RURU => ["Tatyana"=>"Tatyana","Maxim"=>"Maxim"],
+                //constants::M_LANG_TAIN => [],
+                //constants::M_LANG_TEIN => [],
+                constants::M_LANG_TRTR => ['Filiz'=>'Filiz'],
+                constants::M_LANG_ZHCN => ['Zhiyu']
+        );
+
+
+        $lang_options = self::get_lang_options();
+        $ret=[];
+        foreach($alllang as $lang=>$voices){
+            foreach($voices as $voice){
+             $ret[$voice]=$voice . ' - (' . $lang_options[$lang] . ')';
+            }
+        }
+        return $ret;
     }
 
     public static function get_lang_options() {

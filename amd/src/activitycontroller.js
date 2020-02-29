@@ -1,5 +1,6 @@
 /* jshint ignore:start */
-define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/recorderhelper'], function ($, jqui, log, def, recorderhelper) {
+define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke'],
+    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke) {
 
     "use strict"; // jshint ;_;
 
@@ -16,6 +17,9 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
         controls: null,
         ra_recorder: null,
         rec_time_start: 0,
+        enableshadow: false,
+        enablepreview: false,
+        letsshadow: false,
 
         //CSS in this file
         passagefinished: def.passagefinished,
@@ -54,11 +58,28 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
                 return;
             }
 
+            //set up model audio
+            dd.enableshadow =dd.activitydata.enableshadow;
+            dd.enablepreview =dd.activitydata.enablepreview;
+            dd.setupmodelaudio();
+
+
             dd.setup_recorder();
             dd.process_html(dd.activitydata);
             dd.register_events();
+
+            //set initial mode
+            if(dd.enableshadow || dd.enablepreview){
+                dd.domenulayout();
+            }else{
+                dd.doreadinglayout();
+            }
         },
 
+        setupmodelaudio: function(){
+            var karaoke_opts={breaks:this.activitydata.breaks, audioplayerclass:this.activitydata.audioplayerclass };
+            modelaudiokaraoke.init(karaoke_opts);
+        },
 
         process_html: function (opts) {
 
@@ -74,19 +95,20 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
                 recordingcontainer: $('.' + opts['recordingcontainer']),
                 dummyrecorder: $('.' + opts['dummyrecorder']),
                 recordercontainer: $('.' + opts['recordercontainer']),
-                instructionscontainer: $('.' + opts['instructionscontainer']),
+                menubuttonscontainer: $('.' + opts['menubuttonscontainer']),
+                menuinstructionscontainer: $('.' + opts['menuinstructionscontainer']),
+                activityinstructionscontainer: $('.' + opts['activityinstructionscontainer']),
                 recinstructionscontainerright: $('.' + opts['recinstructionscontainerright']),
                 recinstructionscontainerleft: $('.' + opts['recinstructionscontainerleft']),
                 allowearlyexit: $('.' + opts['allowearlyexit']),
-                wheretonextcontainer: $('.' + opts['wheretonextcontainer'])
+                wheretonextcontainer: $('.' + opts['wheretonextcontainer']),
+                modelaudioplayer: $('#' + opts['modelaudioplayer']),
+                startpreviewbutton: $('#' + opts['startpreviewbutton']),
+                startreadingbutton: $('#' + opts['startreadingbutton']),
+                startshadowbutton: $('#' + opts['startshadowbutton']),
+                returnmenubutton: $('#' + opts['returnmenubutton'])
             };
             this.controls = controls;
-        },
-
-        beginall: function () {
-            var m = this;
-            // m.dorecord();
-            m.passagerecorded = true;
         },
 
         is_browser_ok: function () {
@@ -97,16 +119,21 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
         setup_recorder: function () {
             var dd = this;
 
-            //Set up the callback functions for the audio recorder
+            //after the recorder reports that it has (really) started this functuon is called.
+            var beginall= function(){
+                dd.passagerecorded = true;
+                if(dd.enableshadow && dd.letsshadow){
+                    dd.controls.modelaudioplayer[0].play();
+                }
+            };
 
             //originates from the recording:started event
             //contains no meaningful data
             //See https://api.poodll.com
             var on_recording_start = function (eventdata) {
-
                 dd.rec_time_start = new Date().getTime();
                 dd.dopassagelayout();
-                dd.controls.passagecontainer.show(1000, dd.beginall);
+                dd.controls.passagecontainer.show(1000, beginall);
             };
 
             //originates from the recording:ended event
@@ -119,6 +146,11 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
                     return;
                 }
                 dd.douploadlayout();
+                //if we are shadowing we should stop the audio player.
+                if(dd.enableshadow && dd.letsshadow){
+                    dd.controls.modelaudioplayer[0].currentTime=0;
+                    dd.controls.modelaudioplayer[0].pause();
+                }
             };
 
             //data sent here originates from the awaiting_processing event
@@ -145,10 +177,22 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
 
         register_events: function () {
             var dd = this;
-
-            //events for other controls on the page
-            //ie not recorders
-            //dd.controls.passagecontainer.click(function(){log.debug('clicked');})
+            dd.controls.startpreviewbutton.click(function(){
+                dd.dopreviewlayout();
+            });
+            dd.controls.startreadingbutton.click(function(){
+                dd.letsshadow=false;
+                dd.doreadinglayout();
+            });
+            dd.controls.startshadowbutton.click(function(){
+                dd.letsshadow=true;
+                dd.doreadinglayout();
+            });
+            dd.controls.returnmenubutton.click(function(){
+                dd.controls.modelaudioplayer[0].currentTime=0;
+                dd.controls.modelaudioplayer[0].pause();
+                dd.domenulayout();
+            });
         },
 
 
@@ -196,15 +240,56 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
             xhr.send(params);
         },
 
+        doreadinglayout: function () {
+            var m = this;
+            m.controls.hider.fadeOut('fast');
+            m.controls.activityinstructionscontainer.show();
+            m.controls.recordingcontainer.show();
+            m.controls.menuinstructionscontainer.hide();
+            m.controls.menubuttonscontainer.hide();
+            m.controls.returnmenubutton.hide();
+            m.controls.progresscontainer.hide();
+            m.controls.passagecontainer.hide();
+            m.controls.feedbackcontainer.hide();
+            m.controls.wheretonextcontainer.hide();
+        },
+
+        domenulayout: function () {
+            var m = this;
+            m.controls.menuinstructionscontainer.show();
+            m.controls.menubuttonscontainer.show();
+            m.controls.activityinstructionscontainer.hide();
+            m.controls.returnmenubutton.hide();
+            m.controls.progresscontainer.hide();
+            m.controls.passagecontainer.hide();
+            m.controls.recordingcontainer.hide();
+            m.controls.feedbackcontainer.hide();
+            m.controls.wheretonextcontainer.hide();
+            m.controls.modelaudioplayer.hide();
+            m.controls.hider.hide();
+        },
+
+        dopreviewlayout: function () {
+            var m = this;
+            m.controls.passagecontainer.show();
+            m.controls.returnmenubutton.show();
+            m.controls.modelaudioplayer.show();
+            m.controls.menubuttonscontainer.hide();
+            m.controls.hider.hide();
+            m.controls.progresscontainer.hide();
+            m.controls.menuinstructionscontainer.hide();
+            m.controls.activityinstructionscontainer.hide();
+            m.controls.recordingcontainer.hide();
+            m.controls.feedbackcontainer.hide();
+            m.controls.wheretonextcontainer.hide();
+        },
+
 
         dopassagelayout: function () {
             var m = this;
             m.controls.introbox.hide();
-            //m.controls.instructionscontainer.hide();
-            if (m.controls.allowearlyexit) {
-                //  m.controls.stopbutton.hide();
-            }
         },
+
         douploadlayout: function () {
             var m = this;
             m.controls.passagecontainer.addClass(m.passagefinished);
@@ -216,7 +301,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
             var m = this;
             m.controls.hider.fadeOut('fast');
             m.controls.progresscontainer.fadeOut('fast');
-            m.controls.instructionscontainer.hide();
+            m.controls.activityinstructionscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.show();

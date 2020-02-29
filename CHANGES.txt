@@ -1,3 +1,9 @@
+2.0.24 Build 2.0.24 (Build 2020022000)
+-added tts voice for click to hear
+-added support for Japanese language (alpha .. not for production)
+-added shadowing and preview modes
+-refactor
+
 2.0.23 (Build 2020021800)
 -added sessionscoremethod setting for strict and normal grading modes
 
