@@ -27,7 +27,20 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
         },
 
         //init the module
-        init: function(opts){
+        init: function(props){
+
+            //pick up opts from html
+            var theid = '#amdopts_' + props.widgetid;
+            var configcontrol = $(theid).get(0);
+            if (configcontrol) {
+                var opts = JSON.parse(configcontrol.value);
+                $(theid).remove();
+            } else {
+                //if there is no config we might as well give up
+                log.debug('Read Aloud model audio Controller: No config found on page. Giving up.');
+                return;
+            }
+
             if(opts.breaks) {
                 this.breaks=JSON.parse(opts.breaks);
             }

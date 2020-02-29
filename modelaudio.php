@@ -110,12 +110,6 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 $PAGE->set_pagelayout('course');
 
-$modelaudio_opts = Array();
-$modelaudio_opts['recorderid']=constants::M_RECORDERID;
-$modelaudio_opts['breaks']=$moduleinstance->modelaudiobreaks;
-
-//this inits the model audio helper JS
-$PAGE->requires->js_call_amd("mod_readaloud/modelaudiohelper", 'init', array($modelaudio_opts));
 
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
@@ -177,6 +171,21 @@ $setdata = array(
 $modelaudiobreaksform = new \mod_readaloud\modelaudiobreaksform(null, array());
 $modelaudiobreaksform->set_data($setdata);
 $modelaudiobreaksform->display();
+
+//set up the AMD js and related opts
+$modelaudio_opts = Array();
+$modelaudio_opts['recorderid']=constants::M_RECORDERID;
+$modelaudio_opts['breaks']=$moduleinstance->modelaudiobreaks;
+
+$jsonstring = json_encode($modelaudio_opts);
+$widgetid = constants::M_RECORDERID . '_opts_9999';
+$opts_html =
+        \html_writer::tag('input', '', array('id' => 'amdopts_' . $widgetid, 'type' => 'hidden', 'value' => $jsonstring));
+$opts = array('widgetid' => $widgetid);
+
+//this inits the model audio helper JS
+$PAGE->requires->js_call_amd("mod_readaloud/modelaudiohelper", 'init', array($opts));
+echo $opts_html;
 
 // Finish the page
 echo $renderer->footer();
