@@ -97,6 +97,12 @@ class utils {
         return $result;
     }
 
+    //fetch slightly slower version of speech
+    public static function fetch_slow_ssml($text){
+        $slowtemplate='<speak><break time="1000ms"></break><prosody volume="default" rate="slow" pitch="medium">@@text@@</prosody></speak>';
+        return str_replace('@@text@@',$text,$slowtemplate);
+    }
+
     //fetch the MP3 URL of the text we want transcribed
     public static function fetch_polly_url($token,$region,$speaktext,$texttype, $voice) {
         global $USER;
