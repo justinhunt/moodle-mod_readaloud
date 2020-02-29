@@ -99,7 +99,7 @@ class utils {
 
     //fetch slightly slower version of speech
     public static function fetch_slow_ssml($text){
-        $slowtemplate='<speak><break time="1000ms"></break><prosody volume="default" rate="slow" pitch="medium">@@text@@</prosody></speak>';
+        $slowtemplate='<speak><break time="1000ms"></break><prosody rate="slow">@@text@@</prosody></speak>';
         return str_replace('@@text@@',$text,$slowtemplate);
     }
 
