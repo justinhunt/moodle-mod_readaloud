@@ -382,7 +382,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table = new xmldb_table('readaloud');
 
         //
-        $field = new xmldb_field('ttsspeed', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $field = new xmldb_field('ttsspeed', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
 
         // add field to readaloud table
         if (!$dbman->field_exists($table, $field)) {
