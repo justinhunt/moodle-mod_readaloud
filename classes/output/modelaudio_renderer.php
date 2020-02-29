@@ -28,7 +28,7 @@ class modelaudio_renderer extends \plugin_renderer_base {
     public function render_polly_player($moduleinstance,$token) {
         $url = utils::fetch_polly_url($token,$moduleinstance->region,
                 $moduleinstance->passage,'text',$moduleinstance->ttsvoice);
-        $playerclass = constants::M_GRADING_PLAYER;
+        $playerclass = constants::M_MODELAUDIO_PLAYER;
         $ret = "<audio id='$playerclass' controls src='$url'></audio>";
         return $ret;
     }
