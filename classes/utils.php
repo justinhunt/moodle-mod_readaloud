@@ -98,9 +98,24 @@ class utils {
     }
 
     //fetch slightly slower version of speech
-    public static function fetch_slow_ssml($text){
-        $slowtemplate='<speak><break time="1000ms"></break><prosody rate="slow">@@text@@</prosody></speak>';
-        return str_replace('@@text@@',$text,$slowtemplate);
+    public static function fetch_speech_ssml($text, $ttsspeed){
+
+        switch($ttsspeed){
+            case constants::TTSSPEED_SLOW:
+                $speed='slow';
+                break;
+            case constants::TTSSPEED_XSLOW:
+                $speed='x-slow';
+                break;
+            case constants::TTSSPEED_MEDIUM:
+            default:
+            $speed='medium';
+        }
+
+        $slowtemplate='<speak><break time="1000ms"></break><prosody rate="@@speed@@">@@text@@</prosody></speak>';
+        $slowtemplate = str_replace('@@text@@',$text,$slowtemplate);
+        $slowtemplate = str_replace('@@speed@@',$speed,$slowtemplate);
+        return $slowtemplate;
     }
 
     //fetch the MP3 URL of the text we want transcribed
@@ -892,6 +907,14 @@ class utils {
         return array(
                 constants::SESSIONSCORE_NORMAL => get_string("sessionscorenormal", constants::M_COMPONENT),
                 constants::SESSIONSCORE_STRICT => get_string("sessionscorestrict", constants::M_COMPONENT)
+        );
+    }
+
+    public static function get_ttsspeed_options() {
+        return array(
+                constants::TTSSPEED_MEDIUM => get_string("mediumspeed", constants::M_COMPONENT),
+                constants::TTSSPEED_SLOW => get_string("slowspeed", constants::M_COMPONENT),
+                constants::TTSSPEED_XSLOW => get_string("extraslowspeed", constants::M_COMPONENT)
         );
     }
 

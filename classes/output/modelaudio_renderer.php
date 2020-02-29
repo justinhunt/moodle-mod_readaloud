@@ -20,14 +20,14 @@ class modelaudio_renderer extends \plugin_renderer_base {
     }
 
     public function render_polly_url($moduleinstance,$token) {
-        $slowpassage = utils::fetch_slow_ssml($moduleinstance->passage);
+        $slowpassage = utils::fetch_speech_ssml($moduleinstance->passage,$moduleinstance->ttsspeed);
         $ret = utils::fetch_polly_url($token,$moduleinstance->region,
                 $slowpassage,'ssml',$moduleinstance->ttsvoice);
         return $ret;
     }
 
     public function render_polly_player($moduleinstance,$token) {
-        $slowpassage = utils::fetch_slow_ssml($moduleinstance->passage);
+        $slowpassage = utils::fetch_speech_ssml($moduleinstance->passage,$moduleinstance->ttsspeed);
         $url = utils::fetch_polly_url($token,$moduleinstance->region,
                 $slowpassage,'ssml',$moduleinstance->ttsvoice);
         $playerclass = constants::M_MODELAUDIO_PLAYER;

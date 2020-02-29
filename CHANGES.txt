@@ -1,3 +1,6 @@
+2.0.25 Build 2.0.25 (Build 2020022900)
+-Added TTS Speed setting
+
 2.0.24 Build 2.0.24 (Build 2020022000)
 -added tts voice for click to hear
 -added support for Japanese language (alpha .. not for production)

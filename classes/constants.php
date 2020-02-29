@@ -51,6 +51,11 @@ class constants {
     const SESSIONSCORE_NORMAL = 0; //Normal = WPM / Targetwpm * 100
     const SESSIONSCORE_STRICT = 1; //Strict = (WPM - Errors) / Targetwpm * 100
 
+    //TTS Speed
+    const TTSSPEED_MEDIUM = 0;
+    const TTSSPEED_SLOW = 1;
+    const TTSSPEED_XSLOW = 2;
+
     //CSS ids/classes
     const M_RECORD_BUTTON = 'mod_readaloud_record_button';
     const M_START_BUTTON = 'mod_readaloud_start_button';

@@ -175,6 +175,10 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addElement('select', 'ttsvoice', get_string('ttsvoice', constants::M_COMPONENT), $langoptions);
         $mform->setDefault('ttsvoice', $config->ttsvoice);
 
+        $speedoptions = \mod_readaloud\utils::get_ttsspeed_options();
+        $mform->addElement('select', 'ttsspeed', get_string('ttsspeed', constants::M_COMPONENT), $speedoptions);
+        $mform->setDefault('ttsspeed', constants::TTSSPEED_SLOW);
+
         //transcriber options
         $name = 'transcriber';
         $label = get_string($name, constants::M_COMPONENT);

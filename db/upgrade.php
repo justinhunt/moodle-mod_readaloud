@@ -377,6 +377,20 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020022000, 'readaloud');
     }
 
+    // Add TTS Speed to readaloud table.
+    if ($oldversion < 2020022900) {
+        $table = new xmldb_table('readaloud');
+
+        //
+        $field = new xmldb_field('ttsspeed', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // add field to readaloud table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2020022900, 'readaloud');
+    }
+
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

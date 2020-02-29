@@ -386,5 +386,11 @@ $string['modelaudio_playertitle'] = 'Play Model Audio';
 $string['modelaudio_breakstitle'] = 'Mark-up Model Audio';
 $string['viewmodeltranscript'] = 'View Model Transcript';
 
+$string['ttsspeed'] = 'TTS Speed';
+$string['mediumspeed'] = 'Medium';
+$string['slowspeed'] = 'Slow';
+$string['extraslowspeed'] = 'Extra Slow';
+
+
 $string['welcomemenu'] = 'Choose from the options below.';
 $string['returnmenu'] = 'Return to Start Menu.';
