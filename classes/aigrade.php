@@ -13,7 +13,7 @@ use \mod_readaloud\constants;
 defined('MOODLE_INTERNAL') || die();
 
 class aigrade {
-    function __construct($attemptid, $modulecontextid = 0) {
+    function __construct($attemptid, $modulecontextid = 0, $streamingresults=false) {
         global $DB;
         $this->attemptid = $attemptid;
         $this->modulecontextid = $modulecontextid;
@@ -32,8 +32,14 @@ class aigrade {
                 }
             }
             if (!$this->has_transcripts()) {
-                //if we do not have transcripts we try to fetch them
-                $success = $this->fetch_transcripts();
+                if($streamingresults){
+                    //if we do not have transcripts we try to fetch them
+                    $success = $this->process_streaming_transcripts($streamingresults);
+                }else {
+                    //if we do not have transcripts we try to fetch them
+                    $success = $this->fetch_transcripts();
+                }
+
                 //if we got transcripts, right on man.
                 //we process them and update gradebook
                 if ($success) {
@@ -118,6 +124,33 @@ class aigrade {
         $data->timemodified = time();
         $recordid = $DB->insert_record(constants::M_AITABLE, $data);
         return $recordid;
+    }
+
+    public function process_streaming_transcripts($streamingresults){
+        global $DB;
+        $success = false;
+        $transcript = false;
+        $fulltranscript = false;
+
+        if (!utils::is_json($streamingresults)) {
+            return $success;
+        }
+
+        $streaming = json_decode($streamingresults);
+        $transcript =$streaming->results->transcripts[0]->transcript;
+        $fulltranscript =$streamingresults;
+
+        if ($fulltranscript) {
+            $record = new \stdClass();
+            $record->id = $this->recordid;
+            $record->transcript = diff::cleanText($transcript);
+            $record->fulltranscript = $fulltranscript;
+            $success = $DB->update_record(constants::M_AITABLE, $record);
+
+            $this->aidata->transcript = $transcript;
+            $this->aidata->fulltranscript = $fulltranscript;
+        }
+        return $success;
     }
 
 

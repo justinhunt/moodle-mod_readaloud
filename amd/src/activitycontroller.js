@@ -1,6 +1,8 @@
 /* jshint ignore:start */
-define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke'],
-    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke) {
+define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
+        'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
+        'mod_readaloud/transcriber','core/ajax','core/notification'],
+    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke, transcriber, Ajax, notification) {
 
     "use strict"; // jshint ;_;
 
@@ -20,6 +22,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
         enableshadow: false,
         enablepreview: false,
         letsshadow: false,
+        streamingresults: false,
 
         //CSS in this file
         passagefinished: def.passagefinished,
@@ -63,7 +66,30 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
             dd.enablepreview =dd.activitydata.enablepreview;
             dd.setupmodelaudio();
 
+            //init streaming transcriber
+            var opts={};
+            opts['language']=dd.activitydata.language;
+            opts['region']=dd.activitydata.region;
+            opts['accessid']=dd.activitydata.accessid;
+            opts['secretkey']=dd.activitydata.secretkey;
+            opts['transcriber']=dd.activitydata.transcriber;
+            if(opts['transcriber'] == def.transcriber_amazonstreaming) {
+                transcriber.init(opts);
+                transcriber.onFinalResult = function (transcript, result) {
+                    dd.streamingresults.push(result);
+                    //if recording over deal with final result
+                    //if(!transcriber.active){
+                    log.debug(dd.streamingresults);
+                    //}
 
+                    // theCallback(message);
+                };
+                transcriber.onPartialResult = function (transcript, result) {
+                    //do nothing
+                };
+            }
+
+            //init recorder and html and events
             dd.setup_recorder();
             dd.process_html(dd.activitydata);
             dd.register_events();
@@ -134,6 +160,26 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
                 dd.rec_time_start = new Date().getTime();
                 dd.dopassagelayout();
                 dd.controls.passagecontainer.show(1000, beginall);
+
+                //start streaming transcriber
+                if(dd.activitydata.transcriber == def.transcriber_amazonstreaming) {
+                    if (transcriber.active) {
+                        return;
+                    }
+                    //init our streamingresults
+                    dd.streamingresults = [];
+                    // first we get the microphone input from the browser (as a promise)...
+                    window.navigator.mediaDevices.getUserMedia({
+                        video: false,
+                        audio: true,
+                    }).then(function (stream) {
+                        transcriber.start(stream, transcriber)
+                    }).catch(function (error) {
+                            log.debug(error);
+                            log.debug('There was an error streaming your audio to Amazon Transcribe. Please try again.');
+                        }
+                    );
+                }//end of if amazonstreaming
             };
 
             //originates from the recording:ended event
@@ -151,6 +197,14 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
                     dd.controls.modelaudioplayer[0].currentTime=0;
                     dd.controls.modelaudioplayer[0].pause();
                 }
+
+                //stop streaming transcriber
+                if(dd.activitydata.transcriber == def.transcriber_amazonstreaming) {
+                    if (!transcriber.active) {
+                        return;
+                    }
+                    transcriber.closeSocket();
+                }
             };
 
             //data sent here originates from the awaiting_processing event
@@ -163,7 +217,14 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
                 if (rectime > 0) {
                     rectime = Math.ceil(rectime / 1000);
                 }
-                dd.send_submission(eventdata.mediaurl, rectime);
+
+                if(dd.activitydata.transcriber == def.transcriber_amazonstreaming &&
+                    dd.streamingresults &&
+                    dd.streamingresults.length > 0){
+                    dd.send_streaming_submission(eventdata.mediaurl, rectime, dd.streamingresults);
+                }else {
+                    dd.send_submission(eventdata.mediaurl, rectime);
+                }
                 //and let the user know that they are all done
                 dd.dofinishedlayout();
             };
@@ -195,8 +256,69 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
             });
         },
 
+        send_streaming_submission: function (filename, rectime, streamingresults) {
+            var that = this;
+            Ajax.call([{
+                methodname: 'mod_readaloud_submit_streaming_attempt',
+                args: {
+                    cmid: that.cmid,
+                    filename: filename,//encodeURIComponent(filename),
+                    rectime: rectime,
+                    awsresults: JSON.stringify(streamingresults)
+                },
+                done: function (ajaxresult) {
+                    var payloadobject = JSON.parse(ajaxresult);
+                    if (payloadobject) {
+                        switch (payloadobject.success) {
+                            case true:
+                                log.debug('attempted submission accepted');
+
+                                break;
+
+                            case false:
+                            default:
+                                log.debug('attempted item evaluation failure');
+                                if (payloadobject.message) {
+                                    log.debug('message: ' + payloadobject.message);
+                                }
+                        }
+                    }
+                },
+                fail: notification.exception
+            }]);
+        },
 
         send_submission: function (filename, rectime) {
+            var that = this;
+            Ajax.call([{
+                methodname: 'mod_readaloud_submit_regular_attempt',
+                args: {
+                    cmid: that.cmid,
+                    filename:  filename,//encodeURIComponent(filename),
+                    rectime: rectime
+                },
+                done: function(ajaxresult){
+                    var payloadobject = JSON.parse(ajaxresult);
+                    if (payloadobject) {
+                        switch (payloadobject.success) {
+                            case true:
+                                log.debug('attempted submission accepted');
+
+                                break;
+
+                            case false:
+                            default:
+                                log.debug('attempted item evaluation failure');
+                                if (payloadobject.message) {
+                                    log.debug('message: ' + payloadobject.message);
+                                }
+                        }
+                    }
+                },
+                fail: notification.exception
+            }]);
+/*
+            return;
 
             //set up our ajax request
             var xhr = new XMLHttpRequest();
@@ -238,6 +360,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions', 'mod_read
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.setRequestHeader("Cache-Control", "no-cache");
             xhr.send(params);
+*/
         },
 
         doreadinglayout: function () {

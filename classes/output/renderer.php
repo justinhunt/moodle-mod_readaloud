@@ -124,6 +124,26 @@ class renderer extends \plugin_renderer_base {
 
     }
 
+    public function show_progress_chart($chartdata){
+        global $CFG;
+        //if no chart data or lower than Moodle 3.2 we do not shopw the chart
+        if(!$chartdata || $CFG->version < 2016120500 ){return '';}
+
+        $chart = new \core\chart_line();
+        $chart->add_series($chartdata->wpmseries);
+        $chart->add_series($chartdata->accuracyseries);
+        $chart->add_series($chartdata->sessionscoreseries);
+        $chart->set_labels($chartdata->labelsdata);
+
+        $htmltitle = $this->output->heading(get_string("progresschart", constants::M_COMPONENT), 5);
+        $html = \html_writer::div($htmltitle, constants::M_CLASS . '_center');
+        $html .= \html_writer::div(get_string("chartexplainer", constants::M_COMPONENT),
+                constants::M_CLASS . '_center');
+        $html .= $this->output->render($chart);
+
+        return $html;
+    }
+
     /**
      *
      */
@@ -507,7 +527,20 @@ class renderer extends \plugin_renderer_base {
         $string_hints = base64_encode(json_encode($hints));
 
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
-        $transcribe = $can_transcribe ? $moduleinstance->transcriber : "0";
+
+        //if they choose streaming transcription we also transcribe on server(just in case)
+        //we will turn this off after streaming has proved stable 03/2020
+        switch ($moduleinstance->transcriber){
+            case constants::TRANSCRIBER_AMAZONSTREAMING :
+                $transcribe = $can_transcribe ? constants::TRANSCRIBER_AMAZONTRANSCRIBE : "0";
+                break;
+            case constants::TRANSCRIBER_AMAZONTRANSCRIBE:
+            case constants::TRANSCRIBER_GOOGLECLOUDSPEECH:
+            case constants::TRANSCRIBER_NONE:
+            default:
+                $transcribe = $can_transcribe ? $moduleinstance->transcriber : "0";
+        }
+
         $recorderdiv = \html_writer::div('', constants::M_CLASS . '_center',
                 array('id' => constants::M_RECORDERID,
                         'data-id' => 'therecorder',
@@ -547,7 +580,7 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    function fetch_activity_amd($cm, $moduleinstance) {
+    function fetch_activity_amd($cm, $moduleinstance,$accessid,$accesssecret) {
         global $USER;
         //any html we want to return to be sent to the page
         $ret_html = '';
@@ -574,7 +607,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
         $recopts['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
-        $recopts['enableshadow'] = $moduleinstance->enablepreview ? true : false;
+        $recopts['enablepreview'] = $moduleinstance->enablepreview ? true : false;
         $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;
         $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
         $recopts['breaks'] = $moduleinstance->modelaudiobreaks;
@@ -583,6 +616,18 @@ class renderer extends \plugin_renderer_base {
         $recopts['startreadingbutton'] = constants::M_STARTNOSHADOW;
         $recopts['startshadowbutton'] = constants::M_STARTSHADOW;
         $recopts['returnmenubutton'] = constants::M_RETURNMENU;
+
+        //streaming transcriber
+        //if not available we switch to amazon transcribe
+        if($moduleinstance->transcriber == constants::TRANSCRIBER_AMAZONSTREAMING &&
+                !utils::can_streaming_transcribe($moduleinstance)){
+            $moduleinstance->transcriber=constants::TRANSCRIBER_AMAZONTRANSCRIBE;
+        }
+        $recopts['transcriber']=$moduleinstance->transcriber;
+        $recopts['language']=$moduleinstance->ttslanguage;
+        $recopts['region']= utils::translate_region($moduleinstance->region);
+        $recopts['accessid']=$accessid;
+        $recopts['secretkey']=$accesssecret;
 
 
         //we need an update control tp hold the recorded filename, and one for draft item id

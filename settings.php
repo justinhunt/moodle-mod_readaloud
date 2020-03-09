@@ -132,7 +132,7 @@ if ($ADMIN->fulltree) {
     //Language options
     $name = 'ttslanguage';
     $label = get_string($name, constants::M_COMPONENT);
-    $details = "";
+    $details = get_string($name . '_details', constants::M_COMPONENT);
     $default = constants::M_LANG_ENUS;
     $options = \mod_readaloud\utils::get_lang_options();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",

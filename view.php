@@ -128,6 +128,8 @@ if ($attempts && $retake == 0) {
     if(count($attempts)>1) {
         $attemptsummary = utils::fetch_attempt_summary($moduleinstance);
         echo $renderer->show_attempt_summary($attemptsummary);
+        $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
+        echo $renderer->show_progress_chart($chartdata);
     }
 
     //show feedback summary
@@ -299,7 +301,12 @@ echo $renderer->show_progress($moduleinstance, $cm);
 echo $renderer->show_wheretonext($moduleinstance);
 
 //the module AMD code
-echo $renderer->fetch_activity_amd($cm, $moduleinstance);
+//get aws info
+$cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
+$tokenobject = $cache->get('recentpoodlltoken');
+$accessid = $tokenobject->awsaccessid;
+$accesssecret= $tokenobject->awsaccesssecret;
+echo $renderer->fetch_activity_amd($cm, $moduleinstance,$accessid,$accesssecret);
 
 // Finish the page
 echo $renderer->footer();

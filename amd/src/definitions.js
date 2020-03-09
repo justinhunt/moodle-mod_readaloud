@@ -72,6 +72,7 @@ define(['jquery', 'core/log'], function ($, log) {
         modelaudiourlfield: 'mod_readaloud_modelaudio_form_urlfield',
         activesentence: 'mod_readaloud_modelaudio_activesentence',
         modeltranscriptbutton: 'mod_readaloud_modeltranscript_button',
-        modeltranscript: 'mod_readaloud_modeltranscript'
+        modeltranscript: 'mod_readaloud_modeltranscript',
+        transcriber_amazonstreaming: 4
     };//end of return value
 });

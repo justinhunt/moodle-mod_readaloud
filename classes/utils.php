@@ -50,6 +50,26 @@ class utils {
         return $ret;
     }
 
+    public static function can_streaming_transcribe($instance){
+
+        $ret = false;
+
+        //The instance languages
+        switch($instance->ttslanguage){
+            case constants::M_LANG_ENAU:
+            case constants::M_LANG_ENGB:
+            case constants::M_LANG_ENUS:
+            case constants::M_LANG_FRFR:
+            case constants::M_LANG_FRCA:
+                $ret =true;
+                break;
+            default:
+                $ret = false;
+        }
+
+        return $ret;
+    }
+
     //are we willing and able to transcribe submissions?
     public static function can_transcribe($instance) {
 
@@ -271,6 +291,12 @@ class utils {
                 if (property_exists($resp_object, 'sites')) {
                     $tokenobject->sites = $resp_object->sites;
                 }
+                if(property_exists($resp_object,'awsaccesssecret')){
+                    $tokenobject->awsaccesssecret = $resp_object->awsaccesssecret;
+                }
+                if(property_exists($resp_object,'awsaccessid')){
+                    $tokenobject->awsaccessid = $resp_object->awsaccessid;
+                }
 
                 $cache->set('recentpoodlltoken', $tokenobject);
                 $cache->set('recentpoodlluser', $apiuser);
@@ -327,6 +353,21 @@ class utils {
 
         //just return empty if there is no error.
         return '';
+    }
+
+    public static function translate_region($key){
+        switch($key){
+            case "useast1": return "us-east-1";
+            case "tokyo": return "ap-northeast-1";
+            case "sydney": return "ap-southeast-2";
+            case "dublin": return "eu-east-1";
+            case "ottawa": return "us-east-1";
+            case "frankfurt": return "eu-central-2";
+            case "london": return "us-east-1";
+            case "saopaulo": return "sa-east-1";
+            case "singapore": return "us-east-1";
+            case "mumbai": return "us-east-1";
+        }
     }
 
     /*
@@ -794,6 +835,62 @@ class utils {
         return $ret;
     }
 
+    public static function fetch_attempt_chartdata($moduleinstance,$userid=0){
+        global $DB, $USER;
+
+        //use current user if not passed in
+        if($userid==0){$userid = $USER->id;}
+        //init return value
+        $chartdata = false;
+
+        $sql =
+                "SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore,tai.fulltranscript as fulltranscript FROM {" .
+                constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
+                "INNER JOIN {" . constants::M_AITABLE . "} tai ON tai.attemptid=tu.id " .
+                "WHERE tu.readaloudid=? AND u.id=?" .
+                " ORDER BY tu.id DESC";
+
+        $alldata = $DB->get_records_sql($sql, array($moduleinstance->id, $userid));
+
+        //if we have data, yay
+        if ($alldata) {
+
+            //init our data set
+            $chartdata = new \stdClass();
+            $wpmdata=[];
+            $accuracydata=[];
+            $sessionscoredata=[];
+            $labelsdata=[];
+            $attemptno=0;
+
+            //loop through each attempt
+            foreach ($alldata as $thedata) {
+
+
+                //sessiontime is our indicator that a human grade has been saved.
+                //use aidata if no human grade or machinegrades only
+                if (!$thedata->sessiontime || $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY) {
+                    $wpmdata[]= $thedata->aiwpm;
+                    $accuracydata[] = $thedata->aiaccuracy;
+                    $sessionscoredata[] = $thedata->aisessionscore;
+                }else{
+                    $wpmdata[]= $thedata->wpm;
+                    $accuracydata[] = $thedata->accuracy;
+                    $sessionscoredata[] = $thedata->sessionscore;
+
+                }
+                $attemptno++;
+                $labelsdata[] =get_string('attemptno', constants::M_COMPONENT, $attemptno);
+            }
+            $chartdata->accuracyseries = new \core\chart_series(get_string('accuracy_p', constants::M_COMPONENT),$accuracydata);
+            $chartdata->wpmseries = new \core\chart_series(get_string('wpm', constants::M_COMPONENT),$wpmdata);
+            $chartdata->sessionscoreseries = new \core\chart_series(get_string('grade_p', constants::M_COMPONENT),$sessionscoredata);
+            $chartdata->labelsdata=$labelsdata;
+
+        }
+        return $chartdata;
+    }
+
     public static function fetch_attempt_summary($moduleinstance,$userid=0){
         global $DB, $USER;
 
@@ -851,6 +948,97 @@ class utils {
 
         }
         return $attemptsummary;
+    }
+
+    //save the data to Moodle.
+    public static function create_attempt($filename, $rectime, $readaloud) {
+        global $USER, $DB;
+
+        //correct filename which has probably been massaged to get through mod_security
+        $filename = str_replace('https___', 'https://', $filename);
+
+        //Add a blank attempt with just the filename  and essential details
+        $newattempt = new \stdClass();
+        $newattempt->courseid = $readaloud->course;
+        $newattempt->readaloudid = $readaloud->id;
+        $newattempt->userid = $USER->id;
+        $newattempt->status = 0;
+        $newattempt->filename = $filename;
+        $newattempt->sessionscore = 0;
+        //$newattempt->sessiontime=$rectime;  //.. this would work. But sessiontime is used as flag of human has graded ...so needs more thought
+        $newattempt->sessionerrors = '';
+        $newattempt->errorcount = 0;
+        $newattempt->wpm = 0;
+        $newattempt->timecreated = time();
+        $newattempt->timemodified = time();
+        $attemptid = $DB->insert_record(constants::M_USERTABLE, $newattempt);
+        if (!$attemptid) {
+            return false;
+        }
+        $newattempt->id = $attemptid;
+
+        //if we are machine grading we need an entry to AI table too
+        //But ... there is the chance a user will CHANGE the machgrademethod value after submissions have begun,
+        //If they do, INNER JOIN SQL in grade related logic will mess up gradebook if aigrade record is not available.
+        //So for prudence sake we ALWAYS create an aigrade record
+        if (true ||
+                $readaloud->machgrademethod == constants::MACHINEGRADE_HYBRID ||
+                $readaloud->machgrademethod == constants::MACHINEGRADE_MACHINEONLY) {
+            aigrade::create_record($newattempt, $readaloud->timelimit);
+        }
+
+        //return the attempt id
+        return $attemptid;
+    }
+
+    //streaming results are not the same format as non streaming, we massage the streaming to look like a non streaming
+    //to our code that will go on to process it.
+    public static function parse_streaming_results($streaming_results){
+        $results = json_decode($streaming_results);
+        $alltranscript = '';
+        $allitems=[];
+        foreach($results as $result){
+            foreach($result as $completion) {
+                foreach ($completion->Alternatives as $alternative) {
+                    $alltranscript .= $alternative->Transcript . ' ';
+                    foreach ($alternative->Items as $item) {
+                        $processeditem = new \stdClass();
+                        $processeditem->alternatives = [['content' => $item->Content, 'confidence' => "1.0000"]];
+                        $processeditem->end_time = "" . round($item->EndTime,3);
+                        $processeditem->start_time = "" . round($item->StartTime,3);
+                        $processeditem->type = $item->Type;
+                        $allitems[] = $processeditem;
+                    }
+                }
+            }
+        }
+        $ret = new \stdClass();
+        $ret->jobName="streaming";
+        $ret->accountId="streaming";
+        $ret->results =[];
+        $ret->status='COMPLETED';
+        $ret->results['transcripts']=[['transcript'=>$alltranscript]];
+        $ret->results['items']=$allitems;
+
+        return json_encode($ret);
+    }
+
+
+    //register an adhoc task to pick up transcripts
+    public static function register_aws_task($activityid, $attemptid, $modulecontextid) {
+        $s3_task = new \mod_readaloud\task\readaloud_s3_adhoc();
+        $s3_task->set_component('mod_readaloud');
+
+        $customdata = new \stdClass();
+        $customdata->activityid = $activityid;
+        $customdata->attemptid = $attemptid;
+        $customdata->modulecontextid = $modulecontextid;
+        $customdata->taskcreationtime = time();
+
+        $s3_task->set_custom_data($customdata);
+        // queue it
+        \core\task\manager::queue_adhoc_task($s3_task);
+        return true;
     }
 
     //What to show students after an attempt
@@ -949,6 +1137,7 @@ class utils {
     public static function fetch_options_transcribers() {
         $options =
                 array(constants::TRANSCRIBER_AMAZONTRANSCRIBE => get_string("transcriber_amazontranscribe", constants::M_COMPONENT),
+                        constants::TRANSCRIBER_AMAZONSTREAMING => get_string("transcriber_amazonstreaming", constants::M_COMPONENT),
                         constants::TRANSCRIBER_GOOGLECLOUDSPEECH => get_string("transcriber_googlecloud", constants::M_COMPONENT));
         return $options;
     }

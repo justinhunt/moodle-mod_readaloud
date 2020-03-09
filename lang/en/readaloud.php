@@ -134,6 +134,7 @@ $string['enabletts'] = 'Enable TTS(experimental)';
 $string['enabletts_details'] = 'TTS is currently not implemented';
 //we hijacked this setting for both TTS STT .... bad ... but they are always the same aren't they?
 $string['ttslanguage'] = 'Passage Language';
+$string['ttslanguage_details'] = 'This value is used for speech recognition and text to speech.';
 $string['deleteattemptconfirm'] = "Are you sure that you want to delete this attempt?";
 $string['deletenow'] = '';
 $string['allowearlyexit'] = 'Can exit early';
@@ -356,10 +357,11 @@ $string['startshadowreading'] = 'Start Reading (Shadow Mode)';
 
 
 $string['transcriber'] = 'Transcriber';
-$string['transcriber_details'] = 'The transcription engine to use';
+$string['transcriber_details'] = 'The transcription engine to use. Streaming transcription only works if passage language is US/AU/GB English and FR/CA French.';
 $string['transcriber_none'] = 'No transcription';
-$string['transcriber_amazontranscribe'] = 'Regular Transcription';
-$string['transcriber_googlecloud'] = 'Fast Transcription (< 60s only)';
+$string['transcriber_amazontranscribe'] = 'Regular Transcription(AWS)';
+$string['transcriber_amazonstreaming'] = 'Instant Transcription(AWS)';
+$string['transcriber_googlecloud'] = 'Quick Transcription(Google)(audio length < 60s ony)';
 
 $string['submitrawaudio'] = 'Submit uncompressed audio';
 $string['submitrawaudio_details'] = 'Submitting uncompressed audio may increase transcription accuracy, but at the expense of upload speed and reliability.';
@@ -394,3 +396,6 @@ $string['extraslowspeed'] = 'Extra Slow';
 
 $string['welcomemenu'] = 'Choose from the options below.';
 $string['returnmenu'] = 'Return to Start Menu.';
+$string['attemptno'] = 'Attempt {$a}';
+$string['progresschart'] = 'Progress Chart';
+$string['chartexplainer'] = 'The chart below shows your progress over time in reading this passage.';

@@ -158,6 +158,7 @@ class constants {
     const TRANSCRIBER_NONE = 0;
     const TRANSCRIBER_AMAZONTRANSCRIBE = 1;
     const TRANSCRIBER_GOOGLECLOUDSPEECH = 2;
+    const TRANSCRIBER_AMAZONSTREAMING =4;
     const TRANSCRIBER_GOOGLECHROME = 3;
 
     const M_STARTPREVIEW= 'mod_readaloud_button_startpreview';
