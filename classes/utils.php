@@ -848,7 +848,7 @@ class utils {
                 constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
                 "INNER JOIN {" . constants::M_AITABLE . "} tai ON tai.attemptid=tu.id " .
                 "WHERE tu.readaloudid=? AND u.id=?" .
-                " ORDER BY tu.id DESC";
+                " ORDER BY tu.id ASC";
 
         $alldata = $DB->get_records_sql($sql, array($moduleinstance->id, $userid));
 

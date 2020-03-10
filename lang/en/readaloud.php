@@ -357,7 +357,7 @@ $string['startshadowreading'] = 'Start Reading (Shadow Mode)';
 
 
 $string['transcriber'] = 'Transcriber';
-$string['transcriber_details'] = 'The transcription engine to use. Streaming transcription only works if passage language is US/AU/GB English and FR/CA French.';
+$string['transcriber_details'] = 'The transcription engine to use. Instant transcription only works if passage language is US/AU/GB English and FR/CA French.';
 $string['transcriber_none'] = 'No transcription';
 $string['transcriber_amazontranscribe'] = 'Regular Transcription(AWS)';
 $string['transcriber_amazonstreaming'] = 'Instant Transcription(AWS)';
