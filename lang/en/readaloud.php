@@ -104,7 +104,7 @@ $string['alternatives_descr'] =
 
 $string['defaultwelcome'] =
         'To begin the activity first test your microphone. When we can hear sound from your microphone a start button will appear. After you press the start button, a reading passage will appear. Read the passage aloud as clearly as you can.';
-$string['defaultfeedback'] = 'Thanks for reading. Please be patient until your attempt has been evaluated.';
+$string['defaultfeedback'] = 'Thanks for reading.';
 $string['timelimit'] = 'Time Limit';
 $string['gotnosound'] = 'We could not hear you. Please check the permissions and settings for microphone and try again.';
 $string['done'] = 'Done';
