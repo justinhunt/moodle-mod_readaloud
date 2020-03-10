@@ -134,12 +134,16 @@ class renderer extends \plugin_renderer_base {
         $chart->add_series($chartdata->accuracyseries);
         $chart->add_series($chartdata->sessionscoreseries);
         $chart->set_labels($chartdata->labelsdata);
+        $renderedchart= $this->output->render($chart);
+
 
         $htmltitle = $this->output->heading(get_string("progresschart", constants::M_COMPONENT), 5);
-        $html = \html_writer::div($htmltitle, constants::M_CLASS . '_center');
+        $html = \html_writer::div($htmltitle, constants::M_CLASS . '_center ' . constants::M_CLASS . '_progressheader');
         $html .= \html_writer::div(get_string("chartexplainer", constants::M_COMPONENT),
                 constants::M_CLASS . '_center');
-        $html .= $this->output->render($chart);
+        $html .= \html_writer::div($renderedchart,
+                constants::M_CLASS . '_center ' . constants::M_CLASS . '_progresschart');
+
 
         return $html;
     }

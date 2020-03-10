@@ -432,3 +432,11 @@ div.mod_readaloud_attemptsummarytable {
     border: 1px solid darkgrey;
     padding: 5px;
 }
+
+.mod_readaloud_progresschart {
+    max-width: 600px;
+    margin: auto;
+}
+.mod_readaloud_progressheader {
+    margin-top: 20px;
+}
