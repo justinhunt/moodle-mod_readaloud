@@ -1,3 +1,6 @@
+2.0.27 (Build 2020030701)
+-fixed bug breaking first.js/js on IE 11
+
 2.0.26 (Build 2020030700)
 -removed ajaxhelper and use core/ajax
 -added streaming transcribe and progress report
