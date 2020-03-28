@@ -67,6 +67,22 @@ class utils {
                 $ret = false;
         }
 
+        //The supported regions
+        if($ret) {
+            switch ($instance->region) {
+                case "useast1":
+                case "useast2":
+                case "uswest2":
+                case "sydney":
+                case "dublin":
+                case "ottawa":
+                    $ret =true;
+                    break;
+                default:
+                    $ret = false;
+            }
+        }
+
         return $ret;
     }
 
@@ -353,21 +369,6 @@ class utils {
 
         //just return empty if there is no error.
         return '';
-    }
-
-    public static function translate_region($key){
-        switch($key){
-            case "useast1": return "us-east-1";
-            case "tokyo": return "ap-northeast-1";
-            case "sydney": return "ap-southeast-2";
-            case "dublin": return "eu-east-1";
-            case "ottawa": return "us-east-1";
-            case "frankfurt": return "eu-central-2";
-            case "london": return "us-east-1";
-            case "saopaulo": return "sa-east-1";
-            case "singapore": return "us-east-1";
-            case "mumbai": return "us-east-1";
-        }
     }
 
     /*

@@ -70,8 +70,13 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             var opts={};
             opts['language']=dd.activitydata.language;
             opts['region']=dd.activitydata.region;
-            opts['accessid']=dd.activitydata.accessid;
-            opts['secretkey']=dd.activitydata.secretkey;
+            //opts['accessid']=dd.activitydata.accessid;
+            //opts['secretkey']=dd.activitydata.secretkey;
+            opts['token'] = dd.activitydata.token;
+            opts['parent'] = dd.activitydata.parent;
+            opts['owner'] = dd.activitydata.owner;
+            opts['appid'] = dd.activitydata.appid;
+            opts['expiretime'] = dd.activitydata.expiretime;
             opts['transcriber']=dd.activitydata.transcriber;
             if(opts['transcriber'] == def.transcriber_amazonstreaming) {
                 transcriber.init(opts);
@@ -254,6 +259,38 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 dd.controls.modelaudioplayer[0].pause();
                 dd.domenulayout();
             });
+        },
+
+        fetch_presigned_streaming_url: function (filename, samplerate, expiretime) {
+            var that = this;
+            Ajax.call([{
+                methodname: 'local_cpapi_fetch_streamingtranscriber',
+                args: {
+                    cmid: that.cmid,
+                    filename: filename,//encodeURIComponent(filename),
+                    rectime: rectime,
+                    awsresults: JSON.stringify(streamingresults)
+                },
+                done: function (ajaxresult) {
+                    var payloadobject = JSON.parse(ajaxresult);
+                    if (payloadobject) {
+                        switch (payloadobject.success) {
+                            case true:
+                                log.debug('attempted submission accepted');
+
+                                break;
+
+                            case false:
+                            default:
+                                log.debug('attempted item evaluation failure');
+                                if (payloadobject.message) {
+                                    log.debug('message: ' + payloadobject.message);
+                                }
+                        }
+                    }
+                },
+                fail: notification.exception
+            }]);
         },
 
         send_streaming_submission: function (filename, rectime, streamingresults) {

@@ -584,8 +584,8 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    function fetch_activity_amd($cm, $moduleinstance,$accessid,$accesssecret) {
-        global $USER;
+    function fetch_activity_amd($cm, $moduleinstance,$token) {
+        global $CFG,$USER;
         //any html we want to return to be sent to the page
         $ret_html = '';
 
@@ -629,9 +629,12 @@ class renderer extends \plugin_renderer_base {
         }
         $recopts['transcriber']=$moduleinstance->transcriber;
         $recopts['language']=$moduleinstance->ttslanguage;
-        $recopts['region']= utils::translate_region($moduleinstance->region);
-        $recopts['accessid']=$accessid;
-        $recopts['secretkey']=$accesssecret;
+        $recopts['region']= $moduleinstance->region;
+        $recopts['token']=$token;
+        $recopts['parent']=$CFG->wwwroot;
+        $recopts['owner']=hash('md5',$USER->username);
+        $recopts['appid']=constants::M_COMPONENT;
+        $recopts['expiretime']=300;//max expire time is 300 seconds
 
 
         //we need an update control tp hold the recorded filename, and one for draft item id

@@ -302,11 +302,13 @@ echo $renderer->show_wheretonext($moduleinstance);
 
 //the module AMD code
 //get aws info
+/*
 $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
 $tokenobject = $cache->get('recentpoodlltoken');
 $accessid = $tokenobject->awsaccessid;
 $accesssecret= $tokenobject->awsaccesssecret;
-echo $renderer->fetch_activity_amd($cm, $moduleinstance,$accessid,$accesssecret);
+*/
+echo $renderer->fetch_activity_amd($cm, $moduleinstance,$token);
 
 // Finish the page
 echo $renderer->footer();
