@@ -407,7 +407,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.recordingcontainer.show();
             m.controls.menuinstructionscontainer.hide();
             m.controls.menubuttonscontainer.hide();
-            m.controls.returnmenubutton.hide();
+            m.controls.returnmenubutton.show();
             m.controls.progresscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.feedbackcontainer.hide();
@@ -466,6 +466,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.show();
             m.controls.wheretonextcontainer.show();
+            m.controls.returnmenubutton.hide();
         },
         doerrorlayout: function () {
             var m = this;

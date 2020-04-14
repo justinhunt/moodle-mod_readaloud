@@ -351,9 +351,9 @@ $string['mistranscriptions'] = 'Mistranscriptions';
 $string['mistrans_count'] = 'Count';
 $string['total_mistranscriptions'] = 'Total mistranscriptions: {$a}';
 
-$string['previewreading'] = 'Preview Reading';
-$string['startreading'] = 'Start Reading (Normal Mode)';
-$string['startshadowreading'] = 'Start Reading (Shadow Mode)';
+$string['previewreading'] = 'Preview';
+$string['startreading'] = 'Normal Mode';
+$string['startshadowreading'] = 'Shadow Mode';
 
 
 $string['transcriber'] = 'Transcriber';
@@ -395,7 +395,7 @@ $string['extraslowspeed'] = 'Extra Slow';
 
 
 $string['welcomemenu'] = 'Choose from the options below.';
-$string['returnmenu'] = 'Return to Start Menu.';
+$string['returnmenu'] = 'Mode selection';
 $string['attemptno'] = 'Attempt {$a}';
 $string['progresschart'] = 'Progress Chart';
 $string['chartexplainer'] = 'The chart below shows your progress over time in reading this passage.';

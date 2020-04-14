@@ -152,27 +152,47 @@ class renderer extends \plugin_renderer_base {
      *
      */
     public function show_menubuttons ($moduleinstance) {
+      
+      global $CFG;
+      
+      /*
 
         $menubuttons= array();
+      
         if($moduleinstance->enablepreview){
             $menubuttons[]=  \html_writer::tag('button', get_string("previewreading", constants::M_COMPONENT),
                     array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTPREVIEW,'type'=>'button','id'=>constants::M_STARTPREVIEW));
         }
+      
         if($moduleinstance->enableshadow){
             $menubuttons[]=  \html_writer::tag('button', get_string("startshadowreading", constants::M_COMPONENT),
                     array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTSHADOW,'type'=>'button','id'=>constants::M_STARTSHADOW));
         }
+      
         $menubuttons[]=  \html_writer::tag('button', get_string("startreading", constants::M_COMPONENT),
                     array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTNOSHADOW,'type'=>'button','id'=>constants::M_STARTNOSHADOW));
 
         $ret = \html_writer::div( implode('<br>',$menubuttons), constants::M_MENUBUTTONS_CONTAINER);
+        
+        */
+      
+        $ret='<div class="row '.constants::M_MENUBUTTONS_CONTAINER.'">';
+        
+        $ret.="<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/preview.png\")' id='".constants::M_STARTPREVIEW."' class='mode-chooser ".($moduleinstance->enablepreview?'':'no-click')."'><div class='mode-chooser-label'>".get_string("previewreading", constants::M_COMPONENT)."</div></div></div>";
+
+              $ret.= "<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/readaloud.png\")' id='".constants::M_STARTNOSHADOW."' class='mode-chooser'><div class='mode-chooser-label'>".get_string("startreading", constants::M_COMPONENT)."</div></div></div>";
+      
+        $ret.="<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/readaloudshadow.png\")' id='".constants::M_STARTSHADOW."' class='mode-chooser ".($moduleinstance->enableshadow?'':'no-click')."'><div class='mode-chooser-label'>".get_string("startshadowreading", constants::M_COMPONENT)."</div></div></div>";
+
+        $ret.="</div>";
+      
         return $ret;
 
     }
 
     public function show_returntomenu_button(){
-        $returnbutton =  \html_writer::tag('button', get_string("returnmenu", constants::M_COMPONENT),
-                array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_RETURNMENU,'type'=>'button','id'=>constants::M_RETURNMENU));
+        $returnbutton =  \html_writer::tag('button', "<i class='fa fa-arrow-left'></i> ".get_string("returnmenu", constants::M_COMPONENT),
+                array('class'=>constants::M_CLASS . '_center btn-block btn btn-secondary ' . constants::M_RETURNMENU,'type'=>'button','id'=>constants::M_RETURNMENU));
         return $returnbutton;
     }
 

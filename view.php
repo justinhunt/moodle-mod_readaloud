@@ -289,13 +289,8 @@ $collapsespaces=$moduleinstance->ttslanguage==constants::M_LANG_JAJP;
 
 echo $gradenowrenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $collapsespaces);
 
-//return to menu button
-echo $renderer->show_returntomenu_button();
-
 //lets fetch recorder
 echo $renderer->show_recorder($moduleinstance, $token, $debug);
-
-
 
 echo $renderer->show_progress($moduleinstance, $cm);
 echo $renderer->show_wheretonext($moduleinstance);
@@ -309,6 +304,10 @@ $accessid = $tokenobject->awsaccessid;
 $accesssecret= $tokenobject->awsaccesssecret;
 */
 echo $renderer->fetch_activity_amd($cm, $moduleinstance,$token);
+
+//return to menu button
+echo "<hr/>";
+echo $renderer->show_returntomenu_button();
 
 // Finish the page
 echo $renderer->footer();

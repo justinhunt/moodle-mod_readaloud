@@ -14,14 +14,40 @@ use \mod_readaloud\utils;
 class gradenow_renderer extends \plugin_renderer_base {
 
     public function render_attempt_scoresheader($gradenow) {
-        $audio = $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
-        $wpm = $this->render_wpmdetails();
-        $accuracy = $this->render_accuracydetails();
-        $sessionscore = $this->render_sessionscoredetails();
-        $mistakes = $this->render_mistakedetails();
-        $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
-                constants::M_GRADING_ACTION_CONTAINER, array('id' => constants::M_GRADING_ACTION_CONTAINER));
-        return $actionheader;
+      
+      $ret = "<hr/>";
+      
+      $ret .= $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
+
+      $ret .= '<div style="margin-top:10px;" class="table-responsive">';
+      $ret .= '<table class="table table-condensed table-bordered">';
+      $ret .= '<thead><tr>';
+      $ret .= '<th>'.get_string('wpm', constants::M_COMPONENT).'</th>';
+      $ret .= '<th>'.get_string('accuracy_p', constants::M_COMPONENT).'</th>';
+      $ret .= '<th>'.get_string('grade_p', constants::M_COMPONENT).'</th>';
+      $ret .= '<th>'.get_string('mistakes', constants::M_COMPONENT).'</th>';
+      $ret .= '</tr></thead>';
+      $ret .= '<tbody><tr>';
+      $ret .= '<td id="'.constants::M_GRADING_WPM_SCORE.'"></td>';
+      $ret .= '<td id="'.constants::M_GRADING_ACCURACY_SCORE.'"></td>';
+      $ret .= '<td id="'.constants::M_GRADING_SESSION_SCORE.'"></td>';
+      $ret .= '<td id="'.constants::M_GRADING_ERROR_SCORE.'"></td>';
+      $ret .= '</tr></tbody>';
+
+      /*
+      $wpm = $this->render_wpmdetails();
+      $accuracy = $this->render_accuracydetails();
+      $sessionscore = $this->render_sessionscoredetails();
+      $mistakes = $this->render_mistakedetails();
+      $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
+              constants::M_GRADING_ACTION_CONTAINER, array('id' => constants::M_GRADING_ACTION_CONTAINER));
+      */
+      
+      $ret.="</table>";
+      $ret.="</div>";
+      
+      return $ret;
+      
     }
 
     public function render_gradenow($gradenow,$collapsespaces=false) {
@@ -227,6 +253,8 @@ class gradenow_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
+    /*
+    
     public function render_wpmdetails() {
         global $CFG;
         $title = \html_writer::div(get_string('wpm', constants::M_COMPONENT), 'panel-heading');
@@ -265,4 +293,7 @@ class gradenow_renderer extends \plugin_renderer_base {
                 array('id' => constants::M_GRADING_ERROR_CONTAINER));
         return $ret;
     }
+    
+    */
+    
 }
