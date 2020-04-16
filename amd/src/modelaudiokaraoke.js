@@ -58,6 +58,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
             this.controls.audioplayer = $('#' + this.cd.audioplayerclass);
             this.controls.eachword = $('.' + this.cd.wordclass);
             this.controls.eachspace = $('.' + this.cd.spaceclass);
+            this.controls.eachwordorspace = $('.' + this.cd.spaceclass + ',.' + this.cd.wordclass);
             this.controls.passagecontainer = $("." + this.cd.passagecontainer);
             this.controls.stopbutton = $('#' + this.cd.stopbutton);
             this.controls.playbutton = $('#' + this.cd.playbutton);
@@ -76,6 +77,26 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
           
             this.controls.stopbutton.on('click',function(){
               aplayer.pause();
+            });
+
+            this.controls.eachwordorspace.on('click',function(){
+                var wordnumber = parseInt($(this).attr('data-wordnumber'));
+                var nearest_start_break=false;
+                for (var i = 0; i < that.breaks.length; i++) {
+                    if(that.breaks[i].wordnumber < wordnumber) {
+                        nearest_start_break = that.breaks[i];
+                    }else{
+                        //exit the loop;
+                        break;
+                    }
+                }
+                if(!nearest_start_break){
+                    //start from beginning OR do nothing
+                }else{
+                    aplayer.pause();
+                    aplayer.currentTime=nearest_start_break.audiotime;
+                    aplayer.play();
+                }
             });
 
             //Player events (onended, onpause, ontimeupdate)
