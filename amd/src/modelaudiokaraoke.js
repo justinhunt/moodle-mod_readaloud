@@ -20,7 +20,9 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
             spaceclass: def.spaceclass,
             endspaceclass: def.endspaceclass,
             passagecontainer: def.passagecontainer,
-            activesentence: def.activesentence
+            activesentence: def.activesentence,
+            stopbutton: 'mod_readaloud_button_stop',
+            playbutton: 'mod_readaloud_button_play'
         },
 
         //init the module
@@ -57,6 +59,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
             this.controls.eachword = $('.' + this.cd.wordclass);
             this.controls.eachspace = $('.' + this.cd.spaceclass);
             this.controls.passagecontainer = $("." + this.cd.passagecontainer);
+            this.controls.stopbutton = $('#' + this.cd.stopbutton);
+            this.controls.playbutton = $('#' + this.cd.playbutton);
         },
 
         //attach the various event handlers we need
@@ -65,6 +69,14 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
 
             // Get the audio element
             var aplayer = this.controls.audioplayer[0];
+          
+            this.controls.playbutton.on('click',function(){
+              aplayer.play();
+            });
+          
+            this.controls.stopbutton.on('click',function(){
+              aplayer.pause();
+            });
 
             //Player events (onended, onpause, ontimeupdate)
             var ended = function(){

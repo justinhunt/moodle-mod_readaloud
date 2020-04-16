@@ -477,7 +477,7 @@ div.mod_readaloud_attemptsummarytable {
 }
 
 .mode-chooser{
-  height: 150px;
+  height: 200px;
   border: 1px solid darkgray;
   margin-bottom: 10px;
   position: relative;
@@ -497,8 +497,14 @@ div.mod_readaloud_attemptsummarytable {
   bottom: 0;
   right: 0;
   left: 0;
-  height: 35px;
+  height: 80px;
   border-top: 1px solid darkgray;
   text-align: center;
   padding: 5px;
+}
+
+#mod_readaloud_button_stopandplay{
+  height:30px;
+  border:1px solid transparent;
+  display: none;
 }

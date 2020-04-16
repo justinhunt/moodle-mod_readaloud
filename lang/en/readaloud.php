@@ -399,3 +399,9 @@ $string['returnmenu'] = 'Mode selection';
 $string['attemptno'] = 'Attempt {$a}';
 $string['progresschart'] = 'Progress Chart';
 $string['chartexplainer'] = 'The chart below shows your progress over time in reading this passage.';
+
+$string['previewhelp'] = "Listen to a teacher read the passage aloud. You do not need to read aloud.";
+$string['normalhelp'] = "Read the passage aloud. Speak at a speed that is natural for you.";
+$string['shadowhelp'] = "Read the passage aloud, along with the teacher. You should wear headphones.";
+$string['playbutton'] = "Play";
+$string['stopbutton'] = "Pause";

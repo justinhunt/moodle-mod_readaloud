@@ -281,6 +281,9 @@ echo $renderer->show_menubuttons($moduleinstance);
 $visible=false;
 echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $visible);
 
+//show stop and play buttons
+echo $renderer->show_stopandplay($moduleinstance);
+
 //for Japanese (and later other languages we collapse spaces)
 $collapsespaces=$moduleinstance->ttslanguage==constants::M_LANG_JAJP;
 

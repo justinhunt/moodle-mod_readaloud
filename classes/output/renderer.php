@@ -147,10 +147,16 @@ class renderer extends \plugin_renderer_base {
 
         return $html;
     }
-
-    /**
-     *
-     */
+  
+    public function show_stopandplay($moduleinstance){
+      $ret = "<div id='".constants::M_STOPANDPLAY."'>";
+      $ret .= "<button id='".constants::M_PLAY_BTN."' style='width:50%;float:left;' class='btn btn-secondary'><i class='fa fa-play'></i> ".get_string("playbutton", constants::M_COMPONENT)."</button>";
+      $ret .= "<button id='".constants::M_STOP_BTN."' style='width:50%;float:left;' class='btn btn-secondary'><i class='fa fa-pause'></i> ".get_string("stopbutton", constants::M_COMPONENT)."</button>";
+      $ret .= "</div>";
+      
+      return $ret; 
+    }
+  
     public function show_menubuttons ($moduleinstance) {
       
       global $CFG;
@@ -178,11 +184,11 @@ class renderer extends \plugin_renderer_base {
       
         $ret='<div class="row '.constants::M_MENUBUTTONS_CONTAINER.'">';
         
-        $ret.="<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/preview.png\")' id='".constants::M_STARTPREVIEW."' class='mode-chooser ".($moduleinstance->enablepreview?'':'no-click')."'><div class='mode-chooser-label'>".get_string("previewreading", constants::M_COMPONENT)."</div></div></div>";
+        $ret.="<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/preview.png\")' id='".constants::M_STARTPREVIEW."' class='mode-chooser ".($moduleinstance->enablepreview?'':'no-click')."'><div class='mode-chooser-label'>"."<b>".get_string("previewreading", constants::M_COMPONENT)."</b>: ".get_string("previewhelp", constants::M_COMPONENT)."</div></div></div>";
 
-              $ret.= "<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/readaloud.png\")' id='".constants::M_STARTNOSHADOW."' class='mode-chooser'><div class='mode-chooser-label'>".get_string("startreading", constants::M_COMPONENT)."</div></div></div>";
+              $ret.= "<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/readaloud.png\")' id='".constants::M_STARTNOSHADOW."' class='mode-chooser'><div class='mode-chooser-label'>"."<b>".get_string("startreading", constants::M_COMPONENT)."</b>: ".get_string("normalhelp", constants::M_COMPONENT)."</div></div></div>";
       
-        $ret.="<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/readaloudshadow.png\")' id='".constants::M_STARTSHADOW."' class='mode-chooser ".($moduleinstance->enableshadow?'':'no-click')."'><div class='mode-chooser-label'>".get_string("startshadowreading", constants::M_COMPONENT)."</div></div></div>";
+        $ret.="<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/readaloudshadow.png\")' id='".constants::M_STARTSHADOW."' class='mode-chooser ".($moduleinstance->enableshadow?'':'no-click')."'><div class='mode-chooser-label'>"."<b>".get_string("startshadowreading", constants::M_COMPONENT)."</b>: ".get_string("shadowhelp", constants::M_COMPONENT)."</div></div></div>";
 
         $ret.="</div>";
       
@@ -640,7 +646,10 @@ class renderer extends \plugin_renderer_base {
         $recopts['startreadingbutton'] = constants::M_STARTNOSHADOW;
         $recopts['startshadowbutton'] = constants::M_STARTSHADOW;
         $recopts['returnmenubutton'] = constants::M_RETURNMENU;
-
+        $recopts['stopandplay'] = constants::M_STOPANDPLAY;
+        $recopts['stopbutton'] = constants::M_STOP_BTN;
+        $recopts['playbutton'] = constants::M_PLAY_BTN;
+      
         //streaming transcriber
         //if not available we switch to amazon transcribe
         if($moduleinstance->transcriber == constants::TRANSCRIBER_AMAZONSTREAMING &&

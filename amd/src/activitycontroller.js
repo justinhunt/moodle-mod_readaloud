@@ -137,7 +137,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 startpreviewbutton: $('#' + opts['startpreviewbutton']),
                 startreadingbutton: $('#' + opts['startreadingbutton']),
                 startshadowbutton: $('#' + opts['startshadowbutton']),
-                returnmenubutton: $('#' + opts['returnmenubutton'])
+                returnmenubutton: $('#' + opts['returnmenubutton']),
+                stopandplay: $('#' + opts['stopandplay'])
             };
             this.controls = controls;
         },
@@ -243,6 +244,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
 
         register_events: function () {
             var dd = this;
+          
+            
             dd.controls.startpreviewbutton.click(function(){
                 dd.dopreviewlayout();
             });
@@ -412,6 +415,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.passagecontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
+            m.controls.stopandplay.hide();
         },
 
         domenulayout: function () {
@@ -427,13 +431,15 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.wheretonextcontainer.hide();
             m.controls.modelaudioplayer.hide();
             m.controls.hider.hide();
+            m.controls.stopandplay.hide();
         },
 
         dopreviewlayout: function () {
             var m = this;
             m.controls.passagecontainer.show();
             m.controls.returnmenubutton.show();
-            m.controls.modelaudioplayer.show();
+            m.controls.modelaudioplayer.hide();
+            m.controls.stopandplay.show();
             m.controls.menubuttonscontainer.hide();
             m.controls.hider.hide();
             m.controls.progresscontainer.hide();
@@ -442,6 +448,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
+            m.controls.stopandplay.show();
         },
 
 

@@ -165,6 +165,9 @@ class constants {
     const M_STARTSHADOW= 'mod_readaloud_button_startshadow';
     const M_STARTNOSHADOW= 'mod_readaloud_button_startnoshadow';
     const M_RETURNMENU= 'mod_readaloud_button_returnmenu';
+    const M_STOPANDPLAY= 'mod_readaloud_button_stopandplay';
     const M_BACKTOTOP= 'mod_readaloud_button_backtotop';
-
+    const M_STOP_BTN = 'mod_readaloud_button_stop';
+    const M_PLAY_BTN = 'mod_readaloud_button_play';
+  
 }
