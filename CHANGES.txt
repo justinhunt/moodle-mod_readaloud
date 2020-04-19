@@ -1,3 +1,7 @@
+2.0.29 (Build 2020041900)
+- added aws streaming transcription to cloudpoodll
+
+
 2.0.28 (Build 2020032801)
 -Improved transcriber.js integration
 

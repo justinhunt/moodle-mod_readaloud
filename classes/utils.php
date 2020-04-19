@@ -59,6 +59,7 @@ class utils {
             case constants::M_LANG_ENAU:
             case constants::M_LANG_ENGB:
             case constants::M_LANG_ENUS:
+            case constants::M_LANG_ESUS:
             case constants::M_LANG_FRFR:
             case constants::M_LANG_FRCA:
                 $ret =true;

@@ -1,8 +1,8 @@
 /* jshint ignore:start */
 define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
         'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
-        'mod_readaloud/transcriber-lazy','core/ajax','core/notification'],
-    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke, transcriber, Ajax, notification) {
+        'core/ajax','core/notification'],
+    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke, Ajax, notification) {
 
     "use strict"; // jshint ;_;
 
@@ -66,33 +66,6 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             dd.enablepreview =dd.activitydata.enablepreview;
             dd.setupmodelaudio();
 
-            //init streaming transcriber
-            var opts={};
-            opts['language']=dd.activitydata.language;
-            opts['region']=dd.activitydata.region;
-            //opts['accessid']=dd.activitydata.accessid;
-            //opts['secretkey']=dd.activitydata.secretkey;
-            opts['token'] = dd.activitydata.token;
-            opts['parent'] = dd.activitydata.parent;
-            opts['owner'] = dd.activitydata.owner;
-            opts['appid'] = dd.activitydata.appid;
-            opts['expiretime'] = dd.activitydata.expiretime;
-            opts['transcriber']=dd.activitydata.transcriber;
-            if(opts['transcriber'] == def.transcriber_amazonstreaming) {
-                transcriber.init(opts);
-                transcriber.onFinalResult = function (transcript, result) {
-                    dd.streamingresults.push(result);
-                    //if recording over deal with final result
-                    //if(!transcriber.active){
-                    log.debug(dd.streamingresults);
-                    //}
-
-                    // theCallback(message);
-                };
-                transcriber.onPartialResult = function (transcript, result) {
-                    //do nothing
-                };
-            }
 
             //init recorder and html and events
             dd.setup_recorder();
@@ -159,6 +132,15 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 }
             };
 
+            var on_speech = function (eventdata) {
+                var speech = eventdata.capturedspeech;
+                var speechresults = eventdata.speechresults;
+                if(dd.activitydata.transcriber == def.transcriber_amazonstreaming) {
+                    dd.streamingresults.push(speechresults);
+                    log.debug(dd.streamingresults);
+                }
+            };
+
             //originates from the recording:started event
             //contains no meaningful data
             //See https://api.poodll.com
@@ -169,22 +151,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
 
                 //start streaming transcriber
                 if(dd.activitydata.transcriber == def.transcriber_amazonstreaming) {
-                    if (transcriber.active) {
-                        return;
-                    }
                     //init our streamingresults
                     dd.streamingresults = [];
-                    // first we get the microphone input from the browser (as a promise)...
-                    window.navigator.mediaDevices.getUserMedia({
-                        video: false,
-                        audio: true,
-                    }).then(function (stream) {
-                        transcriber.start(stream, transcriber)
-                    }).catch(function (error) {
-                            log.debug(error);
-                            log.debug('There was an error streaming your audio to Amazon Transcribe. Please try again.');
-                        }
-                    );
                 }//end of if amazonstreaming
             };
 
@@ -202,14 +170,6 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 if(dd.enableshadow && dd.letsshadow){
                     dd.controls.modelaudioplayer[0].currentTime=0;
                     dd.controls.modelaudioplayer[0].pause();
-                }
-
-                //stop streaming transcriber
-                if(dd.activitydata.transcriber == def.transcriber_amazonstreaming) {
-                    if (!transcriber.active) {
-                        return;
-                    }
-                    transcriber.closeSocket();
                 }
             };
 
@@ -239,7 +199,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             recorderhelper.init(dd.activitydata,
                 on_recording_start,
                 on_recording_end,
-                on_audio_processing);
+                on_audio_processing,
+                on_speech);
         },
 
         register_events: function () {
@@ -264,37 +225,6 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             });
         },
 
-        fetch_presigned_streaming_url: function (filename, samplerate, expiretime) {
-            var that = this;
-            Ajax.call([{
-                methodname: 'local_cpapi_fetch_streamingtranscriber',
-                args: {
-                    cmid: that.cmid,
-                    filename: filename,//encodeURIComponent(filename),
-                    rectime: rectime,
-                    awsresults: JSON.stringify(streamingresults)
-                },
-                done: function (ajaxresult) {
-                    var payloadobject = JSON.parse(ajaxresult);
-                    if (payloadobject) {
-                        switch (payloadobject.success) {
-                            case true:
-                                log.debug('attempted submission accepted');
-
-                                break;
-
-                            case false:
-                            default:
-                                log.debug('attempted item evaluation failure');
-                                if (payloadobject.message) {
-                                    log.debug('message: ' + payloadobject.message);
-                                }
-                        }
-                    }
-                },
-                fail: notification.exception
-            }]);
-        },
 
         send_streaming_submission: function (filename, rectime, streamingresults) {
             var that = this;

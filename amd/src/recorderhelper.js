@@ -12,7 +12,8 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
 
         init: function (opts, on_recording_start,
                         on_recording_end,
-                        on_audio_processing) {
+                        on_audio_processing,
+                        on_speech) {
 
             var that = this;
             cloudpoodll.init(opts['recorderid'],
@@ -36,6 +37,9 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
                                 on_audio_processing(message);
                             }
                             that.status = 'posted';
+                            break;
+                        case 'speech':
+                                on_speech(message);
                             break;
                         case 'error':
                             alert('PROBLEM:' + message.message);

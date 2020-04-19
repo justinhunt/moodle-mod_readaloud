@@ -554,7 +554,7 @@ class renderer extends \plugin_renderer_base {
                 $moduleinstance->submitrawaudio) {
             $hints->encoder = 'stereoaudio';
         }
-        $string_hints = base64_encode(json_encode($hints));
+
 
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
 
@@ -563,13 +563,19 @@ class renderer extends \plugin_renderer_base {
         switch ($moduleinstance->transcriber){
             case constants::TRANSCRIBER_AMAZONSTREAMING :
                 $transcribe = $can_transcribe ? constants::TRANSCRIBER_AMAZONTRANSCRIBE : "0";
+                $hints->streamingtranscriber = 'aws';
+                $speechevents = '1';
                 break;
             case constants::TRANSCRIBER_AMAZONTRANSCRIBE:
             case constants::TRANSCRIBER_GOOGLECLOUDSPEECH:
             case constants::TRANSCRIBER_NONE:
             default:
                 $transcribe = $can_transcribe ? $moduleinstance->transcriber : "0";
+                $speechevents="0";
         }
+
+        //we encode any hints
+        $string_hints = base64_encode(json_encode($hints));
 
         $recorderdiv = \html_writer::div('', constants::M_CLASS . '_center',
                 array('id' => constants::M_RECORDERID,
@@ -592,6 +598,7 @@ class renderer extends \plugin_renderer_base {
                         'data-expiredays' => $moduleinstance->expiredays,
                         'data-region' => $moduleinstance->region,
                         'data-fallback' => 'warning',
+                        'data-speechevents' => $speechevents,
                         'data-hints' => $string_hints,
                         'data-token' => $token //localhost
                     //'data-token'=>"643eba92a1447ac0c6a882c85051461a" //cloudpoodll
