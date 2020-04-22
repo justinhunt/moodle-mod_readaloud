@@ -33,5 +33,14 @@ $functions = array(
         'capabilities'=> 'mod/readaloud:view',
         'type'        => 'read',
         'ajax'        => true,
+    ),
+
+    'mod_readaloud_compare_passage_to_transcript' => array(
+            'classname'   => 'mod_readaloud_external',
+            'methodname'  => 'compare_passage_to_transcript',
+            'description' => 'compares passage to transcript and returns diffs',
+            'capabilities'=> 'mod/readaloud:view',
+            'type'        => 'read',
+            'ajax'        => true,
     )
 );

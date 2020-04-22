@@ -8,9 +8,8 @@
  * @author  Justin Hunt - Poodll.com
  */
 
-use \mod_readaloud\constants;
-use \mod_readaloud\aigrade;
 use \mod_readaloud\utils;
+use \mod_readaloud\diff;
 
 class mod_readaloud_external extends external_api {
 
@@ -68,6 +67,73 @@ class mod_readaloud_external extends external_api {
         return new external_value(PARAM_RAW);
     }
 
+
+    //---------------------------------------
+    public static function compare_passage_to_transcript_parameters() {
+        return new external_function_parameters([
+                'language' => new external_value(PARAM_TEXT),
+                'passage' => new external_value(PARAM_TEXT),
+                'transcript' => new external_value(PARAM_TEXT),
+                'alternatives' => new external_value(PARAM_RAW)
+        ]);
+    }
+
+    public static function compare_passage_to_transcript($language,$passage,$transcript, $alternatives) {
+        global $DB;
+
+        //turn the passage and transcript into an array of words
+        $passagebits = diff::fetchWordArray($passage);
+        $alternatives = diff::fetchAlternativesArray($alternatives);
+        $transcriptbits = diff::fetchWordArray($transcript);
+        $wildcards = diff::fetchWildcardsArray($alternatives);
+
+        //fetch sequences of transcript/passage matched words
+        // then prepare an array of "differences"
+        $passagecount = count($passagebits);
+        $transcriptcount = count($transcriptbits);
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language);
+        //fetch diffs
+        $debug=false;
+        $diffs = diff::fetchDiffs($sequences, $passagecount, $transcriptcount, $debug);
+        $diffs = diff::applyWildcards($diffs, $passagebits, $wildcards);
+
+
+        //from the array of differences build error data, match data, markers, scores and metrics
+        $errors = new \stdClass();
+        $currentword = 0;
+
+        //loop through diffs
+        // (could do a for loop here .. since diff count = passage words count for now index is $currentword
+        foreach ($diffs as $diff) {
+            $currentword++;
+            switch ($diff[0]) {
+                case Diff::UNMATCHED:
+                    //we collect error info so we can count and display them on passage
+                    $error = new \stdClass();
+                    $error->word = $passagebits[$currentword - 1];
+                    $error->wordnumber = $currentword;
+                    $errors->{$currentword} = $error;
+                    break;
+
+                case Diff::MATCHED:
+                    //do need to do anything here
+                    break;
+
+                default:
+                    //do nothing
+                    //should never get here
+            }
+        }
+
+        //finalise and serialise session errors
+        $sessionerrors = json_encode($errors);
+
+        return $sessionerrors;
+
+    }
+    public static function compare_passage_to_transcript_returns() {
+        return new external_value(PARAM_RAW);
+    }
     //---------------------------------------
 
     public static function submit_streaming_attempt_parameters() {

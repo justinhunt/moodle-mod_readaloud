@@ -160,10 +160,9 @@ class diff {
 
     //Do some adhoc match judgement based on common language transcription errors by AI
     public static function generous_match($passageword, $transcriptword, $language) {
-        switch ($language) {
-            case constants::M_LANG_ENUS:
-            case constants::M_LANG_ENGB:
-            case constants::M_LANG_ENAU:
+        $lang = substr($language,0,2);
+        switch ($lang) {
+            case 'en':
                 if (self::mb_strequals($passageword . 's', $transcriptword)) {
                     return true;
                 }
