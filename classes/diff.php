@@ -53,9 +53,15 @@ class diff {
      * ii) remove html characters
      * iii) replace any line ends with spaces (so we can "split" later)
      * iv) remove punctuation
+     *
+     * Raw text back from Amazon gets caught on some pregreplace
+     *  unicode thing so we set the unicode flag /u.
+     * After its been to the DB and back its no longer required
+     * but then the /u unicode switch will fail, so we need to set a flag
+     * to use the unicode flag or not
     *
     */
-    public static function cleanText($thetext) {
+    public static function cleanText($thetext,$unicodemb4=false) {
         //lowercaseify
         $thetext = strtolower($thetext);
 
@@ -63,13 +69,21 @@ class diff {
         $thetext = strip_tags($thetext);
 
         //replace all line ends with spaces
-        $thetext = preg_replace('#\R+#', ' ', $thetext);
+        if($unicodemb4) {
+            $thetext = preg_replace('/#\R+#/u', ' ', $thetext);
+        }else{
+            $thetext = preg_replace('/#\R+#/', ' ', $thetext);
+        }
 
-        //remove punctuation
+        //remove punctuation. This is where we needed the unicode flag
         //see https://stackoverflow.com/questions/5233734/how-to-strip-punctuation-in-php
         // $thetext = preg_replace("#[[:punct:]]#", "", $thetext);
         //https://stackoverflow.com/questions/5689918/php-strip-punctuation
-        $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
+        if($unicodemb4) {
+            $thetext = preg_replace("/[[:punct:]]+/u", "", $thetext);
+        }else{
+            $thetext = preg_replace("/[[:punct:]]+/", "", $thetext);
+        }
 
         //remove bad chars
         $b_open = "“";

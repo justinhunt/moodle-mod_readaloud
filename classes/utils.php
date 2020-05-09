@@ -129,7 +129,7 @@ class utils {
 
         require_once($CFG->libdir . '/filelib.php');
         $curl = new \curl();
-
+       // $curl->setopt(array('CURLOPT_ENCODING' => ""));
         $result = $curl->get($url, $postdata);
         return $result;
     }

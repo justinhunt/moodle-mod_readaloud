@@ -178,7 +178,8 @@ class aigrade {
         if ($fulltranscript) {
             $record = new \stdClass();
             $record->id = $this->recordid;
-            $record->transcript = diff::cleanText($transcript);
+            $unicodemb4=true;
+            $record->transcript = diff::cleanText($transcript,$unicodemb4);
             $record->fulltranscript = $fulltranscript;
             $success = $DB->update_record(constants::M_AITABLE, $record);
 
