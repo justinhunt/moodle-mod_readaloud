@@ -212,16 +212,27 @@ class renderer extends \plugin_renderer_base {
     /*
      * Show a small summary of the activity
      */
-    public function show_smallreport ($moduleinstance, $attempt, $aigrade) {
+    public function show_smallreport ($moduleinstance, $attempt=false, $aigrade=false) {
         global $CFG;
-        $src = empty($attempt->filename)? '' : $attempt->filename;
+
+        //filename
+        if($attempt && $attempt->filename){
+            $src= $attempt->filename;
+        }else{
+            $src="";
+        }
         $audioplayer = \html_writer::tag('audio', '',
                 array('src' => $src, 'controls' => 1, 'class'=>constants::M_CLASS . '_smallreport_player nomediaplugin nopoodll',
                         'crossorigin'=>'anonymous'));
 
         //star rating
-        $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
-        $ready = $rating > -1;
+        if($attempt) {
+            $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
+            $ready = $rating > -1;
+        }else{
+            $ready = false;
+            $rating =-1;
+        }
         //if we have no rating yet, lets show dots only
         if(!$ready){
             $stars = '. . . . .';
@@ -263,10 +274,10 @@ class renderer extends \plugin_renderer_base {
         }
 
 
-        //Js to refresh small eport
+        //Js to refresh small report
         $opts = Array();
         $opts['filename'] = $attempt->filename;
-        $opts['attemptid'] = $attempt->id;
+        $opts['attemptid'] = $attempt ? $attempt->id : false;
         $opts['ready'] = $ready;
         $opts['remotetranscribe'] = $remotetranscribe;
         $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', array($opts));
@@ -488,13 +499,25 @@ class renderer extends \plugin_renderer_base {
     /**
      *  Show instructions/welcome
      */
-    public function show_welcome_activity($showtext) {
+    public function show_instructions($showtext) {
         $displaytext = $this->output->box_start();
         $displaytext .= \html_writer::div($showtext,
                 constants::M_CLASS . '_center ' . constants::M_INSTRUCTIONS);
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext, constants::M_ACTIVITYINSTRUCTIONS_CONTAINER,
                 array('id' => constants::M_ACTIVITYINSTRUCTIONS_CONTAINER));
+        return $ret;
+    }
+    /**
+     *  Show instructions/welcome
+     */
+    public function show_previewinstructions($showtext) {
+        $displaytext = $this->output->box_start();
+        $displaytext .= \html_writer::div($showtext,
+                constants::M_CLASS . '_center ' . constants::M_PREVIEWINSTRUCTIONS);
+        $displaytext .= $this->output->box_end();
+        $ret = \html_writer::div($displaytext, constants::M_PREVIEWINSTRUCTIONS_CONTAINER,
+                array('id' => constants::M_PREVIEWINSTRUCTIONS_CONTAINER));
         return $ret;
     }
 
@@ -517,7 +540,7 @@ class renderer extends \plugin_renderer_base {
     public function show_intro($readaloud, $cm) {
         $ret = "";
         if (trim(strip_tags($readaloud->intro))) {
-            $ret .= $this->output->box_start('mod_introbox');
+            $ret .= $this->output->box_start(constants::M_INTRO_CONTAINER . ' ' . constants::M_CLASS . '_center ');
             $ret .= format_module_intro('readaloud', $readaloud, $cm->id);
             $ret .= $this->output->box_end();
         }
@@ -722,6 +745,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['menubuttonscontainer'] = constants::M_MENUBUTTONS_CONTAINER;
         $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
         $recopts['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
+        $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
         $recopts['enablepreview'] = $moduleinstance->enablepreview ? true : false;

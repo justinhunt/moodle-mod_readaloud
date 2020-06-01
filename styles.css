@@ -212,6 +212,9 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
 .mod_readaloud_startmenu_cont {
     display: none;
 }
+.mod_readaloud_previewinstructions_cont {
+    display: none;
+}
 
 div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
     display: block;

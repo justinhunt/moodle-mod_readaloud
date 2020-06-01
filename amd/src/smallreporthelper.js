@@ -24,7 +24,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.remotetranscribe=opts['remotetranscribe'];
             this.register_controls();
             this.register_events();
-            if(!this.ready && this.remotetranscribe){
+            if(!this.ready && this.remotetranscribe && this.attemptid){
                 this.check_for_results(this,15);
             }
         },

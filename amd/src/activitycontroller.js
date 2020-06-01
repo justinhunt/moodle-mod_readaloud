@@ -1,8 +1,8 @@
 /* jshint ignore:start */
 define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
         'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
-        'core/ajax','core/notification'],
-    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke, Ajax, notification) {
+        'core/ajax','core/notification','mod_readaloud/smallreporthelper'],
+    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke, Ajax, notification, smallreporthelper) {
 
     "use strict"; // jshint ;_;
 
@@ -102,6 +102,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 recordercontainer: $('.' + opts['recordercontainer']),
                 menubuttonscontainer: $('.' + opts['menubuttonscontainer']),
                 menuinstructionscontainer: $('.' + opts['menuinstructionscontainer']),
+                previewinstructionscontainer: $('.' + opts['previewinstructionscontainer']),
                 activityinstructionscontainer: $('.' + opts['activityinstructionscontainer']),
                 recinstructionscontainerright: $('.' + opts['recinstructionscontainerright']),
                 recinstructionscontainerleft: $('.' + opts['recinstructionscontainerleft']),
@@ -366,6 +367,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.hider.fadeOut('fast');
             m.controls.activityinstructionscontainer.show();
             m.controls.recordingcontainer.show();
+            m.controls.introbox.hide();
             m.controls.menuinstructionscontainer.hide();
             m.controls.menubuttonscontainer.hide();
             m.controls.smallreportcontainer.hide();
@@ -381,11 +383,13 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
 
         domenulayout: function () {
             var m = this;
+            m.controls.introbox.show();
             m.controls.menuinstructionscontainer.show();
             m.controls.menubuttonscontainer.show();
             m.controls.smallreportcontainer.show();
             m.controls.activityinstructionscontainer.hide();
             m.controls.returnmenubutton.hide();
+            m.controls.previewinstructionscontainer.hide();
             m.controls.progresscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
@@ -401,7 +405,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.passagecontainer.removeClass('readmode shadowmode reviewmode nothingmode');
             m.controls.passagecontainer.addClass('previewmode');
             m.controls.passagecontainer.show();
-
+            m.controls.previewinstructionscontainer.show();
+            m.controls.introbox.hide();
             m.controls.returnmenubutton.show();
             m.controls.modelaudioplayer.hide();
             m.controls.smallreportcontainer.hide();
@@ -441,6 +446,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.feedbackcontainer.show();
             m.controls.wheretonextcontainer.show();
             m.controls.returnmenubutton.hide();
+
         },
         doerrorlayout: function () {
             var m = this;

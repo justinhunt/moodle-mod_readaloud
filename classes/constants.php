@@ -89,7 +89,10 @@ class constants {
     const M_ACTIVITYINSTRUCTIONS_CONTAINER = 'mod_readaloud_activityinstructions_const';
     const M_MENUINSTRUCTIONS_CONTAINER = 'mod_readaloud_menuinstructions_const';
     const M_MENUBUTTONS_CONTAINER = 'mod_readaloud_menubuttons_cont';
+    const M_PREVIEWINSTRUCTIONS_CONTAINER = 'mod_readaloud_previewinstructions_cont';
+    const M_PREVIEWINSTRUCTIONS = 'mod_readaloud_previewinstructions';
     const M_SMALLREPORT_CONTAINER = 'mod_readaloud_smallreport_cont';
+    const M_INTRO_CONTAINER = 'mod_intro_box';
 
 
     const M_PASSAGE_CONTAINER = 'mod_readaloud_passage_cont';

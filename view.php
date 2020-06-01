@@ -284,11 +284,15 @@ if ($attempts && $reviewattempts) {
     return;
 }
 
+//show activity description
+echo $renderer->show_intro($moduleinstance, $cm);
 
 //show small report
 if($attempts) {
     if(!$latestattempt){$latestattempt = current($attempts);}
     echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade);
+}else{
+    echo $renderer->show_smallreport($moduleinstance);
 }
 
 //show all the main parts. Many will be hidden and displayed by JS
@@ -307,7 +311,8 @@ if(!empty($problembox)){
 }
 
 
-echo $renderer->show_welcome_activity($moduleinstance->welcome);
+echo $renderer->show_instructions($moduleinstance->welcome);
+echo $renderer->show_previewinstructions(get_string('previewhelp',constants::M_COMPONENT));
 
 echo $renderer->show_feedback($moduleinstance);
 echo $renderer->show_error($moduleinstance, $cm);
