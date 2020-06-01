@@ -11,38 +11,34 @@ namespace mod_readaloud\output;
 use \mod_readaloud\constants;
 use \mod_readaloud\utils;
 
-class gradenow_renderer extends \plugin_renderer_base {
+class passage_renderer extends \plugin_renderer_base {
 
-    public function render_attempt_scoresheader($gradenow) {
+    public function render_attempt_scoresheader($passagehelper,$nograde=false) {
       
       $ret = "<hr/>";
       
-      $ret .= $this->render_audioplayer($gradenow->attemptdetails('audiourl'));
+      $ret .= $this->render_audioplayer($passagehelper->attemptdetails('audiourl'));
 
       $ret .= '<div style="margin-top:10px;" class="table-responsive">';
       $ret .= '<table class="table table-condensed table-bordered">';
       $ret .= '<thead><tr>';
       $ret .= '<th>'.get_string('wpm', constants::M_COMPONENT).'</th>';
       $ret .= '<th>'.get_string('accuracy_p', constants::M_COMPONENT).'</th>';
-      $ret .= '<th>'.get_string('grade_p', constants::M_COMPONENT).'</th>';
+      if(!$nograde) {
+          $ret .= '<th>' . get_string('grade_p', constants::M_COMPONENT) . '</th>';
+      }
       $ret .= '<th>'.get_string('mistakes', constants::M_COMPONENT).'</th>';
       $ret .= '</tr></thead>';
       $ret .= '<tbody><tr>';
       $ret .= '<td id="'.constants::M_GRADING_WPM_SCORE.'"></td>';
       $ret .= '<td id="'.constants::M_GRADING_ACCURACY_SCORE.'"></td>';
-      $ret .= '<td id="'.constants::M_GRADING_SESSION_SCORE.'"></td>';
+      if(!$nograde) {
+            $ret .= '<td id="' . constants::M_GRADING_SESSION_SCORE . '"></td>';
+      }
       $ret .= '<td id="'.constants::M_GRADING_ERROR_SCORE.'"></td>';
       $ret .= '</tr></tbody>';
 
-      /*
-      $wpm = $this->render_wpmdetails();
-      $accuracy = $this->render_accuracydetails();
-      $sessionscore = $this->render_sessionscoredetails();
-      $mistakes = $this->render_mistakedetails();
-      $actionheader = \html_writer::div($audio . $mistakes . $wpm . $accuracy . $sessionscore,
-              constants::M_GRADING_ACTION_CONTAINER, array('id' => constants::M_GRADING_ACTION_CONTAINER));
-      */
-      
+
       $ret.="</table>";
       $ret.="</div>";
       
@@ -50,41 +46,47 @@ class gradenow_renderer extends \plugin_renderer_base {
       
     }
 
-    public function render_gradenow($gradenow,$collapsespaces=false) {
-        $actionheader = $this->render_attempt_scoresheader($gradenow);
-        $ret = $this->render_attempt_header($gradenow->attemptdetails('userfullname'));
+    public function render_gradenow($passagehelper,$collapsespaces=false) {
+        $actionheader = $this->render_attempt_scoresheader($passagehelper);
+        $ret = $this->render_attempt_header($passagehelper->attemptdetails('userfullname'));
         $ret .= $actionheader;
-        $ret .= $this->render_passage($gradenow->attemptdetails('passage'),false,$collapsespaces);
+        $ret .= $this->render_passage($passagehelper->attemptdetails('passage'),false,$collapsespaces);
         $ret .= $this->render_passageactions();
 
         return $ret;
     }
 
-    public function render_userreview($gradenow, $collapsespaces=false) {
-        $actionheader = $this->render_attempt_scoresheader($gradenow);
+    public function render_userreview($passagehelper, $collapsespaces=false,$nograde=false) {
+        $actionheader = $this->render_attempt_scoresheader($passagehelper,$nograde);
         $ret = $actionheader;
 
-        $thepassage = $this->render_passage($gradenow->attemptdetails('passage'),false,$collapsespaces);
+        //we put some CSS at the top of the passage container to control things like padding word separation etc
+        $extraclasses = 'reviewmode';
+        //for Japanese (and later other languages we collapse spaces)
+        if($collapsespaces){
+            $extraclasses .= ' collapsespaces';
+        }
+        $thepassage = $this->render_passage($passagehelper->attemptdetails('passage'),false,$extraclasses);
         $ret .= \html_writer::div($thepassage, constants::M_CLASS . '_postattempt');
         return $ret;
     }
 
-    public function render_machinereview($gradenow, $debug = false) {
-        $actionheader = $this->render_attempt_scoresheader($gradenow);
-        $ret = $this->render_machinegrade_attempt_header($gradenow->attemptdetails('userfullname'));
+    public function render_machinereview($passagehelper, $debug = false) {
+        $actionheader = $this->render_attempt_scoresheader($passagehelper);
+        $ret = $this->render_machinegrade_attempt_header($passagehelper->attemptdetails('userfullname'));
         $ret .= $actionheader;
         if ($debug) {
-            $passage = $this->render_passage($gradenow->attemptdetails('passage'),false,false);
+            $passage = $this->render_passage($passagehelper->attemptdetails('passage'),false,false);
             $ret .= \html_writer::tag('span', $passage, array('class' => constants::M_CLASS . '_debug'));
         } else {
-            $ret .= $this->render_passage($gradenow->attemptdetails('passage'),false,false);
+            $ret .= $this->render_passage($passagehelper->attemptdetails('passage'),false,false);
         }
         return $ret;
     }
 
-    public function render_machinereview_buttons($gradenow) {
-        $attemptid = $gradenow->attemptdetails('id');
-        $readaloudid = $gradenow->attemptdetails('readaloudid');
+    public function render_machinereview_buttons($passagehelper) {
+        $attemptid = $passagehelper->attemptdetails('id');
+        $readaloudid = $passagehelper->attemptdetails('readaloudid');
         $url = new \moodle_url(constants::M_URL . '/grading.php',
                 array('action' => 'gradenow', 'n' => $readaloudid, 'attemptid' => $attemptid));
         $btn = new \single_button($url, get_string('gradethisattempt', constants::M_COMPONENT), 'post');
@@ -147,7 +149,7 @@ class gradenow_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function render_passage($passage, $containerclass=false, $collapsespaces=false) {
+    public function render_passage($passage, $containerclass=false, $extraclasses=false) {
         // load the HTML document
         $doc = new \DOMDocument;
         // it will assume ISO-8859-1  encoding, so we need to hint it:
@@ -191,12 +193,12 @@ class gradenow_renderer extends \plugin_renderer_base {
                 $spacenode = $doc->createElement('span', $seperator);
                 //$newnode->appendChild($spacenode);
                 //print_r($newnode);
-                $newnode->setAttribute('id', constants::M_CLASS . '_grading_passageword_' . $wordcount);
+                $newnode->setAttribute('id', constants::M_CLASS_PASSAGEWORD . '_' . $wordcount);
                 $newnode->setAttribute('data-wordnumber', $wordcount);
-                $newnode->setAttribute('class', constants::M_CLASS . '_grading_passageword');
-                $spacenode->setAttribute('class', constants::M_CLASS . '_grading_passagespace');
+                $newnode->setAttribute('class', constants::M_CLASS_PASSAGEWORD);
+                $spacenode->setAttribute('class', constants::M_CLASS_PASSAGESPACE);
                 $spacenode->setAttribute('data-wordnumber', $wordcount);
-                $spacenode->setAttribute('id', constants::M_CLASS . '_grading_passagespace_' . $wordcount);
+                $spacenode->setAttribute('id', constants::M_CLASS_PASSAGESPACE . '_' . $wordcount);
                 $node->parentNode->appendChild($newnode);
                 $node->parentNode->appendChild($spacenode);
                 $newnode = $doc->createElement('span', $word);
@@ -208,11 +210,12 @@ class gradenow_renderer extends \plugin_renderer_base {
 
         //for some languages we do not want spaces. Japanese, Chinese. For now this is manual
         //TODO auto determine when to use collapsespaces
-        $collapsespaces = $collapsespaces ? ' collapsespaces' : '';
+        $extraclasses = $extraclasses ?  ' ' . $extraclasses : '';
+        //there should no longer be different container classes. remove this soon: Justin 2020-5-31
         if($containerclass) {
-            $ret = \html_writer::div($usepassage, $containerclass . $collapsespaces);
+            $ret = \html_writer::div($usepassage, $containerclass . $extraclasses);
         }else{
-            $ret = \html_writer::div($usepassage, constants::M_CLASS . '_grading_passagecont' . $collapsespaces);
+            $ret = \html_writer::div($usepassage,  constants::M_PASSAGE_CONTAINER . $extraclasses);
         }
         return $ret;
     }
@@ -252,48 +255,5 @@ class gradenow_renderer extends \plugin_renderer_base {
                 array('id' => constants::M_GRADING_PLAYER_CONTAINER));
         return $ret;
     }
-
-    /*
-    
-    public function render_wpmdetails() {
-        global $CFG;
-        $title = \html_writer::div(get_string('wpm', constants::M_COMPONENT), 'panel-heading');
-        $score = \html_writer::div('0', constants::M_GRADING_SCORE . ' panel-body', array('id' => constants::M_GRADING_WPM_SCORE));
-        $ret = \html_writer::div($title . $score, constants::M_GRADING_WPM_CONTAINER . ' panel panel-primary',
-                array('id' => constants::M_GRADING_WPM_CONTAINER));
-        return $ret;
-    }
-
-    public function render_sessionscoredetails() {
-        global $CFG;
-        $title = \html_writer::div(get_string('grade_p', constants::M_COMPONENT), 'panel-heading');
-        $score = \html_writer::div('0', constants::M_GRADING_SCORE . ' panel-body',
-                array('id' => constants::M_GRADING_SESSION_SCORE));
-        $ret = \html_writer::div($title . $score, constants::M_GRADING_SESSIONSCORE_CONTAINER . ' panel panel-primary',
-                array('id' => constants::M_GRADING_SESSIONSCORE_CONTAINER));
-        return $ret;
-    }
-
-    public function render_accuracydetails() {
-        global $CFG;
-        $title = \html_writer::div(get_string('accuracy_p', constants::M_COMPONENT), 'panel-heading');
-        $score = \html_writer::div('0', constants::M_GRADING_SCORE . ' panel-body',
-                array('id' => constants::M_GRADING_ACCURACY_SCORE));
-        $ret = \html_writer::div($title . $score, constants::M_GRADING_ACCURACY_CONTAINER . ' panel panel-primary',
-                array('id' => constants::M_GRADING_ACCURACY_CONTAINER));
-        return $ret;
-    }
-
-    public function render_mistakedetails() {
-        global $CFG;
-        $title = \html_writer::div(get_string('mistakes', constants::M_COMPONENT), 'panel-heading');
-        $score =
-                \html_writer::div('0', constants::M_GRADING_SCORE . ' panel-body', array('id' => constants::M_GRADING_ERROR_SCORE));
-        $ret = \html_writer::div($title . $score, constants::M_GRADING_ERROR_CONTAINER . ' panel panel-danger',
-                array('id' => constants::M_GRADING_ERROR_CONTAINER));
-        return $ret;
-    }
-    
-    */
     
 }

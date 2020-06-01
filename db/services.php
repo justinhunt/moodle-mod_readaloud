@@ -42,5 +42,14 @@ $functions = array(
             'capabilities'=> 'mod/readaloud:view',
             'type'        => 'read',
             'ajax'        => true,
+    ),
+
+    'mod_readaloud_check_for_results' => array(
+                'classname'   => 'mod_readaloud_external',
+                'methodname'  => 'check_for_results',
+                'description' => 'checks if results are in yet',
+                'capabilities'=> 'mod/readaloud:view',
+                'type'        => 'read',
+                'ajax'        => true,
     )
 );

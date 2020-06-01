@@ -189,6 +189,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             //init our popover helper which sets up the button events
             this.init_popoverhelper();
 
+
         },
 
         //set up events related to popover helper
@@ -949,8 +950,17 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             //wpm score
             //we do not apply accuracy adjustment here, that is only for machine grades.
             var wpmscore = 0;
+            var strictwpmscore = 0;
+            var totalwords=m.options.endwordnumber - errorscore;
             if (m.options.totalseconds > 0) {
-                wpmscore = Math.round((m.options.endwordnumber - errorscore) * 60 / m.options.totalseconds);
+
+                //regular WPM
+                wpmscore = Math.round((totalwords * 60) / m.options.totalseconds);
+
+                //strict WPM for grading
+                totalwords = totalwords - errorscore;
+                if(totalwords < 0){totalwords =0;}
+                strictwpmscore = Math.round((totalwords * 60) / m.options.totalseconds);
             }
             m.options.wpm = wpmscore;
             m.controls.wpmscorebox.text(wpmscore);
@@ -964,14 +974,11 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             m.controls.accuracyscorebox.text(accuracyscore);
 
             //sessionscore
-
             if(m.options.sessionscoremethod == m.constants.SESSIONSCORE_STRICT) {
-                var usewpmscore = wpmscore - errorscore;
-                if(usewpmscore < 0){usewpmscore =0;}
+                var usewpmscore = strictwpmscore;
             }else{
                 var usewpmscore = wpmscore;
             }
-
 
             if (usewpmscore > m.options.targetwpm) {
                 usewpmscore = m.options.targetwpm;

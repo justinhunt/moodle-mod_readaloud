@@ -23,7 +23,8 @@ define(['jquery', 'core/log'], function ($, log) {
         quickgradecontainerclass: 'mod_readaloud_quickgrade_cont',
 
         //grade now
-        passagecontainer: 'mod_readaloud_grading_passagecont',
+        //passagecontainer: 'mod_readaloud_grading_passagecont',
+        passagecontainer: 'mod_readaloud_passage_cont',
         audioplayerclass: 'mod_readaloud_grading_player',
         wordplayerclass: 'mod_readaloud_hidden_player',
         wordclass: 'mod_readaloud_grading_passageword',
@@ -73,6 +74,15 @@ define(['jquery', 'core/log'], function ($, log) {
         activesentence: 'mod_readaloud_modelaudio_activesentence',
         modeltranscriptbutton: 'mod_readaloud_modeltranscript_button',
         modeltranscript: 'mod_readaloud_modeltranscript',
-        transcriber_amazonstreaming: 4
+        transcriber_amazonstreaming: 4,
+
+        //small report
+        smallreportcontainer: 'mod_readaloud_smallreport_cont',
+        smallreportrating: 'mod_readaloud_smallreport_rating',
+        smallreportplayer: 'mod_readaloud_smallreport_player',
+        smallreportstatus: 'mod_readaloud_smallreport_status',
+        smallreportheading: 'mod_readaloud_smallreport_heading',
+        fullreportbutton: 'mod_readaloud_smallreport_fullreportbutton',
+
     };//end of return value
 });

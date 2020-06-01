@@ -114,7 +114,7 @@ $PAGE->set_pagelayout('course');
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 $modelaudiorenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'modelaudio');
-$gradenowrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'gradenow');
+$passagerenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'passage');
 
 
 
@@ -160,7 +160,7 @@ echo "<hr>";
 echo $modelaudiorenderer->render_sectiontop(
         get_string('modelaudio_breakstitle',constants::M_COMPONENT),
         get_string('modelaudio_breaksinstructions',constants::M_COMPONENT));
-echo $gradenowrenderer->render_passage($moduleinstance->passage);
+echo $passagerenderer->render_passage($moduleinstance->passage);
 
 
 //show the breaks form

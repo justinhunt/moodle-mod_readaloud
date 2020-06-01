@@ -10,9 +10,60 @@
 
 use \mod_readaloud\utils;
 use \mod_readaloud\diff;
+use \mod_readaloud\constants;
 
 class mod_readaloud_external extends external_api {
 
+
+
+    public static function check_for_results_parameters() {
+        return new external_function_parameters([
+                'attemptid' => new external_value(PARAM_INT)
+        ]);
+    }
+
+    public static function check_for_results($attemptid) {
+        global $DB, $USER;
+        //defaults
+        $ret = ['ready'=>false,'rating'=>0,'src'=>''];
+        $have_humaneval = false;
+        $have_aieval =false;
+        $aigrade=false;
+
+        $params = self::validate_parameters(self::check_for_results_parameters(),
+                array('attemptid'=>$attemptid));
+
+        //fetch attempt information
+        $attempt = $DB->get_record(constants::M_USERTABLE, array('userid' => $USER->id, 'id' => $attemptid));
+        if($attempt) {
+            $readaloud = $DB->get_record('readaloud', array('id' => $attempt->readaloudid), '*', MUST_EXIST);
+            $cm = get_coursemodule_from_instance('readaloud', $readaloud->id, $readaloud->courseid, false, MUST_EXIST);
+
+            if (\mod_readaloud\utils::can_transcribe($readaloud)) {
+                $aigrade = new \mod_readaloud\aigrade($attempt->id, $cm->id);
+            } else {
+                $aigrade = false;
+            }
+
+            $have_humaneval = $attempt->sessiontime != null;
+            $have_aieval = $aigrade && $aigrade->has_transcripts();
+        }
+
+        //if no results, thats that. return.
+        if(!$have_aieval && !$have_humaneval){
+            //just return defaults
+        //if we got results return ratings
+        }else{
+            $ret['ready']=true;
+            $ret['src']=$attempt->filename;
+            $ret['rating']= utils::fetch_rating($attempt,$aigrade);
+        }
+        return json_encode($ret);
+    }
+
+    public static function check_for_results_returns() {
+        return new external_value(PARAM_RAW);
+    }
 
     public static function submit_regular_attempt_parameters() {
         return new external_function_parameters([

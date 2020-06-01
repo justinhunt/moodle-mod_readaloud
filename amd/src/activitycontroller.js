@@ -73,7 +73,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             dd.register_events();
 
             //set initial mode
-            if(dd.enableshadow || dd.enablepreview){
+            //we used to check the settings but now we just show the non-options greyed out
+            if(dd.enableshadow || dd.enablepreview || true){
                 dd.domenulayout();
             }else{
                 dd.doreadinglayout();
@@ -111,7 +112,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 startreadingbutton: $('#' + opts['startreadingbutton']),
                 startshadowbutton: $('#' + opts['startshadowbutton']),
                 returnmenubutton: $('#' + opts['returnmenubutton']),
-                stopandplay: $('#' + opts['stopandplay'])
+                stopandplay: $('#' + opts['stopandplay']),
+                smallreportcontainer: $('.' + opts['smallreportcontainer'])
             };
             this.controls = controls;
         },
@@ -187,12 +189,15 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 if(dd.activitydata.transcriber == def.transcriber_amazonstreaming &&
                     dd.streamingresults &&
                     dd.streamingresults.length > 0){
-                    dd.send_streaming_submission(eventdata.mediaurl, rectime, dd.streamingresults);
+                    //wait a few seconds for the final recognition to come back
+                    setTimeout(dd.send_streaming_submission,1500,dd, eventdata.mediaurl, rectime);
+                    //dd.send_streaming_submission(eventdata.mediaurl, rectime, dd.streamingresults);
                 }else {
                     dd.send_submission(eventdata.mediaurl, rectime);
+                    //and let the user know that they are all done
+                    dd.dofinishedlayout();
                 }
-                //and let the user know that they are all done
-                dd.dofinishedlayout();
+
             };
 
             //init the recorder
@@ -207,18 +212,38 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             var dd = this;
           
             
-            dd.controls.startpreviewbutton.click(function(){
+            dd.controls.startpreviewbutton.click(function(e){
                 dd.dopreviewlayout();
             });
-            dd.controls.startreadingbutton.click(function(){
+            dd.controls.startpreviewbutton.keypress(function(e){
+                if (e.which == 32 || e.which == 13 ) {
+                    dd.dopreviewlayout();
+                    e.preventDefault();
+                }
+            });
+            dd.controls.startreadingbutton.click(function(e){
                 dd.letsshadow=false;
                 dd.doreadinglayout();
             });
-            dd.controls.startshadowbutton.click(function(){
+            dd.controls.startreadingbutton.keypress(function(e){
+                if (e.which == 32 || e.which == 13) {
+                    dd.letsshadow=false;
+                    dd.doreadinglayout();
+                    e.preventDefault();
+                }
+            });
+            dd.controls.startshadowbutton.click(function(e){
                 dd.letsshadow=true;
                 dd.doreadinglayout();
             });
-            dd.controls.returnmenubutton.click(function(){
+            dd.controls.startshadowbutton.keypress(function(e){
+                if (e.which == 32 || e.which == 13) {
+                    dd.letsshadow=true;
+                    dd.doreadinglayout();
+                    e.preventDefault();
+                }
+            });
+            dd.controls.returnmenubutton.click(function(e){
                 dd.controls.modelaudioplayer[0].currentTime=0;
                 dd.controls.modelaudioplayer[0].pause();
                 dd.domenulayout();
@@ -226,8 +251,9 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
         },
 
 
-        send_streaming_submission: function (filename, rectime, streamingresults) {
-            var that = this;
+        send_streaming_submission: function (that, filename, rectime) {
+            //var that = this;
+            var streamingresults=that.streamingresults;
             Ajax.call([{
                 methodname: 'mod_readaloud_submit_streaming_attempt',
                 args: {
@@ -253,6 +279,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                                 }
                         }
                     }
+                    //and let the user know that they are all done
+                    that.dofinishedlayout();
                 },
                 fail: notification.exception
             }]);
@@ -340,8 +368,11 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.recordingcontainer.show();
             m.controls.menuinstructionscontainer.hide();
             m.controls.menubuttonscontainer.hide();
+            m.controls.smallreportcontainer.hide();
             m.controls.returnmenubutton.show();
             m.controls.progresscontainer.hide();
+            m.controls.passagecontainer.removeClass('previewmode shadowmode reviewmode nothingmode');
+            m.controls.passagecontainer.addClass('readmode');
             m.controls.passagecontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
@@ -352,6 +383,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             var m = this;
             m.controls.menuinstructionscontainer.show();
             m.controls.menubuttonscontainer.show();
+            m.controls.smallreportcontainer.show();
             m.controls.activityinstructionscontainer.hide();
             m.controls.returnmenubutton.hide();
             m.controls.progresscontainer.hide();
@@ -366,9 +398,13 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
 
         dopreviewlayout: function () {
             var m = this;
+            m.controls.passagecontainer.removeClass('readmode shadowmode reviewmode nothingmode');
+            m.controls.passagecontainer.addClass('previewmode');
             m.controls.passagecontainer.show();
+
             m.controls.returnmenubutton.show();
             m.controls.modelaudioplayer.hide();
+            m.controls.smallreportcontainer.hide();
             m.controls.stopandplay.show();
             m.controls.menubuttonscontainer.hide();
             m.controls.hider.hide();
@@ -398,6 +434,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             var m = this;
             m.controls.hider.fadeOut('fast');
             m.controls.progresscontainer.fadeOut('fast');
+            m.controls.smallreportcontainer.hide();
             m.controls.activityinstructionscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();

@@ -19,8 +19,17 @@ class constants {
     const M_AITABLE = 'readaloud_ai_result';
     const M_MODNAME = 'readaloud';
     const M_URL = '/mod/readaloud';
-    const M_CLASS = 'mod_readaloud';
+
     const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
+
+    //classes for use in CSS
+    const M_CLASS = 'mod_readaloud';
+
+    //audio recorders
+    const REC_READALOUD = 'readaloud';
+    const REC_ONCE = 'once';
+    const REC_UPLOAD = 'upload';
+
 
     //grading options
     const M_GRADEHIGHEST = 0;
@@ -37,6 +46,7 @@ class constants {
     const POSTATTEMPT_NONE = 0;
     const POSTATTEMPT_EVAL = 1;
     const POSTATTEMPT_EVALERRORS = 2;
+    const POSTATTEMPT_EVALERRORSNOGRADE = 3;
     //more review mode options
     const REVIEWMODE_NONE = 0;
     const REVIEWMODE_MACHINE = 1;
@@ -79,6 +89,7 @@ class constants {
     const M_ACTIVITYINSTRUCTIONS_CONTAINER = 'mod_readaloud_activityinstructions_const';
     const M_MENUINSTRUCTIONS_CONTAINER = 'mod_readaloud_menuinstructions_const';
     const M_MENUBUTTONS_CONTAINER = 'mod_readaloud_menubuttons_cont';
+    const M_SMALLREPORT_CONTAINER = 'mod_readaloud_smallreport_cont';
 
 
     const M_PASSAGE_CONTAINER = 'mod_readaloud_passage_cont';
@@ -118,6 +129,9 @@ class constants {
     const M_MODELAUDIO_PLAYER = 'mod_readaloud_modelaudio_player';
     const M_VIEWMODELTRANSCRIPT = 'mod_readaloud_modeltranscript_button';
     const M_MODELTRANSCRIPT = 'mod_readaloud_modeltranscript';
+    const M_CLASS_PASSAGEWORD = 'mod_readaloud_grading_passageword';
+    const M_CLASS_PASSAGESPACE = 'mod_readaloud_grading_passagespace';
+    const M_CLASS_PASSAGEGRADINGCONT = 'mod_readaloud_grading_passagecont';
 
     //languages
     const M_LANG_ENUS = 'en-US';

@@ -471,6 +471,12 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
 
     $readaloud->timecreated = time();
     $readaloud = readaloud_process_editors($readaloud, $mform);
+
+    //for Japanese we want to segment it into "words"
+    if($readaloud->ttslanguage == constants::M_LANG_JAJP) {
+        $readaloud->passage = utils::segment_japanese($readaloud->passage);
+    }
+
     $readaloud->id = $DB->insert_record(constants::M_TABLE, $readaloud);
 
     readaloud_grade_item_update($readaloud);
@@ -517,6 +523,12 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
     $readaloud->timemodified = time();
     $readaloud->id = $readaloud->instance;
     $readaloud = readaloud_process_editors($readaloud, $mform);
+
+    //for Japanese we want to segment it into "words"
+    if($readaloud->ttslanguage == constants::M_LANG_JAJP) {
+        $readaloud->passage = utils::segment_japanese($readaloud->passage);
+    }
+
     $success = $DB->update_record(constants::M_TABLE, $readaloud);
 
     readaloud_grade_item_update($readaloud);

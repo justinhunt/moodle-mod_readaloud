@@ -63,7 +63,7 @@ class renderer extends \plugin_renderer_base {
         return $this->output->header();
     }
 
-    public function show_attempt_summary($attemptsummary){
+    public function show_attempt_summary($attemptsummary,$showgrades){
 
         //set up our table
         $tableattributes = array('class' => 'generaltable ' . constants::M_CLASS . '_table');
@@ -73,10 +73,12 @@ class renderer extends \plugin_renderer_base {
         $htmltable->id = $tableid;
         $htmltable->attributes = $tableattributes;
 
-        $head = array('',
-                get_string('wpm', constants::M_COMPONENT),
-                get_string('accuracy_p', constants::M_COMPONENT),
-                get_string('grade_p', constants::M_COMPONENT));
+        $head = array('');
+        $head[]= get_string('wpm', constants::M_COMPONENT);
+        $head[]= get_string('accuracy_p', constants::M_COMPONENT);
+        if($showgrades) {
+            $head[] = get_string('grade_p', constants::M_COMPONENT);
+        }
 
         $htmltable->head = $head;
         $htr = new \html_table_row();
@@ -91,8 +93,10 @@ class renderer extends \plugin_renderer_base {
         $cell = new \html_table_cell( $attemptsummary->av_accuracy);
         $htr->cells[] = $cell;
 
-        $cell = new \html_table_cell( $attemptsummary->av_sessionscore);
-        $htr->cells[] = $cell;
+        if($showgrades) {
+            $cell = new \html_table_cell($attemptsummary->av_sessionscore);
+            $htr->cells[] = $cell;
+        }
 
         $htmltable->data[] = $htr;
 
@@ -106,8 +110,11 @@ class renderer extends \plugin_renderer_base {
         $cell = new \html_table_cell( $attemptsummary->h_accuracy);
         $htr->cells[] = $cell;
 
-        $cell = new \html_table_cell( $attemptsummary->h_sessionscore);
-        $htr->cells[] = $cell;
+        if($showgrades) {
+            $cell = new \html_table_cell($attemptsummary->h_sessionscore);
+            $htr->cells[] = $cell;
+        }
+
         $htmltable->data[] = $htr;
 
 
@@ -124,7 +131,7 @@ class renderer extends \plugin_renderer_base {
 
     }
 
-    public function show_progress_chart($chartdata){
+    public function show_progress_chart($chartdata,$showgrades){
         global $CFG;
         //if no chart data or lower than Moodle 3.2 we do not shopw the chart
         if(!$chartdata || $CFG->version < 2016120500 ){return '';}
@@ -132,7 +139,9 @@ class renderer extends \plugin_renderer_base {
         $chart = new \core\chart_line();
         $chart->add_series($chartdata->wpmseries);
         $chart->add_series($chartdata->accuracyseries);
-        $chart->add_series($chartdata->sessionscoreseries);
+        if($showgrades) {
+            $chart->add_series($chartdata->sessionscoreseries);
+        }
         $chart->set_labels($chartdata->labelsdata);
         $renderedchart= $this->output->render($chart);
 
@@ -157,43 +166,113 @@ class renderer extends \plugin_renderer_base {
       return $ret; 
     }
   
-    public function show_menubuttons ($moduleinstance) {
+    public function show_menubuttons ($moduleinstance, $canattempt) {
       
       global $CFG;
-      
-      /*
 
-        $menubuttons= array();
-      
-        if($moduleinstance->enablepreview){
-            $menubuttons[]=  \html_writer::tag('button', get_string("previewreading", constants::M_COMPONENT),
-                    array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTPREVIEW,'type'=>'button','id'=>constants::M_STARTPREVIEW));
-        }
-      
-        if($moduleinstance->enableshadow){
-            $menubuttons[]=  \html_writer::tag('button', get_string("startshadowreading", constants::M_COMPONENT),
-                    array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTSHADOW,'type'=>'button','id'=>constants::M_STARTSHADOW));
-        }
-      
-        $menubuttons[]=  \html_writer::tag('button', get_string("startreading", constants::M_COMPONENT),
-                    array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_STARTNOSHADOW,'type'=>'button','id'=>constants::M_STARTNOSHADOW));
-
-        $ret = \html_writer::div( implode('<br>',$menubuttons), constants::M_MENUBUTTONS_CONTAINER);
-        
-        */
-      
         $ret='<div class="row '.constants::M_MENUBUTTONS_CONTAINER.'">';
-        
-        $ret.="<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/preview.png\")' id='".constants::M_STARTPREVIEW."' class='mode-chooser ".($moduleinstance->enablepreview?'':'no-click')."'><div class='mode-chooser-label'>"."<b>".get_string("previewreading", constants::M_COMPONENT)."</b>: ".get_string("previewhelp", constants::M_COMPONENT)."</div></div></div>";
 
-              $ret.= "<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/readaloud.png\")' id='".constants::M_STARTNOSHADOW."' class='mode-chooser'><div class='mode-chooser-label'>"."<b>".get_string("startreading", constants::M_COMPONENT)."</b>: ".get_string("normalhelp", constants::M_COMPONENT)."</div></div></div>";
-      
-        $ret.="<div class='col-sm-4'><div style='background-image:url(\"".$CFG->wwwroot."/mod/readaloud/pix/readaloudshadow.png\")' id='".constants::M_STARTSHADOW."' class='mode-chooser ".($moduleinstance->enableshadow?'':'no-click')."'><div class='mode-chooser-label'>"."<b>".get_string("startshadowreading", constants::M_COMPONENT)."</b>: ".get_string("shadowhelp", constants::M_COMPONENT)."</div></div></div>";
+        //Preview button
+        if($moduleinstance->enablepreview){
+            $tabstop_class = "tabindex='0' class='mode-chooser preview'";
+        }else{
+            $tabstop_class = "class='mode-chooser preview no-click'";
+        }
+        $ret.="<div class='col-sm-4'><div id='".constants::M_STARTPREVIEW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
+                "<b>".get_string("previewreading", constants::M_COMPONENT)."</b>: ".
+                get_string("previewhelp", constants::M_COMPONENT)."</div></div></div>";
+
+        //attempt button
+        if($canattempt){
+            $tabstop_class = "tabindex='0' class='mode-chooser readaloud'";
+        }else{
+            $tabstop_class = "class='mode-chooser readaloud no-click'";
+        }
+        $ret.= "<div class='col-sm-4'><div id='".constants::M_STARTNOSHADOW. "' " .  $tabstop_class . "'><div class='mode-chooser-label'>".
+                "<b>".get_string("startreading", constants::M_COMPONENT)."</b>: ".
+                get_string("normalhelp", constants::M_COMPONENT)."</div></div></div>";
+
+        //shadow attempt button
+        if($moduleinstance->enableshadow){
+            $tabstop_class = "tabindex='0' class='mode-chooser readaloudshadow'";
+        }else{
+            $tabstop_class = "class='mode-chooser readaloudshadow no-click'";
+        }
+        $ret.="<div class='col-sm-4'><div  id='".constants::M_STARTSHADOW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
+                "<b>".get_string("startshadowreading", constants::M_COMPONENT)."</b>: ".
+                get_string("shadowhelp", constants::M_COMPONENT)."</div></div></div>";
 
         $ret.="</div>";
       
         return $ret;
 
+    }
+
+
+    /*
+     * Show a small summary of the activity
+     */
+    public function show_smallreport ($moduleinstance, $attempt, $aigrade) {
+        global $CFG;
+        $src = empty($attempt->filename)? '' : $attempt->filename;
+        $audioplayer = \html_writer::tag('audio', '',
+                array('src' => $src, 'controls' => 1, 'class'=>constants::M_CLASS . '_smallreport_player nomediaplugin nopoodll',
+                        'crossorigin'=>'anonymous'));
+
+        //star rating
+        $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
+        $ready = $rating > -1;
+        //if we have no rating yet, lets show dots only
+        if(!$ready){
+            $stars = '. . . . .';
+        }else {
+            $emptystar = '<i class="fa fa-lg fa-star-o"></i>';
+            $solidstar = '<i class="fa fa-lg fa-star"></i>';
+            $stars = '';
+            for ($star = 0; $star < 5; $star++) {
+                $stars .= $rating > $star ? $solidstar : $emptystar;
+            }
+        }
+        $starrating =  \html_writer::div($stars,constants::M_CLASS . '_smallreport_rating');
+
+        //heading
+        $headingtext = $ready ? get_string('evaluatedmessage',constants::M_COMPONENT) :
+                get_string('notgradedyet',constants::M_COMPONENT) ;
+        $heading = \html_writer::div($headingtext,constants::M_CLASS . '_smallreport_heading');
+
+        //status display
+        $showtext = $ready ? '' : '-- waiting --';
+        $status = \html_writer::div($showtext,constants::M_CLASS . '_smallreport_status');
+
+        //full report button
+        $thebutton = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
+                array('n' => $moduleinstance->id, 'reviewattempts' => 1)), get_string('fullreport', constants::M_COMPONENT),'get');
+        $showhide = $ready ? '': ' hide';
+        $fullreportbutton = \html_writer::div($thebutton,constants::M_CLASS . '_smallreport_fullreportbutton' . $showhide);
+        $ret = \html_writer::div($heading . $audioplayer . $starrating . $status . $fullreportbutton, constants::M_CLASS . '_smallreport_cont ' . constants::M_CLASS . '_center');
+
+        //If there is no remote transcriber
+        //we do not want to get users hopes up by trying to fetch a transcript with ajax
+        switch($moduleinstance->transcriber){
+            case constants::TRANSCRIBER_AMAZONSTREAMING:
+            case constants::TRANSCRIBER_NONE:
+                $remotetranscribe = false;
+                break;
+            default:
+                $remotetranscribe = true;
+        }
+
+
+        //Js to refresh small eport
+        $opts = Array();
+        $opts['filename'] = $attempt->filename;
+        $opts['attemptid'] = $attempt->id;
+        $opts['ready'] = $ready;
+        $opts['remotetranscribe'] = $remotetranscribe;
+        $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', array($opts));
+        $this->page->requires->strings_for_js(['secs_till_check','notgradedyet','evaluatedmessage', 'checking'],constants::M_COMPONENT);
+
+        return $ret;
     }
 
     public function show_returntomenu_button(){
@@ -203,7 +282,7 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
-     *
+     *  NO LONGER USED
      */
     public function reattemptbutton($moduleinstance) {
 
@@ -218,21 +297,36 @@ class renderer extends \plugin_renderer_base {
     /**
      *
      */
+    public function jump_tomenubutton($moduleinstance) {
+
+        $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
+                array('n' => $moduleinstance->id, 'reviewattempts' => 0)), get_string('returntomenu', constants::M_COMPONENT));
+
+        $ret = \html_writer::div($button, constants::M_CLASS . '_afterattempt_cont');
+        return $ret;
+
+    }
+
+    /**
+     *
+     */
     public function show_wheretonext($moduleinstance) {
 
         $nextactivity = utils::fetch_next_activity($moduleinstance->activitylink);
         //show activity link if we are up to it
-        if ($nextactivity->url) {
-            $button = $this->output->single_button($nextactivity->url, $nextactivity->label);
-            //else lets show a back to top link
-        } else {
+        $buttons=[];
 
-            $button =  \html_writer::link(new \moodle_url(constants::M_URL . '/view.php',
-                    array('n' => $moduleinstance->id)), get_string("backtotop", constants::M_COMPONENT),
-                    array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_BACKTOTOP,'id'=>constants::M_BACKTOTOP));
+        //back to menu button
+        $buttons[] =  \html_writer::link(new \moodle_url(constants::M_URL . '/view.php',
+                array('n' => $moduleinstance->id)), get_string("backtotop", constants::M_COMPONENT),
+                array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_BACKTOTOP,'id'=>constants::M_BACKTOTOP));
+
+        //next activity button
+        if ($nextactivity->url) {
+            $buttons[]= $this->output->single_button($nextactivity->url, $nextactivity->label);
         }
 
-        $ret = \html_writer::div($button, constants::M_WHERETONEXT_CONTAINER);
+        $ret = \html_writer::div(implode('<br><br>',$buttons), constants::M_WHERETONEXT_CONTAINER);
         return $ret;
 
     }
@@ -366,16 +460,6 @@ class renderer extends \plugin_renderer_base {
 
     }
 
-    /**
-     *
-     */
-    public function exceededattempts($moduleinstance) {
-        $message = get_string("exceededattempts", constants::M_COMPONENT, $moduleinstance->maxattempts);
-        $ret = \html_writer::div($message, constants::M_CLASS . '_afterattempt_cont');
-        return $ret;
-
-    }
-
     public function show_ungradedyet() {
         $message = get_string("notgradedyet", constants::M_COMPONENT);
         $ret = \html_writer::div($message, constants::M_CLASS . '_ungraded_cont');
@@ -449,7 +533,7 @@ class renderer extends \plugin_renderer_base {
 
         //for some languages we do not want spaces. Japanese, Chinese. For now this is manual
         //TODO auto determine when to use collapsespaces
-        $collapsespaces = $collapsespaces ? ' collapsespaces' : '';
+        $collapsespaces = $collapsespaces ? ' reviewmode collapsespaces' : '';
 
         $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER . ' '
                 . constants::M_POSTATTEMPT . $collapsespaces,
@@ -490,15 +574,9 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function show_humanevaluated_message() {
-        $displaytext = get_string('humanevaluatedmessage', constants::M_COMPONENT);
+    public function show_evaluated_message() {
+        $displaytext = get_string('evaluatedmessage', constants::M_COMPONENT);
         $ret = \html_writer::div($displaytext, constants::M_EVALUATED_MESSAGE. ' ' . constants::M_CLASS . '_center', array('id' => constants::M_EVALUATED_MESSAGE));
-        return $ret;
-    }
-
-    public function show_machineevaluated_message() {
-        $displaytext = get_string('machineevaluatedmessage', constants::M_COMPONENT);
-        $ret = \html_writer::div($displaytext, constants::M_EVALUATED_MESSAGE . ' ' . constants::M_CLASS . '_center', array('id' => constants::M_EVALUATED_MESSAGE));
         return $ret;
     }
 
@@ -558,11 +636,12 @@ class renderer extends \plugin_renderer_base {
 
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
 
-        //if they choose streaming transcription we also transcribe on server(just in case)
-        //we will turn this off after streaming has proved stable 03/2020
+        //We did double up streaming and standard AWS transcription, but it was constly and a bit useless.
+        //so now its one or the other.
         switch ($moduleinstance->transcriber){
             case constants::TRANSCRIBER_AMAZONSTREAMING :
-                $transcribe = $can_transcribe ? constants::TRANSCRIBER_AMAZONTRANSCRIBE : "0";
+                //this flag tells AWS not to send to amazon transcribe
+                $transcribe = "0";
                 $hints->streamingtranscriber = 'aws';
                 $speechevents = '1';
                 break;
@@ -586,7 +665,7 @@ class renderer extends \plugin_renderer_base {
                         'data-media' => "audio",
                         'data-appid' => constants::M_COMPONENT,
                         'data-owner' => hash('md5',$USER->username),
-                        'data-type' => $debug ? "upload" : "readaloud",
+                        'data-type' => $debug ? "upload" : $moduleinstance->recorder,
                         'data-width' => $debug ? "500" : "360",
                         'data-height' => $debug ? "500" : "210",
                     //'data-iframeclass'=>"letsberesponsive",
@@ -643,6 +722,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['menubuttonscontainer'] = constants::M_MENUBUTTONS_CONTAINER;
         $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
         $recopts['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
+        $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
         $recopts['enablepreview'] = $moduleinstance->enablepreview ? true : false;
         $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;

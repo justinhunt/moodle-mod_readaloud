@@ -160,6 +160,13 @@ class mod_readaloud_mod_form extends moodleform_mod {
         // Appearance.
         $mform->addElement('header', 'recordingaiheader', get_string('recordingaiheader', constants::M_COMPONENT));
 
+        //recorder choice
+        $recorder_options =  \mod_readaloud\utils::fetch_options_recorders();
+        $mform->addElement('select', 'recorder', get_string("recorder", constants::M_COMPONENT), $recorder_options);
+        $mform->setDefault('recorder', $config->defaultrecorder);
+        $mform->addHelpButton('recorder', 'recorder', constants::M_COMPONENT);
+
+
         //Enable AI
         $mform->addElement('advcheckbox', 'enableai', get_string('enableai', constants::M_COMPONENT),
                 get_string('enableai_details', constants::M_COMPONENT));
@@ -251,6 +258,8 @@ class mod_readaloud_mod_form extends moodleform_mod {
                 $postattempt_options);
         $mform->setType('humanpostattempt', PARAM_INT);
         $mform->setDefault('humanpostattempt', $config->humanpostattempt);
+
+
 
         // Post attempt evaluation display (machine)
         /*

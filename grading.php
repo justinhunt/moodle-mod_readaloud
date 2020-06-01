@@ -91,15 +91,15 @@ switch ($action) {
             break;
         } else {
             $data = $mform->get_data();
-            $gradenow = new \mod_readaloud\gradenow($attemptid, $modulecontext->id);
-            $gradenow->update($data);
+            $passagehelper = new \mod_readaloud\passagehelper($attemptid, $modulecontext->id);
+            $passagehelper->update($data);
 
             //update gradebook
-            readaloud_update_grades($moduleinstance, $gradenow->attemptdetails('userid'));
+            readaloud_update_grades($moduleinstance, $passagehelper->attemptdetails('userid'));
 
             //move on or return to grading
             if ($saveandnext != ('false')) {
-                $attemptid = $gradenow->get_next_ungraded_id();
+                $attemptid = $passagehelper->get_next_ungraded_id();
                 if ($attemptid) {
                     $action = 'gradenow';
                     //redirect to clear out form data so we can gradenow on next attempt
@@ -131,7 +131,7 @@ $PAGE->requires->jquery();
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 $reportrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'report');
-$gradenowrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'gradenow');
+$passagerenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'passage');
 
 //From here we actually display the page.
 $mode = "grading";
@@ -141,25 +141,25 @@ switch ($action) {
     //load individual attempt page with most recent(human or machine) eval and action buttons
     case 'gradenow':
 
-        $gradenow = new \mod_readaloud\gradenow($attemptid, $modulecontext->id);
+        $passagehelper = new \mod_readaloud\passagehelper($attemptid, $modulecontext->id);
         $force_aidata = false;//ai data could still be used if not human grading. we just do not force it
         $reviewmode = $reviewmode = constants::REVIEWMODE_NONE;
-        $nextid = $gradenow->get_next_ungraded_id();
+        $nextid = $passagehelper->get_next_ungraded_id();
         $setdata = array(
                 'action' => 'gradenowsubmit',
                 'attemptid' => $attemptid,
                 'n' => $moduleinstance->id,
                 'shownext' => $nextid,
-                'sessiontime' => $gradenow->formdetails('sessiontime', $force_aidata),
-                'sessionscore' => $gradenow->formdetails('sessionscore', $force_aidata),
-                'sessionendword' => $gradenow->formdetails('sessionendword', $force_aidata),
-                'sessionerrors' => $gradenow->formdetails('sessionerrors', $force_aidata));
+                'sessiontime' => $passagehelper->formdetails('sessiontime', $force_aidata),
+                'sessionscore' => $passagehelper->formdetails('sessionscore', $force_aidata),
+                'sessionendword' => $passagehelper->formdetails('sessionendword', $force_aidata),
+                'sessionerrors' => $passagehelper->formdetails('sessionerrors', $force_aidata));
 
         $gradenowform = new \mod_readaloud\gradenowform(null, array('shownext' => $nextid !== false));
         $gradenowform->set_data($setdata);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
-        echo $gradenow->prepare_javascript($reviewmode, $force_aidata);
-        echo $gradenowrenderer->render_gradenow($gradenow,$collapsespaces);
+        echo $passagehelper->prepare_javascript($reviewmode, $force_aidata);
+        echo $passagerenderer->render_gradenow($passagehelper,$collapsespaces);
         $gradenowform->display();
         echo $reportrenderer->show_grading_footer($moduleinstance, $cm, $mode);
         echo $renderer->footer();
@@ -171,7 +171,7 @@ switch ($action) {
         $mode = "machinegrading";
 
         //this forces the regrade using any changes in the diff algorythm, or alternatives
-        //must be done before instant. $gradenow which also  aigrade object internally
+        //must be done before instant. $passagehelper which also  aigrade object internally
         $aigrade = new \mod_readaloud\aigrade($attemptid, $modulecontext->id);
         if ($debug) {
             $debugsequences = $aigrade->do_diff($debug);
@@ -180,18 +180,18 @@ switch ($action) {
         }
 
         //fetch attempt and ai data
-        $gradenow = new \mod_readaloud\gradenow($attemptid, $modulecontext->id);
+        $passagehelper = new \mod_readaloud\passagehelper($attemptid, $modulecontext->id);
         $force_aidata = true;//in this case we are just interested in ai data
         $reviewmode = $reviewmode = constants::REVIEWMODE_MACHINE;
 
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
-        echo $gradenow->prepare_javascript($reviewmode, $force_aidata);
-        echo $gradenowrenderer->render_machinereview($gradenow, $debug);
+        echo $passagehelper->prepare_javascript($reviewmode, $force_aidata);
+        echo $passagerenderer->render_machinereview($passagehelper, $debug);
         //if we can grade and manage attempts show the gradenow button
         if (has_capability('mod/readaloud:manageattempts', $modulecontext)) {
-            echo $gradenowrenderer->render_machinereview_buttons($gradenow);
+            echo $passagerenderer->render_machinereview_buttons($passagehelper);
             if ($debug) {
-                echo $gradenowrenderer->render_debuginfo($debugsequences, $aigrade->aidetails('transcript'),
+                echo $passagerenderer->render_debuginfo($debugsequences, $aigrade->aidetails('transcript'),
                         $aigrade->aidetails('fulltranscript'));
             }
         }
@@ -203,17 +203,17 @@ switch ($action) {
     case 'machinereview':
 
         $mode = "machinegrading";
-        $gradenow = new \mod_readaloud\gradenow($attemptid, $modulecontext->id);
+        $passagehelper = new \mod_readaloud\passagehelper($attemptid, $modulecontext->id);
         $force_aidata = true;//in this case we are just interested in ai data
         $reviewmode = constants::REVIEWMODE_MACHINE;
 
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
 
-        echo $gradenow->prepare_javascript($reviewmode, $force_aidata);
-        echo $gradenowrenderer->render_machinereview($gradenow);
+        echo $passagehelper->prepare_javascript($reviewmode, $force_aidata);
+        echo $passagerenderer->render_machinereview($passagehelper);
         //if we can grade and manage attempts show the gradenow button
         if (has_capability('mod/readaloud:manageattempts', $modulecontext)) {
-            echo $gradenowrenderer->render_machinereview_buttons($gradenow);
+            echo $passagerenderer->render_machinereview_buttons($passagehelper);
         }
         echo $reportrenderer->show_grading_footer($moduleinstance, $cm, $mode);
         echo $renderer->footer();
@@ -223,7 +223,7 @@ switch ($action) {
     case 'aigradenow':
 
         $mode = "machinegrading";
-        $gradenow = new \mod_readaloud\gradenow($attemptid, $modulecontext->id);
+        $passagehelper = new \mod_readaloud\passagehelper($attemptid, $modulecontext->id);
         $force_aidata = true;//in this case we are just interested in ai data
         $reviewmode = $reviewmode = constants::REVIEWMODE_NONE;
 
@@ -233,16 +233,16 @@ switch ($action) {
                 'action' => 'gradenowsubmit',
                 'attemptid' => $attemptid,
                 'n' => $moduleinstance->id,
-                'sessiontime' => $gradenow->formdetails('sessiontime', $force_aidata),
-                'sessionscore' => $gradenow->formdetails('sessionscore', $force_aidata),
-                'sessionendword' => $gradenow->formdetails('sessionendword', $force_aidata),
-                'sessionerrors' => $gradenow->formdetails('sessionerrors', $force_aidata));
-        $nextid = $gradenow->get_next_ungraded_id();
+                'sessiontime' => $passagehelper->formdetails('sessiontime', $force_aidata),
+                'sessionscore' => $passagehelper->formdetails('sessionscore', $force_aidata),
+                'sessionendword' => $passagehelper->formdetails('sessionendword', $force_aidata),
+                'sessionerrors' => $passagehelper->formdetails('sessionerrors', $force_aidata));
+        $nextid = $passagehelper->get_next_ungraded_id();
         $gradenowform = new \mod_readaloud\gradenowform(null, array('shownext' => $nextid !== false));
         $gradenowform->set_data($setdata);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
-        echo $gradenow->prepare_javascript($reviewmode, $force_aidata);
-        echo $gradenowrenderer->render_gradenow($gradenow),$collapsespaces;
+        echo $passagehelper->prepare_javascript($reviewmode, $force_aidata);
+        echo $passagerenderer->render_gradenow($passagehelper),$collapsespaces;
         $gradenowform->display();
         echo $reportrenderer->show_grading_footer($moduleinstance, $cm, $mode);
         echo $renderer->footer();

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Grade Now for readaloud plugin
+ * Passaeg helper for readaloud plugin
  *
  * @package    mod_readaloud
  * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)
@@ -29,13 +29,13 @@ defined('MOODLE_INTERNAL') || die();
 use \mod_readaloud\constants;
 
 /**
- * Grade Now class for mod_readaloud
+ * passage helper class for mod_readaloud
  *
  * @package    mod_readaloud
  * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class gradenow {
+class passagehelper {
     protected $modulecontextid = 0;
     protected $attemptid = 0;
     protected $attemptdata = null;

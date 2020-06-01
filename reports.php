@@ -94,7 +94,6 @@ $PAGE->requires->js_call_amd("mod_readaloud/hiddenplayerhelper", 'init', array($
 //This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 $reportrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'report');
-$gradenowrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'gradenow');
 
 //From here we actually display the page.
 //this is core renderer stuff

@@ -54,14 +54,13 @@ class diff {
      * iii) replace any line ends with spaces (so we can "split" later)
      * iv) remove punctuation
      *
-     * Raw text back from Amazon gets caught on some pregreplace
+     * Raw JP text back from Amazon gets caught on some pregreplace
      *  unicode thing so we set the unicode flag /u.
-     * After its been to the DB and back its no longer required
-     * but then the /u unicode switch will fail, so we need to set a flag
-     * to use the unicode flag or not
+     * Since it will fail quietly if a non unicode char is detected, we need to be careful with this
+     * setting a flag till confident it's ok across the board
     *
     */
-    public static function cleanText($thetext,$unicodemb4=false) {
+    public static function cleanText($thetext,$unicodemb4=true) {
         //lowercaseify
         $thetext = strtolower($thetext);
 
@@ -71,6 +70,8 @@ class diff {
         //replace all line ends with spaces
         if($unicodemb4) {
             $thetext = preg_replace('/#\R+#/u', ' ', $thetext);
+            $thetext = preg_replace('/\r/u', ' ', $thetext);
+            $thetext = preg_replace('/\n/u', ' ', $thetext);
         }else{
             $thetext = preg_replace('/#\R+#/', ' ', $thetext);
         }

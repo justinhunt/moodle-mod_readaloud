@@ -120,6 +120,12 @@ class utils {
         return (json_last_error() == JSON_ERROR_NONE);
     }
 
+    //Insert spaces in between segments in order to create "words"
+    public static function segment_japanese($passage){
+        $segments = \mod_readaloud\jp\Analyzer::segment($passage);
+        return implode(" ",$segments);
+    }
+
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
@@ -594,9 +600,18 @@ class utils {
                 break;
         }
         if ($sessiontime > 0) {
-            $wpmscore = round(($sessionendword - $wpmerrors) * 60 / $sessiontime);
+            //regular WPM
+            $totalwords = $sessionendword - $wpmerrors;
+            $wpmscore = round(($totalwords * 60) / $sessiontime);
+
+            //strict WPM
+            $totalwords = $totalwords - $wpmerrors;
+            if($totalwords < 0){$totalwords =0;}
+            $strictwpmscore = round(($totalwords * 60) / $sessiontime);
+
         } else {
             $wpmscore = 0;
+            $strictwpmscore = 0;
         }
 
         //accuracy score
@@ -607,14 +622,13 @@ class utils {
         }
 
         //sessionscore
-        if($activitydata->sessionscoremethod == constants::SESSIONSCORE_STRICT) {
-            $usewpmscore = $wpmscore - $errorcount;
-            if($usewpmscore < 0){$usewpmscore =0;}
+        $targetwpm = $activitydata->targetwpm;
+        if($activitydata->sessionscoremethod == constants::SESSIONSCORE_STRICT){
+            $usewpmscore = $strictwpmscore;
         }else{
             $usewpmscore = $wpmscore;
         }
 
-        $targetwpm = $activitydata->targetwpm;
         if ($usewpmscore > $targetwpm) {
             $usewpmscore = $targetwpm;
         }
@@ -1048,7 +1062,8 @@ class utils {
         return array(
                 constants::POSTATTEMPT_NONE => get_string("postattempt_none", constants::M_COMPONENT),
                 constants::POSTATTEMPT_EVAL => get_string("postattempt_eval", constants::M_COMPONENT),
-                constants::POSTATTEMPT_EVALERRORS => get_string("postattempt_evalerrors", constants::M_COMPONENT)
+                constants::POSTATTEMPT_EVALERRORS => get_string("postattempt_evalerrors", constants::M_COMPONENT),
+                constants::POSTATTEMPT_EVALERRORSNOGRADE => get_string("postattempt_evalerrorsnograde", constants::M_COMPONENT)
         );
     }
 
@@ -1083,6 +1098,30 @@ class utils {
                 "singapore" => get_string("singapore",constants::M_COMPONENT),
                 "mumbai" => get_string("mumbai",constants::M_COMPONENT)
         );
+    }
+
+    public static function fetch_rating($attempt,$aigrade){
+        $have_humaneval = $attempt->sessiontime != null;
+        $have_aieval = $aigrade && $aigrade->has_transcripts();
+        if(!$have_humaneval && !$have_aieval){
+            return -1;
+        }elseif($have_humaneval){
+            if($attempt->sessionscore==0){return 0;}
+            if($attempt->sessionscore==100){return 5;}
+            return floor($attempt->sessionscore / 20) + 1;
+
+        }else{
+            if($aigrade->aidata->sessionscore==0){return 0;}
+            if($aigrade->aidata->sessionscore==100){return 5;}
+            return floor($aigrade->aidata->sessionscore / 20) + 1;
+        }
+    }
+
+    public static function fetch_options_recorders(){
+        $rec_options = array( constants::REC_READALOUD => get_string("rec_readaloud", constants::M_COMPONENT),
+                constants::REC_ONCE => get_string("rec_once", constants::M_COMPONENT),
+                constants::REC_UPLOAD => get_string("rec_upload", constants::M_COMPONENT));
+        return $rec_options;
     }
 
     public static function get_machinegrade_options() {

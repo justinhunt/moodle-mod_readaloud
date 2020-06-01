@@ -1,3 +1,11 @@
+2.0.31 (Build 2020060000)
+-added option to not show sessionscore/grade
+-added ability to choose recoder
+
+2.0.30 (Build 2020053100)
+- layout changes
+- smallreport
+
 2.0.29 (Build 2020041900)
 - added aws streaming transcription to cloudpoodll
 

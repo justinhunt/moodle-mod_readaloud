@@ -32,7 +32,7 @@ use \mod_readaloud\constants;
 use \mod_readaloud\utils;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$retake = optional_param('retake', 0, PARAM_INT); // course_module ID, or
+$reviewattempts= optional_param('reviewattempts', 0, PARAM_INT); // course_module ID, or
 $n = optional_param('n', 0, PARAM_INT);  // readaloud instance ID - it should be named as the first character of the module
 $debug = optional_param('debug', 0, PARAM_INT);
 
@@ -45,10 +45,10 @@ if ($id) {
     $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('readaloud', $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    print_error(0,get_string('nocourseid',constants::M_COMPONENT));
 }
 
-$PAGE->set_url('/mod/readaloud/view.php', array('id' => $cm->id));
+$PAGE->set_url('/mod/readaloud/view.php', array('id' => $cm->id,'reviewattempts'=>$reviewattempts));
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -80,7 +80,7 @@ $config = get_config(constants::M_COMPONENT);
 
 //Get our renderers
 $renderer = $PAGE->get_renderer('mod_readaloud');
-$gradenowrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'gradenow');
+$passagerenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'passage');
 $modelaudiorenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'modelaudio');
 
 //if we are in review mode, lets review
@@ -103,55 +103,33 @@ if (!$canpreview) {
     $debug = false;
 }
 
-//reset our retake flag if we cant reattempt
-if (!$canattempt) {
-    $retake = 0;
+
+//for Japanese (and later other languages we collapse spaces)
+$collapsespaces=false;
+if($moduleinstance->ttslanguage==constants::M_LANG_JAJP){
+    $collapsespaces=true;
 }
 
-//init our token variable
-$token=false;
+//fetch a token and report a failure to a display item: $problembox
+$problembox='';
+$token="";
+if(empty($config->apiuser) || empty($config->apisecret)){
+    $message = get_string('nocredentials',constants::M_COMPONENT,
+            $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+    $problembox=$renderer->show_problembox($message);
+}else {
+    //fetch token
+    $token = utils::fetch_token($config->apiuser, $config->apisecret);
 
-//display the most recent previous attempt if we have one
-if ($attempts && $retake == 0) {
-    //if we are teacher we see tabs. If student we just see the quiz
-    if (has_capability('mod/readaloud:preview', $modulecontext)) {
-        echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
-    } else {
-        echo $renderer->notabsheader();
+    //check token authenticated and no errors in it
+    $errormessage = utils::fetch_token_error($token);
+    if(!empty($errormessage)){
+        $problembox = $renderer->show_problembox($errormessage);
     }
+}
 
-    //show activity title
-    echo $renderer->show_title($moduleinstance->name);
-
-
-    //show an attempt summary if we have more than one attempt
-    if(count($attempts)>1) {
-        $attemptsummary = utils::fetch_attempt_summary($moduleinstance);
-        echo $renderer->show_attempt_summary($attemptsummary);
-        $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
-        echo $renderer->show_progress_chart($chartdata);
-    }
-
-    //show feedback summary
-    echo $renderer->show_feedback_postattempt($moduleinstance);
-
-    //we show the recorder if we can, but if the token or API creds are invalid we report that
-    if(empty($config->apiuser) || empty($config->apisecret)){
-        $message = get_string('nocredentials',constants::M_COMPONENT,
-                $CFG->wwwroot . constants::M_PLUGINSETTINGS);
-        echo $renderer->show_problembox($message);
-    }else {
-        //fetch token
-        $token = utils::fetch_token($config->apiuser, $config->apisecret);
-
-        //check token authenticated and no errors in it
-        $errormessage = utils::fetch_token_error($token);
-        if(!empty($errormessage)){
-            echo $renderer->show_problembox($errormessage);
-        }
-    }
-
-
+//fetch attempt information
+if($attempts) {
     $latestattempt = array_shift($attempts);
 
     if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
@@ -160,113 +138,175 @@ if ($attempts && $retake == 0) {
         $latest_aigrade = false;
     }
 
-    $readonly = true;
     $have_humaneval = $latestattempt->sessiontime != null;
     $have_aieval = $latest_aigrade && $latest_aigrade->has_transcripts();
-
-    //Are we showing spaces between characters/words. JP/Chinese etc may not
-    $collapsespaces=true;
-
-    if ($have_humaneval || $have_aieval) {
-        //we useed to distingush between humanpostattempt and machinepostattempt but we simplified it,
-        // /and just use the human value for all
-        switch ($moduleinstance->humanpostattempt) {
-            case constants::POSTATTEMPT_NONE:
-                echo $renderer->show_passage_postattempt($moduleinstance,$collapsespaces);
-                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
-                echo $renderer->render_hiddenaudioplayer();
-                break;
-            case constants::POSTATTEMPT_EVAL:
-                if ($have_humaneval) {
-                    echo $renderer->show_humanevaluated_message();
-                    $force_aidata = false;
-                } else {
-                    echo $renderer->show_machineevaluated_message();
-                    $force_aidata = true;
-                }
-                $gradenow = new \mod_readaloud\gradenow($latestattempt->id, $modulecontext->id);
-                $reviewmode = constants::REVIEWMODE_SCORESONLY;
-
-                echo $gradenow->prepare_javascript($reviewmode, $force_aidata, $readonly);
-                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
-                echo $renderer->render_hiddenaudioplayer();
-                echo $gradenowrenderer->render_userreview($gradenow,$collapsespaces);
-
-                break;
-
-            case constants::POSTATTEMPT_EVALERRORS:
-                if ($have_humaneval) {
-                    echo $renderer->show_humanevaluated_message();
-                    $reviewmode = constants::REVIEWMODE_HUMAN;
-                    $force_aidata = false;
-                } else {
-                    echo $renderer->show_machineevaluated_message();
-                    $reviewmode = constants::REVIEWMODE_MACHINE;
-                    $force_aidata = true;
-                }
-                $gradenow = new \mod_readaloud\gradenow($latestattempt->id, $modulecontext->id);
-                echo $gradenow->prepare_javascript($reviewmode, $force_aidata, $readonly);
-                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
-                echo $renderer->render_hiddenaudioplayer();
-                echo $gradenowrenderer->render_userreview($gradenow,$collapsespaces);
-                break;
-        }
-    } else {
-        echo $renderer->show_ungradedyet();
-        echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
-        echo $renderer->render_hiddenaudioplayer();
-        echo $renderer->show_passage_postattempt($moduleinstance,$collapsespaces);
-    }
-
-    //show  button or a label depending on of can retake
-    if ($canattempt) {
-        echo $renderer->reattemptbutton($moduleinstance);
-    } else {
-        echo $renderer->exceededattempts($moduleinstance);
-    }
-    echo $renderer->footer();
-    return;
+}else{
+    $latestattempt = false;
+    $have_humaneval = false;
+    $have_aieval =false;
+    $latest_aigrade = false;
 }
 
 //From here we actually display the page.
-//this is core renderer stuff
 
-//if we are teacher we see tabs. If student we just see the quiz
+//if we are teacher we see tabs. If student we just see the activity
 if (has_capability('mod/readaloud:preview', $modulecontext)) {
     echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
 } else {
     echo $renderer->notabsheader();
 }
 
-//show all the main parts. Many will be hidden and displayed by JS
+//Show the title
 echo $renderer->show_title($moduleinstance->name);
-echo $renderer->show_welcome_menu(get_string('welcomemenu',constants::M_COMPONENT));
 
-//get our token
-if(!$token){
-    //we show the recorder if we can, but if the token or API creds are invalid we report that
-    if(empty($config->apiuser) || empty($config->apisecret)){
-        $message = get_string('nocredentials',constants::M_COMPONENT,
-                $CFG->wwwroot . constants::M_PLUGINSETTINGS);
-        echo $renderer->show_problembox($message);
-        // Finish the page
-        echo $renderer->footer();
-        return;
-    }else {
-        //fetch token
-        $token = utils::fetch_token($config->apiuser, $config->apisecret);
+//If we are reviewing attempts we do that here and return.
+//If we are going to the dashboard we output that below
+if ($attempts && $reviewattempts) {
 
-        //check token authenticated and no errors in it
-        $errormessage = utils::fetch_token_error($token);
-        if(!empty($errormessage)){
-            echo $renderer->show_problembox($errormessage);
-            // Finish the page
-            echo $renderer->footer();
-            return;
+    //show an attempt summary if we have more than one attempt
+    if(count($attempts)>1) {
+        $showgradesinchart=true;
+        switch ($moduleinstance->humanpostattempt) {
+            case constants::POSTATTEMPT_NONE:
+                //no progress charts if not showing errors
+                break;
+
+            case constants::POSTATTEMPT_EVALERRORSNOGRADE:
+                $showgradesinchart=false;
+            case constants::POSTATTEMPT_EVAL:
+            case constants::POSTATTEMPT_EVALERRORS:
+                $attemptsummary = utils::fetch_attempt_summary($moduleinstance);
+                echo $renderer->show_attempt_summary($attemptsummary,$showgradesinchart);
+                $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
+                echo $renderer->show_progress_chart($chartdata,$showgradesinchart);
         }
     }
+
+    //show feedback summary
+    echo $renderer->show_feedback_postattempt($moduleinstance);
+
+    //if we have token problems show them here
+    if(!empty($problembox)) {
+        echo $problembox;
+    }
+
+    if ($have_humaneval || $have_aieval) {
+        //we useed to distingush between humanpostattempt and machinepostattempt but we simplified it,
+        // /and just use the human value for all
+        switch ($moduleinstance->humanpostattempt) {
+            case constants::POSTATTEMPT_NONE:
+                //we need more control over passage display than a word dump allows so we user gradenow renderer
+                //echo $renderer->show_passage_postattempt($moduleinstance,$collapsespaces);
+                $extraclasses = 'readmode';
+                if($collapsespaces){
+                    $extraclasses = ' collapsespaces';
+                }
+                echo $passagerenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $extraclasses);
+                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+                echo $renderer->render_hiddenaudioplayer();
+                break;
+            case constants::POSTATTEMPT_EVAL:
+                echo $renderer->show_evaluated_message();
+                if ($have_humaneval) {
+                    $force_aidata = false;
+                } else {
+                    $force_aidata = true;
+                }
+                $passagehelper = new \mod_readaloud\passagehelper($latestattempt->id, $modulecontext->id);
+                $reviewmode = constants::REVIEWMODE_SCORESONLY;
+
+                $readonly = true;
+                echo $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
+                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+                echo $renderer->render_hiddenaudioplayer();
+                echo $passagerenderer->render_userreview($passagehelper,$collapsespaces);
+
+                break;
+
+            case constants::POSTATTEMPT_EVALERRORS:
+                echo $renderer->show_evaluated_message();
+                if ($have_humaneval) {
+                    $reviewmode = constants::REVIEWMODE_HUMAN;
+                    $force_aidata = false;
+                } else {
+                    $reviewmode = constants::REVIEWMODE_MACHINE;
+                    $force_aidata = true;
+                }
+                $passagehelper = new \mod_readaloud\passagehelper($latestattempt->id, $modulecontext->id);
+                $readonly = true;
+                echo $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
+                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+                echo $renderer->render_hiddenaudioplayer();
+                echo $passagerenderer->render_userreview($passagehelper,$collapsespaces);
+                break;
+
+            case constants::POSTATTEMPT_EVALERRORSNOGRADE:
+                echo $renderer->show_evaluated_message();
+                if ($have_humaneval) {
+                    $reviewmode = constants::REVIEWMODE_HUMAN;
+                    $force_aidata = false;
+                } else {
+                    $reviewmode = constants::REVIEWMODE_MACHINE;
+                    $force_aidata = true;
+                }
+                $passagehelper = new \mod_readaloud\passagehelper($latestattempt->id, $modulecontext->id);
+                $readonly = true;
+                echo $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
+                echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+                echo $renderer->render_hiddenaudioplayer();
+                $nograde=true;
+                echo $passagerenderer->render_userreview($passagehelper,$collapsespaces,$nograde);
+                break;
+        }
+    } else {
+        echo $renderer->show_ungradedyet();
+        echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
+        echo $renderer->render_hiddenaudioplayer();
+        //we need more control over passage display than a word dump allows so we user gradenow renderer
+        //echo $renderer->show_passage_postattempt($moduleinstance,$collapsespaces);
+        $extraclasses = 'readmode';
+        if($collapsespaces){
+            $extraclasses = ' collapsespaces';
+        }
+        echo $passagerenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $extraclasses);
+
+    }
+
+    //TO DO move logic to menu dashboard
+    //show  button or a label depending on of can retake
+    /*
+    if ($canattempt) {
+        echo $renderer->reattemptbutton($moduleinstance);
+    } else {
+        echo $renderer->exceededattempts($moduleinstance);
+    }
+    */
+    echo $renderer->jump_tomenubutton($moduleinstance);
+    echo $renderer->footer();
+    return;
 }
 
+
+//show small report
+if($attempts) {
+    if(!$latestattempt){$latestattempt = array_shift($attempts);}
+    echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade);
+}
+
+//show all the main parts. Many will be hidden and displayed by JS
+$welcomemessage = get_string('welcomemenu',constants::M_COMPONENT);
+
+if (!$canattempt) {
+   $welcomemessage .= '<br>' . get_string("exceededattempts", constants::M_COMPONENT, $moduleinstance->maxattempts);
+}
+
+echo $renderer->show_welcome_menu($welcomemessage);
+if(!empty($problembox)){
+    echo $problembox;
+    // Finish the page
+    echo $renderer->footer();
+    return;
+}
 
 
 echo $renderer->show_welcome_activity($moduleinstance->welcome);
@@ -274,8 +314,9 @@ echo $renderer->show_welcome_activity($moduleinstance->welcome);
 echo $renderer->show_feedback($moduleinstance);
 echo $renderer->show_error($moduleinstance, $cm);
 
+
 //show menu buttons
-echo $renderer->show_menubuttons($moduleinstance);
+echo $renderer->show_menubuttons($moduleinstance,$canattempt);
 
 //Show model audio player
 $visible=false;
@@ -284,13 +325,16 @@ echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $vis
 //show stop and play buttons
 echo $renderer->show_stopandplay($moduleinstance);
 
+//we put some CSS at the top of the passage container to control things like padding word separation etc
+$extraclasses = 'readmode';
 //for Japanese (and later other languages we collapse spaces)
-$collapsespaces=$moduleinstance->ttslanguage==constants::M_LANG_JAJP;
+if($collapsespaces){
+    $extraclasses .= ' collapsespaces';
+}
 
-//changing to marked up passage, so we can handle events better
-//echo $renderer->show_passage($moduleinstance, $cm);
-
-echo $gradenowrenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $collapsespaces);
+//hide on load, and we can show from ajax
+$extraclasses .= ' hide';
+echo $passagerenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $extraclasses);
 
 //lets fetch recorder
 echo $renderer->show_recorder($moduleinstance, $token, $debug);
@@ -298,14 +342,7 @@ echo $renderer->show_recorder($moduleinstance, $token, $debug);
 echo $renderer->show_progress($moduleinstance, $cm);
 echo $renderer->show_wheretonext($moduleinstance);
 
-//the module AMD code
-//get aws info
-/*
-$cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
-$tokenobject = $cache->get('recentpoodlltoken');
-$accessid = $tokenobject->awsaccessid;
-$accesssecret= $tokenobject->awsaccesssecret;
-*/
+
 echo $renderer->fetch_activity_amd($cm, $moduleinstance,$token);
 
 //return to menu button

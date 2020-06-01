@@ -31,7 +31,7 @@ $string['pluginname'] = 'Read Aloud Activity';
 $string['someadminsetting'] = 'Some Admin Setting';
 $string['someadminsetting_details'] = 'More info about Some Admin Setting';
 $string['someinstancesetting'] = 'Some Instance Setting';
-$string['someinstancesetting_details'] = 'More infor about Some Instance Setting';
+$string['someinstancesetting_details'] = 'More info about Some Instance Setting';
 $string['readaloudsettings'] = 'readaloud settings';
 $string['readaloud:addinstance'] = 'Add a new Read Aloud';
 $string['readaloud:view'] = 'View Read Aloud';
@@ -103,7 +103,7 @@ $string['alternatives_descr'] =
         'Specify matching options for specific passage words. 1 word set per line. e.g their|there|they\'re See <a href="https://support.poodll.com/support/solutions/articles/19000096937-tuning-your-read-aloud-activity">docs</a> for more details.';
 
 $string['defaultwelcome'] =
-        'To begin the activity first test your microphone. When we can hear sound from your microphone a start button will appear. After you press the start button, a reading passage will appear. Read the passage aloud as clearly as you can.';
+        'In this activity you should read a passage out loud. You may be required to test your microphone first. You should see the audio recorder below. After you have started recording the reading passage will appear. Read the passage aloud as clearly as you can.';
 $string['defaultfeedback'] = 'Thanks for reading.';
 $string['timelimit'] = 'Time Limit';
 $string['gotnosound'] = 'We could not hear you. Please check the permissions and settings for microphone and try again.';
@@ -130,6 +130,7 @@ $string['nodataavailable'] = 'No Data Available Yet';
 $string['saveandnext'] = 'Save .... and next';
 $string['reattempt'] = 'Try Again';
 $string['notgradedyet'] = 'Your submission has been received, but has not been graded yet';
+$string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
 $string['enabletts'] = 'Enable TTS(experimental)';
 $string['enabletts_details'] = 'TTS is currently not implemented';
 //we hijacked this setting for both TTS STT .... bad ... but they are always the same aren't they?
@@ -241,9 +242,6 @@ $string['viewmachinegrading'] = 'Machine Evaluation';
 $string['review'] = 'Review';
 $string['regrade'] = 'Regrade';
 
-$string['humanevaluatedmessage'] = 'Your latest attempt has been graded by your teacher and results are displayed below.';
-$string['machineevaluatedmessage'] = 'Your latest attempt has been graded <i>automatically</i> and results are displayed below.';
-
 $string['dospotcheck'] = "Spot Check";
 $string['spotcheckbutton'] = "Spot Check Mode";
 $string['gradingbutton'] = "Grading Mode";
@@ -266,8 +264,11 @@ $string['humanpostattempt_details'] = "What to show students after they have att
 $string['machinepostattempt'] = "Evaluation display (machine)";
 $string['machinepostattempt_details'] = "What to show students after they have attempted and received a machine evaluation";
 $string['postattempt_none'] = "Show the passage. Don't show evaluation or errors.";
-$string['postattempt_eval'] = "Show the passage, and evaluation(scores)";
-$string['postattempt_evalerrors'] = "Show the passage, evaluation(scores) and errors";
+$string['postattempt_eval'] = "Show the passage, and evaluation(WPM,Acc,Grade)";
+$string['postattempt_evalerrorsnograde'] = "Show the passage, evaluation(WPM, Acc) and errors";
+$string['postattempt_evalerrors'] = "Show the passage, evaluation(WPM,Acc,Grade) and errors";
+
+
 $string['attemptsperpage'] = "Attempts to show per page: ";
 $string['backtotop'] = "Back to Start";
 $string['transcript'] = "Transcript";
@@ -369,8 +370,8 @@ $string['submitrawaudio_details'] = 'Submitting uncompressed audio may increase 
 $string['sessionscoremethod'] = 'Grade Calculation';
 $string['sessionscoremethod_details'] = 'How the value(%) for gradebook is calculated.';
 $string['sessionscoremethod_help'] = 'The value(%) for gradebook is calculated as a percentage, either WPM / Target_WPM (normal) or (WPM - Errors)/ Target_WPM (strict)';
-$string['sessionscorenormal'] = 'Normal: WPM / Target_WPM';
-$string['sessionscorestrict'] = 'Strict: (WPM - Errors) /Target WPM';
+$string['sessionscorenormal'] = 'Normal: Total correct words per min / Target_WPM';
+$string['sessionscorestrict'] = 'Strict: (Total correct words - errors) per min /Target WPM';
 $string['modelaudio'] = 'Model Audio';
 $string['ttsvoice'] = 'TTS Voice';
 $string['enablepreview'] = 'Enable Preview';
@@ -395,7 +396,7 @@ $string['extraslowspeed'] = 'Extra Slow';
 
 
 $string['welcomemenu'] = 'Choose from the options below.';
-$string['returnmenu'] = 'Mode selection';
+$string['returnmenu'] = 'Return to Menu';
 $string['attemptno'] = 'Attempt {$a}';
 $string['progresschart'] = 'Progress Chart';
 $string['chartexplainer'] = 'The chart below shows your progress over time in reading this passage.';
@@ -405,3 +406,18 @@ $string['normalhelp'] = "Read the passage aloud. Speak at a speed that is natura
 $string['shadowhelp'] = "Read the passage aloud, along with the teacher. You should wear headphones.";
 $string['playbutton'] = "Play";
 $string['stopbutton'] = "Pause";
+
+$string['returntomenu']="Return to Menu";
+$string['fullreport'] = "View Full Report";
+$string['nocourseid'] = 'You must specify a course_module ID or an instance ID. Probably your session expired.';
+
+$string['secs_till_check']='Checking for results in: ';
+$string['checking']=' ... checking ... ';
+
+$string['recorder']='Audio recorder type';
+$string['recorder_help']='Choose the audio recorder type that best suits your students and situation.';
+$string['defaultrecorder']='Default recorder';
+$string['defaultrecorder_details']='Choose the default recorder to be shown to students. ';
+$string['rec_readaloud']='Mic-test then start';
+$string['rec_once']='Just start';
+$string['rec_upload']='Upload (for devs/admins)';
