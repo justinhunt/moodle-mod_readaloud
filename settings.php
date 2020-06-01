@@ -93,7 +93,7 @@ if ($ADMIN->fulltree) {
     $rec_options = utils::fetch_options_recorders();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .'/defaultrecorder',
             new lang_string('defaultrecorder', constants::M_COMPONENT),
-            new lang_string('defaultrecorder_details', constants::M_COMPONENT), constants::REC_READALOUD, $rec_options));
+            new lang_string('defaultrecorder_details', constants::M_COMPONENT), constants::REC_ONCE, $rec_options));
 
 
 
@@ -158,7 +158,7 @@ if ($ADMIN->fulltree) {
     $name = 'transcriber';
     $label = get_string($name, constants::M_COMPONENT);
     $details = get_string($name . '_details', constants::M_COMPONENT);
-    $default = constants::TRANSCRIBER_AMAZONSTREAMING;
+    $default = constants::TRANSCRIBER_AMAZONTRANSCRIBE;
     $options = utils::fetch_options_transcribers();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
             $label, $details, $default, $options));
