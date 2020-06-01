@@ -83,16 +83,14 @@ $renderer = $PAGE->get_renderer('mod_readaloud');
 $passagerenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'passage');
 $modelaudiorenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'modelaudio');
 
-//if we are in review mode, lets review
-$attempts = $DB->get_records(constants::M_USERTABLE, array('userid' => $USER->id, 'readaloudid' => $moduleinstance->id), 'id DESC');
+//do we have attempts and ai data
+$attempts = $DB->get_records(constants::M_USERTABLE, array('userid' => $USER->id, 'readaloudid' => $moduleinstance->id), 'timecreated DESC');
 $ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->id);
 
 //can attempt ?
 $canattempt = true;
 $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
 if (!$canpreview && $moduleinstance->maxattempts > 0) {
-    $attempts = $DB->get_records(constants::M_USERTABLE,
-            array('userid' => $USER->id, constants::M_MODNAME . 'id' => $moduleinstance->id), 'timecreated DESC');
     if ($attempts && count($attempts) >= $moduleinstance->maxattempts) {
         $canattempt = false;
     }
@@ -130,7 +128,7 @@ if(empty($config->apiuser) || empty($config->apisecret)){
 
 //fetch attempt information
 if($attempts) {
-    $latestattempt = array_shift($attempts);
+    $latestattempt = current($attempts);
 
     if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
         $latest_aigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
@@ -289,7 +287,7 @@ if ($attempts && $reviewattempts) {
 
 //show small report
 if($attempts) {
-    if(!$latestattempt){$latestattempt = array_shift($attempts);}
+    if(!$latestattempt){$latestattempt = current($attempts);}
     echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade);
 }
 
