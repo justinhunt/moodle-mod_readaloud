@@ -291,8 +291,6 @@ echo $renderer->show_intro($moduleinstance, $cm);
 if($attempts) {
     if(!$latestattempt){$latestattempt = current($attempts);}
     echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade);
-}else{
-    echo $renderer->show_smallreport($moduleinstance);
 }
 
 //show all the main parts. Many will be hidden and displayed by JS
