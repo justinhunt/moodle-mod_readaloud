@@ -1,4 +1,7 @@
-2.0.31 (Build 2020060000)
+2.0.32 (Build 2020060300)
+-fixed broken simple report if no attempts
+
+2.0.31 (Build 2020060100)
 -added option to not show sessionscore/grade
 -added ability to choose recoder
 
