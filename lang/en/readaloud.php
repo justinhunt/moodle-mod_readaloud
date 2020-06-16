@@ -358,7 +358,7 @@ $string['startshadowreading'] = 'Shadow Mode';
 
 
 $string['transcriber'] = 'Transcriber';
-$string['transcriber_details'] = 'The transcription engine to use. Instant transcription only works if passage language is US/AU/GB English or FR/CA French, and when using US/Dublin/Sydney/Ireland AWS regions.';
+$string['transcriber_details'] = 'The transcription engine to use. Instant transcription only works if passage language is US/AU/GB English or FR/CA French or US Spanish, and when using US/Dublin/Sydney/Ottawa AWS regions.';
 $string['transcriber_none'] = 'No transcription';
 $string['transcriber_amazontranscribe'] = 'Regular Transcription(AWS)';
 $string['transcriber_amazonstreaming'] = 'Instant Transcription(AWS)';
@@ -421,3 +421,5 @@ $string['defaultrecorder_details']='Choose the default recorder to be shown to s
 $string['rec_readaloud']='Mic-test then start';
 $string['rec_once']='Just start';
 $string['rec_upload']='Upload (for devs/admins)';
+
+$string['transcriber_warning']='You have selected instant transcription. Note that this will <strong>only work if passage language and region are correct</strong>.';

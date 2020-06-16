@@ -65,7 +65,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
         },
 
         init_karaoke: function(){
-          var karaoke_opts={audioplayerclass: this.cd.audioplayerclass}
+          var karaoke_opts={audioplayerclass: this.cd.audioplayerclass, modeling: true};
           karaoke.init(karaoke_opts);
           karaoke.set_breaks(this.breaks);
         },
@@ -141,12 +141,14 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
                 }
             }
             this.controls.breaksfield.val(JSON.stringify(this.breaks));
+            karaoke.set_breaks(this.breaks);
             log.debug(this.breaks);
         },
 
         register_break: function(wordnumber, audiotime){
             this.breaks.push({'wordnumber': wordnumber, 'audiotime': audiotime});
             this.controls.breaksfield.val(JSON.stringify(this.breaks));
+            karaoke.set_breaks(this.breaks);
             log.debug(this.breaks);
         },
 

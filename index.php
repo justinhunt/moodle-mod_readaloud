@@ -37,7 +37,11 @@ $course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
 require_course_login($course);
 
-add_to_log($course->id, 'readaloud', 'view all', 'index.php?id=' . $course->id, '');
+// Trigger module viewed event.
+$event = \mod_readaloud\event\course_module_viewed::create(array(
+    'objectid' => $moduleinstance->id,
+    'context' => $modulecontext
+));
 
 $coursecontext = context_course::instance($course->id);
 

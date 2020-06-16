@@ -42,7 +42,7 @@ if ($id) {
     $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    print_error('You must specify a course_module ID or an instance ID');
+    print_error(0,'You must specify a course_module ID or an instance ID');
 }
 
 $PAGE->set_url(constants::M_URL . '/gradesadmin.php',

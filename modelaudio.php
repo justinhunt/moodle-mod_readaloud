@@ -45,7 +45,7 @@ if ($id) {
     $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    error('You must specify a course_module ID or an instance ID');
+    print_error(0,'You must specify a course_module ID or an instance ID');
 }
 
 $PAGE->set_url(constants::M_URL . '/modelaudio.php',
@@ -76,7 +76,7 @@ switch ($action) {
         $mform = new \mod_readaloud\modelaudioform();
         if ($mform->is_cancelled() || $uploadaudio!='false') {
             //both the cancel and "upload audio file" just fall through.
-            // But the upload audio sets a param that is detected below to show he upload recorder
+            // But the upload audio sets a param that is detected below to show the upload recorder
             break;
         } else {
             $data = $mform->get_data();
@@ -146,7 +146,7 @@ echo "<hr>";
 echo $modelaudiorenderer->render_sectiontop(
         get_string('modelaudio_playertitle',constants::M_COMPONENT),
         get_string('modelaudio_playerinstructions',constants::M_COMPONENT));
-if(empty($moduleinstance->modelaudiourl)) {
+if(empty($moduleinstance->modelaudiourl) || $moduleinstance->modelaudiourl=='none') {
     echo $modelaudiorenderer->render_polly_player($moduleinstance, $token);
 }else{
     echo $modelaudiorenderer->render_modelaudio_player($moduleinstance,$token);

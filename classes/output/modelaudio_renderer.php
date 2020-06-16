@@ -38,7 +38,7 @@ class modelaudio_renderer extends \plugin_renderer_base {
 
     public function render_modelaudio_player($moduleinstance, $token, $visible=true){
         $modelaudiourl = $moduleinstance->modelaudiourl;
-        if(empty($modelaudiourl)) {
+        if(empty($modelaudiourl) || $modelaudiourl=='none') {
             $modelaudiourl= $this->render_polly_url($moduleinstance, $token);
         }
         echo $this->render_modelaudio_player_from_url($modelaudiourl,$visible);

@@ -195,7 +195,6 @@ class mod_readaloud_mod_form extends moodleform_mod {
         $mform->addElement('static', 'transcriber_details', '',
                 get_string('transcriber_details', constants::M_COMPONENT));
 
-
         //region
         $regionoptions = \mod_readaloud\utils::get_region_options();
         $mform->addElement('select', 'region', get_string('region', constants::M_COMPONENT), $regionoptions);

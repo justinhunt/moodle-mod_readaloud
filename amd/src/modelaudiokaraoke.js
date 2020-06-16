@@ -11,6 +11,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
         breaks: [],
         endwordnumber: 0,
         currentstartbreak: false,
+        modeling: false,
 
         //class definitions
         cd: {
@@ -29,6 +30,9 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
         init: function(opts){
             if(opts.breaks) {
                 this.breaks=JSON.parse(opts.breaks);
+            }
+            if(opts.modeling) {
+                this.modeling=true;
             }
             if(opts.audioplayerclass) {
                 this.cd.audioplayerclass=opts.audioplayerclass;
@@ -79,25 +83,29 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
               aplayer.pause();
             });
 
-            this.controls.eachwordorspace.on('click',function(){
-                var wordnumber = parseInt($(this).attr('data-wordnumber'));
-                var nearest_start_break=false;
-                for (var i = 0; i < that.breaks.length; i++) {
-                    if(that.breaks[i].wordnumber < wordnumber) {
-                        nearest_start_break = that.breaks[i];
-                    }else{
-                        //exit the loop;
-                        break;
+            //if we are not modeling we want to jump to the clicked location
+            //if we are modeling the meaning of a click is to place a marker, so we do not want to jump
+            if(!this.modeling) {
+                this.controls.eachwordorspace.on('click', function () {
+                    var wordnumber = parseInt($(this).attr('data-wordnumber'));
+                    var nearest_start_break = false;
+                    for (var i = 0; i < that.breaks.length; i++) {
+                        if (that.breaks[i].wordnumber < wordnumber) {
+                            nearest_start_break = that.breaks[i];
+                        } else {
+                            //exit the loop;
+                            break;
+                        }
                     }
-                }
-                if(!nearest_start_break){
-                    //start from beginning OR do nothing
-                }else{
-                    aplayer.pause();
-                    aplayer.currentTime=nearest_start_break.audiotime;
-                    aplayer.play();
-                }
-            });
+                    if (!nearest_start_break) {
+                        //start from beginning OR do nothing
+                    } else {
+                        aplayer.pause();
+                        aplayer.currentTime = nearest_start_break.audiotime;
+                        aplayer.play();
+                    }
+                });//end of eachwordorspace
+            }//end of if not modeling
 
             //Player events (onended, onpause, ontimeupdate)
             var ended = function(){

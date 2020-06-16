@@ -1,3 +1,8 @@
+2.0.33 (Build 2020061600)
+-M3.9 compat. change - js tether library
+-fixes to model audio page
+
+
 2.0.32 (Build 2020060300)
 -fixed broken simple report if no attempts
 
