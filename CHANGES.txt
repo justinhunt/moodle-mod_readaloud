@@ -1,3 +1,6 @@
+2.0.34 (Build 2020062300)
+- Fix to support Essentials theme on M3.3
+
 2.0.33 (Build 2020061600)
 -M3.9 compat. change - js tether library
 -fixes to model audio page

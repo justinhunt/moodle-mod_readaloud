@@ -1,4 +1,4 @@
-define(['jquery', 'core/log', 'mod_readaloud/tether'], function ($, log, Tether) {
+define(['jquery','core/config' ,'core/log', 'mod_readaloud/tether'], function ($, cfg , log, Tether) {
     "use strict"; // jshint ;_;
 
     /*
@@ -6,8 +6,8 @@ define(['jquery', 'core/log', 'mod_readaloud/tether'], function ($, log, Tether)
      */
 
     log.debug('Readaloud deps: initialising');
-    //from moodle 3,9 we no longer need to do this
-    if(M.cfg.version<2020061500) {
+    //from moodle 3,9 we no longer need to load tether manually
+    if(!cfg.version || cfg.version<2020061500) {
         window.Tether = Tether;
     }
     return {};//end of return value
