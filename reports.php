@@ -59,7 +59,7 @@ $PAGE->set_url(constants::M_URL . '/reports.php',
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
-require_capability('mod/readaloud:manage', $modulecontext);
+require_capability('mod/readaloud:viewreports', $modulecontext);
 
 //Get an admin settings 
 $config = get_config(constants::M_COMPONENT);
@@ -109,12 +109,14 @@ switch ($showreport) {
         echo $renderer->footer();
         return;
 
+        /*
     case 'basic':
         $report = new \mod_readaloud\report\basic();
         //formdata should only have simple values, not objects
         //later it gets turned into urls for the export buttons
         $formdata = new stdClass();
         break;
+        */
 
     case 'attempts':
         $report = new \mod_readaloud\report\attempts();

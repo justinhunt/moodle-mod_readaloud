@@ -59,6 +59,8 @@ function readaloud_supports($feature) {
             return true;
         case FEATURE_GRADE_OUTCOMES:
             return true;
+        case FEATURE_GROUPS:
+            return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
         default:
@@ -477,6 +479,23 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
         $readaloud->passage = utils::segment_japanese($readaloud->passage);
     }
 
+    //we want to process the hashcode and lang model if it makes sense
+    if(utils::needs_lang_model($readaloud)){
+        $passagehash = utils::fetch_passagehash($readaloud);
+        if($passagehash){
+            $readaloud->passagehash =$passagehash;
+            //build a lang model
+            $ret = utils::fetch_lang_model($readaloud->passage, $readaloud->ttslanguage, $readaloud->region);
+            if ($ret && isset($ret->success) && $ret->success){
+                $readaloud->passagehash =$passagehash;
+            }else{
+                $readaloud->passagehash =null;
+            }
+        }else{
+            $readaloud->passagehash =null;
+        }
+    }
+
     $readaloud->id = $DB->insert_record(constants::M_TABLE, $readaloud);
 
     readaloud_grade_item_update($readaloud);
@@ -527,6 +546,23 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
     //for Japanese we want to segment it into "words"
     if($readaloud->ttslanguage == constants::M_LANG_JAJP) {
         $readaloud->passage = utils::segment_japanese($readaloud->passage);
+    }
+
+    //we want to process the hashcode and lang model if it makes sense
+    if(utils::needs_lang_model($readaloud)){
+        $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$readaloud->id));
+        $readaloud->passagehash = $oldrecord->passagehash;
+        $newpassagehash = utils::fetch_passagehash($readaloud);
+        if($newpassagehash){
+            //check if it has changed, if not do not waste time processing it
+            if($oldrecord->passagehash!= $newpassagehash) {
+                //build a lang model
+                $ret = utils::fetch_lang_model($readaloud->passage, $readaloud->ttslanguage, $readaloud->region);
+                if ($ret && isset($ret->success) && $ret->success)  {
+                    $readaloud->passagehash = $newpassagehash;
+                }
+            }
+        }
     }
 
     $success = $DB->update_record(constants::M_TABLE, $readaloud);

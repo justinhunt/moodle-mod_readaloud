@@ -85,8 +85,13 @@ switch ($action) {
     /////// Delete attempt NOW////////
     case 'delete':
         require_sesskey();
-        if (!$DB->delete_records(constants::M_USERTABLE, array('id' => $attemptid))) {
+        $attempt = $DB->get_record(constants::M_USERTABLE, array('id' => $attemptid, 'readaloudid' => $cm->instance), '*', MUST_EXIST);
+        if (!groups_user_groups_visible($course, $attempt->userid, $cm)) {
+            print_error("You do not have permssion to delete this user");
+            redirect($redirecturl);
+        }else if (!$DB->delete_records(constants::M_USERTABLE, array('id' => $attemptid))) {
             print_error("Could not delete attempt");
+            redirect($redirecturl);
         }
         //delete AI grades for this attempt too
         $DB->delete_records(constants::M_AITABLE, array('attemptid' => $attemptid));
@@ -97,11 +102,20 @@ switch ($action) {
     /////// Delete ALL attempts ////////
     case 'deleteall':
         require_sesskey();
-        if (!$DB->delete_records(constants::M_USERTABLE, array('readaloudid' => $moduleinstance->id))) {
-            print_error("Could not delete attempts (all)");
+
+        $groupsmode = groups_get_activity_groupmode($cm,$course);
+        $context = empty($cm) ? \context_course::instance($course->id) : \context_module::instance($cm->id);
+        $supergrouper = has_capability('moodle/site:accessallgroups', $context, $USER->id);
+
+        //if no groups, or can see all groups then the SQL is simple
+        if($supergrouper || $groupsmode !=SEPARATEGROUPS) {
+            if (!$DB->delete_records(constants::M_USERTABLE, array('readaloudid' => $moduleinstance->id))) {
+                print_error("Could not delete attempts (all)");
+                redirect($redirecturl);
+            }
+            //delete AI grades for this activity too
+            $DB->delete_records(constants::M_AITABLE, array('readaloudid' => $moduleinstance->id));
         }
-        //delete AI grades for this activity too
-        $DB->delete_records(constants::M_AITABLE, array('readaloudid' => $moduleinstance->id));
 
         redirect($redirecturl);
         return;

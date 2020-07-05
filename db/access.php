@@ -59,7 +59,6 @@ $capabilities = array(
                 ),
                 'clonepermissionsfrom' => 'moodle/course:manageactivities'
         ),
-
         'mod/readaloud:manage' => array(
                 'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
@@ -80,32 +79,8 @@ $capabilities = array(
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
                 ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
+                'clonepermissionsfrom' => 'moodle/grade:viewall'
         ),
-
-        'mod/readaloud:itemedit' => array(
-                'riskbitmask' => RISK_XSS,
-                'captype' => 'write',
-                'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
-                        'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
-
-        'mod/readaloud:itemview' => array(
-                'riskbitmask' => RISK_XSS,
-                'captype' => 'write',
-                'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
-                        'editingteacher' => CAP_ALLOW,
-                        'teacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
-
         'mod/readaloud:preview' => array(
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
@@ -114,18 +89,19 @@ $capabilities = array(
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
                 ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
+                'clonepermissionsfrom' => 'moodle/grade:viewall'
         ),
-        'mod/readaloud:tts' => array(
-                'captype' => 'read',
-                'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array(
-                        'student' => CAP_ALLOW,
+        'mod/readaloud:viewreports' => array(
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_COURSE,
+                'archetypes' => array(
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
+                ),
+                'clonepermissionsfrom' => 'moodle/grade:viewall'
         ),
+
         'mod/readaloud:view' => array(
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,

@@ -40,7 +40,7 @@ class renderer extends \plugin_renderer_base {
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
 
-        if (has_capability('mod/readaloud:manageattempts', $context)) {
+        if (has_capability('mod/readaloud:viewreports', $context)) {
             //   $output .= $this->output->heading_with_help($activityname, 'overview', constants::M_COMPONENT);
 
             if (!empty($currenttab)) {
@@ -702,7 +702,8 @@ class renderer extends \plugin_renderer_base {
                         'data-fallback' => 'warning',
                         'data-speechevents' => $speechevents,
                         'data-hints' => $string_hints,
-                        'data-token' => $token //localhost
+                        'data-token' => $token, //localhost
+                        'data-vocab' => empty($moduleinstance->passagehash) ? 'none' : $moduleinstance->passagehash
                     //'data-token'=>"643eba92a1447ac0c6a882c85051461a" //cloudpoodll
                 )
         );

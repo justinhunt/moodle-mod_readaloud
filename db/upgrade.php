@@ -391,20 +391,31 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020022900, 'readaloud');
     }
 
-    // Add expiredays and region to readaloud table
+    // Add recorder to readaloud table
     if ($oldversion < 2020060100) {
         $table = new xmldb_table('readaloud');
 
-        // Define field expiredays to be added to readaloud
+        // Define field recorder to be added to readaloud
         $field = new xmldb_field('recorder', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'readaloud');
         // add field to readaloud table
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
         upgrade_mod_savepoint(true, 2020060100, 'readaloud');
     }
 
+    // Add passage hashcode to readaloud table
+    if ($oldversion < 2020062800) {
+        $table = new xmldb_table('readaloud');
+
+        // Define field expiredays to be added to readaloud
+        $field = new xmldb_field('passagehash', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null);
+        // add field to readaloud table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2020062800, 'readaloud');
+    }
 
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;

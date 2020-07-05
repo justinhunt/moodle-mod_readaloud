@@ -1,3 +1,9 @@
+2.0.37 (Build 2020070400)
+- Support for groups mode and a few extra capablities
+
+2.0.35 (Build 2020062800)
+- Lang model generation
+
 2.0.34 (Build 2020062300)
 - Fix to support Essentials theme on M3.3
 

@@ -49,15 +49,19 @@ $tabs = $row = $inactive = $activated = array();
 
 $row[] = new tabobject('view', "$CFG->wwwroot/mod/readaloud/view.php?id=$cm->id", get_string('view', constants::M_COMPONENT),
         get_string('preview', constants::M_COMPONENT, format_string($moduleinstance->name)));
-$row[] = new tabobject('grading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id",
-        get_string('grading', constants::M_COMPONENT), get_string('viewgrading', constants::M_COMPONENT));
+if (has_capability('mod/readaloud:viewreports', $context)) {
+    $row[] = new tabobject('grading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id",
+            get_string('grading', constants::M_COMPONENT), get_string('viewgrading', constants::M_COMPONENT));
+    //$row[] = new tabobject('machinegrading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id&action=machinegrading", get_string('machinegrading', constants::M_COMPONENT), get_string('viewmachinegrading', constants::M_COMPONENT));
+    $row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', constants::M_COMPONENT), get_string('viewreports', constants::M_COMPONENT));
+
+}
 if (has_capability('mod/readaloud:manage', $context)) {
     $row[] = new tabobject('gradesadmin', "$CFG->wwwroot/mod/readaloud/gradesadmin.php?id=$cm->id",
             get_string('gradesadmin', constants::M_COMPONENT), get_string('viewgradesadmin', constants::M_COMPONENT));
+    $row[] = new tabobject('modelaudio', "$CFG->wwwroot/mod/readaloud/modelaudio.php?id=$cm->id", get_string('modelaudio', constants::M_COMPONENT), get_string('modelaudio', constants::M_COMPONENT));
 }
-//$row[] = new tabobject('machinegrading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id&action=machinegrading", get_string('machinegrading', constants::M_COMPONENT), get_string('viewmachinegrading', constants::M_COMPONENT));
-$row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', constants::M_COMPONENT), get_string('viewreports', constants::M_COMPONENT));
-$row[] = new tabobject('modelaudio', "$CFG->wwwroot/mod/readaloud/modelaudio.php?id=$cm->id", get_string('modelaudio', constants::M_COMPONENT), get_string('modelaudio', constants::M_COMPONENT));
+
 $tabs[] = $row;
 
 print_tabs($tabs, $currenttab, $inactive, $activated);

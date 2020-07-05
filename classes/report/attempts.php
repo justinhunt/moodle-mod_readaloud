@@ -96,13 +96,36 @@ class attempts extends basereport {
     }
 
     public function process_raw_data($formdata) {
-        global $DB;
+        global $DB, $USER;
 
         //heading data
         $this->headingdata = new \stdClass();
-
         $emptydata = array();
-        $alldata = $DB->get_records(constants::M_USERTABLE, array('readaloudid' => $formdata->readaloudid));
+
+        //Groups stuff
+        $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $formdata->readaloudid));
+        $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
+        $groupsmode = groups_get_activity_groupmode($cm,$course);
+        $context = empty($cm) ? \context_course::instance($course->id) : \context_module::instance($cm->id);
+        $supergrouper = has_capability('moodle/site:accessallgroups', $context, $USER->id);
+
+        //if we need to show  groups
+        if(!$supergrouper && $groupsmode ==SEPARATEGROUPS) {
+            $groups = groups_get_user_groups($course->id);
+            if (!$groups || empty($groups[0])) {
+                return false;
+            }
+            list($groupswhere, $allparams) = $DB->get_in_or_equal(array_values($groups[0]));
+
+            $alldatasql = "SELECT tu.* FROM {" . constants::M_USERTABLE . "} tu " .
+                    " INNER JOIN {groups_members} gm ON tu.userid=gm.userid " .
+                    " WHERE gm.groupid $groupswhere AND tu.readaloudid=?";
+            $alldataparams[]=$formdata->readaloudid;
+            $alldata = $DB->get_records_sql($alldatasql, $allparams);
+        }else{
+            $alldata = $DB->get_records(constants::M_USERTABLE, array('readaloudid' => $formdata->readaloudid));
+        }
 
         if ($alldata) {
             foreach ($alldata as $thedata) {

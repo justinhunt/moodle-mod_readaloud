@@ -172,36 +172,81 @@ class grading extends basereport {
     }//end of function
 
     public function process_raw_data($formdata) {
-        global $DB;
+        global $DB, $USER;
 
         //heading data
         $this->headingdata = new \stdClass();
-
-        $emptydata = array();
-        $user_attempt_totals = array();
-
-        //if we are not machine grading the SQL is simpler
-        $human_sql = "SELECT tu.*, false as fulltranscript  FROM {" . constants::M_USERTABLE .
-                "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
-                " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
-
-        //if we are machine grading we need to fetch human and machine so we can get WPM etc from either
-        $hybrid_sql =
-                "SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore,tai.fulltranscript as fulltranscript FROM {" .
-                constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
-                "INNER JOIN {" . constants::M_AITABLE . "} tai ON tai.attemptid=tu.id " .
-                "WHERE tu.readaloudid=?" .
-                " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
 
         //we need a module instance to know which scoring method we are using.
         $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $formdata->readaloudid));
         $cantranscribe = utils::can_transcribe($moduleinstance);
 
+        $emptydata = array();
+        $user_attempt_totals = array();
+
+
+        //Groups stuff
+        $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
+        $cm = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
+        $groupsmode = groups_get_activity_groupmode($cm,$course);
+        $context = empty($cm) ? \context_course::instance($course->id) : \context_module::instance($cm->id);
+        $supergrouper = has_capability('moodle/site:accessallgroups', $context, $USER->id);
+
+        //if we need to show  groups
+        if(!$supergrouper && $groupsmode ==SEPARATEGROUPS) {
+            $groups = groups_get_user_groups($course->id);
+            if (!$groups || empty($groups[0])) {
+                return false;
+            }
+            list($groupswhere, $allparams) = $DB->get_in_or_equal(array_values($groups[0]));
+
+            //if we are not machine grading the SQL is simpler
+            $human_sql = "SELECT tu.*, false as fulltranscript  FROM {" . constants::M_USERTABLE . "} tu " .
+                    " INNER JOIN {user} u ON tu.userid=u.id ".
+                    " INNER JOIN {groups_members} gm ON tu.userid=gm.userid " .
+                    " WHERE gm.groupid $groupswhere AND tu.readaloudid=?" .
+                    " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
+
+            //if we are machine grading we need to fetch human and machine so we can get WPM etc from either
+            $hybrid_sql =
+                    "SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore,tai.fulltranscript as fulltranscript FROM {" .
+                    constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
+                    " INNER JOIN {" . constants::M_AITABLE . "} tai ON tai.attemptid=tu.id " .
+                    " INNER JOIN {groups_members} gm ON tu.userid=gm.userid " .
+                    " WHERE gm.groupid $groupswhere AND tu.readaloudid=?" .
+                    " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
+
+            //if we are not doing groups its easier
+        }else {
+            //init empty params for later
+            $allparams = array();
+
+            //if we are not machine grading the SQL is simpler
+            $human_sql = "SELECT tu.*, false as fulltranscript  FROM {" . constants::M_USERTABLE .
+                    "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
+                    " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
+
+            //if we are machine grading we need to fetch human and machine so we can get WPM etc from either
+            $hybrid_sql =
+                    "SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore,tai.fulltranscript as fulltranscript FROM {" .
+                    constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
+                    "INNER JOIN {" . constants::M_AITABLE . "} tai ON tai.attemptid=tu.id " .
+                    "WHERE tu.readaloudid=?" .
+                    " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
+
+
+        }
+
+
+
+
         //run the sql and match up WPM/ accuracy and sessionscore if we need to
+        //params will have a groupid or empty at this point
+        $allparams[] = $formdata->readaloudid;
         if (($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
                 $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY)
                 && $cantranscribe) {
-            $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid));
+            $alldata = $DB->get_records_sql($hybrid_sql, $allparams);
             if ($alldata) {
                 //sessiontime is our indicator that a human grade has been saved.
                 foreach ($alldata as $result) {
@@ -213,7 +258,7 @@ class grading extends basereport {
                 }
             }
         } else {
-            $alldata = $DB->get_records_sql($human_sql, array($formdata->readaloudid));
+            $alldata = $DB->get_records_sql($human_sql, $allparams);
         }
 
         //loop through data getting most recent attempt

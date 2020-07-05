@@ -151,7 +151,7 @@ if($attempts) {
 //From here we actually display the page.
 
 //if we are teacher we see tabs. If student we just see the activity
-if (has_capability('mod/readaloud:preview', $modulecontext)) {
+if (has_capability('mod/readaloud:viewreports', $modulecontext)) {
     echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
 } else {
     echo $renderer->notabsheader();

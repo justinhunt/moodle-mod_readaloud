@@ -36,6 +36,9 @@ use \mod_readaloud\constants;
  */
 class utils {
 
+    //const CLOUDPOODLL = 'http://localhost/moodle';
+    const CLOUDPOODLL = 'https://cloud.poodll.com';
+
     //we need to consider legacy client side URLs and cloud hosted ones
     public static function make_audio_URL($filename, $contextid, $component, $filearea, $itemid) {
         //we need to consider legacy client side URLs and cloud hosted ones
@@ -48,6 +51,71 @@ class utils {
                     $filename);
         }
         return $ret;
+    }
+
+    /*
+     * Do we need to build a language model for this passage?
+     *
+     */
+    public static function needs_lang_model($readaloud) {
+        if($readaloud->region=='tokyo' &&
+                substr($readaloud->ttslanguage,0,2)=='en' &&
+            trim($readaloud->passage) !== ''){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /*
+     * Hash the passage and compare
+     *
+     */
+    public static function fetch_passagehash($readaloud) {
+        $cleantext = diff::cleanText($readaloud->passage);
+        if(!empty($cleantext)) {
+            return sha1($cleantext);
+        }else{
+            return false;
+        }
+    }
+
+
+    /*
+     * Build a language model for this passage
+     *
+     */
+    public static function fetch_lang_model($passage, $language, $region){
+        $conf= get_config(constants::M_COMPONENT);
+        if (!empty($conf->apiuser) && !empty($conf->apisecret)) {;
+            $token = self::fetch_token($conf->apiuser, $conf->apisecret);
+            //$token = self::fetch_token('russell', 'Password-123',true);
+
+            if(empty($token)){
+                return false;
+            }
+            $url = self::CLOUDPOODLL . "/webservice/rest/server.php";
+            $params["wstoken"]=$token;
+            $params["wsfunction"]='local_cpapi_generate_lang_model';
+            $params["moodlewsrestformat"]='json';
+            $params["passage"]=diff::cleanText($passage);
+            $params["language"]=$language;
+            $params["region"]=$region;
+
+            $resp = self::curl_fetch($url,$params);
+            $respObj = json_decode($resp);
+            $ret = new \stdClass();
+            if(isset($respObj->returnCode)){
+                $ret->success = $respObj->returnCode =='0' ? true : false;
+                $ret->payload = $respObj->returnMessage;
+            }else{
+                $ret->false;
+                $ret->payload = "unknown problem occurred";
+            }
+            return $ret;
+        }else{
+            return false;
+        }
     }
 
     public static function can_streaming_transcribe($instance){
@@ -278,7 +346,7 @@ class utils {
         }
 
         // Send the request & save response to $resp
-        $token_url = "https://cloud.poodll.com/local/cpapi/poodlltoken.php";
+        $token_url = self::CLOUDPOODLL . "/local/cpapi/poodlltoken.php";
         $postdata = array(
                 'username' => $apiuser,
                 'password' => $apisecret,

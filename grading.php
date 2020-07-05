@@ -58,7 +58,7 @@ if ($id) {
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
-require_capability('mod/readaloud:manage', $modulecontext);
+require_capability('mod/readaloud:viewreports', $modulecontext);
 
 //Get an admin settings 
 $config = get_config(constants::M_COMPONENT);
@@ -141,7 +141,15 @@ switch ($action) {
     //load individual attempt page with most recent(human or machine) eval and action buttons
     case 'gradenow':
 
+
         $passagehelper = new \mod_readaloud\passagehelper($attemptid, $modulecontext->id);
+
+
+        $theuserid = $passagehelper->attemptdetails('userid');
+        if (!groups_user_groups_visible($course, $theuserid, $cm)) {
+            throw new moodle_exception('nopermissiontoshow');
+        }
+
         $force_aidata = false;//ai data could still be used if not human grading. we just do not force it
         $reviewmode = $reviewmode = constants::REVIEWMODE_NONE;
         $nextid = $passagehelper->get_next_ungraded_id();
@@ -181,6 +189,14 @@ switch ($action) {
 
         //fetch attempt and ai data
         $passagehelper = new \mod_readaloud\passagehelper($attemptid, $modulecontext->id);
+
+        //check group access
+        $theuserid = $passagehelper->attemptdetails('userid');
+        if (!groups_user_groups_visible($course, $theuserid, $cm)) {
+            throw new moodle_exception('nopermissiontoshow');
+        }
+
+
         $force_aidata = true;//in this case we are just interested in ai data
         $reviewmode = $reviewmode = constants::REVIEWMODE_MACHINE;
 
@@ -200,6 +216,7 @@ switch ($action) {
         return;
 
     //load individual attempt page with machine eval (NO action buttons )
+/*
     case 'machinereview':
 
         $mode = "machinegrading";
@@ -218,8 +235,10 @@ switch ($action) {
         echo $reportrenderer->show_grading_footer($moduleinstance, $cm, $mode);
         echo $renderer->footer();
         return;
+*/
 
     //load individual attempt page with machine eval and action buttons
+/*
     case 'aigradenow':
 
         $mode = "machinegrading";
@@ -227,7 +246,6 @@ switch ($action) {
         $force_aidata = true;//in this case we are just interested in ai data
         $reviewmode = $reviewmode = constants::REVIEWMODE_NONE;
 
-        //$aigrade = new \mod_readaloud\aigrade($attemptid,$modulecontext->id);
 
         $setdata = array(
                 'action' => 'gradenowsubmit',
@@ -247,6 +265,7 @@ switch ($action) {
         echo $reportrenderer->show_grading_footer($moduleinstance, $cm, $mode);
         echo $renderer->footer();
         return;
+*/
 
     //list view of attempts and grades and action links
     case 'grading':
@@ -260,6 +279,9 @@ switch ($action) {
 
     //list view of attempts and grades and action links for a particular user
     case 'gradingbyuser':
+        if (!groups_user_groups_visible($course, $userid, $cm)) {
+            throw new moodle_exception('nopermissiontoshow');
+        }
         $report = new \mod_readaloud\report\gradingbyuser();
         //formdata should only have simple values, not objects
         //later it gets turned into urls for the export buttons
@@ -270,6 +292,7 @@ switch ($action) {
         break;
 
     //list view of attempts and machine grades and action links
+/*
     case 'machinegrading':
         $mode = "machinegrading";
         $report = new \mod_readaloud\report\machinegrading();
@@ -296,8 +319,9 @@ switch ($action) {
         $formdata->accadjust = $accadjust;
         $formdata->targetwpm = $moduleinstance->targetwpm;
         break;
-
+*/
     //list view of machine  attempts and grades and action links for a particular user
+/*
     case 'machinegradingbyuser':
         $mode = "machinegrading";
         $report = new \mod_readaloud\report\machinegradingbyuser();
@@ -308,7 +332,7 @@ switch ($action) {
         $formdata->userid = $userid;
         $formdata->modulecontextid = $modulecontext->id;
         break;
-
+*/
     default:
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo "unknown action.";
