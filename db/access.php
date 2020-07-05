@@ -105,22 +105,23 @@ $capabilities = array(
         'mod/readaloud:view' => array(
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array(
+                'archetypes' => array(
                         'guest' => CAP_ALLOW,
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
+                ),
+                'clonepermissionsfrom' => 'mod/page:view'
         ),
-
         'mod/readaloud:submit' => array(
                 'riskbitmask' => RISK_SPAM,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
-                'legacy' => array(
+                'archetypes' => array(
                         'student' => CAP_ALLOW
-                )
-        ),
+                ),
+                'clonepermissionsfrom' => 'mod/quiz:attempt'
+        )
 );
 
