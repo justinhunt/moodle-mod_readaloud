@@ -16,10 +16,13 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
                         on_speech) {
 
             var that = this;
-            cloudpoodll.init(opts['recorderid'],
+            var recid=opts['recorderid'];
+            cloudpoodll.init(recid,
+
 
                 function (message) {
-                    //console.log(message);
+
+                    console.log('rechelper',message);
                     switch (message.type) {
                         case 'recording':
                             if (message.action === 'started') {

@@ -6,14 +6,16 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
   return {
 
     currentSentence:"",
+    currentAudioStart: 0,
+    currentAudioStop: 0,
     mak: null,
-    container: null,
-    audiourl: false,
+    controls: {},
     results:[],
     init: function(props) {
       var self = this;
-      cloudpoodll.init('readaloud_pushrecorder', function(message) {
+      var recid ='readaloud_pushrecorder';
 
+      cloudpoodll.init(recid, function(message) {
         switch (message.type) {
           case 'recording':
             break;
@@ -32,11 +34,26 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       });
       self.mak = props.modelaudiokaraoke;
-      self.results = props.results;
-      self.audiourl = self.mak.fetch_audio_url();
-      self.container = $('#' + def.landrcontainer);
+
+      self.prepare_controls();
       self.register_events();
       self.register_mak();
+    },
+
+    activate: function(){
+        this.results = [];
+    },
+
+    prepare_controls: function(){
+        var self = this;
+        self.controls.container =$('#' + def.landrcontainer);
+        self.controls.hiddenplayer = $('#mod_readaloud_landr_hiddenplayer');
+        self.controls.playbutton = $('#mod_readaloud_landr_modalplay');
+        self.controls.skipbutton = $('#mod_readaloud_landr_modalskip');
+        self.controls.stopbutton = $('#mod_readaloud_landr_modalstop');
+        self.audiourl = self.mak.fetch_audio_url();
+        self.controls.hiddenplayer.attr('src',self.audiourl);
+
     },
 
     register_mak: function() {
@@ -52,6 +69,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         }
 
         self.currentSentence = sentence;
+        self.currentAudioStart = oldbreak.audiotime;
+        self.currentAudioEnd = newbreak.audiotime;
         
         log.debug(sentence);
         log.debug(oldbreak);
@@ -59,7 +78,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
         //pause audio while we do our thing
         self.mak.pause_audio();
-        self.container.modal('show');
+        self.controls.container.modal('show');
         $("#mod_readaloud_modal_target_phrase").html(sentence.replace(/[a-zA-Z0-9]/g,'').split(/ /).map(function(e){return '<span></span>';}));
 
       }
@@ -70,11 +89,34 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       var self = this;
 
-      self.container.on('hidden.bs.modal', function(e) {
-        self.mak.play_audio();
+      self.controls.playbutton.on('click',function(e){
+         self.controls.hiddenplayer[0].currentTime=self.currentAudioStart;
+          self.controls.hiddenplayer[0].play();
       });
 
+        self.controls.skipbutton.on('click',function(e){
+            self.controls.container.modal('hide');
+            if(self.controls.hiddenplayer[0].playing){
+                self.controls.hiddenplayer[0].pause();
+            }
+            self.mak.play_audio();
+        });
+
+        self.controls.stopbutton.on('click',function(e){
+            self.controls.container.modal('hide');
+            if(self.controls.hiddenplayer[0].playing){
+                self.controls.hiddenplayer[0].pause();
+            }
+        });
+
+      self.controls.hiddenplayer[0].ontimeupdate =function(){
+        if(self.controls.hiddenplayer[0].currentTime >= self.currentAudioEnd){
+            self.controls.hiddenplayer[0].pause();
+        }
+      };
+
     },
+
     spliton: new RegExp('([,.!?:;" ])', 'g'),
 
     gotComparison: function(comparison, typed) {

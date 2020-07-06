@@ -734,7 +734,7 @@ class renderer extends \plugin_renderer_base {
 
         $recorderdiv = \html_writer::div('', constants::M_CLASS . '_center',
                 array('id' => constants::M_RECORDERID,
-                        'data-id' => 'therecorder',
+                        'data-id' => constants::M_RECORDERID,
                         'data-parent' => $CFG->wwwroot,
                         'data-localloading' => 'auto',
                         'data-localloader' => '/mod/readaloud/poodllloader.html',

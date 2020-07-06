@@ -68,6 +68,9 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             dd.enablelandr =dd.activitydata.enablelandr;
             dd.setupmodelaudio();
 
+            //set up lsten an repeat
+            dd.setuplandr();
+
 
             //init recorder and html and events
             dd.setup_recorder();
@@ -87,8 +90,9 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             var karaoke_opts={breaks:this.activitydata.breaks, audioplayerclass:this.activitydata.audioplayerclass };
             modelaudiokaraoke.init(karaoke_opts);
         },
+
         setuplandr: function(){
-            var landr_opts={modelaudiokaraoke: modelaudiokaraoke, results:[]};
+            var landr_opts={modelaudiokaraoke: modelaudiokaraoke};
             landr.init(landr_opts);
         },
 
@@ -407,6 +411,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.returnmenubutton.hide();
             m.controls.previewinstructionscontainer.hide();
+            m.controls.landrinstructionscontainer.hide();
             m.controls.progresscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
@@ -423,6 +428,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.passagecontainer.addClass('previewmode');
             m.controls.passagecontainer.show();
             m.controls.previewinstructionscontainer.show();
+            m.controls.landrinstructionscontainer.hide();
             m.controls.introbox.hide();
             m.controls.returnmenubutton.show();
             m.controls.modelaudioplayer.hide();
@@ -441,9 +447,26 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
 
         dolandrlayout: function () {
             var m = this;
-            m.dopreviewlayout();
-            m.setuplandr();
-            this.landr_results=[];
+            m.controls.passagecontainer.removeClass('readmode shadowmode reviewmode nothingmode');
+            m.controls.passagecontainer.addClass('previewmode');
+            m.controls.passagecontainer.show();
+            m.controls.landrinstructionscontainer.show();
+            m.controls.previewinstructionscontainer.show();
+            m.controls.introbox.hide();
+            m.controls.returnmenubutton.show();
+            m.controls.modelaudioplayer.hide();
+            m.controls.smallreportcontainer.hide();
+            m.controls.stopandplay.show();
+            m.controls.menubuttonscontainer.hide();
+            m.controls.hider.hide();
+            m.controls.progresscontainer.hide();
+            m.controls.menuinstructionscontainer.hide();
+            m.controls.activityinstructionscontainer.hide();
+            m.controls.recordingcontainer.hide();
+            m.controls.feedbackcontainer.hide();
+            m.controls.wheretonextcontainer.hide();
+            m.controls.stopandplay.show();
+            landr.activate();
         },
 
         dopassagelayout: function () {

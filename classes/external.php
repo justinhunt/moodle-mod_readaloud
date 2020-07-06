@@ -154,32 +154,34 @@ class mod_readaloud_external extends external_api {
         $currentword = 0;
 
         //loop through diffs
-        // (could do a for loop here .. since diff count = passage words count for now index is $currentword
+        $results=[];
         foreach ($diffs as $diff) {
             $currentword++;
+            $result = new \stdClass();
+            $result->word = $passagebits[$currentword - 1];
+            $result->wordnumber = $currentword;
             switch ($diff[0]) {
                 case Diff::UNMATCHED:
                     //we collect error info so we can count and display them on passage
-                    $error = new \stdClass();
-                    $error->word = $passagebits[$currentword - 1];
-                    $error->wordnumber = $currentword;
-                    $errors->{$currentword} = $error;
+
+                    $result->matched =false;
                     break;
 
                 case Diff::MATCHED:
-                    //do need to do anything here
+                    $result->matched =true;
                     break;
 
                 default:
                     //do nothing
                     //should never get here
             }
+            $results[]=$result;
         }
 
         //finalise and serialise session errors
-        $sessionerrors = json_encode($errors);
+        $sessionresults = json_encode($results);
 
-        return $sessionerrors;
+        return $sessionresults;
 
     }
     public static function compare_passage_to_transcript_returns() {

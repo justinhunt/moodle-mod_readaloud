@@ -29,7 +29,8 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
     //init the module
     init: function(opts) {
       if (opts.breaks) {
-        this.breaks = JSON.parse(opts.breaks);
+        var breaks = JSON.parse(opts.breaks);
+        this.set_breaks(breaks);
       }
       if (opts.modeling) {
         this.modeling = true;
@@ -51,12 +52,20 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
     set_breaks: function(breaks) {
       this.breaks = breaks;
       this.sort_breaks();
+      this.number_breaks();
     },
 
     sort_breaks: function() {
       this.breaks.sort(function(a, b) {
         return a.audiotime - b.audiotime
       });
+    },
+
+    number_breaks: function(){
+      var that=this;
+        for (var i = 0; i < that.breaks.length; i++) {
+           that.breaks[i].breaknumber=i+1;
+        }
     },
 
     pause_audio: function() {
@@ -136,6 +145,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
         var startbreak = false;
         var nextbreak = false;
         for (var i = 0; i < that.breaks.length; i++) {
+
           //if this is the last marked break (ie flow till end)
           if (currentTime >= that.breaks[i].audiotime && i + 1 === that.breaks.length) {
             startbreak = that.breaks[i];
@@ -152,7 +162,8 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
           } else if (i === 0 && currentTime < that.breaks[i].audiotime && currentTime > 0) {
             startbreak = {
               wordnumber: 0,
-              audiotime: 0
+              audiotime: 0,
+              breaknumber: 0
             };
             nextbreak = that.breaks[i];
 
