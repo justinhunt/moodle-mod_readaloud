@@ -215,6 +215,9 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
 .mod_readaloud_previewinstructions_cont {
     display: none;
 }
+.mod_readaloud_landrinstructions_cont {
+    display: none;
+}
 
 div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
     display: block;
@@ -498,6 +501,9 @@ div.mod_readaloud_attemptsummarytable {
 }
 .mode-chooser.readaloud {
     background-image: url([[pix:mod_readaloud|readaloud]]);
+}
+.mode-chooser.landr {
+    background-image: url([[pix:mod_readaloud|listenandrepeat]]);
 }
 
 .mode-chooser.no-click {

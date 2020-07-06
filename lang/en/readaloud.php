@@ -356,6 +356,7 @@ $string['total_mistranscriptions'] = 'Total mistranscriptions: {$a}';
 $string['previewreading'] = 'Preview';
 $string['startreading'] = 'Normal Mode';
 $string['startshadowreading'] = 'Shadow Mode';
+$string['landrreading'] = 'Listen and Repeat';
 
 
 $string['transcriber'] = 'Transcriber';
@@ -379,6 +380,8 @@ $string['enablepreview'] = 'Enable Preview';
 $string['enablepreview_details'] = 'Preview mode shows the reading and model audio to student before the activity commences';
 $string['enableshadow'] = 'Enable Shadowing';
 $string['enableshadow_details'] = 'Shadowing mode plays the model audio as students are reading aloud.';
+$string['enablelandr'] = 'Enable Listen and Repeat';
+$string['enablelandr_details'] = 'Listen and Repeat mode plays the model audio sentence by sentence, and checks the students pronunciation.';
 $string['savemodelaudio'] = 'Save Recording';
 $string['uploadmodelaudio'] = 'Upload Audio File';
 $string['modelaudioclear'] = 'Clear Audio';
@@ -405,6 +408,7 @@ $string['chartexplainer'] = 'The chart below shows your progress over time in re
 $string['previewhelp'] = "Listen to a speaker read the passage aloud. You do not need to read aloud.";
 $string['normalhelp'] = "Read the passage aloud. Speak at a speed that is natural for you.";
 $string['shadowhelp'] = "Read the passage aloud, along with the teacher. You should wear headphones.";
+$string['landrhelp'] = "Listen to a speaker read the passage aloud. Repeat after each sentence and check your pronunciation.";
 $string['playbutton'] = "Play";
 $string['stopbutton'] = "Pause";
 

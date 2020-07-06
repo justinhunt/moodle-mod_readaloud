@@ -417,6 +417,19 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020062800, 'readaloud');
     }
 
+    // Add enable listen and repeat to readaloud table
+    if ($oldversion < 2020070500) {
+        $table = new xmldb_table('readaloud');
+
+        // Define field enablelandr to be added to readaloud
+        $field = new xmldb_field('enablelandr', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        // add field to readaloud table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2020070500, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

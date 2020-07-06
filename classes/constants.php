@@ -91,6 +91,8 @@ class constants {
     const M_MENUBUTTONS_CONTAINER = 'mod_readaloud_menubuttons_cont';
     const M_PREVIEWINSTRUCTIONS_CONTAINER = 'mod_readaloud_previewinstructions_cont';
     const M_PREVIEWINSTRUCTIONS = 'mod_readaloud_previewinstructions';
+    const M_LANDRINSTRUCTIONS_CONTAINER = 'mod_readaloud_landrinstructions_cont';
+    const M_LANDRINSTRUCTIONS = 'mod_readaloud_landrinstructions';
     const M_SMALLREPORT_CONTAINER = 'mod_readaloud_smallreport_cont';
     const M_INTRO_CONTAINER = 'mod_intro_box';
 
@@ -179,6 +181,7 @@ class constants {
     const TRANSCRIBER_GOOGLECHROME = 3;
 
     const M_STARTPREVIEW= 'mod_readaloud_button_startpreview';
+    const M_STARTLANDR= 'mod_readaloud_button_startlandr';
     const M_STARTSHADOW= 'mod_readaloud_button_startshadow';
     const M_STARTNOSHADOW= 'mod_readaloud_button_startnoshadow';
     const M_RETURNMENU= 'mod_readaloud_button_returnmenu';

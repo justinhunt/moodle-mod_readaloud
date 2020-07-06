@@ -127,6 +127,10 @@ class mod_readaloud_mod_form extends moodleform_mod {
                 get_string('enableshadow_details', constants::M_COMPONENT));
         $mform->setDefault('enableshadow', $config->enablepreview);
 
+        $mform->addElement('advcheckbox', 'enablelandr', get_string('enablelandr', constants::M_COMPONENT),
+                get_string('enablelandr_details', constants::M_COMPONENT));
+        $mform->setDefault('enablelandr', $config->enablelandr);
+
         //Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::M_COMPONENT),
                 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5',);

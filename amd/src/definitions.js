@@ -84,5 +84,8 @@ define(['jquery', 'core/log'], function ($, log) {
         smallreportheading: 'mod_readaloud_smallreport_heading',
         fullreportbutton: 'mod_readaloud_smallreport_fullreportbutton',
 
+        //listen and repeat container
+        landrcontainer: 'mod_readaloud_landr_container'
+
     };//end of return value
 });

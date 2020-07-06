@@ -346,6 +346,8 @@ echo $renderer->show_recorder($moduleinstance, $token, $debug);
 echo $renderer->show_progress($moduleinstance, $cm);
 echo $renderer->show_wheretonext($moduleinstance);
 
+//show listen and repeat dialog
+echo $renderer->show_landr($moduleinstance, $token);
 
 echo $renderer->fetch_activity_amd($cm, $moduleinstance,$token);
 

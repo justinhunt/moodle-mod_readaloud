@@ -89,6 +89,10 @@ if ($ADMIN->fulltree) {
             get_string('enableshadow', constants::M_COMPONENT),
             get_string('enableshadow_details', constants::M_COMPONENT), 0));
 
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enablelandr',
+            get_string('enablelandr', constants::M_COMPONENT),
+            get_string('enablelandr_details', constants::M_COMPONENT), 0));
+
     //Default recorders
     $rec_options = utils::fetch_options_recorders();
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT .'/defaultrecorder',

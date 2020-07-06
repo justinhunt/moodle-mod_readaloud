@@ -182,6 +182,16 @@ class renderer extends \plugin_renderer_base {
                 "<b>".get_string("previewreading", constants::M_COMPONENT)."</b>: ".
                 get_string("previewhelp", constants::M_COMPONENT)."</div></div></div>";
 
+        //Listen and Repeat button
+        if($moduleinstance->enablelandr){
+            $tabstop_class = "tabindex='0' class='mode-chooser landr'";
+        }else{
+            $tabstop_class = "class='mode-chooser landr no-click'";
+        }
+        $ret.="<div class='col-sm-4'><div id='".constants::M_STARTLANDR. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
+                "<b>".get_string("landrreading", constants::M_COMPONENT)."</b>: ".
+                get_string("landrhelp", constants::M_COMPONENT)."</div></div></div>";
+
         //attempt button
         if($canattempt){
             $tabstop_class = "tabindex='0' class='mode-chooser readaloud'";
@@ -461,6 +471,36 @@ class renderer extends \plugin_renderer_base {
         return $html;
     }
 
+    //fetch modal container
+    function fetch_modalcontainer($title,$content,$containertag){
+        $data=[];
+        $data['title']=$title;
+        $data['content']=$content;
+        $data['containertag']=$containertag;
+        return $this->render_from_template('mod_readaloud/modalcontainer', $data);
+    }
+
+
+    public function show_landr($moduleinstance, $token){
+        global $CFG, $USER;
+        //recorder modal
+        $title = get_string('landrreading',constants::M_COMPONENT);
+        $data=array( 'data-id' => 'readaloud_pushrecorder',
+                        'data-parent' => $CFG->wwwroot,
+                        'data-localloading' => 'auto',
+                        'data-localloader' => '/mod/readaloud/poodllloader.html',
+                        'data-media' => "audio",
+                        'data-language' => $moduleinstance->ttslanguage,
+                        'data-region' => $moduleinstance->region,
+                        'data-owner' => hash('md5',$USER->username),
+                        'data-token' => $token);
+
+        $content =  $this->render_from_template('mod_readaloud/listenandrepeat', $data);
+        $containertag = 'landr_container';
+        $amodalcontainer = $this->fetch_modalcontainer($title,$content,$containertag);
+        return $amodalcontainer;
+    }
+
     /**
      *
      */
@@ -518,6 +558,19 @@ class renderer extends \plugin_renderer_base {
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext, constants::M_PREVIEWINSTRUCTIONS_CONTAINER,
                 array('id' => constants::M_PREVIEWINSTRUCTIONS_CONTAINER));
+        return $ret;
+    }
+
+    /**
+     *  Show listen and repeat instructions
+     */
+    public function show_landrinstructions($showtext) {
+        $displaytext = $this->output->box_start();
+        $displaytext .= \html_writer::div($showtext,
+                constants::M_CLASS . '_center ' . constants::M_LANDRINSTRUCTIONS);
+        $displaytext .= $this->output->box_end();
+        $ret = \html_writer::div($displaytext, constants::M_LANDRINSTRUCTIONS_CONTAINER,
+                array('id' => constants::M_LANDRINSTRUCTIONS_CONTAINER));
         return $ret;
     }
 
@@ -747,13 +800,16 @@ class renderer extends \plugin_renderer_base {
         $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
         $recopts['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
         $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
+        $recopts['landrinstructionscontainer'] = constants::M_LANDRINSTRUCTIONS_CONTAINER;
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
+        $recopts['enablelandr'] = $moduleinstance->enablelandr ? true : false;
         $recopts['enablepreview'] = $moduleinstance->enablepreview ? true : false;
         $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;
         $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
         $recopts['breaks'] = $moduleinstance->modelaudiobreaks;
         $recopts['audioplayerclass'] = constants::M_MODELAUDIO_PLAYER;
+        $recopts['startlandrbutton'] = constants::M_STARTLANDR;
         $recopts['startpreviewbutton'] = constants::M_STARTPREVIEW;
         $recopts['startreadingbutton'] = constants::M_STARTNOSHADOW;
         $recopts['startshadowbutton'] = constants::M_STARTSHADOW;

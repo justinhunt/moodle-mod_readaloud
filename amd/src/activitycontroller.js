@@ -1,8 +1,8 @@
 /* jshint ignore:start */
 define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
         'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
-        'core/ajax','core/notification','mod_readaloud/smallreporthelper'],
-    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke, Ajax, notification, smallreporthelper) {
+        'core/ajax','core/notification','mod_readaloud/smallreporthelper','mod_readaloud/listenandrepeat'],
+    function ($, jqui, log, def, recorderhelper, modelaudiokaraoke, Ajax, notification, smallreporthelper, landr) {
 
     "use strict"; // jshint ;_;
 
@@ -21,6 +21,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
         rec_time_start: 0,
         enableshadow: false,
         enablepreview: false,
+        enablelandr: false,
         letsshadow: false,
         streamingresults: false,
 
@@ -64,6 +65,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             //set up model audio
             dd.enableshadow =dd.activitydata.enableshadow;
             dd.enablepreview =dd.activitydata.enablepreview;
+            dd.enablelandr =dd.activitydata.enablelandr;
             dd.setupmodelaudio();
 
 
@@ -85,6 +87,10 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             var karaoke_opts={breaks:this.activitydata.breaks, audioplayerclass:this.activitydata.audioplayerclass };
             modelaudiokaraoke.init(karaoke_opts);
         },
+        setuplandr: function(){
+            var landr_opts={modelaudiokaraoke: modelaudiokaraoke};
+            landr.init(landr_opts);
+        },
 
         process_html: function (opts) {
 
@@ -103,12 +109,14 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 menubuttonscontainer: $('.' + opts['menubuttonscontainer']),
                 menuinstructionscontainer: $('.' + opts['menuinstructionscontainer']),
                 previewinstructionscontainer: $('.' + opts['previewinstructionscontainer']),
+                landrinstructionscontainer: $('.' + opts['landrinstructionscontainer']),
                 activityinstructionscontainer: $('.' + opts['activityinstructionscontainer']),
                 recinstructionscontainerright: $('.' + opts['recinstructionscontainerright']),
                 recinstructionscontainerleft: $('.' + opts['recinstructionscontainerleft']),
                 allowearlyexit: $('.' + opts['allowearlyexit']),
                 wheretonextcontainer: $('.' + opts['wheretonextcontainer']),
                 modelaudioplayer: $('#' + opts['modelaudioplayer']),
+                startlandrbutton: $('#' + opts['startlandrbutton']),
                 startpreviewbutton: $('#' + opts['startpreviewbutton']),
                 startreadingbutton: $('#' + opts['startreadingbutton']),
                 startshadowbutton: $('#' + opts['startshadowbutton']),
@@ -219,6 +227,15 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             dd.controls.startpreviewbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13 ) {
                     dd.dopreviewlayout();
+                    e.preventDefault();
+                }
+            });
+            dd.controls.startlandrbutton.click(function(e){
+                dd.dolandrlayout();
+            });
+            dd.controls.startlandrbutton.keypress(function(e){
+                if (e.which == 32 || e.which == 13 ) {
+                    dd.dolandrlayout();
                     e.preventDefault();
                 }
             });
@@ -420,6 +437,12 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
             m.controls.stopandplay.show();
+        },
+
+        dolandrlayout: function () {
+            var m = this;
+            m.dopreviewlayout();
+            m.setuplandr();
         },
 
 

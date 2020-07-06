@@ -1,10 +1,10 @@
 define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def) {
     "use strict"; // jshint ;_;
     /*
-    This file helps you get Polly URLs at runtime
+    This file runs preview and shadow and L-and-R modes, highlighting text as the player reaches it.
      */
 
-    log.debug('Model Audio helper: initialising');
+    log.debug('Model Audio Karaoke: initialising');
 
     return {
         controls: {},
@@ -55,6 +55,18 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
 
         sort_breaks: function(){
             this.breaks.sort(function(a, b){return a.audiotime - b.audiotime});
+        },
+
+        pause_audio: function(){
+            this.controls.stopbutton.trigger('click');
+        },
+
+        play_audio: function(){
+            this.controls.playbutton.trigger('click');
+        },
+
+        fetch_audio_url: function(){
+            return this.controls.audioplayer.attr('src');
         },
 
         //load all the controls so we do not have to do it later
@@ -138,11 +150,12 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
 
                     }
                 }
-                //nothing changed since last time
-                if (that.currentstartbreak == startbreak) {
-                    //do nothing
-                    //oooh, new current break!!
-                } else {
+                //if the current break changed since last time, we do not want to do anything
+                // (on first time through we want to flag  "changed" so that is why a false current startbreak goes to "changed"
+
+               if(that.currentstartbreak ===false || startbreak.wordnumber !== that.currentstartbreak.wordnumber) {
+                    var finishedsentence=$('.'+ that.cd.activesentence).text();
+                    that.previousstartbreak=that.currentstartbreak;
                     that.currentstartbreak = startbreak;
                     that.controls.eachword.removeClass(that.cd.activesentence);
                     that.controls.eachspace.removeClass(that.cd.activesentence);
@@ -152,9 +165,17 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function ($, log, def
                             $('#' + that.cd.wordclass + '_' + thewordnumber).addClass((that.cd.activesentence));
                         }
                     }
+                    that.on_reach_audio_break(finishedsentence,that.previousstartbreak, that.currentstartbreak );
                 }
             };
-        }//end of register events
+        },//end of register events
+
+
+        on_reach_audio_break: function(sentence,oldbreak,newbreak){
+            log.debug(sentence);
+            log.debug(oldbreak);
+            log.debug(newbreak);
+        }
 
     };//end of return value
 });
