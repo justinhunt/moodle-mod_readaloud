@@ -428,3 +428,5 @@ $string['rec_once']='Just start';
 $string['rec_upload']='Upload (for devs/admins)';
 
 $string['transcriber_warning']='You have selected instant transcription. Note that this will <strong>only work if passage language and region are correct</strong>.';
+
+$string['close']='Close';
