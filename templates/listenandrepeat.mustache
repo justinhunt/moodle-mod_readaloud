@@ -1,43 +1,4 @@
-<div id="mod_readaloud_landrplayer_container" class="landr_container" >
-  <div class="landr_player_box">
-    <div style="display:none;" class="landr_results">{{#str}}dc_results, mod_poodlltime{{/str}}</div>
-
-    <div class="landr_title text-center">{{#str}}listenandrepeat, mod_poodlltime{{/str}}</div>
-
-    <div class="landr_mainmenu">
-      <div class="landr_loaded" style="display:none;">
-        <p>{{#str}}lr_instructions1, mod_poodlltime{{/str}}</p>
-        <p>{{#str}}lr_instructions2, mod_poodlltime{{/str}}</p>
-      </div>
-      <div class="landr_not_loaded">
-        <p>{{#str}}loading, mod_poodlltime{{/str}}</p>
-      </div>
-    </div>
-
-    <div style="display:none;" class="landr_game"></div>
-
-    <button disabled class='btn btn-block btn-primary landr_start_btn'>
-        <i class='fa fa-play'></i> {{#str}}start, mod_poodlltime{{/str}}
-    </button>
-
-    <div style="display:none;" class="landr_controls">
-
-      <button class="btn btn-secondary landr_ctrl-btn landr_listen_btn">
-        <i class="fa fa-volume-up"></i> {{#str}}listen, mod_poodlltime{{/str}}
-      </button>
-
-      <button class="btn btn-danger landr_ctrl-btn landr_skip_btn">
-        {{#str}}skip, mod_poodlltime{{/str}} <i class="fa fa-arrow-right"></i>
-      </button>
-
-    </div>
-
-    <div class="landr_speakbtncontainer">
-
-      {{> mod_readaloud/cloudpushrecorder}}
-
-    </div>
-
-  </div>
-
-</div>
+<div style="font-size:24px;" id="mod_readaloud_modal_target_phrase"></div><hr>
+<button style="position:absolute;left:20px;bottom:20px" class="btn btn-lg btn-secondary"><i class="fa fa-undo"></i></button>
+<button style="position:absolute;right:20px;bottom:20px" class="btn btn-lg btn-secondary"><i class="fa fa-arrow-right"></i></button>
+<div style="width:300px;margin:auto;position:absolute;left:0;right:0;bottom:0;">{{> mod_readaloud/cloudpushrecorder}}</div>

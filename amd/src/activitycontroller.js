@@ -88,7 +88,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             modelaudiokaraoke.init(karaoke_opts);
         },
         setuplandr: function(){
-            var landr_opts={modelaudiokaraoke: modelaudiokaraoke};
+            var landr_opts={modelaudiokaraoke: modelaudiokaraoke, results:[]};
             landr.init(landr_opts);
         },
 
@@ -443,8 +443,8 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             var m = this;
             m.dopreviewlayout();
             m.setuplandr();
+            this.landr_results=[];
         },
-
 
         dopassagelayout: function () {
             var m = this;
