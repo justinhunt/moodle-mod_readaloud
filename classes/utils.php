@@ -109,7 +109,7 @@ class utils {
                 $ret->success = $respObj->returnCode =='0' ? true : false;
                 $ret->payload = $respObj->returnMessage;
             }else{
-                $ret->false;
+                $ret->success=false;
                 $ret->payload = "unknown problem occurred";
             }
             return $ret;
