@@ -411,7 +411,10 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.returnmenubutton.hide();
             m.controls.previewinstructionscontainer.hide();
+
             m.controls.landrinstructionscontainer.hide();
+            landr.deactivate();
+
             m.controls.progresscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
@@ -451,7 +454,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.passagecontainer.addClass('previewmode');
             m.controls.passagecontainer.show();
             m.controls.landrinstructionscontainer.show();
-            m.controls.previewinstructionscontainer.show();
+            m.controls.previewinstructionscontainer.hide();
             m.controls.introbox.hide();
             m.controls.returnmenubutton.show();
             m.controls.modelaudioplayer.hide();

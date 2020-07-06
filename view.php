@@ -314,6 +314,7 @@ if(!empty($problembox)){
 
 echo $renderer->show_instructions($moduleinstance->welcome);
 echo $renderer->show_previewinstructions(get_string('previewhelp',constants::M_COMPONENT));
+echo $renderer->show_landrinstructions(get_string('landrhelp',constants::M_COMPONENT));
 
 echo $renderer->show_feedback($moduleinstance);
 echo $renderer->show_error($moduleinstance, $cm);

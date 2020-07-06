@@ -5,6 +5,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
   return {
 
+    activated: false,
     currentSentence:"",
     currentAudioStart: 0,
     currentAudioStop: 0,
@@ -42,6 +43,13 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
     activate: function(){
         this.results = [];
+        this.activated=true;
+    },
+    deactivate: function(){
+        if(this.mak.controls.audioplayer[0].playing){
+            this.mak.controls.audioplayer[0].pause();
+        }
+        this.activated=false;
     },
 
     prepare_controls: function(){
@@ -60,6 +68,9 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       var self = this;
       
       self.mak.on_reach_audio_break = function(sentence, oldbreak, newbreak) {
+          //do not get involved if we are not active
+          //model audio karaoke is used elsewhere (shadow and preview) as well
+          if(!self.activated){return;}
 
         // sentence contains the target text
 
