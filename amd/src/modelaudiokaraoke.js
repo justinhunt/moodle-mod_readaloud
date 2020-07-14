@@ -69,11 +69,11 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
     },
 
     pause_audio: function() {
-      this.controls.stopbutton.trigger('click');
+      this.controls.audioplayer[0].pause();
     },
 
     play_audio: function() {
-      this.controls.playbutton.trigger('click');
+      this.controls.audioplayer[0].play();
     },
 
     fetch_audio_url: function() {
@@ -104,6 +104,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
 
       this.controls.stopbutton.on('click', function() {
         aplayer.pause();
+        aplayer.currentTime=0;
       });
 
       //if we are not modeling we want to jump to the clicked location
@@ -184,13 +185,13 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
               $('#' + that.cd.wordclass + '_' + thewordnumber).addClass((that.cd.activesentence));
             }
           }
-          that.on_reach_audio_break(finishedsentence, that.previousstartbreak, that.currentstartbreak);
+          that.on_reach_audio_break(finishedsentence, that.previousstartbreak, that.currentstartbreak, that.breaks);
         }
       };
     }, //end of register events
 
 
-    on_reach_audio_break: function(sentence, oldbreak, newbreak) {
+    on_reach_audio_break: function(sentence, oldbreak, newbreak, breaks) {
       log.debug(sentence);
       log.debug(oldbreak);
       log.debug(newbreak);

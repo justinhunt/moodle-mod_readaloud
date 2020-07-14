@@ -159,8 +159,8 @@ class renderer extends \plugin_renderer_base {
   
     public function show_stopandplay($moduleinstance){
       $ret = "<div id='".constants::M_STOPANDPLAY."'>";
-      $ret .= "<button id='".constants::M_PLAY_BTN."' style='width:50%;float:left;' class='btn btn-secondary'><i class='fa fa-play'></i> ".get_string("playbutton", constants::M_COMPONENT)."</button>";
-      $ret .= "<button id='".constants::M_STOP_BTN."' style='width:50%;float:left;' class='btn btn-secondary'><i class='fa fa-pause'></i> ".get_string("stopbutton", constants::M_COMPONENT)."</button>";
+      $ret .= "<button id='".constants::M_PLAY_BTN."' style='margin:10px;width:40%;float:left;' class='btn btn-secondary'><i class='fa fa-play'></i> ".get_string("playbutton", constants::M_COMPONENT)."</button>";
+      $ret .= "<button id='".constants::M_STOP_BTN."' style='margin:10px;width:40%;float:right;' class='btn btn-secondary'><i class='fa fa-stop'></i> ".get_string("stopbutton", constants::M_COMPONENT)."</button>";
       $ret .= "</div>";
       
       return $ret; 
@@ -170,7 +170,7 @@ class renderer extends \plugin_renderer_base {
       
       global $CFG;
 
-        $ret='<div class="row '.constants::M_MENUBUTTONS_CONTAINER.'">';
+        $ret='<div class="'.constants::M_MENUBUTTONS_CONTAINER.'">';
 
         //Preview button
         if($moduleinstance->enablepreview){
@@ -178,7 +178,7 @@ class renderer extends \plugin_renderer_base {
         }else{
             $tabstop_class = "class='mode-chooser preview no-click'";
         }
-        $ret.="<div class='col-sm-4'><div id='".constants::M_STARTPREVIEW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
+        $ret.="<div><div id='".constants::M_STARTPREVIEW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
                 "<b>".get_string("previewreading", constants::M_COMPONENT)."</b>: ".
                 get_string("previewhelp", constants::M_COMPONENT)."</div></div></div>";
 
@@ -188,9 +188,19 @@ class renderer extends \plugin_renderer_base {
         }else{
             $tabstop_class = "class='mode-chooser landr no-click'";
         }
-        $ret.="<div class='col-sm-4'><div id='".constants::M_STARTLANDR. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
+        $ret.="<div><div id='".constants::M_STARTLANDR. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
                 "<b>".get_string("landrreading", constants::M_COMPONENT)."</b>: ".
                 get_string("landrhelp", constants::M_COMPONENT)."</div></div></div>";
+      
+        //shadow attempt button
+        if($moduleinstance->enableshadow){
+            $tabstop_class = "tabindex='0' class='mode-chooser readaloudshadow'";
+        }else{
+            $tabstop_class = "class='mode-chooser readaloudshadow no-click'";
+        }
+        $ret.="<div><div  id='".constants::M_STARTSHADOW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
+                "<b>".get_string("startshadowreading", constants::M_COMPONENT)."</b>: ".
+                get_string("shadowhelp", constants::M_COMPONENT)."</div></div></div>";
 
         //attempt button
         if($canattempt){
@@ -198,19 +208,10 @@ class renderer extends \plugin_renderer_base {
         }else{
             $tabstop_class = "class='mode-chooser readaloud no-click'";
         }
-        $ret.= "<div class='col-sm-4'><div id='".constants::M_STARTNOSHADOW. "' " .  $tabstop_class . "'><div class='mode-chooser-label'>".
+        $ret.= "<div><div id='".constants::M_STARTNOSHADOW. "' " .  $tabstop_class . "'><div class='mode-chooser-label'>".
                 "<b>".get_string("startreading", constants::M_COMPONENT)."</b>: ".
                 get_string("normalhelp", constants::M_COMPONENT)."</div></div></div>";
 
-        //shadow attempt button
-        if($moduleinstance->enableshadow){
-            $tabstop_class = "tabindex='0' class='mode-chooser readaloudshadow'";
-        }else{
-            $tabstop_class = "class='mode-chooser readaloudshadow no-click'";
-        }
-        $ret.="<div class='col-sm-4'><div  id='".constants::M_STARTSHADOW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
-                "<b>".get_string("startshadowreading", constants::M_COMPONENT)."</b>: ".
-                get_string("shadowhelp", constants::M_COMPONENT)."</div></div></div>";
 
         $ret.="</div>";
       

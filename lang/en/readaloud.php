@@ -410,7 +410,7 @@ $string['normalhelp'] = "Read the passage aloud. Speak at a speed that is natura
 $string['shadowhelp'] = "Read the passage aloud, along with the teacher. You should wear headphones.";
 $string['landrhelp'] = "Listen to a speaker read the passage aloud. Repeat after each sentence and check your pronunciation.";
 $string['playbutton'] = "Play";
-$string['stopbutton'] = "Pause";
+$string['stopbutton'] = "Stop";
 
 $string['returntomenu']="Return to Menu";
 $string['fullreport'] = "View Full Report";
