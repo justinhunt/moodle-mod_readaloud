@@ -487,7 +487,7 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
             //build a lang model
             $ret = utils::fetch_lang_model($readaloud->passage, $readaloud->ttslanguage, $readaloud->region);
             if ($ret && isset($ret->success) && $ret->success){
-                $readaloud->passagehash =$passagehash;
+                $readaloud->passagehash =$readaloud->region . '|'  .$passagehash;
             }else{
                 $readaloud->passagehash =null;
             }
@@ -555,11 +555,11 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
         $newpassagehash = utils::fetch_passagehash($readaloud);
         if($newpassagehash){
             //check if it has changed, if not do not waste time processing it
-            if($oldrecord->passagehash!= $newpassagehash) {
+            if($oldrecord->passagehash!= ($readaloud->region . '|' . $newpassagehash)) {
                 //build a lang model
                 $ret = utils::fetch_lang_model($readaloud->passage, $readaloud->ttslanguage, $readaloud->region);
                 if ($ret && isset($ret->success) && $ret->success)  {
-                    $readaloud->passagehash = $newpassagehash;
+                    $readaloud->passagehash = $readaloud->region . '|' . $newpassagehash;
                 }
             }
         }

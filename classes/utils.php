@@ -58,7 +58,7 @@ class utils {
      *
      */
     public static function needs_lang_model($readaloud) {
-        if($readaloud->region=='tokyo' &&
+        if(($readaloud->region=='tokyo' || $readaloud->region=='useast1') &&
                 substr($readaloud->ttslanguage,0,2)=='en' &&
             trim($readaloud->passage) !== ''){
             return true;
@@ -72,7 +72,7 @@ class utils {
      *
      */
     public static function fetch_passagehash($readaloud) {
-        $cleantext = diff::cleanText($readaloud->passage);
+        $cleantext = diff::cleanText( $readaloud->passage);
         if(!empty($cleantext)) {
             return sha1($cleantext);
         }else{

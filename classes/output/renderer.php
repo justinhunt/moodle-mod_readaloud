@@ -731,6 +731,19 @@ class renderer extends \plugin_renderer_base {
 
         //we encode any hints
         $string_hints = base64_encode(json_encode($hints));
+        //get passage hash as key for transcription vocab
+        //we sneakily add "[region]|" when we save passage hash .. so if user changes region ..we re-generate lang model
+        $transcribevocab = 'none';
+        if(!empty($moduleinstance->passagehash)){
+            $hashbits = explode('|',$moduleinstance->passagehash);
+            if(count($hashbits)==2){
+                $transcribevocab = $hashbits[1];
+            }else{
+                //in the early days there was no region prefix, so we just use the passagehash as is
+                $transcribevocab = $moduleinstance->passagehash;
+            }
+        }
+
 
         $recorderdiv = \html_writer::div('', constants::M_CLASS . '_center',
                 array('id' => constants::M_RECORDERID,
@@ -756,7 +769,7 @@ class renderer extends \plugin_renderer_base {
                         'data-speechevents' => $speechevents,
                         'data-hints' => $string_hints,
                         'data-token' => $token, //localhost
-                        'data-transcribevocab' => empty($moduleinstance->passagehash) ? 'none' : $moduleinstance->passagehash
+                        'data-transcribevocab' => $transcribevocab
                     //'data-token'=>"643eba92a1447ac0c6a882c85051461a" //cloudpoodll
                 )
         );
