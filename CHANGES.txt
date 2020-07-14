@@ -1,3 +1,6 @@
+2.0.39 (Build 2020071401)
+- fixed a few issues on small screen devices and android chrome
+
 2.0.38 (Build 2020071400)
 - Added listen and repeat mode
 - Added lang model generation
