@@ -211,7 +211,7 @@ $string['en-in'] = 'English (IN)';
 $string['es-es'] = 'Spanish (ES)';
 $string['fr-fr'] = 'French (FR)';
 $string['de-de'] = 'German (DE)';
-$string['da-dk'] = 'Danish (DK) (fast transcription only)';
+$string['da-dk'] = 'Danish (DK)';
 $string['hi-in'] = 'Hindi';
 $string['ko-kr'] = 'Korean';
 $string['ar-ae'] = 'Arabic (Gulf)';
@@ -353,18 +353,18 @@ $string['mistranscriptions'] = 'Mistranscriptions';
 $string['mistrans_count'] = 'Count';
 $string['total_mistranscriptions'] = 'Total mistranscriptions: {$a}';
 
-$string['previewreading'] = 'Preview';
-$string['startreading'] = 'Normal Mode';
-$string['startshadowreading'] = 'Shadow Mode';
-$string['landrreading'] = 'Listen and Repeat';
+$string['previewreading'] = 'Listen';
+$string['startreading'] = 'Read';
+$string['startshadowreading'] = 'Shadow Practice';
+$string['landrreading'] = 'Practice';
 
 
 $string['transcriber'] = 'Transcriber';
 $string['transcriber_details'] = 'The transcription engine to use. Instant transcription only works if passage language is US/AU/GB English or FR/CA French or US Spanish, and when using US/Dublin/Sydney/Ottawa AWS regions.';
 $string['transcriber_none'] = 'No transcription';
-$string['transcriber_amazontranscribe'] = 'Regular Transcription(AWS)';
-$string['transcriber_amazonstreaming'] = 'Instant Transcription(AWS)';
-$string['transcriber_googlecloud'] = 'Quick Transcription(Google)(audio length < 60s ony)';
+$string['transcriber_amazontranscribe'] = 'Regular Transcription(AWS): recommended';
+$string['transcriber_amazonstreaming'] = 'Instant Transcription(AWS): not reliable';
+$string['transcriber_googlecloud'] = 'Quick Transcription(Google)(audio length < 60s only)';
 
 $string['submitrawaudio'] = 'Submit uncompressed audio';
 $string['submitrawaudio_details'] = 'Submitting uncompressed audio may increase transcription accuracy, but at the expense of upload speed and reliability.';
@@ -376,18 +376,18 @@ $string['sessionscorenormal'] = 'Normal: Total correct words per min / Target_WP
 $string['sessionscorestrict'] = 'Strict: (Total correct words - errors) per min /Target WPM';
 $string['modelaudio'] = 'Model Audio';
 $string['ttsvoice'] = 'TTS Voice';
-$string['enablepreview'] = 'Enable Preview';
-$string['enablepreview_details'] = 'Preview mode shows the reading and model audio to student before the activity commences';
-$string['enableshadow'] = 'Enable Shadowing';
-$string['enableshadow_details'] = 'Shadowing mode plays the model audio as students are reading aloud.';
-$string['enablelandr'] = 'Enable Listen and Repeat';
-$string['enablelandr_details'] = 'Listen and Repeat mode plays the model audio sentence by sentence, and checks the students pronunciation.';
+$string['enablepreview'] = 'Enable Listen mode';
+$string['enablepreview_details'] = 'Listen mode shows the reading and model audio to student before the activity commences.  You should probably mark-up the model audio in the activty model-audio tab to use this feature.';
+$string['enableshadow'] = 'Enable Practice mode (Shadowing)';
+$string['enableshadow_details'] = 'Enables shadowing mode. This plays the model audio as students are reading aloud.';
+$string['enablelandr'] = 'Enable Practice mode (Listen and Repeat)';
+$string['enablelandr_details'] = 'Enables listen and repeat mode.  You must mark-up the model audio in the activty model-audio tab to use this feature.';
 $string['savemodelaudio'] = 'Save Recording';
 $string['uploadmodelaudio'] = 'Upload Audio File';
 $string['modelaudioclear'] = 'Clear Audio';
 $string['modelaudio_recordinstructions'] = 'Record audio here to be used as the model audio. You can optionally choose to upload audio by pressing the upload audio button, If you do not upload audio, then the model audio will be auto generated using the TTS language and TTS voice from the activity settings.';
 $string['modelaudio_playerinstructions'] = 'The current model audio can be played using the player below.';
-$string['modelaudio_breaksinstructions'] = 'While playing the model audio using the player above, tap words to insert markers in the text. Text between the markers will be highlighted for the reader in preview and shadow modes.';
+$string['modelaudio_breaksinstructions'] = 'While playing the model audio using the player above, tap words to insert markers in the text. Text between the markers will be highlighted for the reader in preview and shadow modes. See <a href="https://support.poodll.com/en/support/solutions/articles/19000116494-marking-up-model-audio-in-poodll-readaloud">an example</a> of how to mark up a passage.';
 $string['modelaudio_recordtitle'] = 'Record Model Audio';
 $string['modelaudio_playertitle'] = 'Play Model Audio';
 $string['modelaudio_breakstitle'] = 'Mark-up Model Audio';
@@ -408,7 +408,7 @@ $string['chartexplainer'] = 'The chart below shows your progress over time in re
 $string['previewhelp'] = "Listen to a speaker read the passage aloud. You do not need to read aloud.";
 $string['normalhelp'] = "Read the passage aloud. Speak at a speed that is natural for you.";
 $string['shadowhelp'] = "Read the passage aloud, along with the teacher. You should wear headphones.";
-$string['landrhelp'] = "Listen to a speaker read the passage aloud. Repeat after each sentence and check your pronunciation.";
+$string['landrhelp'] = "Listen to the speaker. Repeat after each sentence and check your pronunciation.";
 $string['playbutton'] = "Play";
 $string['stopbutton'] = "Stop";
 
@@ -430,3 +430,7 @@ $string['rec_upload']='Upload (for devs/admins)';
 $string['transcriber_warning']='You have selected instant transcription. Note that this will <strong>only work if passage language and region are correct</strong>.';
 
 $string['close']='Close';
+$string['modelaudiowarning']="<span style='color: red'>Model audio not marked up.</span>";
+$string['modelaudiobreaksclear']=' Clear model audio markup';
+$string['savemodelaudiomarkup']=' Save model audio markup';
+

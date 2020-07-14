@@ -96,6 +96,12 @@ switch ($action) {
             redirect($PAGE->url);
         }
         break;
+    case 'modelaudiobreaksclear':
+          $DB->update_record(constants::M_TABLE,
+                    array('id' => $moduleinstance->id, 'modelaudiobreaks' => ''));
+          redirect($PAGE->url);
+
+        break;
     case 'modelaudioclear':
 
         $DB->update_record(constants::M_TABLE, array('id' => $moduleinstance->id, 'modelaudiourl' =>''));
@@ -171,6 +177,11 @@ $setdata = array(
 $modelaudiobreaksform = new \mod_readaloud\modelaudiobreaksform(null, array());
 $modelaudiobreaksform->set_data($setdata);
 $modelaudiobreaksform->display();
+
+//clear breaks button
+$clearbutton = $OUTPUT->single_button(new \moodle_url(constants::M_URL . '/modelaudio.php',
+        array('n' => $moduleinstance->id, 'action' => 'modelaudiobreaksclear')), get_string('modelaudiobreaksclear', constants::M_COMPONENT),'get');
+echo $clearbutton;
 
 //set up the AMD js and related opts
 $modelaudio_opts = Array();

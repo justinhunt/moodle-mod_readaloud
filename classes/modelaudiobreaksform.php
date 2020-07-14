@@ -52,7 +52,7 @@ class modelaudiobreaksform extends \moodleform {
 
         $buttonarray = array();
         $buttonarray[] = &$mform->createElement('cancel');
-        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savemodelaudiomarkup',constants::M_COMPONENT));
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
 
         //	$mform->closeHeaderBefore('buttonar');

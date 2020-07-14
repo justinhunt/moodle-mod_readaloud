@@ -516,8 +516,12 @@ div.mod_readaloud_attemptsummarytable {
   background-image: url([[pix:mod_readaloud|listenandrepeat]]);
 }
 
-.mode-chooser.no-click {
+.mode-chooser.no-show {
   display:none;
+}
+.mode-chooser.no-click {
+  background-color: lightgrey;
+  pointer-events: none;
 }
 
 .mode-chooser:hover {

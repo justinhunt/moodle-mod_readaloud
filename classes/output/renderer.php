@@ -170,33 +170,39 @@ class renderer extends \plugin_renderer_base {
       
       global $CFG;
 
+      $hasaudiobreaks = !empty($moduleinstance->modelaudiobreaks);
+
         $ret='<div class="'.constants::M_MENUBUTTONS_CONTAINER.'">';
 
         //Preview button
         if($moduleinstance->enablepreview){
             $tabstop_class = "tabindex='0' class='mode-chooser preview'";
         }else{
-            $tabstop_class = "class='mode-chooser preview no-click'";
+            $tabstop_class = "class='mode-chooser preview no-show'";
         }
         $ret.="<div><div id='".constants::M_STARTPREVIEW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
                 "<b>".get_string("previewreading", constants::M_COMPONENT)."</b>: ".
                 get_string("previewhelp", constants::M_COMPONENT)."</div></div></div>";
 
         //Listen and Repeat button
-        if($moduleinstance->enablelandr){
+        $modelaudiowarning='';
+        if($moduleinstance->enablelandr  &&  $hasaudiobreaks){
             $tabstop_class = "tabindex='0' class='mode-chooser landr'";
-        }else{
+        }elseif($moduleinstance->enablelandr  &&  !$hasaudiobreaks ){
             $tabstop_class = "class='mode-chooser landr no-click'";
+            $modelaudiowarning = get_string("modelaudiowarning", constants::M_COMPONENT);
+        }else{
+            $tabstop_class = "class='mode-chooser landr no-show'";
         }
         $ret.="<div><div id='".constants::M_STARTLANDR. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
                 "<b>".get_string("landrreading", constants::M_COMPONENT)."</b>: ".
-                get_string("landrhelp", constants::M_COMPONENT)."</div></div></div>";
+                get_string("landrhelp", constants::M_COMPONENT). $modelaudiowarning . "</div></div></div>";
       
         //shadow attempt button
         if($moduleinstance->enableshadow){
             $tabstop_class = "tabindex='0' class='mode-chooser readaloudshadow'";
         }else{
-            $tabstop_class = "class='mode-chooser readaloudshadow no-click'";
+            $tabstop_class = "class='mode-chooser readaloudshadow no-show'";
         }
         $ret.="<div><div  id='".constants::M_STARTSHADOW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
                 "<b>".get_string("startshadowreading", constants::M_COMPONENT)."</b>: ".
