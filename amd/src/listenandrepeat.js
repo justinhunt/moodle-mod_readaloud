@@ -6,15 +6,15 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
   return {
 
     activated: false,
-    currentSentence:"",
+    currentSentence: "",
     currentAudioStart: 0,
     currentAudioStop: 0,
     mak: null,
     controls: {},
-    results:[],
+    results: [],
     init: function(props) {
       var self = this;
-      var recid ='readaloud_pushrecorder';
+      var recid = 'readaloud_pushrecorder';
 
       cloudpoodll.init(recid, function(message) {
         switch (message.type) {
@@ -41,36 +41,38 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.register_mak();
     },
 
-    activate: function(){
-        this.results = [];
-        this.activated=true;
+    activate: function() {
+      this.results = [];
+      this.activated = true;
     },
-    deactivate: function(){
-        if(this.mak.controls.audioplayer[0].playing){
-            this.mak.controls.audioplayer[0].pause();
-        }
-        this.activated=false;
+    deactivate: function() {
+      if (this.mak.controls.audioplayer[0].playing) {
+        this.mak.controls.audioplayer[0].pause();
+      }
+      this.activated = false;
     },
 
-    prepare_controls: function(){
-        var self = this;
-        self.controls.container =$('#' + def.landrcontainer);
-        self.controls.hiddenplayer = $('#mod_readaloud_landr_hiddenplayer');
-        self.controls.playbutton = $('#mod_readaloud_landr_modalplay');
-        self.controls.skipbutton = $('#mod_readaloud_landr_modalskip');
-        self.controls.stopbutton = $('#mod_readaloud_landr_modalstop');
-        self.audiourl = self.mak.fetch_audio_url();
-        self.controls.hiddenplayer.attr('src',self.audiourl);
+    prepare_controls: function() {
+      var self = this;
+      self.controls.container = $('#' + def.landrcontainer);
+      self.controls.hiddenplayer = $('#mod_readaloud_landr_hiddenplayer');
+      self.controls.playbutton = $('#mod_readaloud_landr_modalplay');
+      self.controls.skipbutton = $('#mod_readaloud_landr_modalskip');
+      self.controls.finishedbutton = $("#mod_readaloud_landr_modalfinished");
+      self.audiourl = self.mak.fetch_audio_url();
+      self.controls.hiddenplayer.attr('src', self.audiourl);
 
     },
 
     register_mak: function() {
       var self = this;
-      
-      self.mak.on_reach_audio_break = function(sentence, oldbreak, newbreak) {
-          //do not get involved if we are not active
-          //model audio karaoke is used elsewhere (shadow and preview) as well
-          if(!self.activated){return;}
+
+      self.mak.on_reach_audio_break = function(sentence, oldbreak, newbreak, breaks) {
+        //do not get involved if we are not active
+        //model audio karaoke is used elsewhere (shadow and preview) as well
+        if (!self.activated) {
+          return;
+        }
 
         // sentence contains the target text
 
@@ -82,15 +84,29 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         self.currentSentence = sentence;
         self.currentAudioStart = oldbreak.audiotime;
         self.currentAudioEnd = newbreak.audiotime;
-        
+
         log.debug(sentence);
         log.debug(oldbreak);
         log.debug(newbreak);
 
         //pause audio while we do our thing
-        self.mak.pause_audio();
-        self.controls.container.modal('show');
-        $("#mod_readaloud_modal_target_phrase").html(sentence.replace(/[a-zA-Z0-9]/g,'').split(/ /).map(function(e){return '<span></span>';}));
+        if (oldbreak.breaknumber == 0 && newbreak == false) {
+          // do nothing
+        } else {
+          // detect last line
+          if (newbreak.breaknumber == breaks[breaks.length - 1].breaknumber) {
+            self.controls.finishedbutton.show();
+            self.controls.skipbutton.hide();
+          } else {
+            self.controls.finishedbutton.hide();
+            self.controls.skipbutton.show();
+          }
+          self.mak.pause_audio();
+          self.controls.container.modal('show');
+          $("#mod_readaloud_modal_target_phrase").html(sentence.split(/ /).map(function(e, i) {
+            return '<div class="mod_readaloud_modal_target_word" data-index="' + i + '">' + e + '</div>';
+          }));
+        }
 
       }
 
@@ -100,29 +116,27 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       var self = this;
 
-      self.controls.playbutton.on('click',function(e){
-         self.controls.hiddenplayer[0].currentTime=self.currentAudioStart;
-          self.controls.hiddenplayer[0].play();
+      self.controls.playbutton.on('click', function(e) {
+        self.controls.hiddenplayer[0].currentTime = self.currentAudioStart;
+        self.controls.hiddenplayer[0].play();
       });
 
-        self.controls.skipbutton.on('click',function(e){
-            self.controls.container.modal('hide');
-            if(self.controls.hiddenplayer[0].playing){
-                self.controls.hiddenplayer[0].pause();
-            }
-            self.mak.play_audio();
-        });
+      self.controls.skipbutton.on('click', function(e) {
+        self.controls.container.modal('hide');
+        if (self.controls.hiddenplayer[0].playing) {
+          self.controls.hiddenplayer[0].pause();
+        }
+        self.mak.play_audio();
+      });
 
-        self.controls.stopbutton.on('click',function(e){
-            self.controls.container.modal('hide');
-            if(self.controls.hiddenplayer[0].playing){
-                self.controls.hiddenplayer[0].pause();
-            }
-        });
+      self.controls.finishedbutton.on('click', function() {
+        self.controls.container.modal('hide');
+        self.mak.controls.audioplayer[0].currentTime = 0;
+      });
 
-      self.controls.hiddenplayer[0].ontimeupdate =function(){
-        if(self.controls.hiddenplayer[0].currentTime >= self.currentAudioEnd){
-            self.controls.hiddenplayer[0].pause();
+      self.controls.hiddenplayer[0].ontimeupdate = function() {
+        if (self.controls.hiddenplayer[0].currentTime >= self.currentAudioEnd) {
+          self.controls.hiddenplayer[0].pause();
         }
       };
 
@@ -133,9 +147,12 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
     gotComparison: function(comparison, typed) {
 
       var self = this;
-      console.log("comparison:"+JSON.stringify(comparison));
-      console.log("typed:"+JSON.stringify(typed));
-      //self.results[i]=100
+      var thisClass;
+      $(".mod_readaloud_modal_target_word").removeClass("mod_readaloud_modal_target_word_correct mod_readaloud_modal_target_word_incorrect");
+      comparison.forEach(function(word, idx) {
+        thisClass = word.matched ? "mod_readaloud_modal_target_word_correct" : "mod_readaloud_modal_target_word_incorrect";
+        $(".mod_readaloud_modal_target_word[data-index='" + idx + "']").addClass(thisClass);
+      })
 
     },
     getComparison: function(passage, transcript, callback) {

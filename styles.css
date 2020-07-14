@@ -196,7 +196,6 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
 }
 
 .mod_readaloud_smallreport_cont {
-  display: none;
   padding: 5px;
   border: 1px grey solid;
 }
@@ -255,8 +254,10 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 }
 
 .mod_readaloud_menubuttons_cont {
-  /* first thing shown on view page */
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .mod_readaloud_hidden_player_button {
@@ -490,10 +491,13 @@ div.mod_readaloud_attemptsummarytable {
   margin-bottom: 10px;
   position: relative;
   background-repeat: none;
+  background-repeat: no-repeat;
+  -webkit-background-size: 100px;
   background-size: 100px;
   background-position: center 5px;
-  background-repeat: no-repeat;
   cursor: pointer;
+  width: 300px;
+  margin: 5px;
 }
 
 .mode-chooser.preview {
@@ -513,8 +517,7 @@ div.mod_readaloud_attemptsummarytable {
 }
 
 .mode-chooser.no-click {
-  background-color: lightgrey;
-  pointer-events: none;
+  display:none;
 }
 
 .mode-chooser:hover {
@@ -530,30 +533,60 @@ div.mod_readaloud_attemptsummarytable {
   border-top: 1px solid darkgray;
   text-align: center;
   padding: 5px;
+  font-size: 14px;
 }
 
 #mod_readaloud_button_stopandplay {
-  height: 30px;
+  height: 40px;
   border: 1px solid transparent;
   display: none;
 }
 
-.modal-content {
-  position: absolute !important;
+.mod_readaloud_modal_target_word {
+  margin-right: 10px;
+  display: inline-block;
+  padding: 5px;
+  margin: 5px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.mod_readaloud_modal_target_word_correct {
+  background-color: rgba(0, 255, 0, 0.5);
+}
+
+.mod_readaloud_modal_target_word_incorrect {
+  background-color: rgba(255, 0, 0, 0.5);
+}
+
+.mod_readaloud_modal_target_word_correct::after {
+  content: " ✔";
+  position: absolute;
   left: 0;
   right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  height: 250px;
-  text-align: center;
+  top: -15px;
 }
 
-.modal-dialog {
-  height: 100%;
+.mod_readaloud_modal_target_word_incorrect::after {
+  content: " ✘";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -15px;
 }
 
-.modal-open .modal {
-  overflow-x: hidden !important;
-  overflow-y: hidden !important;
+.mod_readaloud_grading_passageword {
+  cursor: pointer;
+}
+
+#mod_readaloud_landr_modalfinished {
+  display: none;
+}
+
+#mod_readaloud_modal_inner{
+  text-align:center;
+}
+
+#mod_readaloud_modal_controls{
+  height:64px;
 }
