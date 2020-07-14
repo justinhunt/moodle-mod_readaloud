@@ -1,3 +1,10 @@
+2.0.38 (Build 2020071400)
+- Added listen and repeat mode
+- Added lang model generation
+- Support for better transcription in Tokyo and US East regions
+- Tweaks to model audio page
+- Tweaks to main menu
+
 2.0.37 (Build 2020070400)
 - Support for groups mode and a few extra capablities
 
