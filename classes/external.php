@@ -122,19 +122,27 @@ class mod_readaloud_external extends external_api {
     //---------------------------------------
     public static function compare_passage_to_transcript_parameters() {
         return new external_function_parameters([
+                'cmid' => new external_value(PARAM_INT),
                 'language' => new external_value(PARAM_TEXT),
                 'passage' => new external_value(PARAM_TEXT),
-                'transcript' => new external_value(PARAM_TEXT),
-                'alternatives' => new external_value(PARAM_RAW)
+                'transcript' => new external_value(PARAM_TEXT)
         ]);
     }
 
-    public static function compare_passage_to_transcript($language,$passage,$transcript, $alternatives) {
+    public static function compare_passage_to_transcript($cmid, $language,$passage,$transcript) {
         global $DB;
+
+        if($cmid > 0){
+            $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+            $readaloud = $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
+            $alternatives = diff::fetchAlternativesArray($readaloud->alternatives);
+        }else {
+            $alternatives = diff::fetchAlternativesArray('');
+        }
+
 
         //turn the passage and transcript into an array of words
         $passagebits = diff::fetchWordArray($passage);
-        $alternatives = diff::fetchAlternativesArray($alternatives);
         $transcriptbits = diff::fetchWordArray($transcript);
         $wildcards = diff::fetchWildcardsArray($alternatives);
 

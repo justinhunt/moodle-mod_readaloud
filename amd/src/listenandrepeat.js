@@ -12,8 +12,13 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
     mak: null,
     controls: {},
     results: [],
+    cmid: 0,
+
     init: function(props) {
+
       var self = this;
+      self.cmid = props.cmid;
+      self.mak = props.modelaudiokaraoke;
       var recid = 'readaloud_pushrecorder';
 
       cloudpoodll.init(recid, function(message) {
@@ -23,6 +28,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
           case 'speech':
             self.getComparison(
+              self.cmid,
               self.currentSentence,
               message.capturedspeech,
               function(comparison) {
@@ -34,7 +40,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         }
 
       });
-      self.mak = props.modelaudiokaraoke;
+
 
       self.prepare_controls();
       self.register_events();
@@ -155,15 +161,15 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       })
 
     },
-    getComparison: function(passage, transcript, callback) {
+    getComparison: function(cmid, passage, transcript, callback) {
       var self = this;
 
       ajax.call([{
         methodname: 'mod_readaloud_compare_passage_to_transcript',
         args: {
+          cmid: cmid,
           passage: passage,
           transcript: transcript,
-          alternatives: '',
           language: 'en-US'
         },
         done: function(ajaxresult) {

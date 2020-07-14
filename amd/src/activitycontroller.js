@@ -92,7 +92,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
         },
 
         setuplandr: function(){
-            var landr_opts={modelaudiokaraoke: modelaudiokaraoke};
+            var landr_opts={modelaudiokaraoke: modelaudiokaraoke, cmid: this.cmid};
             landr.init(landr_opts);
         },
 
