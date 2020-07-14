@@ -757,7 +757,7 @@ class renderer extends \plugin_renderer_base {
                         'data-speechevents' => $speechevents,
                         'data-hints' => $string_hints,
                         'data-token' => $token, //localhost
-                        'data-vocab' => empty($moduleinstance->passagehash) ? 'none' : $moduleinstance->passagehash
+                        'data-transcribevocab' => empty($moduleinstance->passagehash) ? 'none' : $moduleinstance->passagehash
                     //'data-token'=>"643eba92a1447ac0c6a882c85051461a" //cloudpoodll
                 )
         );
