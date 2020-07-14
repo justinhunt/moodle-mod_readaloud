@@ -266,9 +266,14 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 }
             });
             dd.controls.returnmenubutton.click(function(e){
-                dd.controls.modelaudioplayer[0].currentTime=0;
-                dd.controls.modelaudioplayer[0].pause();
-                dd.domenulayout();
+                //in most cases ajax hide show is ok, but L&R stuffs up android for normal readaloud so we reload
+                if(dd.isandroid() && dd.controls.landrinstructionscontainer.is(":visible")){
+                    location.reload();
+                }else {
+                    dd.controls.modelaudioplayer[0].currentTime = 0;
+                    dd.controls.modelaudioplayer[0].pause();
+                    dd.domenulayout();
+                }
             });
         },
 
@@ -505,6 +510,13 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.errorcontainer.show();
             m.controls.wheretonextcontainer.show();
+        },
+        isandroid: function() {
+                if (/Android/i.test(navigator.userAgent)) {
+                    return true;
+                } else {
+                    return false;
+                }
         }
     };//end of returned object
 });//total end
