@@ -7,6 +7,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
     activated: false,
     currentSentence: "",
+    language: "en-US",
     currentAudioStart: 0,
     currentAudioStop: 0,
     mak: null,
@@ -19,6 +20,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       var self = this;
       self.cmid = props.cmid;
       self.mak = props.modelaudiokaraoke;
+      self.language = props.language;
       var recid = 'readaloud_pushrecorder';
 
       cloudpoodll.init(recid, function(message) {
@@ -170,7 +172,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           cmid: cmid,
           passage: passage,
           transcript: transcript,
-          language: 'en-US'
+          language: self.language
         },
         done: function(ajaxresult) {
           var payloadobject = JSON.parse(ajaxresult);
