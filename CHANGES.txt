@@ -1,3 +1,7 @@
+2.0.40 (Build 2020072701)
+- fixed issue with Listen and Repeat mode getting fixated on en-US
+- fixed issue with name of jp/analyser class
+
 2.0.39 (Build 2020071401)
 - fixed a few issues on small screen devices and android chrome
 

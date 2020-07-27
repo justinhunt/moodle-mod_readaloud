@@ -141,6 +141,12 @@ class mod_readaloud_external extends external_api {
         }
 
 
+        //If this is Japanese we want to segment it into "words"
+        if($language == constants::M_LANG_JAJP) {
+            ///$passage = utils::segment_japanese($passage);
+            $transcript = utils::segment_japanese($transcript);
+        }
+
         //turn the passage and transcript into an array of words
         $passagebits = diff::fetchWordArray($passage);
         $transcriptbits = diff::fetchWordArray($transcript);
