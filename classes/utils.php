@@ -241,7 +241,7 @@ class utils {
         $params['wstoken'] = $token;
         $params['wsfunction'] = $functionname;
         $params['moodlewsrestformat'] = 'json';
-        $params['text'] = $speaktext;//urlencode($speaktext);
+        $params['text'] = urlencode($speaktext);
         $params['texttype'] = $texttype;
         $params['voice'] = $voice;
         $params['appid'] = 'mod_readaloud';
