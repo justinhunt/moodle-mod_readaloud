@@ -61,7 +61,7 @@ class modelaudio_renderer extends \plugin_renderer_base {
         global $CFG,$USER;
         $recorderdiv = \html_writer::div('','',
                 array('id' => constants::M_RECORDERID,
-                        'data-id' => 'therecorder',
+                        'data-id' => constants::M_RECORDERID,
                         'data-parent' => $CFG->wwwroot,
                         'data-localloading' => 'auto',
                         'data-localloader' => '/mod/readaloud/poodllloader.html',
@@ -70,7 +70,7 @@ class modelaudio_renderer extends \plugin_renderer_base {
                         'data-owner' => hash('md5',$USER->username),
                         'data-type' => $uploadaudio ? "upload" : "onetwothree",
                         'data-width' => $uploadaudio ? "350" : "360",
-                        'data-height' => $uploadaudio ? "130" : "210",
+                        'data-height' => $uploadaudio ? "150" : "220",
                     //'data-iframeclass'=>"letsberesponsive",
                         'data-updatecontrol' => constants::M_MODELAUDIO_FORM_URLFIELD,
                         'data-timelimit' => 0,

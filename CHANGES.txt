@@ -1,3 +1,7 @@
+2.0.41 (Build 2020082100)
+- fixed issue with modelaudio tab not accepting recordings or uploads
+
+
 2.0.40 (Build 2020072701)
 - fixed issue with Listen and Repeat mode getting fixated on en-US
 - fixed issue with name of jp/analyser class

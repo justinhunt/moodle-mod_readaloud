@@ -18,11 +18,7 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
             var that = this;
             var recid=opts['recorderid'];
             cloudpoodll.init(recid,
-
-
                 function (message) {
-
-                    console.log('rechelper',message);
                     switch (message.type) {
                         case 'recording':
                             if (message.action === 'started') {
