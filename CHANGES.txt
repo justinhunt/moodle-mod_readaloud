@@ -1,3 +1,6 @@
+2.0.42 (Build 2020090300)
+- changed string comparisons to be binary safe
+
 2.0.41 (Build 2020082100)
 - fixed issue with modelaudio tab not accepting recordings or uploads
 

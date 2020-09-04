@@ -414,15 +414,15 @@ class diff {
     }
 
     public static function mb_strequals($str1, $str2, $encoding = null) {
-        return ($str1 == $str2);
-        /*
+        //return ($str1 == $str2);
+
         if (null === $encoding) { $encoding = mb_internal_encoding(); }
-        if (strcmp(mb_strtoupper($str1, $encoding), mb_strtoupper($str2, $encoding))==0) {
+        if (strcmp(mb_strtoupper($str1, $encoding), mb_strtoupper($str2, $encoding))===0) {
             return true;
         }else{
             return false;
         }
-        */
+
     }
 
     //for use with PHP usort and arrays of sequences
