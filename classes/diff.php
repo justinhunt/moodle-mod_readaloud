@@ -61,6 +61,18 @@ class diff {
     *
     */
     public static function cleanText($thetext,$unicodemb4=true) {
+
+        //turn unicode off if it looks it will fail
+        //really if this is case we have bigger problems at this point and should alert the user
+       // $badtext = "bad text: " . "\xf8\xa1\xa1\xa1\xa1"; //this will fail for sure
+
+        $badtext = "bad text: " . $thetext;
+        $badtextresult = preg_replace("/[[:punct:]]+/u", "", $badtext);
+        if($badtextresult=='') {
+             $unicodemb4 = false;
+        }
+
+
         //lowercaseify
         $thetext = strtolower($thetext);
 
@@ -414,14 +426,15 @@ class diff {
     }
 
     public static function mb_strequals($str1, $str2, $encoding = null) {
-        //return ($str1 == $str2);
-
+        return ($str1 == $str2);
+/*
         if (null === $encoding) { $encoding = mb_internal_encoding(); }
         if (strcmp(mb_strtoupper($str1, $encoding), mb_strtoupper($str2, $encoding))===0) {
             return true;
         }else{
             return false;
         }
+*/
 
     }
 

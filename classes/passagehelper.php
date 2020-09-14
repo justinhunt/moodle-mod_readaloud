@@ -145,7 +145,25 @@ class passagehelper {
         switch ($property) {
             case 'sessiontime':
                 if ($loading_aidata) {
-                    return $this->aidata->sessiontime;
+                    if($this->aidata->sessiontime>0) {
+                        return $this->aidata->sessiontime;
+                    }else{
+                        // if we have a time limit and not allowing early exit, we use the time limit
+                        if ($this->activitydata->timelimit > 0 && !$this->activitydata->allowearlyexit) {
+                            $sessiontime = $this->activitydata->timelimit;
+                            //else we get it from transcript (it will be stored as aidata sessiontime for next time)
+                        } else {
+                            //we get the end_time attribute of the final recognised word in the fulltranscript
+                            $sessiontime = utils::fetch_duration_from_transcript($this->aidata->fulltranscript);
+
+                            if ($sessiontime < 1) {
+                                //this is a guess now, We just don't know it. And should not really get here.
+                                $sessiontime = 60;
+                            }
+                        }
+                        return $sessiontime;
+                    }
+
                 } else {
                     return $this->attemptdetails('sessiontime');
                 }

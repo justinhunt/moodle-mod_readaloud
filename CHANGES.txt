@@ -1,3 +1,7 @@
+2.0.43 (Build 2020091300)
+- changed string comparisons again to be tolerant of unicode issues (a bit of a punt)
+- fixed issue when no exit early flag set, manual grading could fail.
+
 2.0.42 (Build 2020090300)
 - changed string comparisons to be binary safe
 
