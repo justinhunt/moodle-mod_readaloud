@@ -48,6 +48,35 @@ class diff {
     }
 
     /*
+    * Regexp replace with /u will return empty text if not unicodemb4
+    * we only really need unicodemb4 for japanese at this stage (2020/09/17)
+    * but that means we still need it. This impl is awful. There must be a better way ..
+    */
+    public static function isUnicodemb4($thetext) {
+        //$testtext = "test text: " . "\xf8\xa1\xa1\xa1\xa1"; //this will fail for sure
+
+        $thetext = strtolower($thetext);
+        //strip tags is bad for non UTF-8. It might even be the real problem we need to solve here
+        //this anecdotally might help: $thetext =utf8_decode($thetext);
+        //anyway the unicode problems appear after to combo of strtolower and strip_tags, so we call them first
+        $thetext = strip_tags($thetext);
+        $testtext = "test text: " . $thetext;
+
+        $test1 = preg_replace('/#\R+#/u', ' ', $testtext);
+        if(empty($test1)){return false;}
+        $test2 = preg_replace('/\r/u', ' ', $testtext);
+        if(empty($test2)){return false;}
+        $test3 = preg_replace('/\n/u', ' ', $testtext);
+        if(empty($test3)){return false;}
+        $test4 = preg_replace("/[[:punct:]]+/u", "", $testtext);
+        if(empty($test4)){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    /*
     * Clean word of things that might prevent a match
      * i) lowercase it
      * ii) remove html characters
@@ -61,17 +90,10 @@ class diff {
     *
     */
     public static function cleanText($thetext,$unicodemb4=true) {
-
-        //turn unicode off if it looks it will fail
-        //really if this is case we have bigger problems at this point and should alert the user
-       // $badtext = "bad text: " . "\xf8\xa1\xa1\xa1\xa1"; //this will fail for sure
-
-        $badtext = "bad text: " . $thetext;
-        $badtextresult = preg_replace("/[[:punct:]]+/u", "", $badtext);
-        if($badtextresult=='') {
-             $unicodemb4 = false;
+        //f we think its unicodemb4, first test and then get on with it
+        if($unicodemb4){
+            $unicodemb4=self::isUnicodemb4($thetext);
         }
-
 
         //lowercaseify
         $thetext = strtolower($thetext);
@@ -435,6 +457,7 @@ class diff {
             return false;
         }
 */
+
 
     }
 
