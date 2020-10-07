@@ -164,6 +164,8 @@ class passage_renderer extends \plugin_renderer_base {
         $wordcount = 0;
 
         foreach ($nodes as $node) {
+
+            //if its empty space, move on
             $trimmednode = trim($node->nodeValue);
             if (empty($trimmednode)) {
                 continue;
@@ -188,17 +190,30 @@ class passage_renderer extends \plugin_renderer_base {
                     continue;
                 }
 
-                $wordcount++;
+
                 $newnode = $doc->createElement('span', $word);
                 $spacenode = $doc->createElement('span', $seperator);
+
+                //if its a non word character eg : in 'chapter one : beginning'
+                if(\mod_readaloud\diff::cleanText($word)==='') {
+                    $node->parentNode->appendChild($newnode);
+                    $node->parentNode->appendChild($spacenode);
+                    $newnode = $doc->createElement('span', $word);
+                    continue;
+                }
+
+
                 //$newnode->appendChild($spacenode);
                 //print_r($newnode);
+                $wordcount++;
                 $newnode->setAttribute('id', constants::M_CLASS_PASSAGEWORD . '_' . $wordcount);
                 $newnode->setAttribute('data-wordnumber', $wordcount);
                 $newnode->setAttribute('class', constants::M_CLASS_PASSAGEWORD);
                 $spacenode->setAttribute('class', constants::M_CLASS_PASSAGESPACE);
                 $spacenode->setAttribute('data-wordnumber', $wordcount);
                 $spacenode->setAttribute('id', constants::M_CLASS_PASSAGESPACE . '_' . $wordcount);
+
+
                 $node->parentNode->appendChild($newnode);
                 $node->parentNode->appendChild($spacenode);
                 $newnode = $doc->createElement('span', $word);

@@ -108,6 +108,8 @@ class diff {
             $thetext = preg_replace('/\n/u', ' ', $thetext);
         }else{
             $thetext = preg_replace('/#\R+#/', ' ', $thetext);
+            $thetext = preg_replace('/\r/', ' ', $thetext);
+            $thetext = preg_replace('/\n/', ' ', $thetext);
         }
 
         //remove punctuation. This is where we needed the unicode flag

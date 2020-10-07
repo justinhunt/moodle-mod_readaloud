@@ -1,3 +1,7 @@
+
+2.0.45 (Build 2020100700)
+- non UTf8MB4 db encoding related comparison issues
+
 2.0.44 (Build 2020091700)
 - More string comparison fixes
 
