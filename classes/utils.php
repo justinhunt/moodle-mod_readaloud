@@ -58,12 +58,15 @@ class utils {
      *
      */
     public static function needs_lang_model($moduleinstance) {
-        if(($moduleinstance->region=='tokyo' || $moduleinstance->region=='useast1') &&
-                substr($moduleinstance->ttslanguage,0,2)=='en' &&
-            trim($moduleinstance->passage) !== ''){
-            return true;
-        }else{
-            return false;
+        switch($moduleinstance->region){
+            case 'tokyo':
+            case 'useast1':
+            case 'dublin':
+            case 'sydney':
+                return substr($moduleinstance->ttslanguage,0,2)=='en' && trim($moduleinstance->passage)!=="";
+                break;
+            default:
+                return false;
         }
     }
 

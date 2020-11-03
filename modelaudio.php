@@ -124,6 +124,23 @@ $passagerenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'passage');
 
 
 
+//SENTENCE SPLITTER BY PAUL
+/*$lines = explode("\n", $data['text']);
+        $chunks = [];
+        foreach ($lines as $line) {
+            if (strpos($line, '"') === false) {
+                $parts = preg_split("/([A-Z][^?!.]+[?.!])/", $line, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+            } else {
+                $parts = [$line];
+            }
+            foreach ($parts as $part) {
+                $chunks[] = $part;
+            }
+        }
+
+*/
+
+
 
 //get token
 $token = utils::fetch_token($config->apiuser,$config->apisecret);

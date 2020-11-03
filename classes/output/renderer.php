@@ -500,7 +500,7 @@ class renderer extends \plugin_renderer_base {
         }
         $string_hints = base64_encode(json_encode($hints));
 
-
+        //the original poodll pushrecorder
         $data=array( 'data-id' => 'readaloud_pushrecorder',
                         'data-parent' => $CFG->wwwroot,
                         'data-localloading' => 'auto',
@@ -511,6 +511,33 @@ class renderer extends \plugin_renderer_base {
                         'data-owner' => hash('md5',$USER->username),
                         'data-hints' => $string_hints,
                         'data-token' => $token);
+
+        //the TT recorder
+        $data['waveheight']= 75;
+        $data['maxtime']= 15000;
+        //passagehash if not empty will be region|hash eg tokyo|2353531453415134545
+        //but we only send the hash up so we strip the region
+        $data['passagehash']="";
+        if(!empty($moduleinstance->passagehash)){
+            $hashbits = explode('|',$moduleinstance->passagehash);
+            if(count($hashbits)==2){
+                $data['passagehash']  = $hashbits[1];
+            }
+        }
+        switch($moduleinstance->region) {
+            case 'tokyo':
+                $data['asrurl'] = 'https://dstokyo.poodll.com:3000/transcribe';
+                break;
+            case 'sydney':
+                $data['asrurl'] = 'https://dssydney.poodll.com:3000/transcribe';
+                break;
+            case 'dublin':
+                $data['asrurl'] = 'https://dsdublin.poodll.com:3000/transcribe';
+                break;
+            case 'useast1':
+            default:
+            $data['asrurl'] = 'https://dsuseast.poodll.com:3000/transcribe';
+        }
 
         $content =  $this->render_from_template('mod_readaloud/listenandrepeat', $data);
         $containertag = 'landr_container';

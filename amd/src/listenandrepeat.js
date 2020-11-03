@@ -1,4 +1,5 @@
-define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_readaloud/cloudpoodllloader'], function($, log, ajax, def, cloudpoodll) {
+define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_readaloud/cloudpoodllloader', 'mod_readaloud/ttrecorder'],
+    function($, log, ajax, def, cloudpoodll, ttrecorder) {
   "use strict"; // jshint ;_;
 
   log.debug('Readaloud listen and repeat: initialising');
@@ -21,27 +22,39 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.cmid = props.cmid;
       self.mak = props.modelaudiokaraoke;
       self.language = props.language;
+      self.region = props.region;
+
+      //recorder stuff
       var recid = 'readaloud_pushrecorder';
+      var theCallback =function(message) {
+          switch (message.type) {
+              case 'recording':
+                  break;
 
-      cloudpoodll.init(recid, function(message) {
-        switch (message.type) {
-          case 'recording':
-            break;
+              case 'speech':
+                  self.getComparison(
+                      self.cmid,
+                      self.currentSentence,
+                      message.capturedspeech,
+                      function(comparison) {
+                          self.gotComparison(comparison, message);
+                      }
+                  );
+                  break;
+          }
+      };
 
-          case 'speech':
-            self.getComparison(
-              self.cmid,
-              self.currentSentence,
-              message.capturedspeech,
-              function(comparison) {
-                self.gotComparison(comparison, message);
-              }
-            );
-            break;
+      if(self.use_ttrecorder()) {
+            //init tt recorder
+            var opts = {};
+            opts.uniqueid = recid;
+            opts.callback = theCallback;
+            ttrecorder.clone().init(opts);
+      }else{
+            //init cloudpoodll push recorder
+            cloudpoodll.init(recid, theCallback);
+      }
 
-        }
-
-      });
 
 
       self.prepare_controls();
@@ -187,7 +200,50 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         }
       }]);
 
-    }
+    },
+
+      mobile_user: function() {
+
+          if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+              return true;
+          } else {
+              return false;
+          }
+      },
+
+      chrome_user: function(){
+          if(/Chrome/i.test(navigator.userAgent)) {
+              return true;
+          }else{
+              return false;
+          }
+      },
+
+      use_ttrecorder: function(){
+          var ret =false;
+          if(this.mobile_user()){
+              ret = true;
+          }else if(this.chrome_user()){
+              ret = false;
+          }else{
+              ret = true;
+          }
+          if(ret===false){return false;}
+
+          //check if language and region are ok
+          switch(this.region){
+              case 'tokyo':
+              case 'useast1':
+              case 'dublin':
+              case 'sydney':
+                  ret = this.language.substr(0,2)==='en';
+                  break;
+              default:
+                  ret = false;
+          }
+          return ret;
+      },
+
 
   };
 });

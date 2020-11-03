@@ -1,4 +1,7 @@
 
+2.0.46 (Build 2020110400)
+- added alternative speech recognizer and recorder for listen&repeat mode if not Google Chrome
+
 2.0.45 (Build 2020100700)
 - non UTf8MB4 db encoding related comparison issues
 
