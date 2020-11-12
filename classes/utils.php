@@ -36,7 +36,7 @@ use \mod_readaloud\constants;
  */
 class utils {
 
-    //const CLOUDPOODLL = 'http://localhost/moodle';
+  //  const CLOUDPOODLL = 'http://localhost/moodle';
     const CLOUDPOODLL = 'https://cloud.poodll.com';
 
     //we need to consider legacy client side URLs and cloud hosted ones
@@ -250,7 +250,7 @@ class utils {
         $params['appid'] = 'mod_readaloud';
         $params['owner'] = hash('md5',$USER->username);
         $params['region'] = $region;
-        $serverurl = 'https://cloud.poodll.com/webservice/rest/server.php';
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
             return false;
@@ -258,7 +258,7 @@ class utils {
         $payloadobject = json_decode($response);
 
         //returnCode > 0  indicates an error
-        if ($payloadobject->returnCode > 0) {
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
             return false;
             //if all good, then lets do the embed
         } else if ($payloadobject->returnCode === 0) {

@@ -83,7 +83,7 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enablepreview',
             get_string('enablepreview', constants::M_COMPONENT),
-            get_string('enablepreview_details', constants::M_COMPONENT), 0));
+            get_string('enablepreview_details', constants::M_COMPONENT), 1));
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enableshadow',
             get_string('enableshadow', constants::M_COMPONENT),
@@ -91,7 +91,7 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enablelandr',
             get_string('enablelandr', constants::M_COMPONENT),
-            get_string('enablelandr_details', constants::M_COMPONENT), 0));
+            get_string('enablelandr_details', constants::M_COMPONENT), 1));
 
     //Default recorders
     $rec_options = utils::fetch_options_recorders();
