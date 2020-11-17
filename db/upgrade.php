@@ -32,6 +32,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \mod_readaloud\utils;
+
 /**
  * Execute readaloud upgrade from the given old version
  *
@@ -428,6 +430,15 @@ function xmldb_readaloud_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
         upgrade_mod_savepoint(true, 2020070500, 'readaloud');
+    }
+
+    // Make sure language models are saved on langservices server.
+    if ($oldversion < 2020111700) {
+        $mods = $DB->get_records('readaloud',array());
+        foreach ($mods as $themod) {
+            utils::fetch_lang_model($themod->passage,$themod->ttslanguage,$themod->region);
+        }
+        upgrade_mod_savepoint(true, 2020111700, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
