@@ -1,4 +1,7 @@
 
+2.0.47 (Build 2020111700)
+- new speech servers
+
 2.0.46 (Build 2020110400)
 - added alternative speech recognizer and recorder for listen&repeat mode if not Google Chrome
 - better defaults

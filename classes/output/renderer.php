@@ -526,17 +526,21 @@ class renderer extends \plugin_renderer_base {
         }
         switch($moduleinstance->region) {
             case 'tokyo':
-                $data['asrurl'] = 'https://dstokyo.poodll.com:3000/transcribe';
+                $data['asrurl'] = 'https://tokyo.ls.poodll.com/transcribe';
+                //$data['asrurl'] = 'https://dstokyo.poodll.com:3000/transcribe';
                 break;
             case 'sydney':
-                $data['asrurl'] = 'https://dssydney.poodll.com:3000/transcribe';
+                $data['asrurl'] = 'https://sydney.ls.poodll.com/transcribe';
+                //$data['asrurl'] = 'https://dssydney.poodll.com:3000/transcribe';
                 break;
             case 'dublin':
-                $data['asrurl'] = 'https://dsdublin.poodll.com:3000/transcribe';
+                $data['asrurl'] = 'https://dublin.ls.poodll.com/transcribe';
+                //$data['asrurl'] = 'https://dsdublin.poodll.com:3000/transcribe';
                 break;
             case 'useast1':
             default:
-            $data['asrurl'] = 'https://dsuseast.poodll.com:3000/transcribe';
+              $data['asrurl'] = 'https://useast.ls.poodll.com/transcribe';
+            //$data['asrurl'] = 'https://dsuseast.poodll.com:3000/transcribe';
         }
 
         $content =  $this->render_from_template('mod_readaloud/listenandrepeat', $data);
