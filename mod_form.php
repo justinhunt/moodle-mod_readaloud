@@ -37,6 +37,34 @@ use \mod_readaloud\constants;
  */
 class mod_readaloud_mod_form extends moodleform_mod {
 
+    public function __construct($current, $section, $cm, $course, $ajaxformdata=null) {
+        global $CFG;
+        $this->current   = $current;
+        $this->_instance = $current->instance;
+        $this->_section  = $section;
+        $this->_cm       = $cm;
+        $this->_course   = $course;
+        if ($this->_cm) {
+            $this->context = context_module::instance($this->_cm->id);
+        } else {
+            $this->context = context_course::instance($course->id);
+        }
+        // Set the course format.
+        require_once($CFG->dirroot . '/course/format/lib.php');
+        $this->courseformat = course_get_format($course);
+        // Guess module name if not set.
+        if (is_null($this->_modname)) {
+            $matches = array();
+            if (!preg_match('/^mod_([^_]+)_mod_form$/', get_class($this), $matches)) {
+                debugging('Rename form to mod_xx_mod_form, where xx is name of your module');
+                print_error('unknownmodulename');
+            }
+            $this->_modname = $matches[1];
+        }
+        $this->init_features();
+        moodleform::__construct('modedit.php', null, 'post', '', null, true, $ajaxformdata);
+    }
+
     /**
      * Defines forms elements
      */
