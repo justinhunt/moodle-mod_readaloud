@@ -360,11 +360,13 @@ $string['landrreading'] = 'Practice';
 
 
 $string['transcriber'] = 'Transcriber';
-$string['transcriber_details'] = 'The transcription engine to use. Instant transcription only works if passage language is US/AU/GB English or FR/CA French or US Spanish, and when using US/Dublin/Sydney/Ottawa AWS regions.';
+$string['transcriber_details'] = 'The transcription engine to use. AWS works best with ReadAloud.';
 $string['transcriber_none'] = 'No transcription';
 $string['transcriber_amazontranscribe'] = 'Regular Transcription(AWS): recommended';
-$string['transcriber_amazonstreaming'] = 'Instant Transcription(AWS): not reliable';
 $string['transcriber_googlecloud'] = 'Quick Transcription(Google)(audio length < 60s only)';
+
+$string['stricttranscribe'] = 'Strict Transcription';
+$string['stricttranscribemode_details'] = 'By default ReadAloud transcribes generously, particularly in English. Set to strict to get more speech mistakes.';
 
 $string['submitrawaudio'] = 'Submit uncompressed audio';
 $string['submitrawaudio_details'] = 'Submitting uncompressed audio may increase transcription accuracy, but at the expense of upload speed and reliability.';

@@ -441,6 +441,20 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020111700, 'readaloud');
     }
 
+    // Add stricttranscribe to readaloud table
+    if ($oldversion < 2020121400) {
+        $table = new xmldb_table('readaloud');
+
+        //This allows the activity admin to submit raw audio (as opposed to recording). Usually for some sort of disaster recovery
+        $field = new xmldb_field('stricttranscribe', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // add field to readaloud table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2020121400, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

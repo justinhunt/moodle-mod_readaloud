@@ -51,6 +51,7 @@
                 <FIELD NAME="recorder" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" DEFAULT="readaloud" COMMENT="The audio recorder to use"/>
                 <FIELD NAME="activitylink" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="submitrawaudio" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="stricttranscribe" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
             </FIELDS>

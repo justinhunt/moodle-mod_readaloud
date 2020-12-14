@@ -1249,7 +1249,6 @@ class utils {
     public static function fetch_options_transcribers() {
         $options =
                 array(constants::TRANSCRIBER_AMAZONTRANSCRIBE => get_string("transcriber_amazontranscribe", constants::M_COMPONENT),
-                        constants::TRANSCRIBER_AMAZONSTREAMING => get_string("transcriber_amazonstreaming", constants::M_COMPONENT),
                         constants::TRANSCRIBER_GOOGLECLOUDSPEECH => get_string("transcriber_googlecloud", constants::M_COMPONENT));
         return $options;
     }

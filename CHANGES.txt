@@ -1,3 +1,7 @@
+2.0.48 (Build 2020121400)
+-Added an ajax fragmentable form constructor
+-Removed AWS streaming transcription option
+-Added a strict mode for transcription
 
 2.0.47 (Build 2020111700)
 - new speech servers

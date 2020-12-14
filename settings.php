@@ -81,6 +81,9 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/submitrawaudio',
             get_string('submitrawaudio', constants::M_COMPONENT), get_string('submitrawaudio_details', constants::M_COMPONENT), 0));
 
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/stricttranscribe',
+            get_string('stricttranscribe', constants::M_COMPONENT), get_string('stricttranscribemode_details', constants::M_COMPONENT), 0));
+
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enablepreview',
             get_string('enablepreview', constants::M_COMPONENT),
             get_string('enablepreview_details', constants::M_COMPONENT), 1));

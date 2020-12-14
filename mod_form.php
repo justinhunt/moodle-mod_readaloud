@@ -260,6 +260,11 @@ class mod_readaloud_mod_form extends moodleform_mod {
                 get_string('submitrawaudio_details', constants::M_COMPONENT));
         $mform->setDefault('submitrawaudio', $config->submitrawaudio);
 
+        //Strict Transcribe Mode
+        $mform->addElement('advcheckbox', 'stricttranscribe', get_string('stricttranscribe', constants::M_COMPONENT),
+                get_string('stricttranscribemode_details', constants::M_COMPONENT));
+        $mform->setDefault('stricttranscribe', $config->submitrawaudio);
+
         // Post attempt
         $mform->addElement('header', 'postattemptheader', get_string('postattemptheader', constants::M_COMPONENT));
 

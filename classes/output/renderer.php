@@ -760,15 +760,15 @@ class renderer extends \plugin_renderer_base {
 
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
 
-        //We did double up streaming and standard AWS transcription, but it was constly and a bit useless.
-        //so now its one or the other.
+        //We no longer want to use AWS streaming transcription.
         switch ($moduleinstance->transcriber){
             case constants::TRANSCRIBER_AMAZONSTREAMING :
+                $moduleinstance->transcriber = constants::TRANSCRIBER_AMAZONTRANSCRIBE;
                 //this flag tells AWS not to send to amazon transcribe
-                $transcribe = "0";
-                $hints->streamingtranscriber = 'aws';
-                $speechevents = '1';
-                break;
+               // $transcribe = "0";
+               // $hints->streamingtranscriber = 'aws';
+               // $speechevents = '1';
+               // break;
             case constants::TRANSCRIBER_AMAZONTRANSCRIBE:
             case constants::TRANSCRIBER_GOOGLECLOUDSPEECH:
             case constants::TRANSCRIBER_NONE:
@@ -782,7 +782,7 @@ class renderer extends \plugin_renderer_base {
         //get passage hash as key for transcription vocab
         //we sneakily add "[region]|" when we save passage hash .. so if user changes region ..we re-generate lang model
         $transcribevocab = 'none';
-        if(!empty($moduleinstance->passagehash)){
+        if(!empty($moduleinstance->passagehash) && !$moduleinstance->stricttranscribe){
             $hashbits = explode('|',$moduleinstance->passagehash);
             if(count($hashbits)==2){
                 $transcribevocab = $hashbits[1];
@@ -879,10 +879,8 @@ class renderer extends \plugin_renderer_base {
         $recopts['stopbutton'] = constants::M_STOP_BTN;
         $recopts['playbutton'] = constants::M_PLAY_BTN;
       
-        //streaming transcriber
-        //if not available we switch to amazon transcribe
-        if($moduleinstance->transcriber == constants::TRANSCRIBER_AMAZONSTREAMING &&
-                !utils::can_streaming_transcribe($moduleinstance)){
+        //streaming transcriber: we do not want to use it anymore.
+        if($moduleinstance->transcriber == constants::TRANSCRIBER_AMAZONSTREAMING){
             $moduleinstance->transcriber=constants::TRANSCRIBER_AMAZONTRANSCRIBE;
         }
         $recopts['transcriber']=$moduleinstance->transcriber;
