@@ -1,3 +1,7 @@
+
+2.0.49 (Build 2021012400)
+- Better support for non English languages in practice mode
+
 2.0.48 (Build 2020121400)
 -Added an ajax fragmentable form constructor
 -Removed AWS streaming transcription option

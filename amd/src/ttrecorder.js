@@ -27,6 +27,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
         passagehash: null,
         region: null,
         asrurl: null,
+        lang: "en-US",
 
         //for making multiple instances
         clone: function () {
@@ -108,11 +109,13 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
         },
 
         prepare_html: function(){
+            debugger;
             this.controls.recordercontainer =$('#ttrec_container_' + this.uniqueid);
             this.controls.recorderbutton = $('#ttrec_' + this.uniqueid + '_recorderdiv');
             this.passagehash =this.controls.recorderbutton.data('passagehash');
             this.region=this.controls.recorderbutton.data('region');
             this.asrurl=this.controls.recorderbutton.data('asrurl');
+            this.lang =this.controls.recorderbutton.data('lang');
             this.maxTime=this.controls.recorderbutton.data('maxtime');
             this.waveHeight=this.controls.recorderbutton.data('waveheight');
         },
@@ -236,7 +239,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             var blobname = this.uniqueid + Math.floor(Math.random() * 100) +  '.wav';
             bodyFormData.append('audioFile', blob, blobname);
             bodyFormData.append('scorer', this.passagehash);
-
+            bodyFormData.append('lang', this.lang);
             var oReq = new XMLHttpRequest();
             oReq.open("POST", this.asrurl, true);
             oReq.onUploadProgress= function(progressEvent) {};

@@ -236,7 +236,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
               case 'useast1':
               case 'dublin':
               case 'sydney':
-                  ret = this.language.substr(0,2)==='en';
+                  //ret = this.language.substr(0,2)==='en';
+                  ret =true;
                   break;
               default:
                   ret = false;
