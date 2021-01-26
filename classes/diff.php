@@ -466,10 +466,16 @@ class diff {
     //for use with PHP usort and arrays of sequences
     //sort array so that long sequences come first.
     //if sequences are of equal length, the one whose transcript index is earlier comes first
+    //if transcript positions are equal the ones whose pposition is earlier is selected
     public static function cmp($a, $b) {
         if ($a->length == $b->length) {
             if ($a->tposition == $b->tposition) {
-                return 0;
+                if($a->pposition == $b->pposition){
+                    return 0;
+                }else{
+                    return ($a->pposition < $b->pposition) ? -1 : 1;
+                }
+
             } else {
                 return ($a->tposition < $b->tposition) ? -1 : 1;
             }
@@ -546,6 +552,7 @@ class diff {
 
                 //distance between passage location and transcript length
                 $enddistance = $sequence->pposition - $transcriptlength;
+                //$enddistance = $passagelength - $transcriptlength;
 
                 //ratio of alternates to full matches
                 $altcount = count($sequence->altpositions);
@@ -557,9 +564,14 @@ class diff {
 
                 //common is short matches after speaking ends
                 //particularly dangerous are wildcards and alternates
+                //The gist of this is that if the passage match leaps far ahead of the transcript position it looks like a bogus match
+                // on a "the" or "a" which are truncated "there" or "about." As the distance from pposition from transcript length increases
+                // the "leap" distance increases, so the chance of a false far match increases.
+                // However skipped sentences are possible, so we arbitrarily set a 3 word false match limit
+                //[alternatively we might see if the sequence is up until the last transcribed word (which is where it occurs most often]
                 if (($altratio >= 0.5) && $enddistance > 0) {
                     $bust = true;
-                } else if ($sequence->length < $enddistance) {
+                } else if ($sequence->length < $enddistance && $sequence->length<4) {
                     $bust = true;
                 }
             }
