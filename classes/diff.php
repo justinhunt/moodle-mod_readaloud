@@ -567,11 +567,11 @@ class diff {
                 //The gist of this is that if the passage match leaps far ahead of the transcript position it looks like a bogus match
                 // on a "the" or "a" which are truncated "there" or "about." As the distance from pposition from transcript length increases
                 // the "leap" distance increases, so the chance of a false far match increases.
-                // However skipped sentences are possible, so we arbitrarily set a 3 word false match limit
+                // However skipped sentences are possible, so we arbitrarily set a 2 word false match limit
                 //[alternatively we might see if the sequence is up until the last transcribed word (which is where it occurs most often]
                 if (($altratio >= 0.5) && $enddistance > 0) {
                     $bust = true;
-                } else if ($sequence->length < $enddistance && $sequence->length<4) {
+                } else if ($sequence->length < $enddistance && $sequence->length<3) {
                     $bust = true;
                 }
             }
