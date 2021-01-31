@@ -13,6 +13,7 @@ define(['jquery', 'core/log'], function ($, log) {
         final_transcript: '',
         start_timestamp: 0,
         lang: 'en-US',
+        interval: 0,
 
 
         //for making multiple instances
@@ -24,13 +25,21 @@ define(['jquery', 'core/log'], function ($, log) {
             return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
         },
 
-        init: function (lang) {
+        init: function (lang,waveheight,uniqueid) {
             var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
             this.recognition = new SpeechRecognition();
             this.recognition.continuous = true;
             this.recognition.interimResults = true;
             this.lang = lang;
+            this.waveHeight = waveheight;
+            this.uniqueid = uniqueid;
+            this.prepare_html();
             this.register_events();
+        },
+
+        prepare_html: function(){
+            this.canvas =$('#' + this.uniqueid + "_waveform");
+            this.canvasCtx = this.canvas[0].getContext("2d");
         },
 
         set_grammar: function (grammar) {
@@ -42,8 +51,10 @@ define(['jquery', 'core/log'], function ($, log) {
             }
         },
 
-        start: function (stream) {
-            //browser recognition does not actually need to the stream
+        start: function () {
+            var that =this;
+
+            //If we already started ignore this
             if (this.recognizing) {
                 return;
             }
@@ -54,13 +65,19 @@ define(['jquery', 'core/log'], function ($, log) {
             this.ignore_onend = false;
             this.start_timestamp = Date.now();//event.timeStamp;
 
+            //kick off animation
+            that.interval = setInterval(function() {
+                that.drawWave();
+            }, 100);
+
+
         },
         stop: function () {
-            // if (this.recognizing) {
             this.recognizing = false;
             this.recognition.stop();
-            return;
-            //}
+            clearInterval(this.interval);
+            this.canvasCtx.clearRect(0, 0, this.canvas.width()*2, this.waveHeight * 2);
+
         },
 
         register_events: function () {
@@ -70,6 +87,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
             recognition.onstart = function () {
                 that.recognizing = true;
+                that.onstart();
 
             };
             recognition.onerror = function (event) {
@@ -89,6 +107,7 @@ define(['jquery', 'core/log'], function ($, log) {
                     }
                     that.ignore_onend = true;
                 }
+                that.onerror();
             };
             recognition.onend = function () {
                 //that.recognizing = false;
@@ -103,6 +122,7 @@ define(['jquery', 'core/log'], function ($, log) {
                 } else {
                     recognition.start();
                 }
+                that.onend();
 
             };
             recognition.onresult = function (event) {
@@ -118,10 +138,51 @@ define(['jquery', 'core/log'], function ($, log) {
                     }
                 }
 
-
             };
         },//end of register events
 
+        drawWave: function() {
+
+            var width = this.canvas.width() * 2;
+            var bufferLength=4096;
+
+            this.canvasCtx.fillStyle = 'white';
+            this.canvasCtx.fillRect(0, 0, width, this.waveHeight*2);
+
+            this.canvasCtx.lineWidth = 5;
+            this.canvasCtx.strokeStyle = 'gray';
+            this.canvasCtx.beginPath();
+
+            var slicewaveWidth = width / bufferLength;
+            var x = 0;
+
+            for (var i = 0; i < bufferLength; i++) {
+
+                var v = ((Math.random() * 64) + 96) / 128.0;
+                var y = v * this.waveHeight;
+
+                if (i === 0) {
+                    // this.canvasCtx.moveTo(x, y);
+                } else {
+                    this.canvasCtx.lineTo(x, y);
+                }
+                x += slicewaveWidth;
+            }
+
+            this.canvasCtx.lineTo(width, this.waveHeight);
+            this.canvasCtx.stroke();
+
+        },
+
+        onstart: function () {
+            log.debug('started');
+        },
+        onerror: function () {
+            log.debug('error');
+        },
+        onend: function () {
+            log.debug('end');
+        },
         onfinalspeechcapture: function (speechtext,speechresults) {
             log.debug(speechtext);
         },
