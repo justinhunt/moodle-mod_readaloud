@@ -55,7 +55,7 @@ class diff {
     public static function isUnicodemb4($thetext) {
         //$testtext = "test text: " . "\xf8\xa1\xa1\xa1\xa1"; //this will fail for sure
 
-        $thetext = strtolower($thetext);
+        $thetext =  \core_text::strtolower($thetext);
         //strip tags is bad for non UTF-8. It might even be the real problem we need to solve here
         //this anecdotally might help: $thetext =utf8_decode($thetext);
         //anyway the unicode problems appear after to combo of strtolower and strip_tags, so we call them first
@@ -96,7 +96,7 @@ class diff {
         }
 
         //lowercaseify
-        $thetext = strtolower($thetext);
+        $thetext = \core_text::strtolower($thetext);
 
         //remove any html
         $thetext = strip_tags($thetext);

@@ -1,5 +1,7 @@
-2.0.50 (Build xxxxx)
-- Improved differencing
+2.0.50  (Build 2021013100)
+ -Improved differencing
+ -Standardized audio recorder
+ -Better support for languages with non Latin alphabet
 
 
 2.0.49 (Build 2021012400)

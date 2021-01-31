@@ -1,4 +1,5 @@
-define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'], function ($, log, audioHelper, notification) {
+define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification','mod_readaloud/ttbrowserrec'],
+    function ($, log, audioHelper, notification, browserRec) {
     "use strict"; // jshint ;_;
     /*
     *  The TT recorder
@@ -27,7 +28,9 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
         passagehash: null,
         region: null,
         asrurl: null,
-        lang: "en-US",
+        lang: null,
+        browserrec: null,
+        usebrowserrec: false,
 
         //for making multiple instances
         clone: function () {
@@ -47,12 +50,28 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             this.register_events();
             this.audiohelper =  audioHelper.clone();
             this.audiohelper.init(this.waveHeight,this.uniqueid,this);
+            if(browserRec.will_work_ok()){
+                this.browserrec = browserRec.clone();
+                this.browserrec.init(this.lang);
+                this.usebrowserrec=true;
+                this.browserrec.onfinalspeechcapture=function(speechtext){
+                    if(that.audio.isRecording) {
+                        that.audiohelper.stop();
+                    }
+                    that.update_audio('isRecognizing',false);
+                    that.gotRecognition(speechtext);};
+            }
 
             var on_gotstream=  function(stream) {
 
                 var newaudio={stream: stream, isRecording: true};
                 that.update_audio(newaudio);
                 that.currentTime = 0;
+
+                //if user browwserrec
+                if(that.usebrowserrec) {
+                    that.browserrec.start();
+                }
 
                 that.interval = setInterval(function() {
                     if (that.currentTime < that.maxTime) {
@@ -82,6 +101,12 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             var on_stopped = function(blob) {
                 clearInterval(that.interval);
 
+                //if browserrec
+                if(that.usebrowserrec){
+                    that.browserrec.stop();
+                    return;
+                }
+
                 var newaudio = {
                     blob: blob,
                     dataURI: URL.createObjectURL(blob),
@@ -109,7 +134,6 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
         },
 
         prepare_html: function(){
-            debugger;
             this.controls.recordercontainer =$('#ttrec_container_' + this.uniqueid);
             this.controls.recorderbutton = $('#ttrec_' + this.uniqueid + '_recorderdiv');
             this.passagehash =this.controls.recorderbutton.data('passagehash');
@@ -180,7 +204,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
         },
 
         gotRecognition:function(transcript){
-            log.debug('transcript');
+            log.debug('transcript:' + transcript);
             var message={};
             message.type='speech';
             message.capturedspeech = transcript;
@@ -189,7 +213,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
         },
 
         cleanWord: function(word) {
-            return word.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+            return word.replace(/['!"#$%&\\'()\*+,\-\.\/:;<=>?@\[\\\]\^_`{|}~']/g,"").toLowerCase();
         },
 
         recordBtnContent: function() {

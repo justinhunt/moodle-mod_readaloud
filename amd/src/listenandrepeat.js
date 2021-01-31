@@ -166,7 +166,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
     spliton: new RegExp('([,.!?:;" ])', 'g'),
 
     gotComparison: function(comparison, typed) {
-
+     if(!comparison){return;}
       var self = this;
       var thisClass;
       $(".mod_readaloud_modal_target_word").removeClass("mod_readaloud_modal_target_word_correct mod_readaloud_modal_target_word_incorrect");
@@ -221,14 +221,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       use_ttrecorder: function(){
           var ret =false;
-          if(this.mobile_user()){
-              ret = true;
-          }else if(this.chrome_user()){
-              ret = false;
-          }else{
-              ret = true;
-          }
-          if(ret===false){return false;}
+
 
           //check if language and region are ok
           switch(this.region){
@@ -240,7 +233,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
                   ret =true;
                   break;
               default:
-                  ret = false;
+                  ret = this.chrome_user();
           }
           return ret;
       },
