@@ -31,6 +31,8 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             lang: null,
             browserrec: null,
             usebrowserrec: false,
+            currentTime: 0,
+            ds_only: false,
 
             //for making multiple instances
             clone: function () {
@@ -43,38 +45,43 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
 
                 this.uniqueid=opts['uniqueid'];
                 this.callback=opts['callback'];
+                this.ds_only = opts['ds_only'] ? opts['ds_only'] : false;
                 this.prepare_html();
                 this.controls.recordercontainer.show();
                 this.register_events();
 
-                if(browserRec.will_work_ok()){
+
+
+                //If browser rec (Chrome Speech Rec) (and ds is optiona)
+                if(browserRec.will_work_ok() && ! this.ds_only){
+                    //Init browserrec
+                    log.debug("using browser rec");
                     this.browserrec = browserRec.clone();
                     this.browserrec.init(this.lang,this.waveHeight,this.uniqueid);
                     this.usebrowserrec=true;
-                }else{
-                    this.audiohelper =  audioHelper.clone();
-                    this.audiohelper.init(this.waveHeight,this.uniqueid,this);
-                }
 
-
-                if(this.usebrowserrec){
+                    //set up events
                     that.browserrec.onerror = on_error;
                     that.browserrec.onend = function(){
-                        that.browserrec.stop();
-                        that.update_audio('isRecording',false);
-                        that.update_audio('isRecognizing',false);
+                        //do something here
                     };
                     that.browserrec.onstart = function(){
-                        that.update_audio('isRecording',true);
+                        //do something here
                     };
                     that.browserrec.onfinalspeechcapture=function(speechtext){
-                        that.browserrec.stop();
+                        that.gotRecognition(speechtext);
                         that.update_audio('isRecording',false);
                         that.update_audio('isRecognizing',false);
-                        that.gotRecognition(speechtext);
                     };
-                }else {
 
+                    //If DS rec
+                }else {
+                    //set up wav for ds rec
+                    log.debug("using ds rec");
+                    this.audiohelper =  audioHelper.clone();
+                    this.audiohelper.init(this.waveHeight,this.uniqueid,this);
+
+                    //set up events
                     var on_gotstream=  function(stream) {
 
                         var newaudio={stream: stream, isRecording: true};
@@ -136,7 +143,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                     that.audiohelper.onStop = on_stopped;
                     that.audiohelper.onStream = on_gotstream;
 
-                }
+                }//end of setting up recorders
             },
 
             prepare_html: function(){
@@ -174,7 +181,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
 
                 this.audio_updated=function() {
                     //pointer
-                    if (that.audio.isRecognizing || that.isComplete()) {
+                    if (that.audio.isRecognizing) {
                         that.show_recorder_pointer('none');
                     } else {
                         that.show_recorder_pointer('auto');
@@ -218,33 +225,55 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             recordBtnContent: function() {
 
                 if(!this.audio.isRecognizing){
-                    if (!this.isComplete()) {
-                        if (this.audio.isRecording) {
-                            return '<i class="fa fa-stop">';
-                        } else {
-                            return '<i class="fa fa-microphone">';
-                        }
+
+                    if (this.audio.isRecording) {
+                        return '<i class="fa fa-stop">';
                     } else {
-                        return '<i class="fa fa-check">';
+                        return '<i class="fa fa-microphone">';
                     }
+
                 } else {
                     return '<i class="fa fa-spinner fa-spin">';
                 }
             },
             toggleRecording: function() {
+                var that =this;
+
+                //If we are current recording
                 if (this.audio.isRecording) {
+                    //If using Browser Rec (chrome speech)
                     if(this.usebrowserrec){
+                        clearInterval(that.interval);
+                        that.update_audio('isRecording',false);
+                        that.update_audio('isRecognizing',true);
                         this.browserrec.stop();
+
+                        //If using DS rec
                     }else{
                         this.update_audio('isRecognizing',true);
                         this.audiohelper.stop();
                     }
+
+                    //If we are NOT currently recording
                 } else {
 
-
+                    //If using Browser Rec (chrome speech)
                     if(this.usebrowserrec){
                         this.update_audio('isRecording',true);
                         this.browserrec.start();
+                        that.currentTime = 0;
+                        this.interval = setInterval(function() {
+                            if (that.currentTime < that.maxTime) {
+                                that.currentTime += 10;
+                            } else {
+                                that.update_audio('isRecording',false);
+                                that.update_audio('isRecognizing',true);
+                                clearInterval(that.interval);
+                                that.browserrec.stop();
+                            }
+                        }, 10);
+
+                        //If using DS Rec
                     }else {
                         var newaudio = {
                             stream: null,
@@ -281,13 +310,8 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                     }
                 };
                 oReq.send(bodyFormData);
-
             },
 
-            //not really OK here, this is something else
-            isComplete: function() {
-                return false;
-            },
         };//end of return value
 
     });

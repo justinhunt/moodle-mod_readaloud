@@ -9,7 +9,6 @@ define(['jquery', 'core/log'], function ($, log) {
 
         recognition: null,
         recognizing: false,
-        ignore_onend: false,
         final_transcript: '',
         start_timestamp: 0,
         lang: 'en-US',
@@ -29,7 +28,7 @@ define(['jquery', 'core/log'], function ($, log) {
             var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
             this.recognition = new SpeechRecognition();
             this.recognition.continuous = true;
-            this.recognition.interimResults = true;
+            this.recognition.interimResults = false;
             this.lang = lang;
             this.waveHeight = waveheight;
             this.uniqueid = uniqueid;
@@ -62,8 +61,9 @@ define(['jquery', 'core/log'], function ($, log) {
             this.final_transcript = '';
             this.recognition.lang = this.lang;//select_dialect.value;
             this.recognition.start();
-            this.ignore_onend = false;
             this.start_timestamp = Date.now();//event.timeStamp;
+            that.onstart();
+
 
             //kick off animation
             that.interval = setInterval(function() {
@@ -73,11 +73,15 @@ define(['jquery', 'core/log'], function ($, log) {
 
         },
         stop: function () {
+            var that=this;
             this.recognizing = false;
             this.recognition.stop();
             clearInterval(this.interval);
             this.canvasCtx.clearRect(0, 0, this.canvas.width()*2, this.waveHeight * 2);
-
+            setTimeout(function() {
+                that.onfinalspeechcapture(that.final_transcript);
+            }, 1000);
+            this.onend();
         },
 
         register_events: function () {
@@ -85,19 +89,12 @@ define(['jquery', 'core/log'], function ($, log) {
             var recognition = this.recognition;
             var that = this;
 
-            recognition.onstart = function () {
-                that.recognizing = true;
-                that.onstart();
-
-            };
             recognition.onerror = function (event) {
                 if (event.error == 'no-speech') {
                     log.debug('info_no_speech');
-                    that.ignore_onend = true;
                 }
                 if (event.error == 'audio-capture') {
                     log.debug('info_no_microphone');
-                    that.ignore_onend = true;
                 }
                 if (event.error == 'not-allowed') {
                     if (event.timeStamp - that.start_timestamp < 100) {
@@ -105,33 +102,22 @@ define(['jquery', 'core/log'], function ($, log) {
                     } else {
                         log.debug('info_denied');
                     }
-                    that.ignore_onend = true;
                 }
                 that.onerror();
             };
-            recognition.onend = function () {
-                //that.recognizing = false;
 
-                // we restart by default
-                // we might need to be more clever here
-                if (that.recognizing == false) {
-                    return;
+            recognition.onend = function () {
+                if(that.recognizing){
+                    that.recognition.start();
                 }
-                if (that.ignore_onend) {
-                    that.recognizing = false;
-                } else {
-                    recognition.start();
-                }
-                that.onend();
 
             };
+
             recognition.onresult = function (event) {
                 var interim_transcript = '';
                 for (var i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         that.final_transcript += event.results[i][0].transcript;
-                        that.onfinalspeechcapture(that.final_transcript,JSON.stringify(event.results));
-                        that.final_transcript = '';
                     } else {
                         interim_transcript += event.results[i][0].transcript;
                         that.oninterimspeechcapture(interim_transcript);
@@ -183,7 +169,7 @@ define(['jquery', 'core/log'], function ($, log) {
         onend: function () {
             log.debug('end');
         },
-        onfinalspeechcapture: function (speechtext,speechresults) {
+        onfinalspeechcapture: function (speechtext) {
             log.debug(speechtext);
         },
         oninterimspeechcapture: function (speechtext) {
