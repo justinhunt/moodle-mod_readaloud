@@ -1,3 +1,6 @@
+2.0.51 (Build 2021030100)
+-added a setup tab for embedding in iframes
+
 2.0.50  (Build 2021013100)
  -Improved differencing
  -Standardized audio recorder

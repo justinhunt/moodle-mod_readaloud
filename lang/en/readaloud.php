@@ -435,4 +435,7 @@ $string['close']='Close';
 $string['modelaudiowarning']="<span style='color: red'>Model audio not marked up.</span>";
 $string['modelaudiobreaksclear']=' Clear model audio markup';
 $string['savemodelaudiomarkup']=' Save model audio markup';
+$string['enablesetuptab']="Enable setup tab";
+$string['enablesetuptab_details']="Show a tab containing the activity instance settings to admins. Not super useful in most cases.";
+$string['setup']="Setup";
 
