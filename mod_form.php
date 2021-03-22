@@ -122,7 +122,7 @@ class mod_readaloud_mod_form extends moodleform_mod {
 
     public function data_preprocessing(&$form_data) {
         if ($this->current->instance) {
-            utils::prepare_file_and_json_stuff($form_data,$this->context);
+            $form_data = utils::prepare_file_and_json_stuff($form_data,$this->context);
         }
     }
 
