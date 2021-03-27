@@ -76,7 +76,7 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/allowearlyexit',
             get_string('allowearlyexit', constants::M_COMPONENT),
-            get_string('allowearlyexit_defaultdetails', constants::M_COMPONENT), 0));
+            get_string('allowearlyexit_defaultdetails', constants::M_COMPONENT), 1));
 
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/submitrawaudio',
             get_string('submitrawaudio', constants::M_COMPONENT), get_string('submitrawaudio_details', constants::M_COMPONENT), 0));

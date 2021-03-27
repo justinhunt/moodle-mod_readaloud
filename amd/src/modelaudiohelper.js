@@ -10,6 +10,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
         controls: {},
         currentmode: 'modeling', //previewing //stopped
         breaks: [],
+        matches: false,
         goturl: false,
 
         //class definitions
@@ -23,7 +24,6 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
             urlfield: def.modelaudiourlfield,
             modeltranscriptbutton: def.modeltranscriptbutton,
             modeltranscript: def.modeltranscript
-
         },
 
         //init the module
@@ -41,8 +41,11 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
                 return;
             }
 
-            if(opts.breaks) {
-                this.breaks=JSON.parse(opts.breaks);
+            if(opts.modelaudiobreaks) {
+                this.breaks=JSON.parse(opts.modelaudiobreaks);
+            }
+            if(opts.modelaudiomatches) {
+                this.matches=JSON.parse(opts.modelaudiomatches);
             }
 
             //register the controls
@@ -57,10 +60,11 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
             //init karaoke
             this.init_karaoke();
 
-            //init model audio transcript check
+            //if it looks like we have a human audio, do a transcript check
             var audiourl = this.controls.audioplayer.attr('src');
-            if(audiourl != null) {
-                this.check_modelaudio_transcript_ready(audiourl, 5000)
+            if(audiourl != null && !audiourl.includes('poodllfile.poodll.net')) {
+                //this transcript check needs work. for now lets ignore it
+                //this.check_modelaudio_transcript_ready(audiourl, 5000)
             }
         },
 
@@ -117,7 +121,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
                     }else {
                         nextspace.addClass(that.cd.endspaceclass);
                         var theplayer = that.controls.audioplayer[0];
-                        var audiotime = theplayer.currentTime;
+                        var audiotime = that.fetch_break_audiotime(wordnumber, theplayer, that.matches);
                         that.register_break(wordnumber, audiotime);
                     }
                 }
@@ -164,6 +168,16 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
         player_get_time: function(){
             var theplayer = this.controls.audioplayer[0];
             return theplayer.currentTime;
+        },
+
+        fetch_break_audiotime: function(wordnumber,theplayer, matches){
+            if(matches!==false){
+                if(matches[wordnumber]){
+                    return matches[wordnumber].audioend;
+                }
+            }else {
+                return theplayer.currentTime;
+            }
         },
 
         check_modelaudio_transcript_ready: function(audiourl,waitms){

@@ -22,6 +22,9 @@ class constants {
 
     const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
 
+    const M_NEURALVOICES = array("Amy","Emma","Brian","Ivy","Joanna","Kendra","Kimberly",
+            "Salli","Joey","Justin","Kevin","Matthew","Camila","Lupe");
+
     //classes for use in CSS
     const M_CLASS = 'mod_readaloud';
 

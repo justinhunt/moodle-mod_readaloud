@@ -58,6 +58,9 @@ require_capability('mod/readaloud:manage', $modulecontext);
 //Get an admin settings 
 $config = get_config(constants::M_COMPONENT);
 
+//get token
+$token = utils::fetch_token($config->apiuser,$config->apisecret);
+
 
 // Trigger module viewed event.
 $event = \mod_readaloud\event\course_module_viewed::create(array(
@@ -82,6 +85,16 @@ switch ($action) {
             $data = $mform->get_data();
             $DB->update_record(constants::M_TABLE,
                     array('id' => $moduleinstance->id, 'modelaudiourl' => $data->modelaudiourl));
+
+            //register our transcribe task
+            if (utils::can_transcribe($moduleinstance)) {
+                $success = utils::register_modelaudio_task($moduleinstance->id, $data->modelaudiourl, $modulecontext->id);
+                if (!$success) {
+                    $message = "Unable to create model audio adhoc task to fetch transcriptions";
+                }
+            } else {
+                $success = true;
+            }
             redirect($PAGE->url);
         }
         break;
@@ -92,11 +105,14 @@ switch ($action) {
         } else {
             $data = $mform->get_data();
             $DB->update_record(constants::M_TABLE,
-                    array('id' => $moduleinstance->id, 'modelaudiobreaks' => $data->modelaudiobreaks));
+                    array('id' => $moduleinstance->id,
+                            'modelaudiobreaks' => $data->modelaudiobreaks
+                    ));
             redirect($PAGE->url);
         }
         break;
     case 'modelaudiobreaksclear':
+
           $DB->update_record(constants::M_TABLE,
                     array('id' => $moduleinstance->id, 'modelaudiobreaks' => ''));
           redirect($PAGE->url);
@@ -104,8 +120,25 @@ switch ($action) {
         break;
     case 'modelaudioclear':
 
-        $DB->update_record(constants::M_TABLE, array('id' => $moduleinstance->id, 'modelaudiourl' =>''));
-        redirect($PAGE->url);
+            $slowpassage = utils::fetch_speech_ssml($moduleinstance->passage,$moduleinstance->ttsspeed);
+            $speechmarks = utils::fetch_polly_speechmarks($token,$moduleinstance->region,
+                    $slowpassage,'ssml',$moduleinstance->ttsvoice);
+            $matches = utils::speechmarks_to_matches($speechmarks);
+
+            if(!empty($moduleinstance->modelaudiobreaks)){
+                $breaks = utils::sync_modelaudio_breaks($moduleinstance->modelaudiobreaks,$matches);
+            }else{
+                $breaks = utils::guess_modelaudio_breaks($moduleinstance->passage,$matches);
+            }
+
+            $DB->update_record(constants::M_TABLE, array('id' => $moduleinstance->id,
+                            'modelaudiourl' =>'',
+                            'modelaudiotrans' =>'',
+                            'modelaudiofulltrans' =>'',
+                            'modelaudiomatches' =>json_encode($matches),
+                            'modelaudiobreaks'=>json_encode($breaks))
+            );
+            redirect($PAGE->url);
 
         break;
 }
@@ -142,9 +175,6 @@ $passagerenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'passage');
 
 
 
-//get token
-$token = utils::fetch_token($config->apiuser,$config->apisecret);
-
 //From here we actually display the page.
 echo $renderer->header($moduleinstance, $cm,'modelaudio', null, get_string('modelaudio', constants::M_COMPONENT));
 
@@ -174,8 +204,10 @@ if(empty($moduleinstance->modelaudiourl) || $moduleinstance->modelaudiourl=='non
 }else{
     echo $modelaudiorenderer->render_modelaudio_player($moduleinstance,$token);
     echo $modelaudiorenderer->render_audio_clear_button($moduleinstance);
-    echo $modelaudiorenderer->render_view_transcript_button();
-    echo $modelaudiorenderer->render_view_transcript();
+
+    //In debugging, we might want to view the recorded audio transcript.
+    //echo $modelaudiorenderer->render_view_transcript_button();
+    //echo $modelaudiorenderer->render_view_transcript();
 }
 echo "<hr>";
 
@@ -203,7 +235,8 @@ echo $clearbutton;
 //set up the AMD js and related opts
 $modelaudio_opts = Array();
 $modelaudio_opts['recorderid']=constants::M_RECORDERID;
-$modelaudio_opts['breaks']=$moduleinstance->modelaudiobreaks;
+$modelaudio_opts['modelaudiobreaks']=$moduleinstance->modelaudiobreaks;
+$modelaudio_opts['modelaudiomatches']=$moduleinstance->modelaudiomatches ? $moduleinstance->modelaudiomatches : false;
 
 $jsonstring = json_encode($modelaudio_opts);
 $widgetid = constants::M_RECORDERID . '_opts_9999';

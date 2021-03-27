@@ -455,6 +455,26 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020121400, 'readaloud');
     }
 
+    if($oldversion<2021032600){
+
+        $table = new xmldb_table('readaloud');
+
+        // Adding fields to table tool_dataprivacy_contextlist.
+        $fields=array();
+        $fields[] = new xmldb_field('modelaudiotrans', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('modelaudiofulltrans', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('modelaudiomatches', XMLDB_TYPE_TEXT, null, null, null, null);
+
+        // add fields to readaloud table
+        foreach($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2021032600, 'readaloud');
+
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

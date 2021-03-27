@@ -1,3 +1,10 @@
+
+2.0.52 (Build 2021032600)
+- improvements to ui/markup for modelaudio and selection of words
+- added neural voices
+- auto creation of speech breaks, and sync'ing of existing one to new audio/voices
+
+
 2.0.51 (Build 2021030100)
 -added a setup tab for embedding in iframes
 

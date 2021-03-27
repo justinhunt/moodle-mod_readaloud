@@ -99,44 +99,4 @@ class setupform extends \moodleform {
 
     }
 
-    protected final function add_media_upload($name, $count=-1, $label = null, $required = false) {
-		if($count>-1){
-			$name = $name . $count ;
-		}
-		
-		$this->_form->addElement('filemanager',
-                           $name,
-                           $label,
-                           null,
-						   $this->filemanageroptions
-                           );
-		
-	}
-
-	protected final function add_media_prompt_upload($label = null, $required = false) {
-		return $this->add_media_upload(constants::AUDIOPROMPT,-1,$label,$required);
-	}
-
-
-    /**
-     * Convenience function: Adds an response editor
-     *
-     * @param int $count The count of the element to add
-     * @param string $label, null means default
-     * @param bool $required
-     * @return void
-     */
-    protected final function add_editorarearesponse($count, $label = null, $required = false) {
-        if ($label === null) {
-            $label = get_string('response', constants::M_COMPONENT);
-        }
-        //edoptions = array('noclean'=>true)
-        $this->_form->addElement('editor', constants::TEXTANSWER .$count. '_editor', $label, array('rows'=>'4', 'columns'=>'80'), $this->editoroptions);
-        $this->_form->setDefault(constants::TEXTANSWER .$count. '_editor', array('text'=>'', 'format'=>FORMAT_MOODLE));
-        if ($required) {
-            $this->_form->addRule(constants::TEXTANSWER .$count. '_editor', get_string('required'), 'required', null, 'client');
-        }
-    }
-
-
 }

@@ -496,6 +496,24 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
         }
     }
 
+    //we want to create a polly record and speechmarks, if we have a passage
+    if(!empty($readaloud->passage)) {
+        $config = get_config(constants::M_COMPONENT);
+        $token = utils::fetch_token($config->apiuser,$config->apisecret);
+        if($token) {
+            $slowpassage = utils::fetch_speech_ssml($readaloud->passage, $readaloud->ttsspeed);
+            $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
+                    $slowpassage, 'ssml', $readaloud->ttsvoice);
+            if($speechmarks) {
+                $matches = utils::speechmarks_to_matches($speechmarks);
+                $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches);
+                $readaloud->modelaudiomatches = json_encode($matches);
+                $readaloud->modelaudiobreaks = json_encode($breaks);
+            }//end of if speechmarks
+        }//end of if token
+    }
+
+
     $readaloud->id = $DB->insert_record(constants::M_TABLE, $readaloud);
 
     readaloud_grade_item_update($readaloud);
@@ -549,20 +567,56 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
     }
 
     //we want to process the hashcode and lang model if it makes sense
-    if(utils::needs_lang_model($readaloud)){
-        $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$readaloud->id));
-        $readaloud->passagehash = $oldrecord->passagehash;
-        $newpassagehash = utils::fetch_passagehash($readaloud);
-        if($newpassagehash){
-            //check if it has changed, if not do not waste time processing it
-            if($oldrecord->passagehash!= ($readaloud->region . '|' . $newpassagehash)) {
-                //build a lang model
+    $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$readaloud->id));
+
+    $readaloud->passagehash = $oldrecord->passagehash;
+    $newpassagehash = utils::fetch_passagehash($readaloud);
+    if($newpassagehash){
+        //check if it has changed, if not do not waste time processing it
+        if($oldrecord->passagehash!= ($readaloud->region . '|' . $newpassagehash)) {
+            //build a lang model
+            if(utils::needs_lang_model($readaloud)) {
                 $ret = utils::fetch_lang_model($readaloud->passage, $readaloud->ttslanguage, $readaloud->region);
                 if ($ret && isset($ret->success) && $ret->success)  {
                     $readaloud->passagehash = $readaloud->region . '|' . $newpassagehash;
-                }
-            }
+                }//end of if successful
+            }//end of if lang model
+        }//end of if passage hash chaned
+    }//end of if newpassagehash
+
+
+
+    //we want to create a polly record and speechmarks, if (!human_modelaudio && passage) && (passage change || voice change || speed change)
+    $needspeechmarks =false;
+    if(empty($readaloud->modelaudiourl) && !empty($readaloud->passage) && $newpassagehash){
+        //if it has changed OR voice has changed we need to do some work
+        if($oldrecord->passagehash!= ($readaloud->region . '|' . $newpassagehash) ||
+            $oldrecord->ttsvoice != $readaloud->ttsvoice ||
+                $oldrecord->ttsspeed != $readaloud->ttsspeed
+        ) {
+            $needspeechmarks = true;
         }
+    }
+
+    //We create the marked up speechmarks. We do not save the modelurl, we only save that in the case of human model audio
+    if($needspeechmarks) {
+        $config = get_config(constants::M_COMPONENT);
+        $token = utils::fetch_token($config->apiuser,$config->apisecret);
+        if($token) {
+            $slowpassage = utils::fetch_speech_ssml($readaloud->passage, $readaloud->ttsspeed);
+            $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
+                    $slowpassage, 'ssml', $readaloud->ttsvoice);
+            if($speechmarks) {
+                $matches = utils::speechmarks_to_matches($speechmarks);
+                if(!empty($oldrecord->modelaudiobreaks)){
+                    $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
+                }else {
+                    $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches);
+                }
+                $readaloud->modelaudiomatches = json_encode($matches);
+                $readaloud->modelaudiobreaks = json_encode($breaks);
+            } //end of if speechmarks
+        } //end of if token
     }
 
     $success = $DB->update_record(constants::M_TABLE, $readaloud);

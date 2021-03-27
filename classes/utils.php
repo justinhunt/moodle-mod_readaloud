@@ -36,7 +36,7 @@ use \mod_readaloud\constants;
  */
 class utils {
 
-  //  const CLOUDPOODLL = 'http://localhost/moodle';
+    //const CLOUDPOODLL = 'http://localhost/moodle';
     const CLOUDPOODLL = 'https://cloud.poodll.com';
 
     //we need to consider legacy client side URLs and cloud hosted ones
@@ -226,9 +226,17 @@ class utils {
             $speed='medium';
         }
 
+        //deal with SSML reserved characters
+        $text = str_replace('&','&amp;',$text);
+        $text = str_replace("'",'&apos;',$text);
+        $text = str_replace('"','&quot;',$text);
+        $text = str_replace('<','&lt;',$text);
+        $text = str_replace('>','&gt;',$text);
+
         $slowtemplate='<speak><break time="1000ms"></break><prosody rate="@@speed@@">@@text@@</prosody></speak>';
         $slowtemplate = str_replace('@@text@@',$text,$slowtemplate);
         $slowtemplate = str_replace('@@speed@@',$speed,$slowtemplate);
+
         return $slowtemplate;
     }
 
@@ -250,6 +258,7 @@ class utils {
         $params['appid'] = constants::M_COMPONENT;;
         $params['owner'] = hash('md5',$USER->username);
         $params['region'] = $region;
+        $params['engine'] = self::can_speak_neural($voice, $region)?'neural' : 'standard';
         $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
         if (!self::is_json($response)) {
@@ -267,6 +276,116 @@ class utils {
         } else {
             return false;
         }
+    }
+
+    //fetch and process speech marks
+    public static function fetch_polly_speechmarks($token,$region,$speaktext,$texttype, $voice) {
+        global $USER;
+
+        //The REST API we are calling
+        $functionname = 'local_cpapi_fetch_polly_speechmarks';
+
+        //log.debug(params);
+        $params = array();
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['text'] = urlencode($speaktext);
+        $params['texttype'] = $texttype;
+        $params['voice'] = $voice;
+        $params['appid'] = constants::M_COMPONENT;;
+        $params['owner'] = hash('md5',$USER->username);
+        $params['region'] = $region;
+        $params['engine'] = self::can_speak_neural($voice, $region)?'neural' : 'standard';
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        //returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            //if all good, then lets do the embed
+        } else if ($payloadobject->returnCode === 0 && $payloadobject->returnMessage ) {
+            $pollyspeechmarks = json_decode($payloadobject->returnMessage);
+            return $pollyspeechmarks;
+        } else {
+            return false;
+        }
+    }
+
+    //can speak neural?
+    public static function can_speak_neural($voice,$region){
+        //check if the region is supported
+        switch($region){
+            case "useast1":
+            case "tokyo":
+            case "sydney":
+            case "dublin":
+            case "ottawa":
+            case "frankfurt":
+            case "london":
+            case "singapore":
+                //ok
+               break;
+            default:
+                return false;
+        }
+
+        //check if the voice is supported
+        if(in_array($voice,constants::M_NEURALVOICES)){
+            //the neural speech marks seemed wrong. so we turned this off for now
+            //.With a period on the end of each line, there was a gradual drift from accuracay.
+            //return true;
+            return false;
+        }else{
+            return false;
+        }
+    }
+
+    //Turn a set of speechmarks into a matches format that we use for marking up text in Readaloud
+    public static function speechmarks_to_matches($speechmarks){
+        $matches = new \stdClass();
+        $count=0;
+        $currentmark=0;
+
+        //speechmarks could be of type 'sentence' or 'word'
+        //sentence might be useful but at this stage we ignore it
+        //if the word begins with "<" then its ssml so we skip it
+        foreach($speechmarks as $rawmark){
+            $currentmark++;
+            $speechmark = json_decode($rawmark);
+            if(!isset($speechmark->type) || $speechmark->type!='word'){continue;}
+            if(\core_text::strlen($speechmark->value)>1 && \core_text::substr($speechmark->value,0,1)=='<'){continue;}
+            $count++;
+            //with speechmarks we do not get an audio end, so we need to figure one out.
+            $audioend=0;
+            if($count<count($speechmarks)){
+                for($i=$currentmark;$i<count($speechmarks);$i++){
+                    $futuremark = json_decode($speechmarks[$i]);
+                    if(!isset($futuremark->type)){
+                        continue;
+                    }elseif($futuremark->type=='word'){
+                        if(\core_text::strlen($speechmark->value)>1 && \core_text::substr($speechmark->value,0,1)=='<'){
+                            continue;
+                        }
+                        //we had to play with decrement  value. to stop getting the start of the next word
+                        $audioend=($futuremark->time * .001) - .1;
+                        break;
+                    }
+                }
+            }
+            $matches->{$count} = new \stdClass();
+            $matches->{$count}->word=$speechmark->value;
+            $matches->{$count}->pposition=$count;
+            $matches->{$count}->tposition=$count;
+            $matches->{$count}->audiostart=$speechmark->time * .001;
+            $matches->{$count}->audioend=$audioend;
+            $matches->{$count}->altmatch=0;
+        }
+        return $matches;
     }
 
 
@@ -636,6 +755,95 @@ class utils {
 
         return $matches;
     }
+
+
+    //compare passage and transcript and return errors and matches
+    //this is called from aigrade.php and modelaudio.php
+    public static function fetch_diff($passage, $alternatives, $transcript,$fulltranscript, $ttslanguage, $debug = false) {
+        global $DB;
+
+        //turn the passage and transcript into an array of words
+        $passagebits = diff::fetchWordArray($passage);
+        $alternatives = diff::fetchAlternativesArray($alternatives);
+        $transcriptbits = diff::fetchWordArray($transcript);
+        $wildcards = diff::fetchWildcardsArray($alternatives);
+
+        //fetch sequences of transcript/passage matched words
+        // then prepare an array of "differences"
+        $passagecount = count($passagebits);
+        $transcriptcount = count($transcriptbits);
+        $language = $ttslanguage;
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language);
+
+        $debugsequences = array();
+        if ($debug) {
+            $diff_info = diff::fetchDiffs($sequences, $passagecount, $transcriptcount, $debug);
+            $diffs = diff::applyWildcards($diff_info[0], $passagebits, $wildcards);
+            $debugsequences = $diff_info[1];
+        } else {
+            $diffs = diff::fetchDiffs($sequences, $passagecount, $transcriptcount, $debug);
+            $diffs = diff::applyWildcards($diffs, $passagebits, $wildcards);
+        }
+
+        //from the array of differences build error data, match data, markers, scores and metrics
+        $errors = new \stdClass();
+        $matches = new \stdClass();
+        $currentword = 0;
+        $lastunmodified = 0;
+        //loop through diffs
+        // (could do a for loop here .. since diff count = passage words count for now index is $currentword
+        foreach ($diffs as $diff) {
+            $currentword++;
+            switch ($diff[0]) {
+                case Diff::UNMATCHED:
+                    //we collect error info so we can count and display them on passage
+                    $error = new \stdClass();
+                    $error->word = $passagebits[$currentword - 1];
+                    $error->wordnumber = $currentword;
+                    $errors->{$currentword} = $error;
+                    break;
+
+                case Diff::MATCHED:
+                    //we collect match info so we can play audio from selected word
+                    $match = new \stdClass();
+                    $match->word = $passagebits[$currentword - 1];
+                    $match->pposition = $currentword;
+                    $match->tposition = $diff[1];
+                    $match->audiostart = 0;//we will assess this from full transcript shortly
+                    $match->audioend = 0;//we will assess this from full transcript shortly
+                    $match->altmatch = $diff[2];//was this match an alternatives match?
+                    $matches->{$currentword} = $match;
+                    $lastunmodified = $currentword;
+                    break;
+
+                default:
+                    //do nothing
+                    //should never get here
+
+            }
+        }
+        $sessionendword = $lastunmodified;
+
+        //discard errors that happen after session end word.
+        $errorcount = 0;
+        $finalerrors = new \stdClass();
+        foreach ($errors as $key => $error) {
+            if ($key < $sessionendword) {
+                $finalerrors->{$key} = $error;
+                $errorcount++;
+            }
+        }
+        //finalise and serialise session errors
+        $sessionerrors = json_encode($finalerrors);
+
+        //also  capture match information for debugging and audio point matching
+        //we can only map transcript to audio from match data
+        $matches = utils::fetch_audio_points($fulltranscript, $matches, $alternatives);
+
+        return[$matches,$sessionendword,$sessionerrors,$errorcount,$debugsequences];
+
+    }
+
 
     //this is a server side implementation of the same name function in gradenowhelper.js
     //we need this when calculating adjusted grades(reports/machinegrading.php) and on making machine grades(aigrade.php)
@@ -1110,6 +1318,138 @@ class utils {
         return json_encode($ret);
     }
 
+    //Make a good effort to retain breaks even if Model Audio has changed
+    public static function sync_modelaudio_breaks($breaks,$matches) {
+        if(count($breaks)>1) {
+            for ($i = 0; $i < count($breaks); $i++) {
+                $wordnumber = $breaks[$i]['wordnumber'];
+                if(isset($matches->{$wordnumber})) {
+                    $breaks[$i]['audiotime'] = $matches->{$wordnumber}->audioend;
+                }else{
+                   //what to do here?
+                }
+            }//end of for
+        }//end of if count > 0
+        return $breaks;
+    }//end of function
+
+    //Make a good effort to mark up the passage from scratch
+    public static function guess_modelaudio_breaks($passage,$matches) {
+        $breaks=[];
+        $words = self::fetch_passage_as_words($passage);
+        $lastbreak=0;
+        if(count($words)>1) {
+            for ($i = 0; $i < count($words); $i++) {
+
+                //if this word does not have a match, just continue
+                if (!isset($matches->{$i + 1})) {
+                    continue;
+                }
+                //look for some sort of phrase ender and register a break if found.
+                $letsbreak=false;
+                switch (substr($words[$i], -1)) {
+                    case '!':
+                    case '?':
+                    case '.':
+                    case '？':
+                    case '。':
+                    case '！':
+                    case '：':
+                    case ':':
+                        //definite break
+                        $letsbreak =true;
+                        break;
+                    case ',':
+                    case ';':
+                    case '、':
+                    case '；':
+                        if(($matches->{$i + 1}->audioend - $lastbreak)>2){
+                            $letsbreak =true;
+                        }
+                        break;
+                    default:
+                }//end of switch
+                //we add the break only if there is not already a break at the same wordnumber
+                //this might occur if we had multiple periods in the text (newlines collapse to periods)
+                if($letsbreak){
+                    $newbreak = ['wordnumber' => $i + 1, 'audiotime' => $matches->{$i + 1}->audioend];
+                    if(count($breaks)==0 || $breaks[count($breaks)-1]['wordnumber'] !== $newbreak['wordnumber']) {
+                        $breaks[] = $newbreak;
+                        $lastbreak = $matches->{$i + 1}->audioend;
+                    }
+                }
+            }//end of for
+        }//end of if count > 0
+
+        return $breaks;
+    }//end of function
+
+    //This is a semi duplicate of passage_renderer::render_passage
+    // but its for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
+    public static function fetch_passage_as_words($passage){
+            // load the HTML document
+            $doc = new \DOMDocument;
+            // it will assume ISO-8859-1  encoding, so we need to hint it:
+            //see: http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
+            @$doc->loadHTML(mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8'));
+
+
+            // select all the text nodes
+            $xpath = new \DOMXPath($doc);
+            $nodes = $xpath->query('//text()');
+            //init the text count
+            $wordcount = 0;
+            $allwords=[];
+            foreach ($nodes as $node) {
+
+                //if its empty space, move on
+                $trimmednode = trim($node->nodeValue);
+                if (empty($trimmednode)) {
+                    continue;
+                }
+
+                //deal with new lines by making them period char out in space
+                $nodevalue = str_replace("\r\n", '. ' , $node->nodeValue );
+
+                //split each node(line) on words. preg_split messed up with double byte characters
+                //$words = preg_split('/\s+/', $nodevalue);
+                //so we use mb_split
+                $words = mb_split('\s+', $nodevalue);
+
+                foreach ($words as $word) {
+
+                    //if its a non word character eg : in 'chapter one : beginning'
+                    //we append it to prior word
+                    if(\mod_readaloud\diff::cleanText($word)==='') {
+                        if($wordcount > 0){$allwords[$wordcount-1].=$word;}
+                        continue;
+                    }
+                    $allwords[]=$word;
+                    $wordcount++;
+
+                }
+                $node->nodeValue = "";
+            }
+
+            return $allwords;
+    }
+
+    //register an adhoc task to pick up model audio transcripts
+    public static function register_modelaudio_task($activityid, $filename, $modulecontextid) {
+        $modelaudio_task = new \mod_readaloud\task\readaloud_modelaudio_adhoc();
+        $modelaudio_task->set_component('mod_readaloud');
+
+        $customdata = new \stdClass();
+        $customdata->activityid = $activityid;
+        $customdata->filename = $filename;
+        $customdata->modulecontextid = $modulecontextid;
+        $customdata->taskcreationtime = time();
+
+        $modelaudio_task->set_custom_data($customdata);
+        // queue it
+        \core\task\manager::queue_adhoc_task($modelaudio_task);
+        return true;
+    }
 
     //register an adhoc task to pick up transcripts
     public static function register_aws_task($activityid, $attemptid, $modulecontextid) {
@@ -1295,7 +1635,8 @@ class utils {
         $ret=[];
         foreach($alllang as $lang=>$voices){
             foreach($voices as $voice){
-             $ret[$voice]=$voice . ' - (' . $lang_options[$lang] . ')';
+             $neuraltag = in_array($voice,constants::M_NEURALVOICES) ? ' (+)' : '';
+             $ret[$voice]=$voice . $neuraltag . ' - (' . $lang_options[$lang] . ')';
             }
         }
         return $ret;
@@ -1507,6 +1848,7 @@ class utils {
                 $timelimit_options);
         //$mform->addElement('duration', 'timelimit', get_string('timelimit',constants::M_COMPONENT)));
         $mform->setDefault('timelimit', 60);
+        $mform->addHelpButton('timelimit', 'timelimit', constants::M_COMPONENT);
 
         //add other editors
         //could add files but need the context/mod info. So for now just rich text
@@ -1517,14 +1859,33 @@ class utils {
         $ednofileoptions = readaloud_editor_no_files_options($context);
         $opts = array('rows' => '15', 'columns' => '80');
         $mform->addElement('editor', 'passage_editor', get_string('passagelabel', constants::M_COMPONENT), $opts, $ednofileoptions);
+        $mform->addHelpButton('passage_editor', 'passage_editor', constants::M_COMPONENT);
+
+        //tts options
+        $langoptions = \mod_readaloud\utils::get_lang_options();
+        $mform->addElement('select', 'ttslanguage', get_string('ttslanguage', constants::M_COMPONENT), $langoptions);
+        $mform->setDefault('ttslanguage', $config->ttslanguage);
+        $mform->addHelpButton('ttslanguage', 'ttslanguage', constants::M_COMPONENT);
+
+        //tts voice
+        $langoptions = \mod_readaloud\utils::fetch_ttsvoice_options();
+        $mform->addElement('select', 'ttsvoice', get_string('ttsvoice', constants::M_COMPONENT), $langoptions);
+        $mform->setDefault('ttsvoice', $config->ttsvoice);
+        $mform->addHelpButton('ttsvoice', 'ttsvoice', constants::M_COMPONENT);
+
+        $speedoptions = \mod_readaloud\utils::get_ttsspeed_options();
+        $mform->addElement('select', 'ttsspeed', get_string('ttsspeed', constants::M_COMPONENT), $speedoptions);
+        $mform->setDefault('ttsspeed', constants::TTSSPEED_SLOW);
+        $mform->addHelpButton('ttsspeed', 'ttsspeed', constants::M_COMPONENT);
 
         //The alternatives declaration
         $mform->addElement('textarea', 'alternatives', get_string("alternatives", constants::M_COMPONENT),
-                'wrap="virtual" rows="20" cols="50"');
+                'wrap="virtual" rows="6" cols="50"');
         $mform->setDefault('alternatives', '');
         $mform->setType('alternatives', PARAM_RAW);
         $mform->addElement('static', 'alternativesdescr', '',
                 get_string('alternatives_descr', constants::M_COMPONENT));
+        $mform->addHelpButton('alternatives', 'alternatives', constants::M_COMPONENT);
 
         //welcome and feedback
         $opts = array('rows' => '6', 'columns' => '80');
@@ -1557,13 +1918,16 @@ class utils {
                 get_string('enablepreview_details', constants::M_COMPONENT));
         $mform->setDefault('enablepreview', $config->enablepreview);
 
-        $mform->addElement('advcheckbox', 'enableshadow', get_string('enableshadow', constants::M_COMPONENT),
-                get_string('enableshadow_details', constants::M_COMPONENT));
-        $mform->setDefault('enableshadow', $config->enablepreview);
 
         $mform->addElement('advcheckbox', 'enablelandr', get_string('enablelandr', constants::M_COMPONENT),
                 get_string('enablelandr_details', constants::M_COMPONENT));
         $mform->setDefault('enablelandr', $config->enablelandr);
+
+
+        $mform->addElement('advcheckbox', 'enableshadow', get_string('enableshadow', constants::M_COMPONENT),
+                get_string('enableshadow_details', constants::M_COMPONENT));
+        $mform->setDefault('enableshadow', $config->enableshadow);
+
 
         //Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::M_COMPONENT),
@@ -1600,20 +1964,6 @@ class utils {
         $mform->addElement('advcheckbox', 'enableai', get_string('enableai', constants::M_COMPONENT),
                 get_string('enableai_details', constants::M_COMPONENT));
         $mform->setDefault('enableai', $config->enableai);
-
-        //tts options
-        $langoptions = \mod_readaloud\utils::get_lang_options();
-        $mform->addElement('select', 'ttslanguage', get_string('ttslanguage', constants::M_COMPONENT), $langoptions);
-        $mform->setDefault('ttslanguage', $config->ttslanguage);
-
-        //tts voice
-        $langoptions = \mod_readaloud\utils::fetch_ttsvoice_options();
-        $mform->addElement('select', 'ttsvoice', get_string('ttsvoice', constants::M_COMPONENT), $langoptions);
-        $mform->setDefault('ttsvoice', $config->ttsvoice);
-
-        $speedoptions = \mod_readaloud\utils::get_ttsspeed_options();
-        $mform->addElement('select', 'ttsspeed', get_string('ttsspeed', constants::M_COMPONENT), $speedoptions);
-        $mform->setDefault('ttsspeed', constants::TTSSPEED_SLOW);
 
         //transcriber options
         $name = 'transcriber';
@@ -1660,7 +2010,7 @@ class utils {
         //Strict Transcribe Mode
         $mform->addElement('advcheckbox', 'stricttranscribe', get_string('stricttranscribe', constants::M_COMPONENT),
                 get_string('stricttranscribemode_details', constants::M_COMPONENT));
-        $mform->setDefault('stricttranscribe', $config->submitrawaudio);
+        $mform->setDefault('stricttranscribe', $config->stricttranscribe);
 
         // Post attempt
         $mform->addElement('header', 'postattemptheader', get_string('postattemptheader', constants::M_COMPONENT));

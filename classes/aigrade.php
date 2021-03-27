@@ -192,84 +192,20 @@ class aigrade {
     public function do_diff($debug = false) {
         global $DB;
 
-        //turn the passage and transcript into an array of words
-        $passagebits = diff::fetchWordArray($this->activitydata->passage);
-        $alternatives = diff::fetchAlternativesArray($this->activitydata->alternatives);
-        $transcriptbits = diff::fetchWordArray($this->aidata->transcript);
-        $wildcards = diff::fetchWildcardsArray($alternatives);
-
-        //fetch sequences of transcript/passage matched words
-        // then prepare an array of "differences"
-        $passagecount = count($passagebits);
-        $transcriptcount = count($transcriptbits);
-        $language = $this->activitydata->ttslanguage;
-        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language);
-
-        $debugsequences = array();
-        if ($debug) {
-            $diff_info = diff::fetchDiffs($sequences, $passagecount, $transcriptcount, $debug);
-            $diffs = diff::applyWildcards($diff_info[0], $passagebits, $wildcards);
-            $debugsequences = $diff_info[1];
-        } else {
-            $diffs = diff::fetchDiffs($sequences, $passagecount, $transcriptcount, $debug);
-            $diffs = diff::applyWildcards($diffs, $passagebits, $wildcards);
-        }
-
-        //from the array of differences build error data, match data, markers, scores and metrics
-        $errors = new \stdClass();
-        $matches = new \stdClass();
-        $currentword = 0;
-        $lastunmodified = 0;
-        //loop through diffs
-        // (could do a for loop here .. since diff count = passage words count for now index is $currentword
-        foreach ($diffs as $diff) {
-            $currentword++;
-            switch ($diff[0]) {
-                case Diff::UNMATCHED:
-                    //we collect error info so we can count and display them on passage
-                    $error = new \stdClass();
-                    $error->word = $passagebits[$currentword - 1];
-                    $error->wordnumber = $currentword;
-                    $errors->{$currentword} = $error;
-                    break;
-
-                case Diff::MATCHED:
-                    //we collect match info so we can play audio from selected word
-                    $match = new \stdClass();
-                    $match->word = $passagebits[$currentword - 1];
-                    $match->pposition = $currentword;
-                    $match->tposition = $diff[1];
-                    $match->audiostart = 0;//we will assess this from full transcript shortly
-                    $match->audioend = 0;//we will assess this from full transcript shortly
-                    $match->altmatch = $diff[2];//was this match an alternatives match?
-                    $matches->{$currentword} = $match;
-                    $lastunmodified = $currentword;
-                    break;
-
-                default:
-                    //do nothing
-                    //should never get here
-
-            }
-        }
-        $sessionendword = $lastunmodified;
-
-        //discard errors that happen after session end word.
-        $errorcount = 0;
-        $finalerrors = new \stdClass();
-        foreach ($errors as $key => $error) {
-            if ($key < $sessionendword) {
-                $finalerrors->{$key} = $error;
-                $errorcount++;
-            }
-        }
-        //finalise and serialise session errors
-        $sessionerrors = json_encode($finalerrors);
-
-        //also  capture match information for debugging and audio point matching
-        //we can only map transcript to audio from match data
-        $matches = utils::fetch_audio_points($this->aidata->fulltranscript, $matches, $alternatives);
-        $sessionmatches = json_encode($matches);
+        //Run the transcript to passage matching process
+        //A lot of data gets returned.
+        /*
+        *   session matches: {"1":{"word":"oh","pposition":1,"tposition":1,"audiostart":"3.1399998664855957","audioend":"3.179999828338623","altmatch":0},"2":{"word":"lady","pposition":2,"tposition":2,"audiostart":"3.1999998092651367","audioend":"3.5","altmatch":0}}
+        *   sesson errors: {"4":{"word":"it","wordnumber":4},"11":{"word":"it","wordnumber":11},"15":{"word":"in","wordnumber":15}}
+        *
+        *
+        */
+        list($sessionmatches,$sessionendword,$sessionerrors,$errorcount,$debugsequences) =
+                utils::fetch_diff($this->activitydata->passage,
+                        $this->activitydata->alternatives,
+                        $this->aidata->transcript,
+                        $this->aidata->fulltranscript,
+                        $debug);
 
         //session time
         //if we have a human eval sessiontime, use that.

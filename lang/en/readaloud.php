@@ -162,6 +162,14 @@ $string['targetwpm_details'] =
         'The default target WPM. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%. The target WPM can also be set at the activity instance level. ';
 $string['targetwpm_help'] =
         'The target WPM score. A students grade is calculated for the gradebook using this value as the maximum score. If their WPM score is equal to, or greater than the target WPM, they will score 100%.';
+$string['passage_editor'] = 'Reading Passage';
+$string['passage_editor_help'] = "The passage that will be shown to the student to read. Numbers should be written as words, or a wildcard entry added to alternatives. eg 1986|* . Plain text with no formatting is safer.";
+$string['passage_help'] = "The passage that will be shown to the student to read. Numbers should be written as words, or a wildcard entry added to alternatives. eg 1986|* . Plain text with no formatting is safer.";
+$string['timelimit_help'] = "Sets a time limit on the reading. Reading time is used in the WPM calculation. Consider also checking - Allow Early Exit";
+$string['ttslanguage_help'] = "This value is used for speech recognition and text to speech.";
+$string['ttsvoice_help'] = "The machine voice used to read the passage aloud. You should select a voice that matches the language famly of the passage language. Use the model audio tab to record or upload an alternative model audio.";
+$string['ttsspeed_help'] = "The machine voice reading speed. Slow or Extra Slow are good for learners, but can distort the audio.";
+$string['alternatives_help'] = "Specify matching options for specific passage words. 1 word set per line. e.g their|there|they're See <a href=\"https://support.poodll.com/support/solutions/articles/19000096937-tuning-your-read-aloud-activity\">docs</a> for more details.";
 
 $string['accadjust'] = 'Fixed adjustment.';
 $string['accadjust_details'] =
@@ -290,7 +298,7 @@ $string['pushmachinegrades'] = 'Push machine evaluations to gradebook';
 $string['currenterrorestimate'] = 'Current error estimate: {$a}';
 $string['gradesadmintitle'] = 'Alternatives Administration';
 $string['gradesadmininstructions'] =
-        'On this page you can edit the alternatives for the passage while viewing a summary of the mistranscriptions. When you save, all the attempts will be re-evaluated. If you have enabled machine grading you can also push the adjusted grades to the gradebook.';
+        'On this page you can edit the alternatives for the passage while viewing a summary of the mistranscriptions. When you save, all the attempts will be re-evaluated and the adjusted grades to the gradebook.';
 
 $string['noattemptsregrade'] = 'No attempts to regrade';
 $string['machineregraded'] = 'Successfully regraded {$a->done} attempts. Skipped {$a->skipped} attempts.';
@@ -379,17 +387,17 @@ $string['sessionscorestrict'] = 'Strict: (Total correct words - errors) per min 
 $string['modelaudio'] = 'Model Audio';
 $string['ttsvoice'] = 'TTS Voice';
 $string['enablepreview'] = 'Enable Listen mode';
-$string['enablepreview_details'] = 'Listen mode shows the reading and model audio to student before the activity commences.  You should probably mark-up the model audio in the activty model-audio tab to use this feature.';
+$string['enablepreview_details'] = 'Listen mode shows the reading and model audio to student before the activity commences.';
 $string['enableshadow'] = 'Enable Practice mode (Shadowing)';
-$string['enableshadow_details'] = 'Enables shadowing mode. This plays the model audio as students are reading aloud.';
+$string['enableshadow_details'] = 'Enables shadowing mode. This plays the model audio as students are read the entire passage aloud. Students will need headphones for this.';
 $string['enablelandr'] = 'Enable Practice mode (Listen and Repeat)';
-$string['enablelandr_details'] = 'Enables listen and repeat mode.  You must mark-up the model audio in the activty model-audio tab to use this feature.';
+$string['enablelandr_details'] = 'Enables listen and repeat mode. Line by line, the student listens and reads alternately.';
 $string['savemodelaudio'] = 'Save Recording';
 $string['uploadmodelaudio'] = 'Upload Audio File';
 $string['modelaudioclear'] = 'Clear Audio';
-$string['modelaudio_recordinstructions'] = 'Record audio here to be used as the model audio. You can optionally choose to upload audio by pressing the upload audio button, If you do not upload audio, then the model audio will be auto generated using the TTS language and TTS voice from the activity settings.';
+$string['modelaudio_recordinstructions'] = 'Record audio here to be used as the model audio. You can optionally choose to upload audio by pressing the upload audio button. There will be a delay of a few minutes before break point text and audio are synced';
 $string['modelaudio_playerinstructions'] = 'The current model audio can be played using the player below.';
-$string['modelaudio_breaksinstructions'] = 'While playing the model audio using the player above, tap words to insert markers in the text. Text between the markers will be highlighted for the reader in preview and shadow modes. See <a href="https://support.poodll.com/en/support/solutions/articles/19000116494-marking-up-model-audio-in-poodll-readaloud">an example</a> of how to mark up a passage.';
+$string['modelaudio_breaksinstructions'] = 'Tap words in the passage below to add a break at that point in the audio playback in preview and practive modes. The system will automatically sync the audio and the text.';
 $string['modelaudio_recordtitle'] = 'Record Model Audio';
 $string['modelaudio_playertitle'] = 'Play Model Audio';
 $string['modelaudio_breakstitle'] = 'Mark-up Model Audio';
@@ -438,4 +446,4 @@ $string['savemodelaudiomarkup']=' Save model audio markup';
 $string['enablesetuptab']="Enable setup tab";
 $string['enablesetuptab_details']="Show a tab containing the activity instance settings to admins. Not super useful in most cases.";
 $string['setup']="Setup";
-
+$string['failedttsmarkup']='Unable to mark up speech..';
