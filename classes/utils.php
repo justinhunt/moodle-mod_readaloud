@@ -338,8 +338,8 @@ class utils {
         if(in_array($voice,constants::M_NEURALVOICES)){
             //the neural speech marks seemed wrong. so we turned this off for now
             //.With a period on the end of each line, there was a gradual drift from accuracay.
-            //return true;
-            return false;
+            return true;
+            //return false;
         }else{
             return false;
         }
