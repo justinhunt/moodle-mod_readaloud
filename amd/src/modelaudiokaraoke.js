@@ -172,7 +172,6 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
         }
         //if the current break changed since last time, we do not want to do anything
         // (on first time through we want to flag  "changed" so that is why a false current startbreak goes to "changed"
-
         if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber) {
           var finishedsentence = $('.' + that.cd.activesentence).text();
           that.previousstartbreak = that.currentstartbreak;

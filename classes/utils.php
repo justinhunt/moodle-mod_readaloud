@@ -361,7 +361,8 @@ class utils {
             if(\core_text::strlen($speechmark->value)>1 && \core_text::substr($speechmark->value,0,1)=='<'){continue;}
             $count++;
             //with speechmarks we do not get an audio end, so we need to figure one out.
-            $audioend=0;
+            //we default to + .05
+            $audioend=($speechmark->time *.001) + .05;
             if($count<count($speechmarks)){
                 for($i=$currentmark;$i<count($speechmarks);$i++){
                     $futuremark = json_decode($speechmarks[$i]);
@@ -1369,14 +1370,11 @@ class utils {
                         break;
                     default:
                 }//end of switch
-                //we add the break only if there is not already a break at the same wordnumber
-                //this might occur if we had multiple periods in the text (newlines collapse to periods)
+                //we add the new break
                 if($letsbreak){
                     $newbreak = ['wordnumber' => $i + 1, 'audiotime' => $matches->{$i + 1}->audioend];
-                    if(count($breaks)==0 || $breaks[count($breaks)-1]['wordnumber'] !== $newbreak['wordnumber']) {
-                        $breaks[] = $newbreak;
-                        $lastbreak = $matches->{$i + 1}->audioend;
-                    }
+                    $breaks[] = $newbreak;
+                    $lastbreak = $matches->{$i + 1}->audioend;
                 }
             }//end of for
         }//end of if count > 0
