@@ -147,6 +147,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         if (self.controls.hiddenplayer[0].playing) {
           self.controls.hiddenplayer[0].pause();
         }
+        self.controls.hiddenplayer[0].currentTime = self.currentAudioStart;
         self.mak.play_audio();
       });
 
