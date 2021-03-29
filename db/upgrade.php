@@ -33,6 +33,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use \mod_readaloud\utils;
+use \mod_readaloud\constants;
 
 /**
  * Execute readaloud upgrade from the given old version
@@ -473,6 +474,52 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
         upgrade_mod_savepoint(true, 2021032600, 'readaloud');
 
+    }
+
+    if($oldversion<2021032900){
+        //loop through records looking for newly available neural voices and generate speechmarks and breaks
+        //neural voices will be available right away, but the timing of words in the speech will change. So we need to do this
+        //so we regenerate when required to do so
+        $config = get_config(constants::M_COMPONENT);
+        $token = utils::fetch_token($config->apiuser,$config->apisecret);
+        $readalouds=$DB->get_records(constants::M_TABLE);
+
+        foreach($readalouds as $readaloud){
+            if($token && isset($readaloud->passage)
+                    && isset($readaloud->ttsspeec)
+                    && isset($readaloud->ttsvoice)
+                    && isset($readaloud->modelaudiobreaks)
+                    && isset($readaloud->modelaudiourl)
+                    && empty($readaloud->modelaudiourl)
+            ){
+                //if it is not a neural voice, there is no need to resync
+                if(!in_array($readaloud->ttsvoice,constants::M_NEURALVOICES)){continue;}
+
+                //fetch SSML , speechmarks
+                $slowpassage = utils::fetch_speech_ssml($readaloud->passage, $readaloud->ttsspeed);
+                $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
+                        $slowpassage, 'ssml', $readaloud->ttsvoice);
+
+                //if successful create a set of 'matches' (internal doc matching audio/passage/transcript positions)
+                if($speechmarks) {
+                    $matches = utils::speechmarks_to_matches($speechmarks);
+                    //from matches create or sync an existing phrase breaks array with audio/word locations
+                    if(!empty($readaloud->modelaudiobreaks)){
+                        $breaks = utils::sync_modelaudio_breaks(json_decode($readaloud->modelaudiobreaks,true),$matches);
+                    }else {
+                        $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches);
+                    }
+                    //save it
+                    $updatereadaloud = new stdClass();
+                    $updatereadaloud->id = $readaloud->id;
+                    $updatereadaloud->modelaudiomatches = json_encode($matches);
+                    $updatereadaloud->modelaudiobreaks = json_encode($breaks);
+                    $DB->update_record(constants::M_TABLE,$updatereadaloud);
+                } //end of if speechmarks
+            } //end of if should regenerate speechmarks/breaks
+        } //end of for each
+
+        upgrade_mod_savepoint(true, 2021032900, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

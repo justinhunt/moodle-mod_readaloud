@@ -1,4 +1,7 @@
 
+2.0.53 (Build 2021032900)
+- Some passages lost audio/text sync on the last update. This restores it
+
 2.0.52 (Build 2021032600)
 - improvements to ui/markup for modelaudio and selection of words
 - added neural voices
