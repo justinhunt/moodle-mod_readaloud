@@ -476,7 +476,7 @@ function xmldb_readaloud_upgrade($oldversion) {
 
     }
 
-    if($oldversion<2021032901){
+    if($oldversion<2021032902){
         //loop through records looking for newly available neural voices and generate speechmarks and breaks
         //neural voices will be available right away, but the timing of words in the speech will change. So we need to do this
         //so we regenerate when required to do so
@@ -485,11 +485,8 @@ function xmldb_readaloud_upgrade($oldversion) {
         $readalouds=$DB->get_records(constants::M_TABLE);
 
         foreach($readalouds as $readaloud){
-            if($token && isset($readaloud->passage)
-                    && isset($readaloud->ttsspeed)
-                    && isset($readaloud->ttsvoice)
-                    && isset($readaloud->modelaudiobreaks)
-                    && isset($readaloud->modelaudiourl)
+            if($token && !empty($readaloud->passage)
+                    && !empty($readaloud->modelaudiobreaks)
                     && empty($readaloud->modelaudiourl)
             ){
                 //if it is not a neural voice, there is no need to resync
@@ -519,7 +516,7 @@ function xmldb_readaloud_upgrade($oldversion) {
             } //end of if should regenerate speechmarks/breaks
         } //end of for each
 
-        upgrade_mod_savepoint(true, 2021032901, 'readaloud');
+        upgrade_mod_savepoint(true, 2021032902, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
