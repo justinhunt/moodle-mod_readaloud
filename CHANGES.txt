@@ -1,3 +1,6 @@
+2.0.55 (Build 2021032903)
+- Auto advance on listen and repeat
+- disabled recorder button during recognition to prevent super clickers causing event chaos
 
 2.0.54 (Build 2021032902)
 - prev release update:
