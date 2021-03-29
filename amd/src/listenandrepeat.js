@@ -169,10 +169,21 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
      if(!comparison){return;}
       var self = this;
       var thisClass;
+      var wordsmatched=0;
       $(".mod_readaloud_modal_target_word").removeClass("mod_readaloud_modal_target_word_correct mod_readaloud_modal_target_word_incorrect");
+
       comparison.forEach(function(word, idx) {
-        thisClass = word.matched ? "mod_readaloud_modal_target_word_correct" : "mod_readaloud_modal_target_word_incorrect";
+
+        if( word.matched) {
+            thisClass = "mod_readaloud_modal_target_word_correct" ;
+            wordsmatched++;
+        }else{
+            thisClass = "mod_readaloud_modal_target_word_incorrect";
+        }
         $(".mod_readaloud_modal_target_word[data-index='" + idx + "']").addClass(thisClass);
+        if(comparison.length == wordsmatched){
+            setTimeout(function(){self.controls.skipbutton.trigger('click')},600);
+        }
       })
 
     },

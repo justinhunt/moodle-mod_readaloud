@@ -239,6 +239,11 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             toggleRecording: function() {
                 var that =this;
 
+                //If we are recognizing, then we want to discourage super click'ers
+                if (this.audio.isRecognizing) {
+                      return;
+                }
+
                 //If we are current recording
                 if (this.audio.isRecording) {
                     //If using Browser Rec (chrome speech)
