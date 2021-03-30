@@ -519,6 +519,27 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021032902, 'readaloud');
     }
 
+    //a bug means that some attempts might not have been graded
+    if($oldversion <2021033000){
+        if($oldversion>=2021032900){
+            $sql = "SELECT * from {" . constants::M_AITABLE . "} WHERE timecreated < 1617092420 AND timecreated > 1616943600 ";
+            $ai_evals = $DB->get_records_sql($sql);
+            if ($ai_evals) {
+                foreach ($ai_evals as $eval) {
+                    $thecm = get_coursemodule_from_instance(constants::M_TABLE, $eval->readaloudid, $eval->courseid, false);
+                    if($thecm) {
+                        $modulecontext =context_module::instance($thecm->id);
+                        $aigrade = new \mod_readaloud\aigrade($eval->attemptid, $modulecontext->id);
+                        if ($aigrade->has_transcripts()) {
+                            $aigrade->do_diff();
+                        }
+                    }
+                }
+            }
+        }
+        upgrade_mod_savepoint(true, 2021033000, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

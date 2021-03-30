@@ -243,7 +243,7 @@ class aigrade {
         $record->id = $this->recordid;
         $record->sessionerrors = $sessionerrors;
         $record->errorcount = $errorcount;
-        $record->sessionmatches = $sessionmatches;
+        $record->sessionmatches = json_encode($sessionmatches);
         $record->sessiontime = $sessiontime;
         $record->sessionendword = $sessionendword;
         $record->accuracy = $scores->accuracyscore;
