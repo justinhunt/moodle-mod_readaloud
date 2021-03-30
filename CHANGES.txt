@@ -1,3 +1,5 @@
+-added speechmark generation to setup.php
+
 2.0.56 (Build 2021033000)
 - bug where some attempts may have errored on grading from 2021032900+ releases
 

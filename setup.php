@@ -91,10 +91,10 @@ if ($mform->is_cancelled()) {
     }
 
     //we want to process the hashcode and lang model if it makes sense
+    $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$data->id));
+    $data->passagehash = $oldrecord->passagehash;
+    $newpassagehash = utils::fetch_passagehash($data);
     if(utils::needs_lang_model($data)){
-        $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$data->id));
-        $data->passagehash = $oldrecord->passagehash;
-        $newpassagehash = utils::fetch_passagehash($data);
         if($newpassagehash){
             //check if it has changed, if not do not waste time processing it
             if($oldrecord->passagehash!= ($data->region . '|' . $newpassagehash)) {
@@ -105,6 +105,39 @@ if ($mform->is_cancelled()) {
                 }
             }
         }
+    }
+
+    //we want to create a polly record and speechmarks, if (!human_modelaudio && passage) && (passage change || voice change || speed change)
+    $needspeechmarks =false;
+    if(empty($data->modelaudiourl) && !empty($data->passage) && $newpassagehash){
+        //if it has changed OR voice has changed we need to do some work
+        if($oldrecord->passagehash!= ($data->region . '|' . $newpassagehash) ||
+                $oldrecord->ttsvoice != $data->ttsvoice ||
+                $oldrecord->ttsspeed != $data->ttsspeed
+        ) {
+            $needspeechmarks = true;
+        }
+    }
+
+    //We create the marked up speechmarks. We do not save the modelurl, we only save that in the case of human model audio
+    if($needspeechmarks) {
+        $config = get_config(constants::M_COMPONENT);
+        $token = utils::fetch_token($config->apiuser,$config->apisecret);
+        if($token) {
+            $slowpassage = utils::fetch_speech_ssml($data->passage, $data->ttsspeed);
+            $speechmarks = utils::fetch_polly_speechmarks($token, $data->region,
+                    $slowpassage, 'ssml', $data->ttsvoice);
+            if($speechmarks) {
+                $matches = utils::speechmarks_to_matches($speechmarks);
+                if(!empty($oldrecord->modelaudiobreaks)){
+                    $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
+                }else {
+                    $breaks = utils::guess_modelaudio_breaks($data->passage, $matches);
+                }
+                $data->modelaudiomatches = json_encode($matches);
+                $data->modelaudiobreaks = json_encode($breaks);
+            } //end of if speechmarks
+        } //end of if token
     }
 
     //now update the db once we have saved files and stuff
