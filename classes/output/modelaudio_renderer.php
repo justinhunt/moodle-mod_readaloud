@@ -16,8 +16,16 @@ class modelaudio_renderer extends \plugin_renderer_base {
     public function render_sectiontop($title,$instructions){
         $heading = $this->output->heading($title, 4);
         $body = \html_writer::div($instructions, 'modelaudio_instructions');
+
         return $heading . $body;
     }
+
+    public function render_manualbreaktiming_checkbox(){
+        $manualcheckbox= \html_writer::checkbox('manualbreaktiming',0,false,
+                get_string('manualbreaktiming',constants::M_COMPONENT),
+                array('class'=>constants::M_COMPONENT . '_manualbreaktiming'));
+        return $manualcheckbox;
+     }
 
     public function render_polly_url($moduleinstance,$token) {
         $slowpassage = utils::fetch_speech_ssml($moduleinstance->passage,$moduleinstance->ttsspeed);

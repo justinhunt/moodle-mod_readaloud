@@ -505,7 +505,7 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
             $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
                     $slowpassage, 'ssml', $readaloud->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($speechmarks);
+                $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks);
                 $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches);
                 $readaloud->modelaudiomatches = json_encode($matches);
                 $readaloud->modelaudiobreaks = json_encode($breaks);
@@ -607,7 +607,7 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
             $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
                     $slowpassage, 'ssml', $readaloud->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($speechmarks);
+                $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks);
                 if(!empty($oldrecord->modelaudiobreaks)){
                     $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
                 }else {

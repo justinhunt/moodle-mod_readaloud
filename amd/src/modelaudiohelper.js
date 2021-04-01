@@ -171,7 +171,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
         },
 
         fetch_break_audiotime: function(wordnumber,theplayer, matches){
-            if(matches!==false){
+            if(matches!==false && !$('.mod_readaloud_manualbreaktiming').is(":checked")){
                 if(matches[wordnumber]){
                     return matches[wordnumber].audioend;
                 }

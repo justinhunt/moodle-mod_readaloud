@@ -336,58 +336,128 @@ class utils {
 
         //check if the voice is supported
         if(in_array($voice,constants::M_NEURALVOICES)){
-            //the neural speech marks seemed wrong. so we turned this off for now
-            //.With a period on the end of each line, there was a gradual drift from accuracay.
             return true;
-            //return false;
         }else{
             return false;
         }
     }
 
     //Turn a set of speechmarks into a matches format that we use for marking up text in Readaloud
-    public static function speechmarks_to_matches($speechmarks){
+    public static function speechmarks_to_matches($passage,$speechmarks){
         $matches = new \stdClass();
-        $count=0;
-        $currentmark=0;
+        $count=0; //final position in matches array (1 based), also used as position in passagewords array (0 based)
+        $sm_position=-1; //position in speechmarks array
+        $skip=0;//loop skip indicator
+
+        //there can be cases (grr) where the speechmark 'words' do not match the passage words;
+        // eg passage: '1968' -> speechmarks: '19' + speechmarks: '68'
+        //so we need to check back against the passage
+        $passagewords = self::fetch_passage_as_words($passage);
 
         //speechmarks could be of type 'sentence' or 'word'
         //sentence might be useful but at this stage we ignore it
         //if the word begins with "<" then its ssml so we skip it
         foreach($speechmarks as $rawmark){
-            $currentmark++;
+
+            //we might sometimes skip a loop if we used a forward match to do something clever earlier
+            if($skip>0){
+                $skip--;
+                continue;
+            }
+            //we need to keep track of which index rawmark is in the speechmarks array, and create a speechmarks object from it
+            $sm_position++;
             $speechmark = json_decode($rawmark);
+
+            //opt out of current speechmark if its not a word(eg sentence, viseme, ssml) or is ssml mark up
             if(!isset($speechmark->type) || $speechmark->type!='word'){continue;}
             if(\core_text::strlen($speechmark->value)>1 && \core_text::substr($speechmark->value,0,1)=='<'){continue;}
-            $count++;
+
+            //set audio start time
+            //we might run several speech marks together in some cases, but the start is here.
+            $audiostarttime = $speechmark->time;
+
+            //if passage word and speechmark word do not match we have a bit of work to do
+            //we look forward and continue matching until the next passage match occurs, so it might span more than one set of speechmarks
+            if(self::are_different_words($speechmark->value, $passagewords[$count])){
+                list($futuremark,$future_position) = self::forward_search($speechmarks, $sm_position ,
+                        $passagewords, $count, 'lastpassagemismatch');
+                if($futuremark){
+                    //we are going to run together the speechmark and futuremark as a single match
+                    //so we combine the content and tweak the indexes so it will continue on to get the correct audio end,
+                    // and the loop start processing from the future_position + 1
+                    $skip = $future_position - $sm_position;
+                    $sm_position =$future_position;
+                    $futuremark->value = $speechmark->value . $futuremark->value;
+                    $speechmark=$futuremark;
+                }
+            }
+            
+
             //with speechmarks we do not get an audio end, so we need to figure one out.
             //we default to + .05
             $audioend=($speechmark->time *.001) + .05;
             if($count<count($speechmarks)){
-                for($i=$currentmark;$i<count($speechmarks);$i++){
-                    $futuremark = json_decode($speechmarks[$i]);
-                    if(!isset($futuremark->type)){
-                        continue;
-                    }elseif($futuremark->type=='word'){
-                        if(\core_text::strlen($speechmark->value)>1 && \core_text::substr($speechmark->value,0,1)=='<'){
-                            continue;
-                        }
-                        //we had to play with decrement  value. to stop getting the start of the next word
-                        $audioend=($futuremark->time * .001) - .1;
-                        break;
-                    }
+
+                list($futuremark,$future_position) = self::forward_search($speechmarks, $sm_position,
+                        $passagewords, $count, 'audioend');
+                if($futuremark){
+                    //we had to play with decrement  value. to stop getting the start of the next word
+                    $audioend=($futuremark->time * .001) - .1;
                 }
+
             }
+
+            $count++;
             $matches->{$count} = new \stdClass();
             $matches->{$count}->word=$speechmark->value;
             $matches->{$count}->pposition=$count;
             $matches->{$count}->tposition=$count;
-            $matches->{$count}->audiostart=$speechmark->time * .001;
+            $matches->{$count}->audiostart=$audiostarttime * .001;
             $matches->{$count}->audioend=$audioend;
             $matches->{$count}->altmatch=0;
         }
         return $matches;
     }
+
+    //sometimes there are colons and semi colons and quotes in one or the other word, we ignore these and compare
+    public static function are_different_words($word1,$word2){
+        return    \mod_readaloud\diff::cleanText( \core_text::strtolower($word1)) !==
+                \mod_readaloud\diff::cleanText( \core_text::strtolower($word2));
+    }
+
+    //This is part of speechmarks processing to create matches.
+    //while looping we need to look forward to fetch upcoming data. That forward search is done in this function
+    public static function forward_search($speechmarks, $smindex ,$passagewords, $passageindex, $thingtoreturn) {
+        for ($i = $smindex; $i < count($speechmarks); $i++) {
+            $smindex++;
+            if ($smindex >= count($speechmarks)) {
+                return [false,false];
+            }
+
+            $futuremark = json_decode($speechmarks[$smindex]);
+            if (!isset($futuremark->type)) {
+                continue;
+            } else if ($futuremark->type == 'word') {
+                if (\core_text::strlen($futuremark->value) > 1 && \core_text::substr($futuremark->value, 0, 1) == '<') {
+                    continue;
+                }
+                switch ($thingtoreturn) {
+                    case 'audioend':
+                        return [$futuremark,$smindex];
+                    case 'lastpassagemismatch':
+                        if ($passageindex+1 >= count($passagewords)) {
+                            return [false,false];
+                        }
+                        if (!self::are_different_words($futuremark->value,$passagewords[$passageindex+1])) {
+                            $returnindex=$smindex-1;
+                            $returnmark = json_decode($speechmarks[$returnindex]);
+                            return [$returnmark,$returnindex];
+                        }
+                }//end of switch
+            }//end of if
+        }//end of for
+        return [false,false];
+    }//end of function
 
 
 

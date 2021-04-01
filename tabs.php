@@ -51,11 +51,6 @@ $config = get_config(constants::M_COMPONENT);
 $row[] = new tabobject('view', "$CFG->wwwroot/mod/readaloud/view.php?id=$cm->id", get_string('view', constants::M_COMPONENT),
         get_string('preview', constants::M_COMPONENT, format_string($moduleinstance->name)));
 
-if(has_capability('mod/readaloud:manage',$context) && $config->enablesetuptab) {
-    $row[] = new tabobject('setup', "$CFG->wwwroot/mod/readaloud/setup.php?id=$cm->id",
-            get_string('setup', constants::M_COMPONENT), get_string('setup', constants::M_COMPONENT));
-}
-
 if (has_capability('mod/readaloud:viewreports', $context)) {
     $row[] = new tabobject('grading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id",
             get_string('grading', constants::M_COMPONENT), get_string('viewgrading', constants::M_COMPONENT));
@@ -63,6 +58,12 @@ if (has_capability('mod/readaloud:viewreports', $context)) {
     $row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', constants::M_COMPONENT), get_string('viewreports', constants::M_COMPONENT));
 
 }
+
+if(has_capability('mod/readaloud:manage',$context) && $config->enablesetuptab) {
+    $row[] = new tabobject('setup', "$CFG->wwwroot/mod/readaloud/setup.php?id=$cm->id",
+            get_string('setup', constants::M_COMPONENT), get_string('setup', constants::M_COMPONENT));
+}
+
 if (has_capability('mod/readaloud:manage', $context)) {
     $row[] = new tabobject('gradesadmin', "$CFG->wwwroot/mod/readaloud/gradesadmin.php?id=$cm->id",
             get_string('gradesadmin', constants::M_COMPONENT), get_string('viewgradesadmin', constants::M_COMPONENT));

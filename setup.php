@@ -128,7 +128,7 @@ if ($mform->is_cancelled()) {
             $speechmarks = utils::fetch_polly_speechmarks($token, $data->region,
                     $slowpassage, 'ssml', $data->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($speechmarks);
+                $matches = utils::speechmarks_to_matches($data->passage,$speechmarks);
                 if(!empty($oldrecord->modelaudiobreaks)){
                     $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
                 }else {

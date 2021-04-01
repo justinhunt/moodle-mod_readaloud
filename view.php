@@ -157,6 +157,18 @@ if (has_capability('mod/readaloud:viewreports', $modulecontext)) {
     echo $renderer->notabsheader();
 }
 
+if($config->enablesetuptab && empty($moduleinstance->passage)) {
+    if (has_capability('mod/readaloud:manage', $modulecontext)) {
+        echo $renderer->show_no_content($cm,true);
+    }else{
+        echo $renderer->show_no_content($cm,false);
+    }
+    echo $renderer->footer();
+    return;
+}
+
+
+
 //Show the title
 echo $renderer->show_title($moduleinstance->name);
 

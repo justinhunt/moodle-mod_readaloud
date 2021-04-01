@@ -123,10 +123,10 @@ switch ($action) {
             $slowpassage = utils::fetch_speech_ssml($moduleinstance->passage,$moduleinstance->ttsspeed);
             $speechmarks = utils::fetch_polly_speechmarks($token,$moduleinstance->region,
                     $slowpassage,'ssml',$moduleinstance->ttsvoice);
-            $matches = utils::speechmarks_to_matches($speechmarks);
+            $matches = utils::speechmarks_to_matches($moduleinstance->passage,$speechmarks);
 
             if(!empty($moduleinstance->modelaudiobreaks)){
-                $breaks = utils::sync_modelaudio_breaks($moduleinstance->modelaudiobreaks,$matches);
+                $breaks = utils::sync_modelaudio_breaks(json_decode($moduleinstance->modelaudiobreaks),$matches);
             }else{
                 $breaks = utils::guess_modelaudio_breaks($moduleinstance->passage,$matches);
             }
@@ -215,6 +215,7 @@ echo "<hr>";
 echo $modelaudiorenderer->render_sectiontop(
         get_string('modelaudio_breakstitle',constants::M_COMPONENT),
         get_string('modelaudio_breaksinstructions',constants::M_COMPONENT));
+echo $modelaudiorenderer->render_manualbreaktiming_checkbox();
 echo $passagerenderer->render_passage($moduleinstance->passage);
 
 
