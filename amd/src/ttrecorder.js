@@ -311,10 +311,16 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                     if (oReq.status === 200) {
                         callback(JSON.parse(oReq.response));
                     } else {
+                        callback({data: {result: "error"}});
                         console.error(oReq.error);
                     }
                 };
-                oReq.send(bodyFormData);
+                try {
+                    oReq.send(bodyFormData);
+                }catch(err){
+                    callback({data: {result: "error"}});
+                    console.error(err);
+                }
             },
 
         };//end of return value

@@ -232,11 +232,13 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       },
 
       use_ttrecorder: function(){
+          //currently we always use TT recorder.
+          return true;
+       /*
           var ret =false;
-
-
-          //check if language and region are ok
           switch(this.region){
+              case 'bahrain':
+              case 'capetown':
               case 'tokyo':
               case 'useast1':
               case 'dublin':
@@ -248,6 +250,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
                   ret = this.chrome_user();
           }
           return ret;
+          */
       },
 
 

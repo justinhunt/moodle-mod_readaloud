@@ -419,9 +419,10 @@ function readaloud_is_complete($course, $cm, $userid, $type) {
     } elseif($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe) {
 
         //choose AI grades only
-        $sql = "SELECT  MAX( sessionscore  ) AS grade
-                      FROM {" . constants::M_AITABLE . "}
-                     WHERE userid = :userid AND " . constants::M_MODNAME . "id = :moduleid";
+        $sql = "SELECT  MAX(ai.sessionscore) AS grade
+                      FROM {" . constants::M_AITABLE . "} ai
+                      INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
+                     WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
 
     } else {
         //choose human grades only

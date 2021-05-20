@@ -59,14 +59,15 @@ class utils {
      */
     public static function needs_lang_model($moduleinstance) {
         switch($moduleinstance->region){
+            case 'bahrain':
+            case 'capetown':
             case 'tokyo':
             case 'useast1':
             case 'dublin':
             case 'sydney':
-                return substr($moduleinstance->ttslanguage,0,2)=='en' && trim($moduleinstance->passage)!=="";
-                break;
             default:
-                return false;
+                return (substr($moduleinstance->ttslanguage,0,2)=='en' ||
+                        substr($moduleinstance->ttslanguage,0,2)=='de') && trim($moduleinstance->passage)!=="";
         }
     }
 
@@ -156,6 +157,16 @@ class utils {
         }
 
         return $ret;
+    }
+
+    //we might use AWS Transcribe if its strict or no hash(why) and if its not capetown
+    public static function do_strict_transcribe($instance) {
+
+        if($instance->stricttranscribe || empty($instance->passagehash)) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     //are we willing and able to transcribe submissions?
@@ -973,16 +984,20 @@ class utils {
 
         //sessionscore
         $targetwpm = $activitydata->targetwpm;
-        if($activitydata->sessionscoremethod == constants::SESSIONSCORE_STRICT){
-            $usewpmscore = $strictwpmscore;
-        }else{
-            $usewpmscore = $wpmscore;
-        }
+        if($targetwpm && $targetwpm >0) {
+            if ($activitydata->sessionscoremethod == constants::SESSIONSCORE_STRICT) {
+                $usewpmscore = $strictwpmscore;
+            } else {
+                $usewpmscore = $wpmscore;
+            }
 
-        if ($usewpmscore > $targetwpm) {
-            $usewpmscore = $targetwpm;
+            if ($usewpmscore > $targetwpm) {
+                $usewpmscore = $targetwpm;
+            }
+            $sessionscore = round($usewpmscore / $targetwpm * 100);
+        }else{
+            $sessionscore=100;
         }
-        $sessionscore = round($usewpmscore / $targetwpm * 100);
 
         $scores = new \stdClass();
         $scores->wpmscore = $wpmscore;
@@ -1575,7 +1590,9 @@ class utils {
                 "london" => get_string("london", constants::M_COMPONENT),
                 "saopaulo" => get_string("saopaulo", constants::M_COMPONENT),
                 "singapore" => get_string("singapore",constants::M_COMPONENT),
-                "mumbai" => get_string("mumbai",constants::M_COMPONENT)
+                "mumbai" => get_string("mumbai",constants::M_COMPONENT),
+                "bahrain" => get_string("bahrain", constants::M_COMPONENT),
+                "capetown" => get_string("capetown", constants::M_COMPONENT)
         );
     }
 

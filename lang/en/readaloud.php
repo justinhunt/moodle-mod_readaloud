@@ -199,6 +199,8 @@ $string['useast1'] = 'US East';
 $string['tokyo'] = 'Tokyo, Japan';
 $string['sydney'] = 'Sydney, Australia';
 $string['dublin'] = 'Dublin, Ireland';
+$string['capetown'] = 'Capetown, South Africa';
+$string['bahrain'] = 'Bahrain';
 $string['ottawa'] = 'Ottawa, Canada';
 $string['frankfurt'] = 'Frankfurt, Germany';
 $string['london'] = 'London, U.K';
@@ -243,6 +245,7 @@ $string['tr-tr'] = 'Turkish';
 
 $string['awsregion'] = 'AWS Region';
 $string['region'] = 'AWS Region';
+$string['awsregion_details']='Choose the region closest to you. Your data will stay within that region. Capetown region only supports English and German.';
 $string['expiredays'] = 'Days to keep file';
 $string['aigradenow'] = 'AI Grade';
 
@@ -374,7 +377,7 @@ $string['transcriber_amazontranscribe'] = 'Regular Transcription(AWS): recommend
 $string['transcriber_googlecloud'] = 'Quick Transcription(Google)(audio length < 60s only)';
 
 $string['stricttranscribe'] = 'Strict Transcription';
-$string['stricttranscribemode_details'] = 'By default ReadAloud transcribes generously, particularly in English. Set to strict to get more speech mistakes.';
+$string['stricttranscribemode_details'] = 'By default ReadAloud transcribes generously in English and German. Set to strict to get more speech mistakes for full passage readings in those languages.';
 
 $string['submitrawaudio'] = 'Submit uncompressed audio';
 $string['submitrawaudio_details'] = 'Submitting uncompressed audio may increase transcription accuracy, but at the expense of upload speed and reliability.';

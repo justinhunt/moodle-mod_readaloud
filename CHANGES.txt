@@ -1,3 +1,8 @@
+2.0.58 (Build 2021040500)
+- added capetown/bahrain
+- fixed bug in grading if target WPM was not set (or set to 0)
+- fixed bug in grading when only machine eval was selected
+
 2.0.57 (Build 2021040500)
 -added speechmark generation to setup.php
 
