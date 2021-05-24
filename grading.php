@@ -33,6 +33,8 @@ $n = optional_param('n', 0, PARAM_INT);  // readaloud instance ID
 $format = optional_param('format', 'html', PARAM_TEXT); //export format csv or html
 $action = optional_param('action', 'grading', PARAM_TEXT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // user id
+$groupid = optional_param('group', 0, PARAM_INT); // group id
+
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // attemptid
 $saveandnext = optional_param('submitbutton2', 'false', PARAM_TEXT); //Is this a savebutton2
 $debug = optional_param('debug', 0, PARAM_INT);
@@ -119,7 +121,7 @@ switch ($action) {
 }
 
 $PAGE->set_url(constants::M_URL . '/grading.php',
-        array('id' => $cm->id, 'format' => $format, 'action' => $action, 'userid' => $userid, 'attemptid' => $attemptid));
+        array('id' => $cm->id, 'format' => $format, 'action' => $action, 'userid' => $userid, 'attemptid' => $attemptid, 'group' => $groupid));
 
 /// Set up the page header
 $PAGE->set_title(format_string($moduleinstance->name));
@@ -275,6 +277,7 @@ switch ($action) {
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
         $formdata->modulecontextid = $modulecontext->id;
+        $formdata->groupid = $groupid;
         break;
 
     //list view of attempts and grades and action links for a particular user
@@ -355,6 +358,17 @@ $PAGE->requires->js_call_amd("mod_readaloud/hiddenplayerhelper", 'init', array($
 5) call $reportrenderer->render_section_html($sectiontitle, $report->name, $report->get_head, $rows, $report->fields);
 */
 
+$groupmenu = '';
+$formdata->groupid  = 0;
+if(isset($formdata->groupid)){
+    // fetch groupmode/menu/id for this activity
+    if ($groupmode = groups_get_activity_groupmode($cm)) {
+        $groupmenu = groups_print_activity_menu($cm, $PAGE->url, true);
+        $groupmenu .= ' ';
+        $formdata->groupid = groups_get_activity_group($cm);
+    }
+}
+
 $report->process_raw_data($formdata, $moduleinstance);
 $reportheading = $report->fetch_formatted_heading();
 
@@ -368,12 +382,14 @@ switch ($format) {
     default:
         $reportrows = $report->fetch_formatted_rows(true, $paging);
         $allrowscount = $report->fetch_all_rows_count();
+
         $pagingbar = $reportrenderer->show_paging_bar($allrowscount, $paging, $PAGE->url);
         $perpage_selector = $reportrenderer->show_perpage_selector($PAGE->url, $paging);
 
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $renderer->render_hiddenaudioplayer();
         echo $extraheader;
+        echo $groupmenu;
         echo $pagingbar;
         echo $perpage_selector;
         echo $reportrenderer->render_section_html($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows,

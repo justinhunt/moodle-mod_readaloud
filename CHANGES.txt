@@ -1,3 +1,6 @@
+2.0.59 (Build 2021052500)
+- added selection of group for report
+
 2.0.58 (Build 2021052200)
 - added capetown/bahrain
 - fixed bug in grading if target WPM was not set (or set to 0)
