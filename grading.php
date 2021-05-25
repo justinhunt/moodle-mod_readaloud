@@ -359,14 +359,17 @@ $PAGE->requires->js_call_amd("mod_readaloud/hiddenplayerhelper", 'init', array($
 */
 
 $groupmenu = '';
-$formdata->groupid  = 0;
 if(isset($formdata->groupid)){
     // fetch groupmode/menu/id for this activity
     if ($groupmode = groups_get_activity_groupmode($cm)) {
         $groupmenu = groups_print_activity_menu($cm, $PAGE->url, true);
         $groupmenu .= ' ';
         $formdata->groupid = groups_get_activity_group($cm);
+    }else{
+        $formdata->groupid  = 0;
     }
+}else{
+    $formdata->groupid  = 0;
 }
 
 $report->process_raw_data($formdata, $moduleinstance);
