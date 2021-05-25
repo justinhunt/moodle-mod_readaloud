@@ -33,7 +33,6 @@ $n = optional_param('n', 0, PARAM_INT);  // readaloud instance ID
 $format = optional_param('format', 'html', PARAM_TEXT); //export format csv or html
 $action = optional_param('action', 'grading', PARAM_TEXT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // user id
-$groupid = optional_param('group', 0, PARAM_INT); // group id
 
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // attemptid
 $saveandnext = optional_param('submitbutton2', 'false', PARAM_TEXT); //Is this a savebutton2
@@ -121,7 +120,7 @@ switch ($action) {
 }
 
 $PAGE->set_url(constants::M_URL . '/grading.php',
-        array('id' => $cm->id, 'format' => $format, 'action' => $action, 'userid' => $userid, 'attemptid' => $attemptid, 'group' => $groupid));
+        array('id' => $cm->id, 'format' => $format, 'action' => $action, 'userid' => $userid, 'attemptid' => $attemptid));
 
 /// Set up the page header
 $PAGE->set_title(format_string($moduleinstance->name));
@@ -277,7 +276,7 @@ switch ($action) {
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
         $formdata->modulecontextid = $modulecontext->id;
-        $formdata->groupid = $groupid;
+        $formdata->groupmenu = true;
         break;
 
     //list view of attempts and grades and action links for a particular user
@@ -359,7 +358,7 @@ $PAGE->requires->js_call_amd("mod_readaloud/hiddenplayerhelper", 'init', array($
 */
 
 $groupmenu = '';
-if(isset($formdata->groupid)){
+if(isset($formdata->groupmenu)){
     // fetch groupmode/menu/id for this activity
     if ($groupmode = groups_get_activity_groupmode($cm)) {
         $groupmenu = groups_print_activity_menu($cm, $PAGE->url, true);
