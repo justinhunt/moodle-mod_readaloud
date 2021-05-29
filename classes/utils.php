@@ -59,15 +59,18 @@ class utils {
      */
     public static function needs_lang_model($moduleinstance) {
         switch($moduleinstance->region){
-            case 'bahrain':
+
             case 'capetown':
+            case 'bahrain':
             case 'tokyo':
             case 'useast1':
             case 'dublin':
             case 'sydney':
             default:
-                return (substr($moduleinstance->ttslanguage,0,2)=='en' ||
-                        substr($moduleinstance->ttslanguage,0,2)=='de') && trim($moduleinstance->passage)!=="";
+            return (substr($moduleinstance->ttslanguage,0,2)=='en' ||
+                            substr($moduleinstance->ttslanguage,0,2)=='de' ||
+                            substr($moduleinstance->ttslanguage,0,2)=='fr' ||
+                            substr($moduleinstance->ttslanguage,0,2)=='es') && trim($moduleinstance->passage)!=="";
         }
     }
 
