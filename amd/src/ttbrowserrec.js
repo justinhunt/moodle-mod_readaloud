@@ -103,7 +103,7 @@ define(['jquery', 'core/log'], function ($, log) {
                         log.debug('info_denied');
                     }
                 }
-                that.onerror();
+                that.onerror({error: {name: event.error}});
             };
 
             recognition.onend = function () {
