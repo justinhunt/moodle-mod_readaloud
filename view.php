@@ -170,7 +170,11 @@ if($config->enablesetuptab && empty($moduleinstance->passage)) {
 
 
 //Show the title
-echo $renderer->show_title($moduleinstance->name);
+//dont show the heading in an iframe, it will be outside this anyway
+if(!$moduleinstance->foriframe) {
+    echo $renderer->show_title($moduleinstance->name);
+
+}
 
 //If we are reviewing attempts we do that here and return.
 //If we are going to the dashboard we output that below
