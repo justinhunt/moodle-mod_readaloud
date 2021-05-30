@@ -50,7 +50,11 @@ class renderer extends \plugin_renderer_base {
                 ob_end_clean();
             }
         } else {
-            $output .= $this->output->heading($activityname);
+            //dont show the heading in an iframe, it will be outside this anyway
+            if(!$moduleinstance->foriframe) {
+                $output .= $this->output->heading($activityname);
+            }
+
         }
 
         return $output;
