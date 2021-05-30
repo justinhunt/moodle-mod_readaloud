@@ -1,3 +1,6 @@
+2.0.61 (Build 2021053100)
+- Internal flag for iframe use
+
 2.0.60 (Build 2021052900)
 - Added lang models for FR and ES
 

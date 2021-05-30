@@ -56,7 +56,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
                 'grade', 'gradeoptions', 'machgrademethod','sessionscoremethod', 'maxattempts', 'mingrade',
                 'ttslanguage','ttsvoice','ttsspeed','enablepreview','enableshadow','enablelandr' ,'transcriber', 'modelaudiourl','modelaudiobreaks',
                 'modelaudiotrans','modelaudiofulltrans','modelaudiomatches',
-                'enableai', 'allowearlyexit','expiredays' ,'region', 'activitylink','submitrawaudio','stricttranscribe','recorder','timecreated', 'timemodified'
+                'enableai', 'allowearlyexit','expiredays' ,'region', 'activitylink','submitrawaudio','stricttranscribe','recorder','foriframe','timecreated', 'timemodified'
         ));
 
         //attempts

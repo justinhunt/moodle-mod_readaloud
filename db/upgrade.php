@@ -540,6 +540,21 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021033000, 'readaloud');
     }
 
+    // Add foriframe option to readaloud table
+    if ($oldversion < 2021053100) {
+        $table = new xmldb_table(constants::M_TABLE);
+
+
+        // Define field forframe to be added to readaloud
+        $field= new xmldb_field('foriframe', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+
+        // add richtextprompt field to minilesson table
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2021053100, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }
