@@ -69,6 +69,10 @@ $completion->set_module_viewed($cm);
 //are we a teacher or a student?
 $mode = "view";
 
+
+//Get an admin settings
+$config = get_config(constants::M_COMPONENT);
+
 /// Set up the page header
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
@@ -83,8 +87,6 @@ if($config->enablesetuptab){
 //we need to load jquery for some old themes (Essential mainly)
 $PAGE->requires->jquery();
 
-//Get an admin settings
-$config = get_config(constants::M_COMPONENT);
 
 //Get our renderers
 $renderer = $PAGE->get_renderer('mod_readaloud');
