@@ -73,7 +73,12 @@ $mode = "view";
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-$PAGE->set_pagelayout('course');
+
+if($config->enablesetuptab){
+    $PAGE->set_pagelayout('popup');
+}else{
+    $PAGE->set_pagelayout('course');
+}
 
 //we need to load jquery for some old themes (Essential mainly)
 $PAGE->requires->jquery();
