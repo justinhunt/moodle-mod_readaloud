@@ -246,8 +246,17 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 }
 
 #mod_readaloud_grading_player {
-  width: 100% !important;
+  width: 100%;
+  max-width: 1200px;
   margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mod_readaloud_scorestable {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mod_readaloud_hidden_player {

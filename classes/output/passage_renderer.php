@@ -19,7 +19,7 @@ class passage_renderer extends \plugin_renderer_base {
       
       $ret .= $this->render_audioplayer($passagehelper->attemptdetails('audiourl'));
 
-      $ret .= '<div style="margin-top:10px;" class="table-responsive">';
+      $ret .= '<div style="margin-top:10px;" class="table-responsive mod_readaloud_scorestable">';
       $ret .= '<table class="table table-condensed table-bordered">';
       $ret .= '<thead><tr>';
       $ret .= '<th>'.get_string('wpm', constants::M_COMPONENT).'</th>';
