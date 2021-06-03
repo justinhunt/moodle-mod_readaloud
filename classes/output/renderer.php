@@ -321,7 +321,7 @@ class renderer extends \plugin_renderer_base {
 
     public function show_returntomenu_button(){
         $returnbutton =  \html_writer::tag('button', "<i class='fa fa-arrow-left'></i> ".get_string("returnmenu", constants::M_COMPONENT),
-                array('class'=>constants::M_CLASS . '_center btn-block btn btn-secondary ' . constants::M_RETURNMENU,'type'=>'button','id'=>constants::M_RETURNMENU));
+                array('class'=>constants::M_CLASS . '_center btn-block btn btn-secondary ' . constants::M_RETURNMENU,'type'=>'button','style'=>'display: none','id'=>constants::M_RETURNMENU));
         return $returnbutton;
     }
 
