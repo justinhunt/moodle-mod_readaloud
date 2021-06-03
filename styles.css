@@ -265,6 +265,9 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 
 #mod_readaloud_button_returnmenu {
   display: none;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mod_readaloud_menubuttons_cont {
@@ -558,6 +561,9 @@ div.mod_readaloud_attemptsummarytable {
   height: 40px;
   border: 1px solid transparent;
   display: none;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .mod_readaloud_modal_target_word {
