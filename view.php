@@ -158,11 +158,8 @@ if($attempts) {
 //From here we actually display the page.
 
 //if we are teacher we see tabs. If student we just see the activity
-if (has_capability('mod/readaloud:viewreports', $modulecontext)) {
-    echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
-} else {
-    echo $renderer->notabsheader();
-}
+echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
+
 
 if($config->enablesetuptab && empty($moduleinstance->passage)) {
     if (has_capability('mod/readaloud:manage', $modulecontext)) {
@@ -172,15 +169,6 @@ if($config->enablesetuptab && empty($moduleinstance->passage)) {
     }
     echo $renderer->footer();
     return;
-}
-
-
-
-//Show the title
-//dont show the heading in an iframe, it will be outside this anyway
-if(!$moduleinstance->foriframe) {
-    echo $renderer->show_title($moduleinstance->name);
-
 }
 
 //If we are reviewing attempts we do that here and return.

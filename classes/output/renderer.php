@@ -39,6 +39,13 @@ class renderer extends \plugin_renderer_base {
         $this->page->set_title($title);
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
+        if(!$moduleinstance->foriframe) {
+            $thetitle = $this->output->heading($activityname, 3, 'main');
+            $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
+            $output .= $displaytext;
+
+        }
+
 
         if (has_capability('mod/readaloud:viewreports', $context)) {
             //   $output .= $this->output->heading_with_help($activityname, 'overview', constants::M_COMPONENT);
@@ -49,19 +56,11 @@ class renderer extends \plugin_renderer_base {
                 $output .= ob_get_contents();
                 ob_end_clean();
             }
-        } else {
-           $output .= $this->output->heading($activityname);
         }
 
         return $output;
     }
 
-    /**
-     * Return HTML to display limited header
-     */
-    public function notabsheader() {
-        return $this->output->header();
-    }
 
     public function show_no_content($cm, $showsetup){
         $displaytext = $this->output->box_start();
@@ -582,12 +581,6 @@ class renderer extends \plugin_renderer_base {
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext);
         return $ret;
-    }
-
-    public function show_title($title){
-        $thetitle = $this->output->heading($title, 3, 'main');
-        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
-        return $displaytext;
     }
 
     /**
