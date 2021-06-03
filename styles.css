@@ -263,7 +263,7 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
   display: none;
 }
 
-#mod_readaloud_button_returnmenu {
+.mod_readaloud_button_returnmenu {
   display: none;
   max-width: 1200px;
   margin-left: auto;
