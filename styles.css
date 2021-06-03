@@ -198,6 +198,8 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
 .mod_readaloud_smallreport_cont {
   padding: 5px;
   border: 1px grey solid;
+  max-width: 920px;
+  margin: auto;
 }
 
 .mod_readaloud_feedback_cont {
@@ -638,4 +640,9 @@ div.mod_readaloud_attemptsummarytable {
   justify-content: center;
   cursor: pointer;
   background-color: red;
+}
+
+.mod_intro_box.mod_readaloud_center {
+  max-width: 920px;
+  margin: auto;
 }
