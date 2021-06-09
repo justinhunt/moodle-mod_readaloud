@@ -10,6 +10,7 @@
 
 use \mod_readaloud\utils;
 use \mod_readaloud\diff;
+use \mod_readaloud\numberconverter;
 use \mod_readaloud\constants;
 
 class mod_readaloud_external extends external_api {
@@ -130,7 +131,7 @@ class mod_readaloud_external extends external_api {
     }
 
     public static function compare_passage_to_transcript($cmid, $language,$passage,$transcript) {
-        global $DB;
+        global $DB,$CFG;
 
         if($cmid > 0){
             $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
@@ -145,6 +146,13 @@ class mod_readaloud_external extends external_api {
         if($language == constants::M_LANG_JAJP) {
             ///$passage = utils::segment_japanese($passage);
             $transcript = utils::segment_japanese($transcript);
+        }
+
+        //EXPERIMENTAL
+        if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental &&
+                substr($language,0,2)=='en'){
+            //find digits in original passage, and convert number words to digits in the target passage
+            $transcript=numberconverter::words_to_numbers_convert($passage,$transcript );
         }
 
         //turn the passage and transcript into an array of words
