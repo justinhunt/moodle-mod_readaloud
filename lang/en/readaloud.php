@@ -13,12 +13,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'Read Aloud';
-$string['modulenameplural'] = 'Read Alouds';
+$string['modulename'] = 'Poodll ReadAloud';
+$string['modulenameplural'] = 'Poodll ReadAlouds';
 $string['modulename_help'] =
         'ReadAloud is an activity designed to assist teachers in evaluating their students reading fluency. Students read a passage, set by the teacher, into a microphone. Later the teacher can mark words as incorrect and get the student WCPM(Words Correct Per Minute) scores.';
 $string['readaloudfieldset'] = 'Custom example fieldset';
-$string['readaloudname'] = 'Read Aloud';
+$string['readaloudname'] = 'Poodll ReadAloud';
 $string['readaloudname_help'] =
         'This is the content of the help tooltip associated with the readaloudname field. Markdown syntax is supported.';
 $string['readaloud'] = 'readaloud';
@@ -26,8 +26,8 @@ $string['activitylink'] = 'Link to next activity';
 $string['activitylink_help'] =
         'To provide a link after the attempt to another activity in the course, select the activity from the dropdown list.';
 $string['activitylinkname'] = 'Continue to next activity: {$a}';
-$string['pluginadministration'] = 'Read Aloud Administration';
-$string['pluginname'] = 'Read Aloud Activity';
+$string['pluginadministration'] = 'ReadAloud Administration';
+$string['pluginname'] = 'Poodll ReadAloud';
 $string['someadminsetting'] = 'Some Admin Setting';
 $string['someadminsetting_details'] = 'More info about Some Admin Setting';
 $string['someinstancesetting'] = 'Some Instance Setting';
