@@ -157,7 +157,7 @@ class aigrade {
     //transcripts become ready in their own time, if they're ready update data and DB,
     // if not just report that back
     public function fetch_transcripts() {
-        global $DB;
+        global $DB, $CFG;
         $success = false;
         $transcript = false;
         $fulltranscript = false;
@@ -178,11 +178,20 @@ class aigrade {
         if ($fulltranscript) {
             $record = new \stdClass();
             $record->id = $this->recordid;
-            $record->transcript = diff::cleanText($transcript);
+            $cleantranscript = diff::cleanText($transcript);
+
+
+//EXPERIMENTAL
+if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental && substr($this->activitydata->ttslanguage,0,2)=='en'){
+    //find digits in original passage, and convert number words to digits in the target passage
+    $cleantranscript=numberconverter::words_to_numbers_convert($this->activitydata->passage,$cleantranscript );
+}
+
+            $record->transcript = $cleantranscript;
             $record->fulltranscript = $fulltranscript;
             $success = $DB->update_record(constants::M_AITABLE, $record);
 
-            $this->aidata->transcript = $transcript;
+            $this->aidata->transcript = $cleantranscript;
             $this->aidata->fulltranscript = $fulltranscript;
         }
         return $success;

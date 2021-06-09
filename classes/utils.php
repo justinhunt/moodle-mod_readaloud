@@ -79,7 +79,16 @@ class utils {
      *
      */
     public static function fetch_passagehash($moduleinstance) {
+        global $CFG;
+
         $cleantext = diff::cleanText($moduleinstance->passage);
+
+  //EXPERIMENTAL
+if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental && substr($moduleinstance->ttslanguage,0,2)=='en'){
+    //find numbers in the passage, and then replace those with words in the target text
+    $cleantext=numberconverter::numbers_to_words_convert($cleantext,$cleantext);
+}
+
         if(!empty($cleantext)) {
             return sha1($cleantext);
         }else{
@@ -93,6 +102,8 @@ class utils {
      *
      */
     public static function fetch_lang_model($passage, $language, $region){
+        global $CFG;
+
         $conf= get_config(constants::M_COMPONENT);
         if (!empty($conf->apiuser) && !empty($conf->apisecret)) {;
             $token = self::fetch_token($conf->apiuser, $conf->apisecret);
@@ -106,6 +117,13 @@ class utils {
             $params["wsfunction"]='local_cpapi_generate_lang_model';
             $params["moodlewsrestformat"]='json';
             $params["passage"]=diff::cleanText($passage);
+
+//EXPERIMENTAL
+if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental && substr($language,0,2)=='en'){
+    //find numbers in the passage, and then replace those with words in the target text
+    $params["passage"]=numberconverter::numbers_to_words_convert($params["passage"],$params["passage"]);
+}
+
             $params["language"]=$language;
             $params["region"]=$region;
 
@@ -845,7 +863,7 @@ class utils {
     //compare passage and transcript and return errors and matches
     //this is called from aigrade.php and modelaudio.php
     public static function fetch_diff($passage, $alternatives, $transcript,$fulltranscript, $ttslanguage, $debug = false) {
-        global $DB;
+        global $DB, $CFG;
 
         //turn the passage and transcript into an array of words
         $passagebits = diff::fetchWordArray($passage);
