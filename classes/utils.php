@@ -83,10 +83,19 @@ class utils {
 
         $cleantext = diff::cleanText($moduleinstance->passage);
 
-  //EXPERIMENTAL
-if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental && substr($moduleinstance->ttslanguage,0,2)=='en'){
+  //number or odd char converter
+if(substr($moduleinstance->ttslanguage,0,2)=='en' || substr($moduleinstance->ttslanguage,0,2)=='de' ){
     //find numbers in the passage, and then replace those with words in the target text
-    $cleantext=numberconverter::numbers_to_words_convert($cleantext,$cleantext);
+    $cleantext=alphabetconverter::numbers_to_words_convert($cleantext,$cleantext);
+    switch (substr($moduleinstance->ttslanguage,0,2)){
+        case 'en':
+            $cleantext=alphabetconverter::numbers_to_words_convert($cleantext,$cleantext);
+            break;
+        case 'de':
+            $cleantext=alphabetconverter::eszett_to_ss_convert($cleantext,$cleantext);
+            break;
+
+    }
 }
 
         if(!empty($cleantext)) {
@@ -118,10 +127,22 @@ if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental && substr
             $params["moodlewsrestformat"]='json';
             $params["passage"]=diff::cleanText($passage);
 
-//EXPERIMENTAL
-if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental && substr($language,0,2)=='en'){
+//strange char or number converter
+//if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental){
+if(true){
     //find numbers in the passage, and then replace those with words in the target text
-    $params["passage"]=numberconverter::numbers_to_words_convert($params["passage"],$params["passage"]);
+
+    switch (substr($language,0,2)){
+        case 'en':
+            //find digits in original passage, and convert number words to digits in the target passage
+            $params["passage"]=alphabetconverter::numbers_to_words_convert($params["passage"],$params["passage"]);
+            break;
+        case 'de':
+            //find eszetts in original passage, and convert ss words to eszetts in the target passage
+            $params["passage"]=alphabetconverter::eszett_to_ss_convert($params["passage"],$params["passage"]);
+            break;
+
+    }
 }
 
             $params["language"]=$language;
@@ -1617,6 +1638,7 @@ if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental && substr
         );
     }
 
+    //return a rating from 0 - 5 (inclusive)
     public static function fetch_rating($attempt,$aigrade){
         $have_humaneval = $attempt->sessiontime != null;
         $have_aieval = $aigrade && $aigrade->has_transcripts();

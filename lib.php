@@ -179,7 +179,7 @@ function readaloud_grade_item_update($moduleinstance, $grades = null) {
         require_once($CFG->libdir . '/gradelib.php');
     }
 
-    if (array_key_exists('cmidnumber', $moduleinstance)) { //it may not be always present
+    if (array_key_exists('cmidnumber', (array)$moduleinstance)) { //it may not be always present
         $params = array('itemname' => $moduleinstance->name, 'idnumber' => $moduleinstance->cmidnumber);
     } else {
         $params = array('itemname' => $moduleinstance->name);

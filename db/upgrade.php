@@ -555,6 +555,44 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021053100, 'readaloud');
     }
 
+
+    if ($oldversion < 2021061100) {
+        $table = new xmldb_table('readaloud_rsquestions');
+
+        // Adding fields to table tool_dataprivacy_contextlist.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('readaloudid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null);
+        $table->add_field('itemorder', XMLDB_TYPE_INTEGER, '10', null, false, null, '0');
+        $table->add_field('type', XMLDB_TYPE_CHAR, '20', XMLDB_UNSIGNED, null, null);
+        $table->add_field('visible', XMLDB_TYPE_INTEGER, '2', null, false, null, '1');
+        $table->add_field('itemtext', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_field('itemtextformat', XMLDB_TYPE_INTEGER, '2', null, false, null, '0');
+        $table->add_field('itemaudiofname', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_field('customtext1', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_field('customtext1format', XMLDB_TYPE_INTEGER, '2', null, false, null);
+        $table->add_field('customtext2', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_field('customtext2format', XMLDB_TYPE_INTEGER, '2', null, false, null);
+        $table->add_field('customtext3', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_field('customtext3format', XMLDB_TYPE_INTEGER, '2', null, false, null);
+        $table->add_field('customtext4', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_field('customtext4format', XMLDB_TYPE_INTEGER, '2', null, false, null);
+        $table->add_field('correctanswer', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('rsquestionkey', XMLDB_TYPE_TEXT, null, null, null, null);
+        $table->add_field('createdby', XMLDB_TYPE_INTEGER, '10', null, null, null);
+        $table->add_field('modifiedby', XMLDB_TYPE_INTEGER, '10', null, null, null);
+
+        // Adding keys to table tool_dataprivacy_contextlist.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for tool_dataprivacy_contextlist.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        upgrade_mod_savepoint(true, 2021061100, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

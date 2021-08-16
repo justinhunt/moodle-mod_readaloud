@@ -17,6 +17,7 @@ class constants {
     const M_TABLE = 'readaloud';
     const M_USERTABLE = 'readaloud_attempt';
     const M_AITABLE = 'readaloud_ai_result';
+    const M_QTABLE = 'readaloud_rsquestions';
     const M_MODNAME = 'readaloud';
     const M_URL = '/mod/readaloud';
 
@@ -32,6 +33,22 @@ class constants {
     const REC_READALOUD = 'readaloud';
     const REC_ONCE = 'once';
     const REC_UPLOAD = 'upload';
+
+    //Constants for RS Questions
+    const NONE=0;
+    const MAXANSWERS=4;
+    const TEXTQUESTION = 'itemtext';
+    const TEXTANSWER = 'customtext';
+    const TEXTQUESTION_FILEAREA = 'itemarea';
+    const TEXTANSWER_FILEAREA ='answerarea';
+    const TYPE_TEXTPROMPT_LONG = 4;
+    const TYPE_TEXTPROMPT_SHORT = 5;
+    const TYPE_TEXTPROMPT_AUDIO = 6;
+    const TYPE_INSTRUCTIONS = 7;
+    const TEXTCHOICE = 'textchoice';
+    const TEXTBOXCHOICE = 'textboxchoice';
+    const CORRECTANSWER = 'correctanswer';
+
 
 
     //grading options

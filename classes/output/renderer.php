@@ -187,56 +187,30 @@ class renderer extends \plugin_renderer_base {
 
       $hasaudiobreaks = !empty($moduleinstance->modelaudiobreaks);
 
-        $ret='<div class="'.constants::M_MENUBUTTONS_CONTAINER.'">';
-
-        //Preview button
-        if($moduleinstance->enablepreview){
-            $tabstop_class = "tabindex='0' class='mode-chooser preview'";
-        }else{
-            $tabstop_class = "class='mode-chooser preview no-show'";
+        $data=[];
+        //are we previewing?
+        if(!$moduleinstance->enablepreview) {
+            $data['nopreview'] = 1;
         }
-        $ret.="<div><div id='".constants::M_STARTPREVIEW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
-                "<b>".get_string("previewreading", constants::M_COMPONENT)."</b>: ".
-                get_string("previewhelp", constants::M_COMPONENT)."</div></div></div>";
 
-        //Listen and Repeat button
-        $modelaudiowarning='';
-        if($moduleinstance->enablelandr  &&  $hasaudiobreaks){
-            $tabstop_class = "tabindex='0' class='mode-chooser landr'";
-        }elseif($moduleinstance->enablelandr  &&  !$hasaudiobreaks ){
-            $tabstop_class = "class='mode-chooser landr no-click'";
-            $modelaudiowarning = get_string("modelaudiowarning", constants::M_COMPONENT);
-        }else{
-            $tabstop_class = "class='mode-chooser landr no-show'";
+        //do we have audio breaks ?
+        if(!$hasaudiobreaks) {
+            $data['noaudiobreaks'] = 1;
         }
-        $ret.="<div><div id='".constants::M_STARTLANDR. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
-                "<b>".get_string("landrreading", constants::M_COMPONENT)."</b>: ".
-                get_string("landrhelp", constants::M_COMPONENT). $modelaudiowarning . "</div></div></div>";
-      
-        //shadow attempt button
-        if($moduleinstance->enableshadow){
-            $tabstop_class = "tabindex='0' class='mode-chooser readaloudshadow'";
-        }else{
-            $tabstop_class = "class='mode-chooser readaloudshadow no-show'";
+        //is listen and repeat enabled?
+        if(!$moduleinstance->enablelandr) {
+            $data['nolandr'] = 1;
         }
-        $ret.="<div><div  id='".constants::M_STARTSHADOW. "' " . $tabstop_class ."><div class='mode-chooser-label'>".
-                "<b>".get_string("startshadowreading", constants::M_COMPONENT)."</b>: ".
-                get_string("shadowhelp", constants::M_COMPONENT)."</div></div></div>";
-
-        //attempt button
-        if($canattempt){
-            $tabstop_class = "tabindex='0' class='mode-chooser readaloud'";
-        }else{
-            $tabstop_class = "class='mode-chooser readaloud no-click'";
+        //is shadow enabled
+        if(!$moduleinstance->enableshadow) {
+            $data['noshadow'] = 1;
         }
-        $ret.= "<div><div id='".constants::M_STARTNOSHADOW. "' " .  $tabstop_class . "'><div class='mode-chooser-label'>".
-                "<b>".get_string("startreading", constants::M_COMPONENT)."</b>: ".
-                get_string("normalhelp", constants::M_COMPONENT)."</div></div></div>";
-
-
-        $ret.="</div>";
-      
-        return $ret;
+        //can we attempt this activity
+        if(!$canattempt) {
+            $data['cantattempt'] = 1;
+        }
+        //finally render template and return
+        return $this->render_from_template('mod_readaloud/bigbuttonmenu', $data);
 
     }
 
@@ -247,52 +221,38 @@ class renderer extends \plugin_renderer_base {
     public function show_smallreport ($moduleinstance, $attempt=false, $aigrade=false) {
         global $CFG;
 
+        //template data for small report
+        $tdata = Array();
+        $tdata['src']='';
         //filename
         if($attempt && $attempt->filename){
-            $src= $attempt->filename;
-        }else{
-            $src="";
+            $tdata['src']= $attempt->filename;
         }
-        $audioplayer = \html_writer::tag('audio', '',
-                array('src' => $src, 'controls' => 1, 'class'=>constants::M_CLASS . '_smallreport_player nomediaplugin nopoodll',
-                        'crossorigin'=>'anonymous'));
 
         //star rating
         if($attempt) {
             $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
             $ready = $rating > -1;
+            $stars=[];
+            for ($star = 0; $star < 5; $star++) {
+                $stars[] = $rating > $star ? 'fa-star' : 'fa-star-o';
+            }
+            $tdata['stars']=$stars;
         }else{
             $ready = false;
-            $rating =-1;
         }
-        //if we have no rating yet, lets show dots only
-        if(!$ready){
-            $stars = '. . . . .';
-        }else {
-            $emptystar = '<i class="fa fa-lg fa-star-o"></i>';
-            $solidstar = '<i class="fa fa-lg fa-star"></i>';
-            $stars = '';
-            for ($star = 0; $star < 5; $star++) {
-                $stars .= $rating > $star ? $solidstar : $emptystar;
-            }
+        if($ready) {
+            $tdata['ready']=true;
         }
-        $starrating =  \html_writer::div($stars,constants::M_CLASS . '_smallreport_rating');
-
-        //heading
-        $headingtext = $ready ? get_string('evaluatedmessage',constants::M_COMPONENT) :
-                get_string('notgradedyet',constants::M_COMPONENT) ;
-        $heading = \html_writer::div($headingtext,constants::M_CLASS . '_smallreport_heading');
-
-        //status display
-        $showtext = $ready ? '' : '-- waiting --';
-        $status = \html_writer::div($showtext,constants::M_CLASS . '_smallreport_status');
 
         //full report button
-        $thebutton = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
-                array('n' => $moduleinstance->id, 'reviewattempts' => 1)), get_string('fullreport', constants::M_COMPONENT),'get');
-        $showhide = $ready ? '': ' hide';
-        $fullreportbutton = \html_writer::div($thebutton,constants::M_CLASS . '_smallreport_fullreportbutton' . $showhide);
-        $ret = \html_writer::div($heading . $audioplayer . $starrating . $status . $fullreportbutton, constants::M_CLASS . '_smallreport_cont ' . constants::M_CLASS . '_center');
+        $fullreportbutton = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
+                array('n' => $moduleinstance->id, 'reviewattempts' => 1)), get_string('fullreport', constants::M_COMPONENT));
+        $tdata['fullreportbutton']=$fullreportbutton;
+
+        //finally render template
+        $ret = $this->render_from_template('mod_readaloud/smallreport', $tdata);
+
 
         //If there is no remote transcriber
         //we do not want to get users hopes up by trying to fetch a transcript with ajax

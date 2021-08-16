@@ -1,3 +1,8 @@
+2.0.62 (Build 2021081600)
+- removed clonepermissionsfrom entry on view and submit capabilities in access.php
+- fix for array_key_exists on php 8
+- imple number to word converter
+
 2.0.61 (Build 2021053100)
 - Internal flag for iframe use
 

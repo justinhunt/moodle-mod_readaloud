@@ -10,7 +10,7 @@
 
 use \mod_readaloud\utils;
 use \mod_readaloud\diff;
-use \mod_readaloud\numberconverter;
+use \mod_readaloud\alphabetconverter;
 use \mod_readaloud\constants;
 
 class mod_readaloud_external extends external_api {
@@ -38,7 +38,7 @@ class mod_readaloud_external extends external_api {
         $attempt = $DB->get_record(constants::M_USERTABLE, array('userid' => $USER->id, 'id' => $attemptid));
         if($attempt) {
             $readaloud = $DB->get_record('readaloud', array('id' => $attempt->readaloudid), '*', MUST_EXIST);
-            $cm = get_coursemodule_from_instance('readaloud', $readaloud->id, $readaloud->courseid, false, MUST_EXIST);
+            $cm = get_coursemodule_from_instance('readaloud', $readaloud->id, $readaloud->course, false, MUST_EXIST);
 
             if (\mod_readaloud\utils::can_transcribe($readaloud)) {
                 $aigrade = new \mod_readaloud\aigrade($attempt->id, $cm->id);
@@ -149,10 +149,19 @@ class mod_readaloud_external extends external_api {
         }
 
         //EXPERIMENTAL
-        if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental &&
-                substr($language,0,2)=='en'){
-            //find digits in original passage, and convert number words to digits in the target passage
-            $transcript=numberconverter::words_to_numbers_convert($passage,$transcript );
+        if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental){
+            switch (substr($language,0,2)){
+                case 'en':
+                    //find digits in original passage, and convert number words to digits in the target passage
+                    $transcript=alphabetconverter::words_to_numbers_convert($passage,$transcript );
+                    break;
+                case 'de':
+                    //find eszetts in original passage, and convert ss words to eszetts in the target passage
+                    $transcript=alphabetconverter::ss_to_eszett_convert($passage,$transcript );
+                    break;
+
+            }
+
         }
 
         //turn the passage and transcript into an array of words

@@ -9,15 +9,78 @@
 namespace mod_readaloud;
 
 /**
- * Number to word converter class for Poodll Readaloud
+ * alphabet file safe converter class for Poodll Readaloud
+ *
+ * The KenLM generated scorers work on files of acceptable characters(alphabet.txt).
+ *  Digits and German Eszett (ß) are commonly in passages, but not in alphabet.txt files
+ *  So here we perform simple conversionts to ensure this does not trip up matching transcript <--> passage
  *
  * @package    mod_readaloud
  * @copyright  2021 Justin Hunt (poodllsupport@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class numberconverter {
+class alphabetconverter {
 
+
+    /*
+    * This converts any number-digits in the passage, if found in the target, to number-words
+    *
+    *
+    * @param string $passage the passage text
+    * @param string $target the text to run the conversion on
+    * @return string the converted text
+    */
+    public static function eszett_to_ss_convert($passage,$targettext){
+        $passagewords=self::fetchWordArray($passage);
+        $conversions = self::fetch_eszett_conversions($passagewords);
+
+        foreach($conversions as $conversion){
+            $targettext = str_replace($conversion['eszetts'],$conversion['sss'],$targettext);
+        }
+        return $targettext;
+    }
+
+    /*
+    * Fetch any eszett containing words, back to eszett if its ss and in the conveersions array
+    *
+    * @param string $passage the passage text
+    * @param string $target the text to run the conversion on
+    * @return string the converted text
+    *
+    */
+    public static function ss_to_eszett_convert($passage,$targettext){
+        $passagewords=self::fetchWordArray($passage);
+        $conversions = self::fetch_eszett_conversions($passagewords);
+
+        foreach($conversions as $conversion){
+            $targettext = str_replace($conversion['sss'],$conversion['eszetts'],$targettext);
+        }
+        return $targettext;
+    }
+
+    /*
+     * Fetch array of eszett containing words, and their ss equivalents
+     * @param mixed $passagewords the passage text or an array of passage words
+     * @return array the eszett_word to ss_word conversions array
+     */
+    public static function fetch_eszett_conversions($passagewords) {
+
+        //its possible to call this function with just the passage as text,
+        // which might be useful for callers who want the conversions array to pass to JS and not to run the conversion
+        if (!is_array($passagewords)) {
+            $passagewords = self::fetchWordArray($passagewords);
+        }
+
+        $conversions = array();
+        foreach ($passagewords as $candidate) {
+            $eszett_pos =\core_text::strpos($candidate,'ß');
+            if($eszett_pos!==false){
+                $conversions[] = ['eszetts' => $candidate, 'sss' => str_replace('ß','ss',$candidate)];
+            }
+        }
+        return $conversions;
+    }
 
     /*
      * This converts any number-digits in the passage, if found in the target, to number-words
@@ -38,8 +101,7 @@ class numberconverter {
     }
 
     /*
-     * This converts any number-digits in the passage to number-words,
-     *  if those number-words are found in the target they are converted there to number-words
+     * This converts any number-words in the passage to number-digits,
      *
      * @param string $passage the passage text
      * @param string $target the text to run the conversion on
