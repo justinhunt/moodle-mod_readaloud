@@ -180,22 +180,17 @@ class aigrade {
             $record->id = $this->recordid;
             $cleantranscript = diff::cleanText($transcript);
 
+            switch (substr($this->activitydata->ttslanguage,0,2)){
+                case 'en':
+                    //find digits in original passage, and convert number words to digits in the target passage
+                    $cleantranscript=alphabetconverter::words_to_numbers_convert($this->activitydata->passage,$cleantranscript );
+                    break;
+                case 'de':
+                    //find eszetts in original passage, and convert ss words to eszetts in the target passage
+                    $cleantranscript=alphabetconverter::ss_to_eszett_convert($this->activitydata->passage,$cleantranscript );
+                    break;
 
-//EXPERIMENTAL
-if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental){
-    switch (substr($this->activitydata->ttslanguage,0,2)){
-        case 'en':
-            //find digits in original passage, and convert number words to digits in the target passage
-            $cleantranscript=alphabetconverter::words_to_numbers_convert($this->activitydata->passage,$cleantranscript );
-            break;
-        case 'de':
-            //find eszetts in original passage, and convert ss words to eszetts in the target passage
-            $cleantranscript=alphabetconverter::ss_to_eszett_convert($this->activitydata->passage,$cleantranscript );
-            break;
-
-    }
-
-}
+            }
 
             $record->transcript = $cleantranscript;
             $record->fulltranscript = $fulltranscript;
@@ -224,6 +219,8 @@ if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental){
                         $this->activitydata->alternatives,
                         $this->aidata->transcript,
                         $this->aidata->fulltranscript,
+                        $this->activitydata->ttslanguage,
+                        $this->activitydata->phonetic,
                         $debug);
 
         //session time

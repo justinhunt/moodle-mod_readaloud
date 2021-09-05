@@ -480,6 +480,9 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
         $readaloud->passage = utils::segment_japanese($readaloud->passage);
     }
 
+    //do phonetics
+    $readaloud->phonetic = utils::update_create_phonetic($readaloud,false);
+
     //we want to process the hashcode and lang model if it makes sense
     if(utils::needs_lang_model($readaloud)){
         $passagehash = utils::fetch_passagehash($readaloud);
@@ -569,6 +572,9 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
 
     //we want to process the hashcode and lang model if it makes sense
     $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$readaloud->id));
+
+    //update the phonetic if it has changed
+    $readaloud->phonetic = utils::update_create_phonetic($readaloud,$oldrecord);
 
     $readaloud->passagehash = $oldrecord->passagehash;
     $newpassagehash = utils::fetch_passagehash($readaloud);

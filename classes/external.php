@@ -126,19 +126,22 @@ class mod_readaloud_external extends external_api {
                 'cmid' => new external_value(PARAM_INT),
                 'language' => new external_value(PARAM_TEXT),
                 'passage' => new external_value(PARAM_TEXT),
-                'transcript' => new external_value(PARAM_TEXT)
+                'transcript' => new external_value(PARAM_TEXT),
+                'passagephonetic' => new external_value(PARAM_TEXT),
         ]);
     }
 
-    public static function compare_passage_to_transcript($cmid, $language,$passage,$transcript) {
+    public static function compare_passage_to_transcript($cmid, $language,$passage,$transcript, $passagephonetic) {
         global $DB,$CFG;
 
         if($cmid > 0){
             $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
             $readaloud = $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
             $alternatives = diff::fetchAlternativesArray($readaloud->alternatives);
+            $region = $readaloud->region;
         }else {
             $alternatives = diff::fetchAlternativesArray('');
+            $region ='tokyo';
         }
 
 
@@ -146,21 +149,21 @@ class mod_readaloud_external extends external_api {
         if($language == constants::M_LANG_JAJP) {
             ///$passage = utils::segment_japanese($passage);
             $transcript = utils::segment_japanese($transcript);
+            $transcript_phonetic = utils::convert_to_phonetic($transcript,constants::M_LANG_JAJP,$region);
+        }else{
+            $transcript_phonetic ='';
         }
 
         //EXPERIMENTAL
-        if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental){
-            switch (substr($language,0,2)){
-                case 'en':
-                    //find digits in original passage, and convert number words to digits in the target passage
-                    $transcript=alphabetconverter::words_to_numbers_convert($passage,$transcript );
-                    break;
-                case 'de':
-                    //find eszetts in original passage, and convert ss words to eszetts in the target passage
-                    $transcript=alphabetconverter::ss_to_eszett_convert($passage,$transcript );
-                    break;
-
-            }
+        switch (substr($language,0,2)){
+            case 'en':
+                //find digits in original passage, and convert number words to digits in the target passage
+                $transcript=alphabetconverter::words_to_numbers_convert($passage,$transcript);
+                break;
+            case 'de':
+                //find eszetts in original passage, and convert ss words to eszetts in the target passage
+                $transcript=alphabetconverter::ss_to_eszett_convert($passage,$transcript );
+                break;
 
         }
 
@@ -168,12 +171,14 @@ class mod_readaloud_external extends external_api {
         $passagebits = diff::fetchWordArray($passage);
         $transcriptbits = diff::fetchWordArray($transcript);
         $wildcards = diff::fetchWildcardsArray($alternatives);
+        $transcriptphonetic_bits = diff::fetchWordArray($transcript_phonetic);
+        $passagephonetic_bits = diff::fetchWordArray($passagephonetic);
 
         //fetch sequences of transcript/passage matched words
         // then prepare an array of "differences"
         $passagecount = count($passagebits);
         $transcriptcount = count($transcriptbits);
-        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language);
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language,$transcriptphonetic_bits,$passagephonetic_bits);
         //fetch diffs
         $debug=false;
         $diffs = diff::fetchDiffs($sequences, $passagecount, $transcriptcount, $debug);

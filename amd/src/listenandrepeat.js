@@ -8,12 +8,14 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
     activated: false,
     currentSentence: "",
+    currentPhonetic: "",
     language: "en-US",
     currentAudioStart: 0,
     currentAudioStop: 0,
     mak: null,
     controls: {},
     results: [],
+    phonetics: [],
     cmid: 0,
 
     init: function(props) {
@@ -23,6 +25,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.mak = props.modelaudiokaraoke;
       self.language = props.language;
       self.region = props.region;
+      self.phonetics = props.phonetics;
 
       //recorder stuff
       var recid = 'readaloud_pushrecorder';
@@ -32,10 +35,12 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
                   break;
 
               case 'speech':
+
                   self.getComparison(
                       self.cmid,
                       self.currentSentence,
                       message.capturedspeech,
+                      self.currentPhonetic,
                       function(comparison) {
                           self.gotComparison(comparison, message);
                       }
@@ -106,6 +111,17 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         self.currentAudioStart = oldbreak.audiotime;
         self.currentAudioEnd = newbreak.audiotime;
 
+          log.debug("phonetics",self.phonetics);
+          log.debug(oldbreak);
+          log.debug(newbreak);
+
+          if(self.phonetics.length>newbreak.wordnumber-1){
+              self.currentPhonetic = self.phonetics.slice(oldbreak.wordnumber,newbreak.wordnumber-1).join(' ');
+          }else{
+              self.currentPhonetic  = '';
+          }
+
+
         log.debug(sentence);
         log.debug(oldbreak);
         log.debug(newbreak);
@@ -164,7 +180,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
     },
 
-    spliton: new RegExp('([,.!?:;" ])', 'g'),
+   // spliton: new RegExp('([,.!?:;" ])', 'g'),
+      spliton: new RegExp(/([!"# $%&'()。「」、*+,-.\/:;<=>?@[\]^_`{|}~])/, 'g'),
 
     gotComparison: function(comparison, typed) {
      if(!comparison){return;}
@@ -188,7 +205,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       })
 
     },
-    getComparison: function(cmid, passage, transcript, callback) {
+    getComparison: function(cmid, passage, transcript,passagephonetic, callback) {
       var self = this;
 
       ajax.call([{
@@ -197,6 +214,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           cmid: cmid,
           passage: passage,
           transcript: transcript,
+          passagephonetic: passagephonetic,
           language: self.language
         },
         done: function(ajaxresult) {

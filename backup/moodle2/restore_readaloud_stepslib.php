@@ -160,7 +160,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 
         $userinfo = $this->get_setting_value('userinfo'); // are we including userinfo?
         if ($userinfo) {
-            $this->add_related_files(constants::M_COMPONENT, constants::M_FILEAREA_SUBMISSIONS, constants::M_USERTABLE);
+           // $this->add_related_files(constants::M_COMPONENT, constants::M_FILEAREA_SUBMISSIONS, constants::M_USERTABLE);
         }
     }
 }

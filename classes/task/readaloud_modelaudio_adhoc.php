@@ -91,6 +91,8 @@ class readaloud_modelaudio_adhoc extends \core\task\adhoc_task {
                             $activity->alternatives,
                             $transcript,
                             $fulltranscript,
+                            $activity->ttslanguage,
+                            $activity->phonetic,
                             $debug);
 
 

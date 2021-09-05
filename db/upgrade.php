@@ -593,6 +593,27 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021061100, 'readaloud');
     }
 
+    // Add alternatives  to minilesson table
+    if ($oldversion < 2021090100) {
+        $table = new xmldb_table(constants::M_TABLE);
+
+        // Define alternatives field to be added to minilesson
+        $fields=[];
+        $fields[] = new xmldb_field('phonetic', XMLDB_TYPE_TEXT, null, null, null, null);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        //create a phonetic for each readaloud instance
+        utils::update_all_phonetic();
+
+        upgrade_mod_savepoint(true, 2021090100, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

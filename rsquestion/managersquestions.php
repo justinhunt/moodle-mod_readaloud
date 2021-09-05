@@ -60,7 +60,7 @@ $PAGE->set_pagelayout('course');
 
 //are we in new or edit mode?
 if ($itemid) {
-    $item = $DB->get_record(constants::M_QTABLE, array('id'=>$itemid,constants::M_MODNAME => $cm->instance), '*', MUST_EXIST);
+    $item = $DB->get_record(constants::M_QTABLE, array('id'=>$itemid,constants::M_MODNAME . 'id' => $cm->instance), '*', MUST_EXIST);
 	if(!$item){
 		print_error('could not find item of id:' . $itemid);
 	}
@@ -119,11 +119,17 @@ switch($type){
 		break;
 
     case constants::TYPE_TEXTPROMPT_SHORT:
-        $mform = new textpromptshortform();
+        $mform = new textpromptshortform(null,
+            array('editoroptions'=>$editoroptions,
+                'filemanageroptions'=>$filemanageroptions)
+        );
         break;
 
     case constants::TYPE_TEXTPROMPT_AUDIO:
-        $mform = new textpromptaudioform();
+        $mform = new textpromptaudioform(null,
+            array('editoroptions'=>$editoroptions,
+                'filemanageroptions'=>$filemanageroptions)
+        );
         break;
 
 	case constants::NONE:

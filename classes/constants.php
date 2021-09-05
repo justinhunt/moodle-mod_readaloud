@@ -41,6 +41,7 @@ class constants {
     const TEXTANSWER = 'customtext';
     const TEXTQUESTION_FILEAREA = 'itemarea';
     const TEXTANSWER_FILEAREA ='answerarea';
+    const TEXTPROMPT_FILEAREA = 'textitem';
     const TYPE_TEXTPROMPT_LONG = 4;
     const TYPE_TEXTPROMPT_SHORT = 5;
     const TYPE_TEXTPROMPT_AUDIO = 6;

@@ -499,14 +499,9 @@ class renderer extends \plugin_renderer_base {
                 $data['passagehash']  = $hashbits[1];
             }
         }
-        switch($moduleinstance->region) {
-            case 'useast1':
-                $data['asrurl'] = 'https://useast.ls.poodll.com/transcribe';
-                break;
-            default:
-              $data['asrurl'] = 'https://' . $moduleinstance->region . '.ls.poodll.com/transcribe';
-              //eg 'https://dublin.ls.poodll.com/transcribe'
-        }
+
+        //fetch lang services url
+        $data['asrurl'] = utils::fetch_lang_server_url($moduleinstance->region,'transcribe');
 
         $content =  $this->render_from_template('mod_readaloud/listenandrepeat', $data);
         $containertag = 'landr_container';
@@ -828,6 +823,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;
         $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
         $recopts['breaks'] = $moduleinstance->modelaudiobreaks;
+
         $recopts['audioplayerclass'] = constants::M_MODELAUDIO_PLAYER;
         $recopts['startlandrbutton'] = constants::M_STARTLANDR;
         $recopts['startpreviewbutton'] = constants::M_STARTPREVIEW;
@@ -837,6 +833,11 @@ class renderer extends \plugin_renderer_base {
         $recopts['stopandplay'] = constants::M_STOPANDPLAY;
         $recopts['stopbutton'] = constants::M_STOP_BTN;
         $recopts['playbutton'] = constants::M_PLAY_BTN;
+
+        $recopts['phonetics'] = '';
+        if($moduleinstance->phonetic && !empty($moduleinstance->phonetic)) {
+            $recopts['phonetics'] = explode(' ',$moduleinstance->phonetic);
+        }
       
         //streaming transcriber: we do not want to use it anymore.
         if($moduleinstance->transcriber == constants::TRANSCRIBER_AMAZONSTREAMING){

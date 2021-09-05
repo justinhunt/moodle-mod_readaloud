@@ -83,20 +83,20 @@ class utils {
 
         $cleantext = diff::cleanText($moduleinstance->passage);
 
-  //number or odd char converter
-if(substr($moduleinstance->ttslanguage,0,2)=='en' || substr($moduleinstance->ttslanguage,0,2)=='de' ){
-    //find numbers in the passage, and then replace those with words in the target text
-    $cleantext=alphabetconverter::numbers_to_words_convert($cleantext,$cleantext);
-    switch (substr($moduleinstance->ttslanguage,0,2)){
-        case 'en':
+          //number or odd char converter
+        if(substr($moduleinstance->ttslanguage,0,2)=='en' || substr($moduleinstance->ttslanguage,0,2)=='de' ){
+            //find numbers in the passage, and then replace those with words in the target text
             $cleantext=alphabetconverter::numbers_to_words_convert($cleantext,$cleantext);
-            break;
-        case 'de':
-            $cleantext=alphabetconverter::eszett_to_ss_convert($cleantext,$cleantext);
-            break;
+            switch (substr($moduleinstance->ttslanguage,0,2)){
+                case 'en':
+                    $cleantext=alphabetconverter::numbers_to_words_convert($cleantext,$cleantext);
+                    break;
+                case 'de':
+                    $cleantext=alphabetconverter::eszett_to_ss_convert($cleantext,$cleantext);
+                    break;
 
-    }
-}
+            }
+        }
 
         if(!empty($cleantext)) {
             return sha1($cleantext);
@@ -104,7 +104,51 @@ if(substr($moduleinstance->ttslanguage,0,2)=='en' || substr($moduleinstance->tts
             return false;
         }
     }
+    //we want to generate a phonetics if this is phonetic'able
+    public static function update_create_phonetic($moduleinstance, $olditem){
+        //if we have an old item, set the default return value to the current phonetic value
+        //we will update it if the text has changed
+        if($olditem) {
+            $thephonetics = $olditem->phonetic;
+        }else{
+            $thephonetics ='';
+        }
 
+        $dophonetic = true;
+        if($dophonetic) {
+            //make sure the passage has really changed before doing an expensive call to create phonetics
+            $newpassage = diff::cleanText($moduleinstance->passage);
+            if($olditem!==false) {
+                $oldpassage =  diff::cleanText($olditem->passage);
+            }else{
+                $oldpassage='';
+            }
+            if ($newpassage !== $oldpassage) {
+                $segmented = true;
+                //build a phonetics string
+               $thephonetics = utils::convert_to_phonetic($newpassage, $moduleinstance->ttslanguage, 'tokyo', $segmented);
+            }
+        }
+        return $thephonetics;
+    }
+
+    /*
+     *  We want to upgrade all the phonetic models on occasion
+     *
+     */
+    public static function update_all_phonetic(){
+        global $DB;
+        $updates=0;
+        $items = $DB->get_records(constants::M_TABLE);
+        foreach($items as $moduleinstance) {
+            $olditem = false;
+            $phonetic =self::update_create_phonetic($moduleinstance, $olditem);
+            if(!empty($phonetic)){
+                $DB->update_record(constants::M_TABLE,array('id'=>$moduleinstance->id,'phonetic'=>$phonetic));
+                $updates++;
+            }
+        }
+    }
 
     /*
      * Build a language model for this passage
@@ -250,17 +294,135 @@ if(true){
         return implode(" ",$segments);
     }
 
+
+    //convert a phrase or word to a series of phonetic characters that we can use to compare text/spoken
+    public static function convert_to_phonetic($phrase,$language,$region='tokyo',$segmented=true){
+        global $CFG;
+
+        switch($language){
+            case constants::M_LANG_ENUS:
+            case constants::M_LANG_ENAB:
+            case constants::M_LANG_ENAU:
+            case constants::M_LANG_ENIN:
+            case constants::M_LANG_ENIE:
+            case constants::M_LANG_ENWL:
+            case constants::M_LANG_ENGB:
+                $phrasebits = explode(' ',$phrase);
+                $phonebits=[];
+                foreach($phrasebits as $phrasebit){
+                    $phonebits[] = metaphone($phrasebit);
+                }
+                if($segmented) {
+                    $phonetic = implode(' ', $phonebits);
+                }else {
+                    $phonetic = implode('', $phonebits);
+                }
+
+                //the resulting phonetic string will look like this: 0S IS A TK IT IS A KT WN TW 0T IS A MNK
+                // but "one" and "won" result in diff phonetic strings and non english support is not there so
+                //really we want to put an IPA database on services server and poll as we do for katakanify
+                //see: https://github.com/open-dict-data/ipa-dict
+                //and command line searchable dictionaries https://github.com/open-dsl-dict/ipa-dict-dsl based on those
+                // gdcl :    https://github.com/dohliam/gdcl
+                break;
+            case constants::M_LANG_JAJP:
+
+                //fetch katakana/hiragana if the JP
+                $katakanify_url = utils::fetch_lang_server_url($region,'katakanify');
+
+                //results look like this:
+
+                /*
+                    {
+                        "status": true,
+                        "message": "Katakanify complete.",
+                        "data": {
+                            "status": true,
+                            "results": [
+                                "元気な\t形容詞,*,ナ形容詞,ダ列基本連体形,元気だ,げんきな,代表表記:元気だ/げんきだ",
+                                "男の子\t名詞,普通名詞,*,*,男の子,おとこのこ,代表表記:男の子/おとこのこ カテゴリ:人 ドメイン:家庭・暮らし",
+                                "は\t助詞,副助詞,*,*,は,は,連語",
+                                "いい\t動詞,*,子音動詞ワ行,基本連用形,いう,いい,連語",
+                                "こ\t接尾辞,動詞性接尾辞,カ変動詞,未然形,くる,こ,連語",
+                                "です\t判定詞,*,判定詞,デス列基本形,だ,です,連語",
+                                "。\t特殊,句点,*,*,。,。,連語",
+                                "EOS",
+                                ""
+                            ]
+                        }
+                    }
+                */
+
+                $postdata =array('passage'=>$phrase);
+                $results = self::curl_fetch($katakanify_url,$postdata,'post');
+                if(!self::is_json($results)){return false;}
+
+                $jsonresults = json_decode($results);
+                $nodes=[];
+                if($jsonresults && $jsonresults->status==true){
+                    foreach($jsonresults->data->results as $result){
+                        $bits = preg_split("/\t+/", $result);
+                        if(count($bits)>1) {
+                            $nodes[] = $bits[1];
+                        }
+                    }
+                }
+
+                //process nodes
+                $katakanaarray=[];
+                foreach ($nodes as $n) {
+                    $analysis = explode(',',$n);
+                    if(count($analysis) > 7) {
+                        if($analysis[0]!=='記号') {
+                            $reading = $analysis[7];
+                            if ($reading != '*') {
+                                $katakanaarray[] = $reading;
+                            }
+                        }
+                    }
+                }
+                if($segmented) {
+                    $phonetic = implode(' ',$katakanaarray);
+                }else {
+                    $phonetic = implode('',$katakanaarray);
+                }
+                break;
+
+            default:
+                $phonetic = '';
+        }
+        return $phonetic;
+
+    }
+
+    //fetch lang server url, services incl. 'transcribe' , 'lm', 'lt', 'spellcheck', 'katakanify'
+    public static function fetch_lang_server_url($region,$service='transcribe'){
+        switch($region) {
+            case 'useast1':
+                $ret = 'https://useast.ls.poodll.com/';
+                break;
+            default:
+                $ret = 'https://' . $region . '.ls.poodll.com/';
+        }
+        return $ret . $service;
+    }
+
+
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper
-    public static function curl_fetch($url, $postdata = false) {
+    public static function curl_fetch($url, $postdata = false, $method='get') {
         global $CFG;
 
         require_once($CFG->libdir . '/filelib.php');
         $curl = new \curl();
        // $curl->setopt(array('CURLOPT_ENCODING' => ""));
-        $result = $curl->get($url, $postdata);
+        if($method=='get') {
+            $result = $curl->get($url, $postdata);
+        }else{
+            $result = $curl->post($url, $postdata);
+        }
         return $result;
     }
 
@@ -883,7 +1045,7 @@ if(true){
 
     //compare passage and transcript and return errors and matches
     //this is called from aigrade.php and modelaudio.php
-    public static function fetch_diff($passage, $alternatives, $transcript,$fulltranscript, $ttslanguage, $debug = false) {
+    public static function fetch_diff($passage, $alternatives, $transcript,$fulltranscript, $language,$passagephonetic, $debug = false) {
         global $DB, $CFG;
 
         //turn the passage and transcript into an array of words
@@ -891,13 +1053,23 @@ if(true){
         $alternatives = diff::fetchAlternativesArray($alternatives);
         $transcriptbits = diff::fetchWordArray($transcript);
         $wildcards = diff::fetchWildcardsArray($alternatives);
+        $passagephonetic_bits = diff::fetchWordArray($passagephonetic);
+
+        //If this is Japanese we want to segment it into "words"
+        if($language == constants::M_LANG_JAJP) {
+            $transcript = utils::segment_japanese($transcript);
+            $region='tokyo'; //TO DO: should pass region in and not hard code it
+            $transcript_phonetic = utils::convert_to_phonetic($transcript,constants::M_LANG_JAJP,$region);
+        }else{
+            $transcript_phonetic ='';
+        }
+        $transcriptphonetic_bits = diff::fetchWordArray($transcript_phonetic);
 
         //fetch sequences of transcript/passage matched words
         // then prepare an array of "differences"
         $passagecount = count($passagebits);
         $transcriptcount = count($transcriptbits);
-        $language = $ttslanguage;
-        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language);
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language,$transcriptphonetic_bits,$passagephonetic_bits);
 
         $debugsequences = array();
         if ($debug) {
