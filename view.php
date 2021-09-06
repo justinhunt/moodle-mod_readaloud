@@ -213,7 +213,7 @@ if ($attempts && $reviewattempts) {
                 if($collapsespaces){
                     $extraclasses = ' collapsespaces';
                 }
-                echo $passagerenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $extraclasses);
+                echo $passagerenderer->render_passage($moduleinstance->passage,$moduleinstance->ttslanguage,constants::M_PASSAGE_CONTAINER, $extraclasses);
                 echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
                 echo $renderer->render_hiddenaudioplayer();
                 break;
@@ -231,7 +231,7 @@ if ($attempts && $reviewattempts) {
                 echo $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
                 echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
                 echo $renderer->render_hiddenaudioplayer();
-                echo $passagerenderer->render_userreview($passagehelper,$collapsespaces);
+                echo $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces);
 
                 break;
 
@@ -249,7 +249,7 @@ if ($attempts && $reviewattempts) {
                 echo $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
                 echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
                 echo $renderer->render_hiddenaudioplayer();
-                echo $passagerenderer->render_userreview($passagehelper,$collapsespaces);
+                echo $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces);
                 break;
 
             case constants::POSTATTEMPT_EVALERRORSNOGRADE:
@@ -267,7 +267,7 @@ if ($attempts && $reviewattempts) {
                 echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
                 echo $renderer->render_hiddenaudioplayer();
                 $nograde=true;
-                echo $passagerenderer->render_userreview($passagehelper,$collapsespaces,$nograde);
+                echo $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces,$nograde);
                 break;
         }
     } else {
@@ -280,7 +280,7 @@ if ($attempts && $reviewattempts) {
         if($collapsespaces){
             $extraclasses = ' collapsespaces';
         }
-        echo $passagerenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $extraclasses);
+        echo $passagerenderer->render_passage($moduleinstance->passage,$moduleinstance->ttslanguage,constants::M_PASSAGE_CONTAINER, $extraclasses);
 
     }
 
@@ -350,7 +350,7 @@ if($collapsespaces){
 
 //hide on load, and we can show from ajax
 $extraclasses .= ' hide';
-echo $passagerenderer->render_passage($moduleinstance->passage,constants::M_PASSAGE_CONTAINER, $extraclasses);
+echo $passagerenderer->render_passage($moduleinstance->passage,$moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
 
 //lets fetch recorder
 echo $renderer->show_recorder($moduleinstance, $token, $debug);

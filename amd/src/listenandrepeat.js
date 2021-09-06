@@ -116,7 +116,9 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           log.debug(newbreak);
 
           if(self.phonetics.length>newbreak.wordnumber-1){
-              self.currentPhonetic = self.phonetics.slice(oldbreak.wordnumber,newbreak.wordnumber-1).join(' ');
+              var startpos = oldbreak.wordnumber-1;
+              if(startpos<0){startpos=0;}
+              self.currentPhonetic = self.phonetics.slice(startpos,newbreak.wordnumber-1).join(' ');
           }else{
               self.currentPhonetic  = '';
           }

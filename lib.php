@@ -475,11 +475,6 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
     $readaloud->timecreated = time();
     $readaloud = readaloud_process_editors($readaloud, $mform);
 
-    //for Japanese we want to segment it into "words"
-    if($readaloud->ttslanguage == constants::M_LANG_JAJP) {
-        $readaloud->passage = utils::segment_japanese($readaloud->passage);
-    }
-
     //do phonetics
     $readaloud->phonetic = utils::update_create_phonetic($readaloud,false);
 
@@ -509,8 +504,8 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
             $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
                     $slowpassage, 'ssml', $readaloud->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks);
-                $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches);
+                $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks,$readaloud->ttslanguage);
+                $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches,$readaloud->ttslanguage);
                 $readaloud->modelaudiomatches = json_encode($matches);
                 $readaloud->modelaudiobreaks = json_encode($breaks);
             }//end of if speechmarks
@@ -565,11 +560,6 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
     $readaloud->id = $readaloud->instance;
     $readaloud = readaloud_process_editors($readaloud, $mform);
 
-    //for Japanese we want to segment it into "words"
-    if($readaloud->ttslanguage == constants::M_LANG_JAJP) {
-        $readaloud->passage = utils::segment_japanese($readaloud->passage);
-    }
-
     //we want to process the hashcode and lang model if it makes sense
     $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$readaloud->id));
 
@@ -614,11 +604,12 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
             $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
                     $slowpassage, 'ssml', $readaloud->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks);
-                if(!empty($oldrecord->modelaudiobreaks)){
+                $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks,$readaloud->ttslanguage);
+                //if(!empty($oldrecord->modelaudiobreaks)){
+                if(false){
                     $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
                 }else {
-                    $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches);
+                    $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches,$readaloud->ttslanguage);
                 }
                 $readaloud->modelaudiomatches = json_encode($matches);
                 $readaloud->modelaudiobreaks = json_encode($breaks);

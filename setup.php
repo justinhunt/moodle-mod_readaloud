@@ -85,11 +85,6 @@ if ($mform->is_cancelled()) {
     $data->coursemodule = $cm->id;
     $data = readaloud_process_editors($data);
 
-    //for Japanese we want to segment it into "words"
-    if($data->ttslanguage == constants::M_LANG_JAJP) {
-        $data->passage = utils::segment_japanese($data->passage);
-    }
-
     //we want to process the hashcode and lang model if it makes sense
     $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$data->id));
     $data->passagehash = $oldrecord->passagehash;
@@ -128,11 +123,11 @@ if ($mform->is_cancelled()) {
             $speechmarks = utils::fetch_polly_speechmarks($token, $data->region,
                     $slowpassage, 'ssml', $data->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($data->passage,$speechmarks);
+                $matches = utils::speechmarks_to_matches($data->passage,$speechmarks, $data->ttslanguage);
                 if(!empty($oldrecord->modelaudiobreaks)){
                     $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
                 }else {
-                    $breaks = utils::guess_modelaudio_breaks($data->passage, $matches);
+                    $breaks = utils::guess_modelaudio_breaks($data->passage, $matches,$data->ttslanguage);
                 }
                 $data->modelaudiomatches = json_encode($matches);
                 $data->modelaudiobreaks = json_encode($breaks);

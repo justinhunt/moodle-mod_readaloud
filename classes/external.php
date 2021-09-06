@@ -147,9 +147,8 @@ class mod_readaloud_external extends external_api {
 
         //If this is Japanese we want to segment it into "words"
         if($language == constants::M_LANG_JAJP) {
-            ///$passage = utils::segment_japanese($passage);
-            $transcript = utils::segment_japanese($transcript);
             $transcript_phonetic = utils::convert_to_phonetic($transcript,constants::M_LANG_JAJP,$region);
+            $transcript = utils::segment_japanese($transcript);
         }else{
             $transcript_phonetic ='';
         }

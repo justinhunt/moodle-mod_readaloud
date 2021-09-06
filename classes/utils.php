@@ -353,7 +353,12 @@ if(true){
                     }
                 */
 
-                $postdata =array('passage'=>$phrase);
+
+                //for Japanese we want to segment it into "words"
+                $passage = utils::segment_japanese($phrase);
+
+
+                $postdata =array('passage'=>$passage);
                 $results = self::curl_fetch($katakanify_url,$postdata,'post');
                 if(!self::is_json($results)){return false;}
 
@@ -558,16 +563,22 @@ if(true){
     }
 
     //Turn a set of speechmarks into a matches format that we use for marking up text in Readaloud
-    public static function speechmarks_to_matches($passage,$speechmarks){
+    public static function speechmarks_to_matches($passage,$speechmarks,$language){
         $matches = new \stdClass();
         $count=0; //final position in matches array (1 based), also used as position in passagewords array (0 based)
         $sm_position=-1; //position in speechmarks array
         $skip=0;//loop skip indicator
 
+        if($language == constants::M_LANG_JAJP) {
+            $region='tokyo'; //TO DO: should pass region in and not hard code it
+            $passage = utils::segment_japanese($passage);
+        }
+
         //there can be cases (grr) where the speechmark 'words' do not match the passage words;
         // eg passage: '1968' -> speechmarks: '19' + speechmarks: '68'
         //so we need to check back against the passage
-        $passagewords = self::fetch_passage_as_words($passage);
+
+        $passagewords = self::fetch_passage_as_words($passage,$language);
 
         //speechmarks could be of type 'sentence' or 'word'
         //sentence might be useful but at this stage we ignore it
@@ -1057,7 +1068,6 @@ if(true){
 
         //If this is Japanese we want to segment it into "words"
         if($language == constants::M_LANG_JAJP) {
-            $transcript = utils::segment_japanese($transcript);
             $region='tokyo'; //TO DO: should pass region in and not hard code it
             $transcript_phonetic = utils::convert_to_phonetic($transcript,constants::M_LANG_JAJP,$region);
         }else{
@@ -1634,9 +1644,9 @@ if(true){
     }//end of function
 
     //Make a good effort to mark up the passage from scratch
-    public static function guess_modelaudio_breaks($passage,$matches) {
+    public static function guess_modelaudio_breaks($passage,$matches,$language) {
         $breaks=[];
-        $words = self::fetch_passage_as_words($passage);
+        $words = self::fetch_passage_as_words($passage,$language);
         $lastbreak=0;
         if(count($words)>1) {
             for ($i = 0; $i < count($words); $i++) {
@@ -1683,7 +1693,12 @@ if(true){
 
     //This is a semi duplicate of passage_renderer::render_passage
     // but its for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
-    public static function fetch_passage_as_words($passage){
+    public static function fetch_passage_as_words($passage,$language){
+
+            //for Japanese we want to segment it into "words"
+            if($language==constants::M_LANG_JAJP){
+                $passage = utils::segment_japanese($passage);
+            }
             // load the HTML document
             $doc = new \DOMDocument;
             // it will assume ISO-8859-1  encoding, so we need to hint it:

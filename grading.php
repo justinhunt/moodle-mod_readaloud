@@ -174,7 +174,7 @@ switch ($action) {
         $gradenowform->set_data($setdata);
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $passagehelper->prepare_javascript($reviewmode, $force_aidata);
-        echo $passagerenderer->render_gradenow($passagehelper,$collapsespaces);
+        echo $passagerenderer->render_gradenow($passagehelper,$moduleinstance->ttslanguage,$collapsespaces);
         $gradenowform->display();
         echo $reportrenderer->show_grading_footer($moduleinstance, $cm, $mode);
         echo $renderer->footer();
@@ -209,7 +209,7 @@ switch ($action) {
 
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('grading', constants::M_COMPONENT));
         echo $passagehelper->prepare_javascript($reviewmode, $force_aidata);
-        echo $passagerenderer->render_machinereview($passagehelper, $debug);
+        echo $passagerenderer->render_machinereview($passagehelper,$moduleinstance->ttslanguage, $debug);
         //if we can grade and manage attempts show the gradenow button
         if (has_capability('mod/readaloud:manageattempts', $modulecontext)) {
             echo $passagerenderer->render_machinereview_buttons($passagehelper);

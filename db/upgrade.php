@@ -499,12 +499,12 @@ function xmldb_readaloud_upgrade($oldversion) {
 
                 //if successful create a set of 'matches' (internal doc matching audio/passage/transcript positions)
                 if($speechmarks) {
-                    $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks);
+                    $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks,$readaloud->ttslanguage);
                     //from matches create or sync an existing phrase breaks array with audio/word locations
                     if(!empty($readaloud->modelaudiobreaks)){
                         $breaks = utils::sync_modelaudio_breaks(json_decode($readaloud->modelaudiobreaks,true),$matches);
                     }else {
-                        $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches);
+                        $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches,$readaloud->ttslanguage);
                     }
                     //save it
                     $updatereadaloud = new stdClass();
