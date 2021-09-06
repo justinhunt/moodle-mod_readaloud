@@ -304,6 +304,134 @@ class alphabetconverter {
     }
 
     /*
+    * This converts any number-words in the passage to number-digits,
+    *
+    * @param string $passage the passage text
+    * @param string $target the text to run the conversion on
+    * @return string the converted text
+    *
+    */
+    public static function words_to_suji_convert($passage,$targettext){
+        $passagewords=self::fetchWordArray($passage);
+        $conversions = self::fetch_suji_conversions($passagewords);
+
+        foreach($conversions as $conversion){
+            $targettext = str_replace($conversion['words'],$conversion['digits'],$targettext);
+        }
+        return $targettext;
+    }
+
+    /*
+    * This is just rule based heuristics, keep adding rules when you need 'em
+    * @param mixed $passagewords the passage text or an array of passage words
+    * @return array the digit to word conversions array
+    */
+    public static function fetch_suji_conversions($passagewords){
+
+        //its possible to call this function with just the passage as text,
+        // which might be useful for callers who want the conversions array to pass to JS and not to run the conversion
+        if(!is_array($passagewords)){
+            $passagewords=self::fetchWordArray($passagewords);
+        }
+
+        $conversions=array();
+        foreach ($passagewords as $candidate){
+
+            //plain numbers
+            if(is_numeric($candidate)){
+                //get regular numerals
+                $numberwords = self::convert_suji_to_words($candidate);
+                if($numberwords){
+                    $conversions[] = ['digits'=>$candidate,'words'=>$numberwords];
+                }
+
+            }else{
+                //get regular numerals
+                $numberdigits = self::convert_words_to_suji($candidate);
+                if($numberdigits){
+                    $conversions[] = ['digits'=>$numberdigits,'words'=>$candidate];
+                }
+            }
+        }
+        return $conversions;
+    }
+
+    public static function convert_words_to_suji($words){
+
+            $arr = array();
+            $arr[1000000000000] = '兆';
+            $arr[100000000] = '億';
+            $arr[10000] = '万';
+            $arr[1000] = '千';
+            $arr[100] = '百';
+            $arr[10] = '十';
+            $arr[9] = '九';
+            $arr[8] = '八';
+            $arr[7] = '七';
+            $arr[6] = '六';
+            $arr[5] = '五';
+            $arr[4] = '四';
+            $arr[3] = '三';
+            $arr[2] = '二';
+            $arr[1] = '一';
+
+            $arrayWithNumbers = mb_str_split($words);
+            $suji = null;
+            foreach($arrayWithNumbers as $jpKanji){
+                $keyVal = array_search($jpKanji, $arr);
+                if($keyVal===false){continue;}
+                if( $suji== null){
+                    $suji= $keyVal;
+                }else{
+                    if($keyVal < 10){
+                        $suji = $suji + $keyVal;
+                    }else{
+                        $suji = $suji * $keyVal;
+                    }
+                }
+            }
+            return $suji;
+    }
+
+    public static function convert_suji_to_words($suji){
+
+        $arr = array();
+        $arr[1000000000000] = '兆';
+        $arr[100000000] = '億';
+        $arr[10000] = '万';
+        $arr[1000] = '千';
+        $arr[100] = '百';
+        $arr[10] = '十';
+        $arr[9] = '九';
+        $arr[8] = '八';
+        $arr[7] = '七';
+        $arr[6] = '六';
+        $arr[5] = '五';
+        $arr[4] = '四';
+        $arr[3] = '三';
+        $arr[2] = '二';
+        $arr[1] = '一';
+
+        $word='';
+        $nowsuji = $suji;
+        foreach($arr as $factor=>$factorword){
+            if($nowsuji > 10 && $factor > 9) {
+                $multiplier = intdiv($nowsuji, $factor);
+                if ($multiplier > 0) {
+                    $word .= $arr[$multiplier] . $factorword;
+                    $nowsuji = $nowsuji - ($multiplier * $factor);
+                }
+            }else{
+                if($nowsuji>0) {
+                    $word .= $factorword;
+                }
+                break;
+            }
+        }
+        return $word;
+    }
+
+    /*
    * Convenience function to remove dependency on aigrade and diff
    */
 

@@ -105,46 +105,48 @@ class utils {
         }
     }
     //we want to generate a phonetics if this is phonetic'able
-    public static function update_create_phonetic($moduleinstance, $olditem){
+    public static function update_create_phonetic_segments($moduleinstance, $olditem){
         //if we have an old item, set the default return value to the current phonetic value
         //we will update it if the text has changed
         if($olditem) {
             $thephonetics = $olditem->phonetic;
+            $thesegments =$olditem->passagesegments;
         }else{
             $thephonetics ='';
+            $thesegments ='';
         }
 
         $dophonetic = true;
         if($dophonetic) {
             //make sure the passage has really changed before doing an expensive call to create phonetics
-            $newpassage = diff::cleanText($moduleinstance->passage);
+            $cleannewpassage = diff::cleanText($moduleinstance->passage);
             if($olditem!==false) {
-                $oldpassage =  diff::cleanText($olditem->passage);
+                $cleanoldpassage =  diff::cleanText($olditem->passage);
             }else{
-                $oldpassage='';
+                $cleanoldpassage='';
             }
-            if ($newpassage !== $oldpassage) {
+            if ($cleannewpassage !== $cleanoldpassage) {
                 $segmented = true;
                 //build a phonetics string
-               $thephonetics = utils::convert_to_phonetic($newpassage, $moduleinstance->ttslanguage, 'tokyo', $segmented);
+               list($thephonetics,$thesegments) = utils::fetch_phones_and_segments($moduleinstance->passage, $moduleinstance->ttslanguage, 'tokyo', $segmented);
             }
         }
-        return $thephonetics;
+        return [$thephonetics,$thesegments];
     }
 
     /*
      *  We want to upgrade all the phonetic models on occasion
      *
      */
-    public static function update_all_phonetic(){
+    public static function update_all_phonetic_segments(){
         global $DB;
         $updates=0;
         $items = $DB->get_records(constants::M_TABLE);
         foreach($items as $moduleinstance) {
             $olditem = false;
-            $phonetic =self::update_create_phonetic($moduleinstance, $olditem);
-            if(!empty($phonetic)){
-                $DB->update_record(constants::M_TABLE,array('id'=>$moduleinstance->id,'phonetic'=>$phonetic));
+            [$thephonetic,$thepassagesegments] = self::update_create_phonetic_segments($moduleinstance,$olditem);
+            if(!empty($thephonetic)){
+                $DB->update_record(constants::M_TABLE,array('id'=>$moduleinstance->id,'phonetic'=>$thephonetic, 'passagesegments'=>$thepassagesegments));
                 $updates++;
             }
         }
@@ -296,7 +298,7 @@ if(true){
 
 
     //convert a phrase or word to a series of phonetic characters that we can use to compare text/spoken
-    public static function convert_to_phonetic($phrase,$language,$region='tokyo',$segmented=true){
+    public static function fetch_phones_and_segments($phrase, $language, $region='tokyo', $segmented=true){
         global $CFG;
 
         switch($language){
@@ -314,8 +316,10 @@ if(true){
                 }
                 if($segmented) {
                     $phonetic = implode(' ', $phonebits);
+                    $segments=$phrase;
                 }else {
                     $phonetic = implode('', $phonebits);
+                    $segments=$phrase;
                 }
 
                 //the resulting phonetic string will look like this: 0S IS A TK IT IS A KT WN TW 0T IS A MNK
@@ -355,48 +359,69 @@ if(true){
 
 
                 //for Japanese we want to segment it into "words"
-                $passage = utils::segment_japanese($phrase);
+             //   $passage = utils::segment_japanese($phrase);
 
-
-                $postdata =array('passage'=>$passage);
+                $postdata =array('passage'=>$phrase);
                 $results = self::curl_fetch($katakanify_url,$postdata,'post');
                 if(!self::is_json($results)){return false;}
 
                 $jsonresults = json_decode($results);
                 $nodes=[];
+                $words=[];
                 if($jsonresults && $jsonresults->status==true){
                     foreach($jsonresults->data->results as $result){
                         $bits = preg_split("/\t+/", $result);
                         if(count($bits)>1) {
                             $nodes[] = $bits[1];
+                            $words[] = $bits[0];
                         }
                     }
                 }
 
                 //process nodes
                 $katakanaarray=[];
+                $segmentarray=[];
+                $nodeindex=-1;
                 foreach ($nodes as $n) {
+                    $nodeindex++;
                     $analysis = explode(',',$n);
-                    if(count($analysis) > 7) {
-                        if($analysis[0]!=='記号') {
-                            $reading = $analysis[7];
-                            if ($reading != '*') {
-                                $katakanaarray[] = $reading;
-                            }
+                    if(count($analysis) > 5) {
+                        switch($analysis[0]) {
+                            case '記号':
+                                $segmentcount = count($segmentarray);
+                                if($segmentcount>0){
+                                    $segmentarray[$segmentcount-1].=$words[$nodeindex];
+                                }
+                                break;
+                            default:
+                                $reading = '*';
+                                if(count($analysis) > 7) {
+                                    $reading = $analysis[7];
+                                }
+                                if ($reading != '*') {
+                                    $katakanaarray[] = $reading;
+                                } else if($analysis[1]=='数'){
+                                    //numbers dont get phoneticized
+                                    $katakanaarray[] = $words[$nodeindex];
+                                }
+                                $segmentarray[]=$words[$nodeindex];
                         }
                     }
                 }
                 if($segmented) {
                     $phonetic = implode(' ',$katakanaarray);
+                    $segments = implode(' ',$segmentarray);
                 }else {
                     $phonetic = implode('',$katakanaarray);
+                    $segments = implode('',$segmentarray);
                 }
                 break;
 
             default:
                 $phonetic = '';
+                $segments = '';
         }
-        return $phonetic;
+        return [$phonetic,$segments];
 
     }
 
@@ -564,83 +589,80 @@ if(true){
 
     //Turn a set of speechmarks into a matches format that we use for marking up text in Readaloud
     public static function speechmarks_to_matches($passage,$speechmarks,$language){
-        $matches = new \stdClass();
-        $count=0; //final position in matches array (1 based), also used as position in passagewords array (0 based)
-        $sm_position=-1; //position in speechmarks array
-        $skip=0;//loop skip indicator
 
-        if($language == constants::M_LANG_JAJP) {
-            $region='tokyo'; //TO DO: should pass region in and not hard code it
-            $passage = utils::segment_japanese($passage);
-        }
+        //clean the punctuation
+        $passage=diff::cleanText($passage);
+        //prepare arrays of words to in transcript and passage to match on
+        $passagebits = self::fetch_passage_as_words($passage,$language);
+        $transcriptbits =[];
+        $transcriptobjects =[];
 
-        //there can be cases (grr) where the speechmark 'words' do not match the passage words;
-        // eg passage: '1968' -> speechmarks: '19' + speechmarks: '68'
-        //so we need to check back against the passage
-
-        $passagewords = self::fetch_passage_as_words($passage,$language);
-
-        //speechmarks could be of type 'sentence' or 'word'
-        //sentence might be useful but at this stage we ignore it
-        //if the word begins with "<" then its ssml so we skip it
-        foreach($speechmarks as $rawmark){
-
-            //we might sometimes skip a loop if we used a forward match to do something clever earlier
-            if($skip>0){
-                $skip--;
-                continue;
-            }
-            //we need to keep track of which index rawmark is in the speechmarks array, and create a speechmarks object from it
-            $sm_position++;
+        //for speechmarks we need to throw away ssml tags and punctuation so we do that,
+        // and prepare a matching array of the full speechmarks data object for use after the diff has been run
+        foreach($speechmarks as $rawmark) {
             $speechmark = json_decode($rawmark);
 
             //opt out of current speechmark if its not a word(eg sentence, viseme, ssml) or is ssml mark up
-            if(!isset($speechmark->type) || $speechmark->type!='word'){continue;}
-            if(\core_text::strlen($speechmark->value)>1 && \core_text::substr($speechmark->value,0,1)=='<'){continue;}
-
-            //set audio start time
-            //we might run several speech marks together in some cases, but the start is here.
-            $audiostarttime = $speechmark->time;
-
-            //if passage word and speechmark word do not match we have a bit of work to do
-            //we look forward and continue matching until the next passage match occurs, so it might span more than one set of speechmarks
-            if(self::are_different_words($speechmark->value, $passagewords[$count])){
-                list($futuremark,$future_position) = self::forward_search($speechmarks, $sm_position ,
-                        $passagewords, $count, 'lastpassagemismatch');
-                if($futuremark){
-                    //we are going to run together the speechmark and futuremark as a single match
-                    //so we combine the content and tweak the indexes so it will continue on to get the correct audio end,
-                    // and the loop start processing from the future_position + 1
-                    $skip = $future_position - $sm_position;
-                    $sm_position =$future_position;
-                    $futuremark->value = $speechmark->value . $futuremark->value;
-                    $speechmark=$futuremark;
-                }
+            if (!isset($speechmark->type) || $speechmark->type != 'word') {
+                continue;
             }
-            
-
-            //with speechmarks we do not get an audio end, so we need to figure one out.
-            //we default to + .05
-            $audioend=($speechmark->time *.001) + .05;
-            if($count<count($speechmarks)){
-
-                list($futuremark,$future_position) = self::forward_search($speechmarks, $sm_position,
-                        $passagewords, $count, 'audioend');
-                if($futuremark){
-                    //we had to play with decrement  value. to stop getting the start of the next word
-                    $audioend=($futuremark->time * .001) - .1;
-                }
-
+            //if the word begins with "<" then its ssml so we skip it
+            if (\core_text::strlen($speechmark->value) > 1 && \core_text::substr($speechmark->value, 0, 1) == '<') {
+                continue;
             }
+            $transcriptbits[] = $speechmark->value;
+            $transcriptobjects[] =$speechmark;
+        }
 
-            $count++;
-            $matches->{$count} = new \stdClass();
-            $matches->{$count}->word=$speechmark->value;
-            $matches->{$count}->pposition=$count;
-            $matches->{$count}->tposition=$count;
-            $matches->{$count}->audiostart=$audiostarttime * .001;
-            $matches->{$count}->audioend=$audioend;
-            $matches->{$count}->altmatch=0;
+        //Most of this is just to keep the diff function happy (it is used to different sets of data from real transcripts)
+        $alternatives = diff::fetchAlternativesArray('');
+        $wildcards = diff::fetchWildcardsArray($alternatives );
+        $passagephonetic_bits = diff::fetchWordArray('');
+        $transcript_phonetic ='';
+        $transcriptphonetic_bits = diff::fetchWordArray('');
+
+        //fetch sequences of transcript/passage matched words
+        // then prepare an array of "differences"
+        $passagecount = count($passagebits);
+        $transcriptcount = count($transcriptbits);
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language,$transcriptphonetic_bits,$passagephonetic_bits);
+        $debug=false;
+        $diffs = diff::fetchDiffs($sequences, $passagecount, $transcriptcount, $debug);
+
+
+        //from the array of differences build the matches and pull in audio stamps from speechmark data
+        $matches = new \stdClass();
+        $currentword = -1;
+        $lastword = -1;
+        //loop through diffs
+        // (could do a for loop here .. since diff count = passage words count for now index is $currentword
+        foreach ($diffs as $diff) {
+            $currentword++;
+            switch ($diff[0]) {
+                case Diff::UNMATCHED:
+                    break;
+
+                case Diff::MATCHED:
+                    //we collect match info so we can play audio from selected word
+                    $match = new \stdClass();
+                    $match->word = $passagebits[$currentword - 1];
+                    $match->pposition = $currentword;
+                    $match->tposition = $diff[1]-2; //why isnt it -1 or just as it is, it seems to be out by TWO
+                    $match->audiostart = ($transcriptobjects[$match->tposition]->time) * .001;
+                    $match->audioend = $match->audiostart + .05; //provisional end
+                    $match->altmatch = $diff[2];//was this match an alternatives match?
+                    $matches->{$currentword} = $match;
+                    //set the last audio end to the start of the current one
+                    if($lastword > -1){
+                        $matches->{$lastword}->audioend=$match->audiostart;
+                    }
+                    $lastword = $currentword;
+                    break;
+
+                default:
+                    //do nothing
+                    //should never get here
+            }
         }
         return $matches;
     }
@@ -1069,9 +1091,11 @@ if(true){
         //If this is Japanese we want to segment it into "words"
         if($language == constants::M_LANG_JAJP) {
             $region='tokyo'; //TO DO: should pass region in and not hard code it
-            $transcript_phonetic = utils::convert_to_phonetic($transcript,constants::M_LANG_JAJP,$region);
+            list($transcript_phonetic,$transcript_segments) = utils::fetch_phones_and_segments($transcript,constants::M_LANG_JAJP,$region);
+            $transcriptbits = diff::fetchWordArray($transcript_segments);
         }else{
             $transcript_phonetic ='';
+            $transcript_segments='';
         }
         $transcriptphonetic_bits = diff::fetchWordArray($transcript_phonetic);
 
@@ -1657,7 +1681,8 @@ if(true){
                 }
                 //look for some sort of phrase ender and register a break if found.
                 $letsbreak=false;
-                switch (substr($words[$i], -1)) {
+                $lastcharofword = \core_text::substr($words[$i], -1);
+                switch ($lastcharofword ) {
                     case '!':
                     case '?':
                     case '.':
@@ -1695,10 +1720,6 @@ if(true){
     // but its for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
     public static function fetch_passage_as_words($passage,$language){
 
-            //for Japanese we want to segment it into "words"
-            if($language==constants::M_LANG_JAJP){
-                $passage = utils::segment_japanese($passage);
-            }
             // load the HTML document
             $doc = new \DOMDocument;
             // it will assume ISO-8859-1  encoding, so we need to hint it:

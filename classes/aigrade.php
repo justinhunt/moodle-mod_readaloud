@@ -183,11 +183,16 @@ class aigrade {
             switch (substr($this->activitydata->ttslanguage,0,2)){
                 case 'en':
                     //find digits in original passage, and convert number words to digits in the target passage
-                    $cleantranscript=alphabetconverter::words_to_numbers_convert($this->activitydata->passage,$cleantranscript );
+                    $cleantranscript=alphabetconverter::words_to_numbers_convert($this->activitydata->passagesegments,$cleantranscript );
                     break;
                 case 'de':
                     //find eszetts in original passage, and convert ss words to eszetts in the target passage
-                    $cleantranscript=alphabetconverter::ss_to_eszett_convert($this->activitydata->passage,$cleantranscript );
+                    $cleantranscript=alphabetconverter::ss_to_eszett_convert($this->activitydata->passagesegments,$cleantranscript );
+                    break;
+
+                case 'ja':
+                    //probably needs segmented transcript, never tested this from here ... more testing needed here and external
+                   // $cleantranscript=alphabetconverter::words_to_suji_convert($this->activitydata->passagesegments,$transcript);
                     break;
 
             }
@@ -215,7 +220,7 @@ class aigrade {
         *
         */
         list($sessionmatches,$sessionendword,$sessionerrors,$errorcount,$debugsequences) =
-                utils::fetch_diff($this->activitydata->passage,
+                utils::fetch_diff($this->activitydata->passagesegments,
                         $this->activitydata->alternatives,
                         $this->aidata->transcript,
                         $this->aidata->fulltranscript,

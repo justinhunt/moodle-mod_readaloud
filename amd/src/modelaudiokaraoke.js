@@ -28,7 +28,6 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
 
     //init the module
     init: function(opts) {
-      debugger;
       if (opts.breaks) {
         var breaks = JSON.parse(opts.breaks);
         this.set_breaks(breaks);

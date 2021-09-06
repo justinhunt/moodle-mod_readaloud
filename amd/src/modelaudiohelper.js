@@ -151,6 +151,18 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
 
         register_break: function(wordnumber, audiotime){
             this.breaks.push({'wordnumber': wordnumber, 'audiotime': audiotime});
+
+            var compare = function( a, b ) {
+                if ( a.wordnumber < b.wordnumber ){
+                    return -1;
+                }
+                if (  a.wordnumber >  b.wordnumber ){
+                    return 1;
+                }
+                return 0;
+            };
+            this.breaks.sort( compare );
+
             this.controls.breaksfield.val(JSON.stringify(this.breaks));
             karaoke.set_breaks(this.breaks);
             log.debug(this.breaks);
@@ -174,6 +186,13 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
             if(matches!==false && !$('.mod_readaloud_manualbreaktiming').is(":checked")){
                 if(matches[wordnumber]){
                     return matches[wordnumber].audioend;
+                }else{
+                    //try five more words, just in case
+                    for(var i =1;i<6;i++){
+                        if(matches[wordnumber+i]){
+                            return matches[wordnumber+i].audiostart;
+                        }
+                    }
                 }
             }else {
                 return theplayer.currentTime;

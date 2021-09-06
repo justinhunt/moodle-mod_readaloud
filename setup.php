@@ -85,6 +85,7 @@ if ($mform->is_cancelled()) {
     $data->coursemodule = $cm->id;
     $data = readaloud_process_editors($data);
 
+
     //we want to process the hashcode and lang model if it makes sense
     $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$data->id));
     $data->passagehash = $oldrecord->passagehash;
@@ -101,6 +102,11 @@ if ($mform->is_cancelled()) {
             }
         }
     }
+
+    //update the phonetic if it has changed
+    [$thephonetic,$thepassagesegments] = utils::update_create_phonetic_segments($data,$oldrecord);
+    $data->phonetic = $thephonetic;
+    $data->passagesegments = $thepassagesegments;
 
     //we want to create a polly record and speechmarks, if (!human_modelaudio && passage) && (passage change || voice change || speed change)
     $needspeechmarks =false;
@@ -123,11 +129,11 @@ if ($mform->is_cancelled()) {
             $speechmarks = utils::fetch_polly_speechmarks($token, $data->region,
                     $slowpassage, 'ssml', $data->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($data->passage,$speechmarks, $data->ttslanguage);
+                $matches = utils::speechmarks_to_matches($data->passagesegments,$speechmarks, $data->ttslanguage);
                 if(!empty($oldrecord->modelaudiobreaks)){
                     $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
                 }else {
-                    $breaks = utils::guess_modelaudio_breaks($data->passage, $matches,$data->ttslanguage);
+                    $breaks = utils::guess_modelaudio_breaks($data->passagesegments, $matches,$data->ttslanguage);
                 }
                 $data->modelaudiomatches = json_encode($matches);
                 $data->modelaudiobreaks = json_encode($breaks);

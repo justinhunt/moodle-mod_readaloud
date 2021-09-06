@@ -213,7 +213,7 @@ if ($attempts && $reviewattempts) {
                 if($collapsespaces){
                     $extraclasses = ' collapsespaces';
                 }
-                echo $passagerenderer->render_passage($moduleinstance->passage,$moduleinstance->ttslanguage,constants::M_PASSAGE_CONTAINER, $extraclasses);
+                echo $passagerenderer->render_passage($moduleinstance->passagesegments,$moduleinstance->ttslanguage,constants::M_PASSAGE_CONTAINER, $extraclasses);
                 echo $renderer->fetch_clicktohear_amd($moduleinstance,$token);
                 echo $renderer->render_hiddenaudioplayer();
                 break;
@@ -280,7 +280,7 @@ if ($attempts && $reviewattempts) {
         if($collapsespaces){
             $extraclasses = ' collapsespaces';
         }
-        echo $passagerenderer->render_passage($moduleinstance->passage,$moduleinstance->ttslanguage,constants::M_PASSAGE_CONTAINER, $extraclasses);
+        echo $passagerenderer->render_passage($moduleinstance->passagesegments,$moduleinstance->ttslanguage,constants::M_PASSAGE_CONTAINER, $extraclasses);
 
     }
 
@@ -350,7 +350,7 @@ if($collapsespaces){
 
 //hide on load, and we can show from ajax
 $extraclasses .= ' hide';
-echo $passagerenderer->render_passage($moduleinstance->passage,$moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
+echo $passagerenderer->render_passage($moduleinstance->passagesegments,$moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
 
 //lets fetch recorder
 echo $renderer->show_recorder($moduleinstance, $token, $debug);

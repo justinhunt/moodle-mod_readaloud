@@ -116,9 +116,16 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           log.debug(newbreak);
 
           if(self.phonetics.length>newbreak.wordnumber-1){
-              var startpos = oldbreak.wordnumber-1;
+              var startpos = oldbreak.wordnumber;
               if(startpos<0){startpos=0;}
-              self.currentPhonetic = self.phonetics.slice(startpos,newbreak.wordnumber-1).join(' ');
+              var endpos = newbreak.wordnumber;
+
+              /*
+              * break=0: wordnumber 0 start = 0, end = 9: jssplit returns 0-8
+              * break=1: wordnumber 9 start = 9, end = 18: jssplit returns 9-17
+              * break=2: wordnumber 18 start = 18, end = 99: jssplit returns 18-98
+               */
+              self.currentPhonetic = self.phonetics.slice(startpos,endpos).join(' ');
           }else{
               self.currentPhonetic  = '';
           }

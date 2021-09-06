@@ -13,6 +13,7 @@
                 <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"
                        COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
                 <FIELD NAME="passage" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The passage to be read."/>
+                <FIELD NAME="passagesegments" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="The passage with spaces(usually same as passage)."/>
                 <FIELD NAME="passagehash" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The hash of the passage"/>
                 <FIELD NAME="passageformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"
                        COMMENT="Format of the passage field (MOODLE, HTML, MARKDOWN...)"/>

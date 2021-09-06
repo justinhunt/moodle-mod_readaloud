@@ -486,6 +486,9 @@ div.mod_readaloud_attemptsummarytable {
 .collapsespaces .mod_readaloud_grading_passagespace:not(.mod_readaloud_grading_endspace) {
   display: none;
 }
+.collapsespaces .mod_readaloud_grading_passageword {
+  padding: 1.5px;
+}
 
 .mod_readaloud_modeltranscript {
   background-color: #ddd;

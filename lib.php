@@ -457,6 +457,20 @@ function readaloud_get_editornames() {
     return array('passage', 'welcome', 'feedback');
 }
 
+function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $mform = null) {
+    global $DB;
+    $cmid = $readaloud->coursemodule;
+    $context = context_module::instance($cmid);
+    $editors = readaloud_get_editornames();
+    $itemid = 0;
+    $edoptions = readaloud_editor_no_files_options($context);
+    foreach ($editors as $editor) {
+        $readaloud = file_postupdate_standard_editor($readaloud, $editor, $edoptions, $context, constants::M_COMPONENT, $editor,
+            $itemid);
+    }
+    return $readaloud;
+}
+
 /**
  * Saves a new instance of the readaloud into the database
  *
@@ -476,7 +490,9 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
     $readaloud = readaloud_process_editors($readaloud, $mform);
 
     //do phonetics
-    $readaloud->phonetic = utils::update_create_phonetic($readaloud,false);
+    [$thephonetic,$thepassagesegments] = utils::update_create_phonetic_segments($readaloud,false);
+    $readaloud->phonetic = $thephonetic;
+    $readaloud->passagesegments = $thepassagesegments;
 
     //we want to process the hashcode and lang model if it makes sense
     if(utils::needs_lang_model($readaloud)){
@@ -504,8 +520,8 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
             $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
                     $slowpassage, 'ssml', $readaloud->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks,$readaloud->ttslanguage);
-                $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches,$readaloud->ttslanguage);
+                $matches = utils::speechmarks_to_matches($readaloud->passagesegments,$speechmarks,$readaloud->ttslanguage);
+                $breaks = utils::guess_modelaudio_breaks($readaloud->passagesegments, $matches,$readaloud->ttslanguage);
                 $readaloud->modelaudiomatches = json_encode($matches);
                 $readaloud->modelaudiobreaks = json_encode($breaks);
             }//end of if speechmarks
@@ -523,20 +539,6 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
     }
 
     return $readaloud->id;
-}
-
-function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $mform = null) {
-    global $DB;
-    $cmid = $readaloud->coursemodule;
-    $context = context_module::instance($cmid);
-    $editors = readaloud_get_editornames();
-    $itemid = 0;
-    $edoptions = readaloud_editor_no_files_options($context);
-    foreach ($editors as $editor) {
-        $readaloud = file_postupdate_standard_editor($readaloud, $editor, $edoptions, $context, constants::M_COMPONENT, $editor,
-                $itemid);
-    }
-    return $readaloud;
 }
 
 /**
@@ -564,7 +566,9 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
     $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$readaloud->id));
 
     //update the phonetic if it has changed
-    $readaloud->phonetic = utils::update_create_phonetic($readaloud,$oldrecord);
+    [$thephonetic,$thepassagesegments] = utils::update_create_phonetic_segments($readaloud,$oldrecord);
+    $readaloud->phonetic = $thephonetic;
+    $readaloud->passagesegments = $thepassagesegments;
 
     $readaloud->passagehash = $oldrecord->passagehash;
     $newpassagehash = utils::fetch_passagehash($readaloud);
@@ -604,12 +608,12 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
             $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
                     $slowpassage, 'ssml', $readaloud->ttsvoice);
             if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks,$readaloud->ttslanguage);
-                //if(!empty($oldrecord->modelaudiobreaks)){
-                if(false){
+                $matches = utils::speechmarks_to_matches($readaloud->passagesegments,$speechmarks,$readaloud->ttslanguage);
+                if(false && !empty($oldrecord->modelaudiobreaks) && strlen($oldrecord->modelaudiobreaks)>5){
+                    //we no longer sync. It just is not the correct behaviour if the passage/speech has changed
                     $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
                 }else {
-                    $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches,$readaloud->ttslanguage);
+                    $breaks = utils::guess_modelaudio_breaks($readaloud->passagesegments, $matches,$readaloud->ttslanguage);
                 }
                 $readaloud->modelaudiomatches = json_encode($matches);
                 $readaloud->modelaudiobreaks = json_encode($breaks);

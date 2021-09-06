@@ -133,6 +133,11 @@ class passagehelper {
             case 'somedetails':
                 $ret = $this->attemptdata->id . ' ' . $this->activitydata->passage;
                 break;
+
+            case 'passagesegments':
+                $ret = $this->activitydata->passagesegments;
+                break;
+
             default:
                 $ret = $this->attemptdata->{$property};
         }
