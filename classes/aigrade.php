@@ -191,8 +191,8 @@ class aigrade {
                     break;
 
                 case 'ja':
-                    //probably needs segmented transcript, never tested this from here ... more testing needed here and external
-                   // $cleantranscript=alphabetconverter::words_to_suji_convert($this->activitydata->passagesegments,$transcript);
+                    //probably needs segmented transcript, more testing needed here and from external
+                    $cleantranscript=alphabetconverter::words_to_suji_convert($this->activitydata->passagesegments,$transcript);
                     break;
 
             }

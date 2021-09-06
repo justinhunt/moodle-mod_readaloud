@@ -145,12 +145,8 @@ class mod_readaloud_external extends external_api {
         }
 
 
-        //If this is Japanese we want to segment it into "words"
-        if($language == constants::M_LANG_JAJP) {
-            list($transcript_phonetic,$transcript) = utils::fetch_phones_and_segments($transcript,constants::M_LANG_JAJP,$region);
-        }else{
-            $transcript_phonetic ='';
-        }
+        //Fetch phonetics and segments
+        list($transcript_phonetic,$transcript) = utils::fetch_phones_and_segments($transcript,$language,$region);
 
         //EXPERIMENTAL
         switch (substr($language,0,2)){
@@ -163,9 +159,10 @@ class mod_readaloud_external extends external_api {
                 $transcript=alphabetconverter::ss_to_eszett_convert($passage,$transcript );
                 break;
             case 'ja':
+                //find digits in original passage, and convert number words to digits in the target passage
                 //this works but segmented digits are a bit messed up, not sure its worthwhile. more testing needed
                 //from here and aigrade
-               // $transcript=alphabetconverter::words_to_suji_convert($passage,$transcript);
+                $transcript=alphabetconverter::words_to_suji_convert($passage,$transcript);
                 break;
 
 

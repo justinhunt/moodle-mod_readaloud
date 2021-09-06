@@ -304,7 +304,7 @@ class alphabetconverter {
     }
 
     /*
-    * This converts any number-words in the passage to number-digits,
+    * This converts any number-words in the transcript to number-digits, by checking what the number digits are in the passage
     *
     * @param string $passage the passage text
     * @param string $target the text to run the conversion on
@@ -343,13 +343,6 @@ class alphabetconverter {
                 $numberwords = self::convert_suji_to_words($candidate);
                 if($numberwords){
                     $conversions[] = ['digits'=>$candidate,'words'=>$numberwords];
-                }
-
-            }else{
-                //get regular numerals
-                $numberdigits = self::convert_words_to_suji($candidate);
-                if($numberdigits){
-                    $conversions[] = ['digits'=>$numberdigits,'words'=>$candidate];
                 }
             }
         }
@@ -416,7 +409,11 @@ class alphabetconverter {
         $nowsuji = $suji;
         foreach($arr as $factor=>$factorword){
             if($nowsuji > 10 && $factor > 9) {
-                $multiplier = intdiv($nowsuji, $factor);
+                if(phpversion()>=7) {
+                    $multiplier = intdiv($nowsuji, $factor);
+                }else{
+                    $multiplier = floor($nowsuji/$factor);
+                }
                 if ($multiplier > 0) {
                     $word .= $arr[$multiplier] . $factorword;
                     $nowsuji = $nowsuji - ($multiplier * $factor);

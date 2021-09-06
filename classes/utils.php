@@ -298,6 +298,7 @@ if(true){
 
 
     //convert a phrase or word to a series of phonetic characters that we can use to compare text/spoken
+    //the segments will usually just return the phrase , but in japanese we want to segment into words
     public static function fetch_phones_and_segments($phrase, $language, $region='tokyo', $segmented=true){
         global $CFG;
 
@@ -419,7 +420,7 @@ if(true){
 
             default:
                 $phonetic = '';
-                $segments = '';
+                $segments = $phrase;
         }
         return [$phonetic,$segments];
 
@@ -610,7 +611,7 @@ if(true){
             if (\core_text::strlen($speechmark->value) > 1 && \core_text::substr($speechmark->value, 0, 1) == '<') {
                 continue;
             }
-            $transcriptbits[] = $speechmark->value;
+            $transcriptbits[] = diff::cleanText($speechmark->value);
             $transcriptobjects[] =$speechmark;
         }
 
@@ -645,16 +646,16 @@ if(true){
                 case Diff::MATCHED:
                     //we collect match info so we can play audio from selected word
                     $match = new \stdClass();
-                    $match->word = $passagebits[$currentword - 1];
+                    $match->word = $passagebits[$currentword];
                     $match->pposition = $currentword;
-                    $match->tposition = $diff[1]-2; //why isnt it -1 or just as it is, it seems to be out by TWO
-                    $match->audiostart = ($transcriptobjects[$match->tposition]->time) * .001;
+                    $match->tposition = $diff[1]-1;
+                    $match->audiostart = ($transcriptobjects[$match->tposition]->time * .001)-.3;
                     $match->audioend = $match->audiostart + .05; //provisional end
                     $match->altmatch = $diff[2];//was this match an alternatives match?
                     $matches->{$currentword} = $match;
                     //set the last audio end to the start of the current one
                     if($lastword > -1){
-                        $matches->{$lastword}->audioend=$match->audiostart;
+                        $matches->{$lastword}->audioend=$match->audiostart-.2;
                     }
                     $lastword = $currentword;
                     break;
