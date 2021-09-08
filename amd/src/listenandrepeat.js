@@ -26,6 +26,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.language = props.language;
       self.region = props.region;
       self.phonetics = props.phonetics;
+      self.ds_only = props.ds_only;
 
       //recorder stuff
       var recid = 'readaloud_pushrecorder';
@@ -53,6 +54,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
             //init tt recorder
             var opts = {};
             opts.uniqueid = recid;
+            opts.ds_only = self.ds_only;
             opts.callback = theCallback;
             ttrecorder.clone().init(opts);
       }else{

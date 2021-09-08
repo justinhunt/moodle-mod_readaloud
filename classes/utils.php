@@ -306,6 +306,8 @@ if(true){
             case constants::M_LANG_ENUS:
             case constants::M_LANG_ENAB:
             case constants::M_LANG_ENAU:
+            case constants::M_LANG_ENNZ:
+            case constants::M_LANG_ENZA:
             case constants::M_LANG_ENIN:
             case constants::M_LANG_ENIE:
             case constants::M_LANG_ENWL:
@@ -574,6 +576,7 @@ if(true){
             case "frankfurt":
             case "london":
             case "singapore":
+            case "capetown":
                 //ok
                break;
             default:
@@ -1940,7 +1943,9 @@ if(true){
                 constants::M_LANG_ENUS => ['Joey'=>'Joey','Justin'=>'Justin','Matthew'=>'Matthew','Ivy'=>'Ivy',
                 'Joanna'=>'Joanna','Kendra'=>'Kendra','Kimberly'=>'Kimberly','Salli'=>'Salli'],
                 constants::M_LANG_ENGB => ['Brian'=>'Brian','Amy'=>'Amy', 'Emma'=>'Emma'],
-                constants::M_LANG_ENAU => ['Russell'=>'Russell','Nicole'=>'Nicole'],
+                constants::M_LANG_ENAU => ['Russell'=>'Russell','Nicole'=>'Nicole','Olivia'=>'Olivia'],
+                constants::M_LANG_ENNZ => ['Aria'=>'Aria'],
+                constants::M_LANG_ENZA => ['Ayanda'=>'Ayanda'],
                 constants::M_LANG_ENIN => ['Aditi'=>'Aditi', 'Raveena'=>'Raveena'],
                // constants::M_LANG_ENIE => [],
                 constants::M_LANG_ENWL => ["Geraint"=>"Geraint"],
@@ -1948,14 +1953,14 @@ if(true){
                 constants::M_LANG_ESUS => ['Miguel'=>'Miguel','Penelope'=>'Penelope'],
                 constants::M_LANG_ESES => [ 'Enrique'=>'Enrique', 'Conchita'=>'Conchita', 'Lucia'=>'Lucia'],
                 //constants::M_LANG_FAIR => [],
-                constants::M_LANG_FRCA => ['Chantal'=>'Chantal'],
+                constants::M_LANG_FRCA => ['Chantal'=>'Chantal', 'Gabrielle'=>'Gabrielle'],
                 constants::M_LANG_FRFR => ['Mathieu'=>'Mathieu','Celine'=>'Celine', 'Léa'=>'Léa'],
                 constants::M_LANG_HIIN => ["Aditi"=>"Aditi"],
                 //constants::M_LANG_HEIL => [],
                 //constants::M_LANG_IDID => [],
                 constants::M_LANG_ITIT => ['Carla'=>'Carla',  'Bianca'=>'Bianca', 'Giorgio'=>'Giorgio'],
                 constants::M_LANG_JAJP => ['Takumi'=>'Takumi','Mizuki'=>'Mizuki'],
-                constants::M_LANG_KOKR => ['Seoyan'=>'Seoyan'],
+                constants::M_LANG_KOKR => ['Seoyeon'=>'Seoyeon'],
                 //constants::M_LANG_MSMY => [],
                 constants::M_LANG_NLNL => ["Ruben"=>"Ruben","Lotte"=>"Lotte"],
                 constants::M_LANG_PTBR => ['Ricardo'=>'Ricardo', 'Vitoria'=>'Vitoria'],
@@ -1989,6 +1994,8 @@ if(true){
                 constants::M_LANG_ENUS => get_string('en-us', constants::M_COMPONENT),
                 constants::M_LANG_ENGB => get_string('en-gb', constants::M_COMPONENT),
                 constants::M_LANG_ENAU => get_string('en-au', constants::M_COMPONENT),
+                constants::M_LANG_ENNZ => get_string('en-nz', constants::M_COMPONENT),
+                constants::M_LANG_ENZA => get_string('en-za', constants::M_COMPONENT),
                 constants::M_LANG_ENIN => get_string('en-in', constants::M_COMPONENT),
                 constants::M_LANG_ENIE => get_string('en-ie', constants::M_COMPONENT),
                 constants::M_LANG_ENWL => get_string('en-wl', constants::M_COMPONENT),

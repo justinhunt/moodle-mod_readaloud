@@ -819,6 +819,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
         $recopts['enablelandr'] = $moduleinstance->enablelandr ? true : false;
+        $recopts['ds_only'] = false; //if false, chrome will use its own speech rec. if true chrome wont be used (server may yet decide not to use DS)
         $recopts['enablepreview'] = $moduleinstance->enablepreview ? true : false;
         $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;
         $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;

@@ -1,3 +1,7 @@
+2.0.63 (Build 20210901XX)
+- Added more neural voices and NZ and SA English to polly and transcribe
+- Added internal flag to turn off Chrome speech rec
+
 2.0.63 (Build 2021090100)
 - Added questions for an embedded quiz (not finished)
 - Added phonetic for more clever word comparisons especially in Japanese

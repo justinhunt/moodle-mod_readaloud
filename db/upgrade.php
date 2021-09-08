@@ -446,7 +446,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2020121400) {
         $table = new xmldb_table('readaloud');
 
-        //This allows the activity admin to submit raw audio (as opposed to recording). Usually for some sort of disaster recovery
+        //This forces the activity to use AWS transcription (not Poodll transcription). It results in slower but stricter transcription, ie more errors
         $field = new xmldb_field('stricttranscribe', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to readaloud table

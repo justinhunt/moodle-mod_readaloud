@@ -23,8 +23,8 @@ class constants {
 
     const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
 
-    const M_NEURALVOICES = array("Amy","Emma","Brian","Ivy","Joanna","Kendra","Kimberly",
-            "Salli","Joey","Justin","Kevin","Matthew","Camila","Lupe");
+    const M_NEURALVOICES = array("Amy","Emma","Brian","Olivia","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly",
+            "Salli","Joey","Justin","Kevin","Matthew","Camila","Lupe", "Gabrielle", "Vicki", "Seoyeon");
 
     //classes for use in CSS
     const M_CLASS = 'mod_readaloud';
@@ -163,6 +163,8 @@ class constants {
     const M_LANG_ENUS = 'en-US';
     const M_LANG_ENGB = 'en-GB';
     const M_LANG_ENAU = 'en-AU';
+    const M_LANG_ENNZ = 'en-NZ';
+    const M_LANG_ENZA = 'en-ZA';
     const M_LANG_ENIN = 'en-IN';
     const M_LANG_ESUS = 'es-US';
     const M_LANG_ESES = 'es-ES';
