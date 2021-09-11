@@ -182,10 +182,13 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
             return theplayer.currentTime;
         },
 
+        //the break occurs after the current word.  matches array  is 0 based and words array is 1 based
+        //So if break 1: word tapped is wordnumber 3, we want the start position of wordnumber 4 as audiotime. That is matches[3].audiostart
         fetch_break_audiotime: function(wordnumber,theplayer, matches){
             if(matches!==false && !$('.mod_readaloud_manualbreaktiming').is(":checked")){
                 if(matches[wordnumber]){
-                    return matches[wordnumber].audioend;
+                    return matches[wordnumber].audiostart;
+
                 }else{
                     //try five more words, just in case
                     for(var i =1;i<6;i++){
