@@ -1662,7 +1662,7 @@ if(true){
             for ($i = 0; $i < count($breaks); $i++) {
                 $wordnumber = $breaks[$i]['wordnumber'];
                 if(isset($matches->{$wordnumber})) {
-                    $breaks[$i]['audiotime'] = $matches->{$wordnumber}->audioend;
+                    $breaks[$i]['audiotime'] = $matches->{$wordnumber}->audiostart;//or audio end? ...
                 }else{
                    //what to do here?
                 }
@@ -1672,6 +1672,8 @@ if(true){
     }//end of function
 
     //Make a good effort to mark up the passage from scratch
+    //the break occurs after the current word.  matches array  is 0 based and words array is 0 based
+    //So if break 1: word tapped is wordnumber 2, break->3 we want the audiostart position of next as audiotime. That is matches[3].audiostart
     public static function guess_modelaudio_breaks($passage,$matches,$language) {
         $breaks=[];
         $words = self::fetch_passage_as_words($passage,$language);
@@ -1702,7 +1704,7 @@ if(true){
                     case ';':
                     case '、':
                     case '；':
-                        if(($matches->{$i + 1}->audioend - $lastbreak)>2){
+                        if(($matches->{$i + 1}->audiostart - $lastbreak)>2){
                             $letsbreak =true;
                         }
                         break;
@@ -1710,9 +1712,9 @@ if(true){
                 }//end of switch
                 //we add the new break
                 if($letsbreak){
-                    $newbreak = ['wordnumber' => $i + 1, 'audiotime' => $matches->{$i + 1}->audioend];
+                    $newbreak = ['wordnumber' => $i + 1, 'audiotime' => $matches->{$i + 1}->audiostart];
                     $breaks[] = $newbreak;
-                    $lastbreak = $matches->{$i + 1}->audioend;
+                    $lastbreak = $matches->{$i + 1}->audiostart;
                 }
             }//end of for
         }//end of if count > 0
