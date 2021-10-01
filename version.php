@@ -28,9 +28,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021093001;
+$plugin->version = 2021100100;
 $plugin->requires = 2016052300;      // Requires Moodle 3.1
 $plugin->component = 'mod_readaloud';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.0.65 (Build 2021093001)';
+$plugin->release = '2.0.66 (Build 2021100100)';
 

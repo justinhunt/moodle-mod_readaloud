@@ -114,6 +114,23 @@ switch($action){
         redirect($PAGE->url,get_string('pushmodes_done',constants::M_COMPONENT),10);
         break;
 
+    case constants::M_PUSH_GRADESETTINGS:
+        $updatefields = ['mingrade','machgrademethod','sessionscoremethod','gradeoptions'];
+        foreach($updatefields as $thefield) {
+            $DB->set_field(constants::M_TABLE, $thefield, $moduleinstance->{$thefield}, array('name' => $moduleinstance->name, 'masterinstance' => 0));
+        }
+
+        //this should work, but its turned off. I do not think we should mess with gradebook in this way since UI locks up if grades present
+    // and it did not work for grademin grade (so not sure about point/scale/maxgrade ...)
+/*
+        $clones = $DB->get_records(constants::M_TABLE, array('name' => $moduleinstance->name, 'masterinstance' => 0));
+        foreach($clones as $clone){
+            readaloud_grade_item_update($clone);
+        }
+*/
+        redirect($PAGE->url,get_string('pushgradesettings_done',constants::M_COMPONENT),10);
+        break;
+
     case constants::M_PUSH_NONE:
     default:
 
