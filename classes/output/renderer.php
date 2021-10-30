@@ -705,26 +705,20 @@ class renderer extends \plugin_renderer_base {
         $hints = new \stdClass();
         $hints->allowearlyexit = $moduleinstance->allowearlyexit;
 
-        //perhaps we want to force stereoaudio
-        if ($moduleinstance->transcriber == constants::TRANSCRIBER_GOOGLECLOUDSPEECH ||
-                $moduleinstance->submitrawaudio) {
-            $hints->encoder = 'stereoaudio';
-        }
-
 
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
 
         //We no longer want to use AWS streaming transcription.
         switch ($moduleinstance->transcriber){
             case constants::TRANSCRIBER_AMAZONSTREAMING :
-                $moduleinstance->transcriber = constants::TRANSCRIBER_AMAZONTRANSCRIBE;
+                $moduleinstance->transcriber = constants::TRANSCRIBER_AUTO;
                 //this flag tells AWS not to send to amazon transcribe
                // $transcribe = "0";
                // $hints->streamingtranscriber = 'aws';
                // $speechevents = '1';
                // break;
-            case constants::TRANSCRIBER_AMAZONTRANSCRIBE:
-            case constants::TRANSCRIBER_GOOGLECLOUDSPEECH:
+            case constants::TRANSCRIBER_AUTO:
+            case constants::TRANSCRIBER_POODLL:
             case constants::TRANSCRIBER_NONE:
             default:
                 $transcribe = $can_transcribe ? $moduleinstance->transcriber : "0";
@@ -819,7 +813,6 @@ class renderer extends \plugin_renderer_base {
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
         $recopts['enablelandr'] = $moduleinstance->enablelandr ? true : false;
-        $recopts['ds_only'] = false; //if false, chrome will use its own speech rec. if true chrome wont be used (server may yet decide not to use DS)
         $recopts['enablepreview'] = $moduleinstance->enablepreview ? true : false;
         $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;
         $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
@@ -839,12 +832,15 @@ class renderer extends \plugin_renderer_base {
         if($moduleinstance->phonetic && !empty($moduleinstance->phonetic)) {
             $recopts['phonetics'] = explode(' ',$moduleinstance->phonetic);
         }
-      
-        //streaming transcriber: we do not want to use it anymore.
-        if($moduleinstance->transcriber == constants::TRANSCRIBER_AMAZONSTREAMING){
-            $moduleinstance->transcriber=constants::TRANSCRIBER_AMAZONTRANSCRIBE;
-        }
+
         $recopts['transcriber']=$moduleinstance->transcriber;
+        //this will force browser recognition to use Poodll (not chrome or other browser speech)
+        if($recopts['transcriber']==constants::TRANSCRIBER_POODLL){
+            $recopts['ds_only'] = true;
+        }else {
+            $recopts['ds_only'] = false;
+        }
+
         $recopts['language']=$moduleinstance->ttslanguage;
         $recopts['region']= $moduleinstance->region;
         $recopts['token']=$token;
@@ -852,7 +848,6 @@ class renderer extends \plugin_renderer_base {
         $recopts['owner']=hash('md5',$USER->username);
         $recopts['appid']=constants::M_COMPONENT;
         $recopts['expiretime']=300;//max expire time is 300 seconds
-
 
         //we need an update control tp hold the recorded filename, and one for draft item id
         $ret_html = $ret_html . \html_writer::tag('input', '', array('id' => constants::M_UPDATE_CONTROL, 'type' => 'hidden'));

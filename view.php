@@ -185,6 +185,7 @@ if ($attempts && $reviewattempts) {
 
             case constants::POSTATTEMPT_EVALERRORSNOGRADE:
                 $showgradesinchart=false;
+                //no break here .. we want to flow on
             case constants::POSTATTEMPT_EVAL:
             case constants::POSTATTEMPT_EVALERRORS:
                 $attemptsummary = utils::fetch_attempt_summary($moduleinstance);

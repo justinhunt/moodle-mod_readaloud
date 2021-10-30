@@ -12,7 +12,7 @@
             <div class='mode-chooser-label'>
                 <b>{{#str}}landrreading , mod_readaloud{{/str}}</b>:
                 {{#str}}landrhelp , mod_readaloud{{/str}}
-                {{#noaudiobreaks}}{{#str}}modelaudiowarning , mod_readaloud{{/str}}{{/noaudiobreaks}}
+                {{#noaudiobreaks}}<span class="mod_readaloud_menubutton_warning">{{#str}}modelaudiowarning , mod_readaloud{{/str}}</span>{{/noaudiobreaks}}
             </div>
         </div>
     </div>
@@ -29,6 +29,7 @@
             <div class='mode-chooser-label'>
                 <b>{{#str}}startreading , mod_readaloud{{/str}}</b>:
                 {{#str}}normalhelp , mod_readaloud{{/str}}
+                {{#cantattempt}}<span class="mod_readaloud_menubutton_warning">{{#str}}exceededallattempts , mod_readaloud{{/str}}</span>{{/cantattempt}}
             </div>
         </div>
     </div>
