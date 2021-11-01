@@ -1,3 +1,8 @@
+2.0.68 (Build 2021103100)
+-fixed issue with broken recorder on listen and repeat on chrome (from previous release)
+- added max attempts display to shadow tile button
+- refactor of some code
+
 2.0.67 (Build 2021103000)
 - re organised transcriber options (UI) and allowed user to prefer Poodll STT
 - improved display of max attempts reached status
