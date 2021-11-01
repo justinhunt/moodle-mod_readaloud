@@ -626,11 +626,6 @@ function xmldb_readaloud_upgrade($oldversion) {
         //create a phonetic for each readaloud instance
         utils::update_all_phonetic_segments();
 
-        upgrade_mod_savepoint(true, 2021090300, 'readaloud');
-    }
-
-    // Add Master Instance option to readaloud table
-    if ($oldversion < 2021093000) {
         $table = new xmldb_table(constants::M_TABLE);
 
         $field= new xmldb_field('masterinstance', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);

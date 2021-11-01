@@ -108,6 +108,7 @@ class utils {
     public static function update_create_phonetic_segments($moduleinstance, $olditem){
         //if we have an old item, set the default return value to the current phonetic value
         //we will update it if the text has changed
+
         if($olditem) {
             $thephonetics = $olditem->phonetic;
             $thesegments =$olditem->passagesegments;
@@ -119,7 +120,7 @@ class utils {
         $dophonetic = true;
         if($dophonetic) {
             //make sure the passage has really changed before doing an expensive call to create phonetics
-            if (!$olditem || $moduleinstance->passage !== $olditem->passage) {
+            if (!$olditem || $moduleinstance->passage !== $olditem->passage || empty($thesegments)) {
                 $segmented = true;
                 //build a phonetics string
                list($thephonetics,$thesegments) = utils::fetch_phones_and_segments($moduleinstance->passage, $moduleinstance->ttslanguage, 'tokyo', $segmented);
