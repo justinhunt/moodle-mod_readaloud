@@ -1,3 +1,7 @@
+2.0.XX (Build 20211105xx)
+- renamed button to push all grades to gradebook
+
+
 2.0.67 (Build 2021103000)
 - re organised transcriber options (UI) and allowed user to prefer Poodll STT
 - improved display of max attempts reached status

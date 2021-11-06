@@ -350,9 +350,9 @@ class renderer extends \plugin_renderer_base {
     /**
      *
      */
-    public function show_pushmachinegrades($moduleinstance) {
+    public function show_pushalltogradebook($moduleinstance) {
 
-        $sectiontitle = get_string("pushmachinegrades", constants::M_COMPONENT);
+        $sectiontitle = get_string("pushalltogradebook", constants::M_COMPONENT);
         $heading = $this->output->heading($sectiontitle, 4);
 
         if (utils::can_transcribe($moduleinstance) &&
@@ -363,8 +363,8 @@ class renderer extends \plugin_renderer_base {
             $options = array('disabled' => 'disabled');
         }
         $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/gradesadmin.php',
-                array('n' => $moduleinstance->id, 'action' => 'pushmachinegrades')),
-                get_string('pushmachinegrades', constants::M_COMPONENT), 'post', $options);
+                array('n' => $moduleinstance->id, 'action' => 'pushalltogradebook')),
+                get_string('pushalltogradebook', constants::M_COMPONENT), 'post', $options);
 
         $ret = \html_writer::div($heading . $button, constants::M_GRADESADMIN_CONTAINER);
         return $ret;
