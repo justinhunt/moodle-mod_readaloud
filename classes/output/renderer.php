@@ -497,7 +497,7 @@ class renderer extends \plugin_renderer_base {
         //fetch lang services url
         $data['asrurl'] = utils::fetch_lang_server_url($moduleinstance->region,'transcribe');
 
-        //this will set some opts for the recorder, but others are set by fetch_activity_amd and it is applie in listen and repeat.js
+        //this will set some opts for the recorder, but others are set by fetch_activity_amd and it is applied in listen and repeat.js
         $content =  $this->render_from_template('mod_readaloud/listenandrepeat', $data);
         $containertag = 'landr_container';
         $amodalcontainer = $this->fetch_modalcontainer($title,$content,$containertag);

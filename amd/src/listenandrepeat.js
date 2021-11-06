@@ -51,7 +51,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
         //init tt recorder
       var opts = {};
-      opts.uniqueid = recid;
+      opts.uniqueid = 'readaloud_ttrecorder';
       opts.ds_only = self.ds_only;
       opts.callback = theCallback;
       ttrecorder.clone().init(opts);
