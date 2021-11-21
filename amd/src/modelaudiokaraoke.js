@@ -132,17 +132,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
         }); //end of eachwordorspace
       } //end of if not modeling
 
-      //Player events (onended, onpause, ontimeupdate)
-      var ended = function() {
-        that.controls.eachword.removeClass(that.cd.activesentence);
-        that.controls.eachspace.removeClass(that.cd.activesentence);
-        that.currentstartbreak = false;
-      };
-
-      aplayer.onended = ended;
-      aplayer.onpause = ended;
-
-      aplayer.ontimeupdate = function() {
+      var timeupdate = function() {
         var currentTime = aplayer.currentTime;
         var startbreak = false;
         var nextbreak = false;
@@ -166,7 +156,6 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
               wordnumber: 0,
               audiotime: 0,
               breaknumber: 0,
-              finalbreak: false
             };
             nextbreak = that.breaks[i];
 
@@ -175,7 +164,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
         //if the current break changed since last time, we go in here
         // (on first time through we want to flag  "changed" so that is why a false current startbreak goes to "changed"
         //in the special case that we reached the end of the passage we need to raise the eevent
-        if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber || aplayer.ended) {
+        if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber || (aplayer.ended && nextbreak.audiotime===0)) {
           var finishedsentence = $('.' + that.cd.activesentence).text();
           that.previousstartbreak = that.currentstartbreak;
           that.currentstartbreak = startbreak;
@@ -188,10 +177,19 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
             }
           }
           that.on_reach_audio_break(finishedsentence, that.previousstartbreak, that.currentstartbreak, that.breaks);
-
-
         }
       };
+
+      //Player events (onended, onpause, ontimeupdate)
+      var ended = function() {
+        that.controls.eachword.removeClass(that.cd.activesentence);
+        that.controls.eachspace.removeClass(that.cd.activesentence);
+        that.currentstartbreak = false;
+      };
+
+      aplayer.onended = ended;
+      aplayer.onpause = ended;
+      aplayer.ontimeupdate = timeupdate;
     }, //end of register events
 
 

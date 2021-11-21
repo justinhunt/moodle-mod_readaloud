@@ -12,6 +12,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
     language: "en-US",
     currentAudioStart: 0,
     currentAudioStop: 0,
+    oldBreak: {},
+    newBreak: {},
     mak: null,
     controls: {},
     results: [],
@@ -102,6 +104,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         }
 
         self.currentSentence = sentence;
+        self.oldBreak = oldbreak;
+        self.newBreak = newbreak;
         self.currentAudioStart = oldbreak.audiotime;
         self.currentAudioEnd = newbreak.audiotime;
 
@@ -134,9 +138,10 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           // do nothing
         } else {
           // detect last line
-          if (newbreak.breaknumber == breaks[breaks.length - 1].breaknumber) {
+          if (oldbreak.breaknumber == breaks[breaks.length - 1].breaknumber) {
             self.controls.finishedbutton.show();
             self.controls.skipbutton.hide();
+            self.oldBreak.isfinalbreak=true
           } else {
             self.controls.finishedbutton.hide();
             self.controls.skipbutton.show();
@@ -163,11 +168,18 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       self.controls.skipbutton.on('click', function(e) {
         self.controls.container.modal('hide');
-        if (self.controls.hiddenplayer[0].playing) {
-          self.controls.hiddenplayer[0].pause();
+
+        //we might get here from a 100% score on final break on the modal (it calls the skip button
+        //so we check if its finished or not
+        if(self.oldBreak.isfinalbreak) {
+          self.mak.controls.audioplayer[0].currentTime = 0;
+        }else{
+          if (self.controls.hiddenplayer[0].playing) {
+            self.controls.hiddenplayer[0].pause();
+          }
+            self.controls.hiddenplayer[0].currentTime = self.currentAudioStart;
+            self.mak.play_audio();
         }
-        self.controls.hiddenplayer[0].currentTime = self.currentAudioStart;
-        self.mak.play_audio();
       });
 
       self.controls.finishedbutton.on('click', function() {
