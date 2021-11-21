@@ -165,15 +165,17 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
             startbreak = {
               wordnumber: 0,
               audiotime: 0,
-              breaknumber: 0
+              breaknumber: 0,
+              finalbreak: false
             };
             nextbreak = that.breaks[i];
 
           }
         }
-        //if the current break changed since last time, we do not want to do anything
+        //if the current break changed since last time, we go in here
         // (on first time through we want to flag  "changed" so that is why a false current startbreak goes to "changed"
-        if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber) {
+        //in the special case that we reached the end of the passage we need to raise the eevent
+        if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber || aplayer.ended) {
           var finishedsentence = $('.' + that.cd.activesentence).text();
           that.previousstartbreak = that.currentstartbreak;
           that.currentstartbreak = startbreak;
@@ -186,6 +188,8 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
             }
           }
           that.on_reach_audio_break(finishedsentence, that.previousstartbreak, that.currentstartbreak, that.breaks);
+
+
         }
       };
     }, //end of register events

@@ -96,7 +96,6 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         }
 
         // sentence contains the target text
-
         //empty strings are none of our concern
         if (sentence.trim() === '') {
           return;

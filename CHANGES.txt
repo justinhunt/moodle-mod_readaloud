@@ -1,3 +1,7 @@
+2.0.70 (Build 2021112100)
+- Added ignore punctuation mode to dictation
+- Fixed browser speech recognition on Safari
+
 2.0.69 (Build 2021103101)
 - fixed broken upgrade script
 
