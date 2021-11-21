@@ -303,7 +303,7 @@ $string['machinegrademachineonly'] = "Always use machine eval. grade";
 $string['gradesadmin'] = "Alternatives Admin";
 $string['viewgradesadmin'] = 'Grades Admin';
 $string['machineregradeall'] = 'Save and re-evaluate all attempts';
-$string['pushmachinegrades'] = 'Push machine evaluations to gradebook';
+$string['pushalltogradebook'] = 'Re-push evaluations to gradebook';
 $string['currenterrorestimate'] = 'Current error estimate: {$a}';
 $string['gradesadmintitle'] = 'Alternatives Administration';
 $string['gradesadmininstructions'] =
@@ -557,6 +557,6 @@ $string['pushttsmodelaudio_desc']='Push TTS and Model Audio related settings, th
 $string['pushttsmodelaudio_done']='TTS and Model Audio have been pushed';
 
 $string['masterinstance']='Master Instance';
-$string['masterinstance_details']='Master instance allows the author to push the individual settings of one ReadAloud to existing copies of the same activity. Contact Poodll Support if you wish to use this.';
+$string['masterinstance_details']='Master instance allows the author to push the individual settings of one ReadAloud to existing copies of the same activity. They must have exactly the same name.';
 
 $string['pushpage_explanation']= "Use the buttons on this page to push settings from this ReadAloud instance to clones of it (ie activities with the same name). Be careful there is no going back so be sure of your intention before using.";
