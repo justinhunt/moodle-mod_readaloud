@@ -19,6 +19,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
     results: [],
     phonetics: [],
     cmid: 0,
+    ttr: {},
 
     init: function(props) {
 
@@ -29,11 +30,22 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.region = props.region;
       self.phonetics = props.phonetics;
       self.ds_only = props.ds_only;
+      self.shadow = props.shadow;
+      self.ttr
 
       //recorder stuff
       var theCallback =function(message) {
           switch (message.type) {
-              case 'recording':
+            case 'recordingstarted':
+              if (self.shadow === true) {
+                self.controls.playbutton.trigger('click');
+              }
+              break;
+
+            case 'recordingstopped':
+                  if (self.shadow === true){
+                    self.controls.hiddenplayer[0].pause();
+                  }
                   break;
 
               case 'speech':
@@ -56,7 +68,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       opts.uniqueid = 'readaloud_ttrecorder';
       opts.ds_only = self.ds_only;
       opts.callback = theCallback;
-      ttrecorder.clone().init(opts);
+      opts.shadow = true;
+      self.ttr = ttrecorder.clone().init(opts);
 
       self.prepare_controls();
       self.register_events();
@@ -109,9 +122,10 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         self.currentAudioStart = oldbreak.audiotime;
         self.currentAudioEnd = newbreak.audiotime;
 
-          log.debug("phonetics",self.phonetics);
-          log.debug(oldbreak);
-          log.debug(newbreak);
+        if(self.currentAudioStart===self.currentAudioEnd){
+            //This is a special case where the end of the audio has been reached in MAK, and there is now no next break
+            self.currentAudioEnd=self.controls.hiddenplayer[0].duration;
+        }
 
           if(self.phonetics.length>newbreak.wordnumber-1){
               var startpos = oldbreak.wordnumber;
@@ -127,11 +141,6 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           }else{
               self.currentPhonetic  = '';
           }
-
-
-        log.debug(sentence);
-        log.debug(oldbreak);
-        log.debug(newbreak);
 
         //pause audio while we do our thing
         if (oldbreak.breaknumber == 0 && newbreak == false) {
@@ -162,6 +171,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       var self = this;
 
       self.controls.playbutton.on('click', function(e) {
+log.debug("settingAudioStart:" + self.currentAudioStart);
         self.controls.hiddenplayer[0].currentTime = self.currentAudioStart;
         self.controls.hiddenplayer[0].play();
       });
@@ -170,7 +180,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         self.controls.container.modal('hide');
 
         //we might get here from a 100% score on final break on the modal (it calls the skip button
-        //so we check if its finished or not
+        //so we check if its finished or not. Otherwise it will return to the first break and start playing
         if(self.oldBreak.isfinalbreak) {
           self.mak.controls.audioplayer[0].currentTime = 0;
         }else{

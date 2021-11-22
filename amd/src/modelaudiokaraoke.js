@@ -114,7 +114,6 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
           var wordnumber = parseInt($(this).attr('data-wordnumber'));
           var nearest_start_break = false;
           for (var i = 0; i < that.breaks.length; i++) {
-            debugger;
             if (that.breaks[i].wordnumber < wordnumber) {
               nearest_start_break = that.breaks[i];
             } else {
@@ -164,7 +163,8 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
         //if the current break changed since last time, we go in here
         // (on first time through we want to flag  "changed" so that is why a false current startbreak goes to "changed"
         //in the special case that we reached the end of the passage we need to raise the eevent
-        if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber || (aplayer.ended && nextbreak.audiotime===0)) {
+        var islastbreak = aplayer.ended && nextbreak.audiotime===0;
+        if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber || islastbreak) {
           var finishedsentence = $('.' + that.cd.activesentence).text();
           that.previousstartbreak = that.currentstartbreak;
           that.currentstartbreak = startbreak;
@@ -186,6 +186,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
         that.controls.eachspace.removeClass(that.cd.activesentence);
         that.currentstartbreak = false;
       };
+
 
       aplayer.onended = ended;
       aplayer.onpause = ended;
