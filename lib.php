@@ -454,7 +454,8 @@ function readaloud_dotask(progress_trace $trace) {
 }
 
 function readaloud_get_editornames() {
-    return array('passage', 'welcome', 'feedback');
+    //we removed "passage" to force plain text 30/10/2021
+    return array('welcome', 'feedback');
 }
 
 function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $mform = null) {
@@ -490,7 +491,7 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
     $readaloud = readaloud_process_editors($readaloud, $mform);
 
     //do phonetics
-    [$thephonetic,$thepassagesegments] = utils::update_create_phonetic_segments($readaloud,false);
+    list($thephonetic,$thepassagesegments) = utils::update_create_phonetic_segments($readaloud,false);
     $readaloud->phonetic = $thephonetic;
     $readaloud->passagesegments = $thepassagesegments;
 
@@ -566,7 +567,7 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
     $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$readaloud->id));
 
     //update the phonetic if it has changed
-    [$thephonetic,$thepassagesegments] = utils::update_create_phonetic_segments($readaloud,$oldrecord);
+    list($thephonetic,$thepassagesegments) = utils::update_create_phonetic_segments($readaloud,$oldrecord);
     $readaloud->phonetic = $thephonetic;
     $readaloud->passagesegments = $thepassagesegments;
 
@@ -584,8 +585,6 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
             }//end of if lang model
         }//end of if passage hash chaned
     }//end of if newpassagehash
-
-
 
     //we want to create a polly record and speechmarks, if (!human_modelaudio && passage) && (passage change || voice change || speed change)
     $needspeechmarks =false;

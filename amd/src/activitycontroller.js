@@ -218,10 +218,12 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             });
             dd.controls.startlandrbutton.click(function(e){
                 dd.dolandrlayout();
+                landr.shadow=false;
             });
             dd.controls.startlandrbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13 ) {
                     dd.dolandrlayout();
+                    landr.shadow=false;
                     e.preventDefault();
                 }
             });
@@ -237,11 +239,18 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
                 }
             });
             dd.controls.startshadowbutton.click(function(e){
+                //landr shadowing
+                //dd.dolandrlayout();
+                // landr.shadow=true;
+
                 dd.letsshadow=true;
                 dd.doreadinglayout();
             });
             dd.controls.startshadowbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13) {
+                    //dd.dolandrlayout();
+                    //landr.shadow=true;
+
                     dd.letsshadow=true;
                     dd.doreadinglayout();
                     e.preventDefault();
