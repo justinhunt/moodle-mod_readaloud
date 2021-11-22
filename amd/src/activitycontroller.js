@@ -270,7 +270,7 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
 
         send_submission: function (filename, rectime) {
             var that = this;
-            var shadowing = that.enableshadow && that.letsshadow;
+            var shadowing = (that.enableshadow && that.letsshadow) ? 1 : 0;
             Ajax.call([{
                 methodname: 'mod_readaloud_submit_regular_attempt',
                 args: {

@@ -984,7 +984,8 @@ class renderer extends \plugin_renderer_base {
                     $ret .= $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
                     $ret .= $this->fetch_clicktohear_amd($moduleinstance,$token);
                     $ret .= $this->render_hiddenaudioplayer();
-                    $ret .= $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces);
+                    $nograde=$latestattempt->dontgrade;
+                    $ret .= $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces,$nograde);
 
                     break;
 
@@ -1002,7 +1003,8 @@ class renderer extends \plugin_renderer_base {
                     $ret .= $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
                     $ret .= $this->fetch_clicktohear_amd($moduleinstance,$token);
                     $ret .= $this->render_hiddenaudioplayer();
-                    $ret .= $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces);
+                    $nograde=$latestattempt->dontgrade;
+                    $ret .= $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces, $nograde);
                     break;
 
                 case constants::POSTATTEMPT_EVALERRORSNOGRADE:
