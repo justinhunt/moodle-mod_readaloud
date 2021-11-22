@@ -50,19 +50,12 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           }
       };
 
-      if(self.use_ttrecorder()) {
-            //init tt recorder
-            var opts = {};
-            opts.uniqueid = recid;
-            opts.ds_only = self.ds_only;
-            opts.callback = theCallback;
-            ttrecorder.clone().init(opts);
-      }else{
-            //init cloudpoodll push recorder
-            cloudpoodll.init(recid, theCallback);
-      }
-
-
+    //init tt recorder
+    var opts = {};
+    opts.uniqueid = recid;
+    opts.ds_only = self.ds_only;
+    opts.callback = theCallback;
+    ttrecorder.clone().init(opts);
 
       self.prepare_controls();
       self.register_events();
@@ -258,30 +251,6 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           }else{
               return false;
           }
-      },
-
-      use_ttrecorder: function(){
-          //currently we always use TT recorder.
-          return true;
-       /*
-          var ret =false;
-          switch(this.region){
-              case 'bahrain':
-              case 'capetown':
-              case 'tokyo':
-              case 'useast1':
-              case 'dublin':
-              case 'sydney':
-                  //ret = this.language.substr(0,2)==='en';
-                  ret =true;
-                  break;
-              default:
-                  ret = this.chrome_user();
-          }
-          return ret;
-          */
-      },
-
-
+      }
   };
 });

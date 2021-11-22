@@ -1584,7 +1584,7 @@ if(true){
     }
 
     //save the data to Moodle.
-    public static function create_attempt($filename, $rectime, $readaloud) {
+    public static function create_attempt($filename, $rectime, $readaloud,$gradeable) {
         global $USER, $DB;
 
         //correct filename which has probably been massaged to get through mod_security
@@ -1602,6 +1602,7 @@ if(true){
         $newattempt->sessionerrors = '';
         $newattempt->errorcount = 0;
         $newattempt->wpm = 0;
+        $newattempt->dontgrade = $gradeable ? 0 : 1 ;
         $newattempt->timecreated = time();
         $newattempt->timemodified = time();
         $attemptid = $DB->insert_record(constants::M_USERTABLE, $newattempt);

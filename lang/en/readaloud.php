@@ -44,6 +44,7 @@ $string['readaloud:manage'] = 'Can manage Read Aloud instances';
 $string['readaloud:preview'] = 'Can preview Read Aloud activities';
 $string['readaloud:submit'] = 'Can submit Read Aloud attempts';
 $string['readaloud:viewreports'] = 'Can view Read Aloud grades and reports';
+$string['readaloud:pushtoclones'] = 'Can push settings to clones';
 $string['privacy:metadata'] = 'The Poodll Read Aloud plugin does store personal data.';
 
 $string['id'] = 'ID';

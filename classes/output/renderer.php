@@ -467,32 +467,20 @@ class renderer extends \plugin_renderer_base {
         global $CFG, $USER;
         //recorder modal
         $title = get_string('landrreading',constants::M_COMPONENT);
-        //are we going to force streaning transcription from AWS only if its android
-        $hints = new \stdClass();
-        $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
-        if(stripos($ua,'android') !== false) {
-            $hints->streamingtranscriber = 'aws';
-        }
-        $string_hints = base64_encode(json_encode($hints));
 
-        //the original poodll pushrecorder
+        //the TT recorder stuff
         $data=array( 'data-id' => 'readaloud_pushrecorder',
                         'data-parent' => $CFG->wwwroot,
-                        'data-localloading' => 'auto',
-                        'data-localloader' => '/mod/readaloud/poodllloader.html',
                         'data-media' => "audio",
                         'data-language' => $moduleinstance->ttslanguage,
                         'data-region' => $moduleinstance->region,
-                        'data-owner' => hash('md5',$USER->username),
-                        'data-hints' => $string_hints,
-                        'data-token' => $token);
+                         'waveheight'=> 75,
+                        'maxtime'=> 15000,
+                         'passagehash'=>'');
 
-        //the TT recorder
-        $data['waveheight']= 75;
-        $data['maxtime']= 15000;
+
         //passagehash if not empty will be region|hash eg tokyo|2353531453415134545
         //but we only send the hash up so we strip the region
-        $data['passagehash']="";
         if(!empty($moduleinstance->passagehash)){
             $hashbits = explode('|',$moduleinstance->passagehash);
             if(count($hashbits)==2){
