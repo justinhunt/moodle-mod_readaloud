@@ -314,7 +314,7 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
 
             $human_sql = "SELECT u.id, u.id AS userid,MAX(a.sessionscore) AS rawgrade
                   FROM {user} u,  {" . constants::M_USERTABLE . "} a 
-                 WHERE  u.id = a.userid AND a.readaloudid = :moduleid AND attempt.dontgrade = 0
+                 WHERE  u.id = a.userid AND a.readaloudid = :moduleid AND a.dontgrade = 0
                        $user
               GROUP BY u.id";
 
@@ -355,7 +355,7 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
             //human_sql
             $human_sql = "SELECT u.id, u.id AS userid, MAX(a.sessionscore) AS rawgrade
                           FROM {user} u, {" . constants::M_USERTABLE . "} a
-                         WHERE a.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid AND iattempt.dontgrade = 0)  AND u.id = a.userid AND a.readaloudid = :moduleid
+                         WHERE a.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid AND ia.dontgrade = 0)  AND u.id = a.userid AND a.readaloudid = :moduleid
                                $user
                       GROUP BY u.id";
 
