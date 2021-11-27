@@ -223,11 +223,6 @@ class renderer extends \plugin_renderer_base {
 
         //template data for small report
         $tdata = Array();
-        $tdata['src']='';
-        //filename
-        if($attempt && $attempt->filename){
-            $tdata['src']= $attempt->filename;
-        }
 
         //star rating
         if($attempt) {
@@ -244,6 +239,16 @@ class renderer extends \plugin_renderer_base {
         if($ready) {
             $tdata['ready']=true;
         }
+
+        //audio  filename
+        $tdata['src']='';
+        if($ready && $attempt->filename){
+            //we set the filename here. If attempt is not ready yet, audio may not be ready, so we blank it here
+            //and set it from JS pinging every 500ms or so till audio is ready
+            $tdata['src']= $attempt->filename;
+        }
+
+
 
         //full report button
         $fullreportbutton = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',

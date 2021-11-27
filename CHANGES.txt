@@ -1,3 +1,6 @@
+2.0.72 (Build 2021112700)
+- Added a skeleton placeholder for loading audio
+
 2.0.71 (Build 2021112600)
 - Fixed broken spot check Ok/Not ok buttons
 - Fixed problem with human/hybrid grading pushed in last update
