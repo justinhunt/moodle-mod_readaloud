@@ -17,7 +17,7 @@
                     var customer = {email: "{{email}}", billing_address: {first_name: "{{first_name}}",last_name: "{{last_name}}", country: "{{country}}"}};
                     cart.setCustomer(customer);
                     // Passing values for custom fields
-                    product.setCustomData({startsiteurl: "{{{wwwroot}}}"});
+                    product.setCustomData({cf_startsiteurl: "{{{wwwroot}}}"});
 
                     // Opening the checkout
                     cart.proceedToCheckout();
