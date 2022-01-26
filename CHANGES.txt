@@ -1,3 +1,6 @@
+Version 2.0.76 (Build 202201XXXX)
+- Added a listen to your own speech feature on L&R
+
 Version 2.0.75 (Build 2022012500)
 - Improved Japanese number recognition
 
