@@ -2184,6 +2184,33 @@ if(true){
             $mform->addHelpButton('showdescription', 'showdescription');
         }
 
+        $name = 'timing';
+        $label = get_string($name, 'form');
+        $mform->addElement('header', $name, $label);
+        $mform->setExpanded($name, true);
+
+
+
+        //-----------------------------------------------------------------------------
+
+        $name = 'viewstart';
+        $label = get_string($name, "readaloud");
+        $mform->addElement('date_time_selector', $name, $label, array('optional' => true));
+
+        $mform->addHelpButton($name, $name, $plugin);
+
+        //self::set_type_default_advanced($mform, $config, $name, PARAM_INT);
+
+        $name = 'viewend';
+        $label = get_string($name, "readaloud");
+        $mform->addElement('date_time_selector', $name, $label,  array('optional' => true));
+        $mform->addHelpButton($name, $name, $plugin);
+
+        //self::set_type_default_advanced($mform, $config, $name, PARAM_INT);
+
+        $mform->addElement('html', '<hr></hr>');
+        
+
         //time target
         $timelimit_options = \mod_readaloud\utils::get_timelimit_options();
         $mform->addElement('select', 'timelimit', get_string('timelimit', constants::M_COMPONENT),

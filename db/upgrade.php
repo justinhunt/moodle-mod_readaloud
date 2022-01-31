@@ -615,6 +615,8 @@ function xmldb_readaloud_upgrade($oldversion) {
         // Define alternatives field to be added to minilesson
         $fields=[];
         $fields[] = new xmldb_field('passagesegments', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('viewstart', XMLDB_TYPE_INT, null, null, null, null);
+        $fields[] = new xmldb_field('viewend', XMLDB_TYPE_INT, null, null, null, null);
 
         // Add fields
         foreach ($fields as $field) {
