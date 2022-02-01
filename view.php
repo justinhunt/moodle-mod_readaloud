@@ -183,81 +183,26 @@ if ($attempts && $reviewattempts) {
 //show activity description
 echo $renderer->show_intro($moduleinstance, $cm);
 
-if(!is_siteadmin()){
-$current_time=time();
-if ( $current_time>$moduleinstance->viewend){
-  echo "This activity is closed";die;
-}
-else if($current_time<$moduleinstance->viewstart){
-
- // echo date('l, jS \of  F Y, h:i A',$current_time);
-  echo "This activity is not open yet.</br>";  
-  echo "<b>Open: </b>";
-
-  if($moduleinstance->viewstart)
-  echo date('l, jS \of  F Y, h:i A',$moduleinstance->viewstart);
-
-  echo "</br>";
-  echo "<b>Until: </b>";
-
-   if($moduleinstance->viewend)
-   echo date("l, jS \of F Y, h:i A",$moduleinstance->viewend);
-
-die;
-}
-else{
-
-  echo "<b>Open: </b>";
-  
-  if($moduleinstance->viewstart)
-  echo date('l, jS \of  F Y, h:i A',$moduleinstance->viewstart);
-  
-  echo "</br>";
-  echo "<b>Until: </b>";
-
-  if($moduleinstance->viewend)
-  echo date("l, jS \of F Y, h:i A",$moduleinstance->viewend);
-
+//show open close dates
+$hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart>0;
+if($hasopenclosedates){
+    echo $renderer->show_open_close_dates($moduleinstance);
+    $current_time=time();
+    $closed = false;
+    if ( $current_time>$moduleinstance->viewend){
+        echo get_string('activityisclosed',constants::M_COMPONENT);
+        $closed = true;
+    }elseif($current_time<$moduleinstance->viewstart){
+        echo get_string('activityisnotopenyet',constants::M_COMPONENT);
+        $closed = true;
+    }
+    //if we are not a teacher and the activity is closed/not-open leave at this point
+    if(!has_capability('mod/readaloud:preview',$modulecontext) && $closed){
+        echo $renderer->footer();
+        exit;
+    }
 }
 
-
-
-}
-
-
-
-if(is_siteadmin()){
-$current_time=time();
-if ( $current_time>$moduleinstance->viewend){
-   if($moduleinstance->viewend) 
-   echo "This activity is closed";
-}
- else if($current_time<$moduleinstance->viewstart ){
-
- // echo date('l, jS \of  F Y, h:i A',$current_time);
-  echo "This activity is not open yet.</br>";  
-  echo "<b>Open: </b>";
-  echo date('l, jS \of  F Y, h:i A',$moduleinstance->viewstart);
-  echo "</br>";
-  echo "<b>Until: </b>";
-  echo date("l, jS \of F Y, h:i A",$moduleinstance->viewend);
-}
-else{
-
-  echo "<b>Open: </b>";
-
-  if($moduleinstance->viewstart)
-  echo date('l, jS \of  F Y, h:i A',$moduleinstance->viewstart);
-  
-  echo "</br>";
-  echo "<b>Until: </b>";
-
-  if($moduleinstance->viewend)
-  echo date("l, jS \of F Y, h:i A",$moduleinstance->viewend);
-
-}
-
-}
 
 //show small report
 if($attempts) {

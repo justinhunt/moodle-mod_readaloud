@@ -921,11 +921,11 @@ function mod_readaloud_cm_info_dynamic(cm_info $cm) {
 }
 function readaloud_get_coursemodule_info($coursemodule) {
     global $DB;
-    $date= $DB->get_record('readaloud', array('id' => $coursemodule->instance,), '*', MUST_EXIST);
+    $moduleinstance= $DB->get_record('readaloud', array('id' => $coursemodule->instance,), '*', MUST_EXIST);
     $result = new cached_cm_info();
-    $result->content = format_module_intro('readaloud', $assignment, $coursemodule->id, false);
-    $result->name = 'readaloud';
-    $result->customdata['duedate'] = $date->viewend;
-    $result->customdata['allowsubmissionsfromdate'] = $date->viewstart;
+    $result->content = format_module_intro('readaloud', $moduleinstance, $coursemodule->id, false);
+    $result->name = $moduleinstance->name;
+    $result->customdata['duedate'] = $moduleinstance->viewend;
+    $result->customdata['allowsubmissionsfromdate'] = $moduleinstance->viewstart;
     return $result;
 }
