@@ -912,3 +912,20 @@ function readaloud_extend_navigation(navigation_node $navref, stdclass $course, 
  */
 function readaloud_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $readaloudnode = null) {
 }
+function mod_readaloud_cm_info_dynamic(cm_info $cm) {
+        global $USER,$DB;
+        $date= $DB->get_record('readaloud', array('id' => $cm->instance,), '*', MUST_EXIST);
+        $cm->override_customdata('duedate',  $date->viewend);
+        $cm->override_customdata('allowsubmissionsfromdate', $date->viewstart);
+    
+}
+function readaloud_get_coursemodule_info($coursemodule) {
+    global $DB;
+    $date= $DB->get_record('readaloud', array('id' => $coursemodule->instance,), '*', MUST_EXIST);
+    $result = new cached_cm_info();
+    $result->content = format_module_intro('readaloud', $assignment, $coursemodule->id, false);
+    $result->name = 'readaloud';
+    $result->customdata['duedate'] = $date->viewend;
+    $result->customdata['allowsubmissionsfromdate'] = $date->viewstart;
+    return $result;
+}
