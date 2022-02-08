@@ -923,7 +923,11 @@ function readaloud_get_coursemodule_info($coursemodule) {
     global $DB;
     $moduleinstance= $DB->get_record('readaloud', array('id' => $coursemodule->instance,), '*', MUST_EXIST);
     $result = new cached_cm_info();
-    $result->content = format_module_intro('readaloud', $moduleinstance, $coursemodule->id, false);
+    if ($coursemodule->showdescription) {
+        if (time() > $moduleinstance->viewstart) {
+            $result->content = format_module_intro('readaloud', $moduleinstance, $coursemodule->id, false);
+        }
+    }
     $result->name = $moduleinstance->name;
     $result->customdata['duedate'] = $moduleinstance->viewend;
     $result->customdata['allowsubmissionsfromdate'] = $moduleinstance->viewstart;
