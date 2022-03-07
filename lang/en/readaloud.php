@@ -224,6 +224,7 @@ $string['pt-br'] = 'Portuguese (BR)';
 $string['en-in'] = 'English (IN)';
 $string['es-es'] = 'Spanish (ES)';
 $string['fr-fr'] = 'French (FR)';
+$string['fil-ph'] = 'Filipino';
 $string['de-de'] = 'German (DE)';
 $string['da-dk'] = 'Danish (DK)';
 $string['hi-in'] = 'Hindi';
