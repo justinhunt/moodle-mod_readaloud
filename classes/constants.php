@@ -175,6 +175,7 @@ class constants {
     const M_LANG_PTBR = 'pt-BR';
 
     const M_LANG_DADK = 'da-DK';
+    const M_LANG_FILPH = 'fil-PH';
 
     const M_LANG_KOKR = 'ko-KR';
     const M_LANG_HIIN = 'hi-IN';
