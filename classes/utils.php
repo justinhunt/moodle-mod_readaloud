@@ -1969,10 +1969,10 @@ if(true){
                 constants::M_LANG_TRTR => ['Filiz'=>'Filiz'],
                 constants::M_LANG_ZHCN => ['Zhiyu'],
 
-               // constants::M_LANG_NBNO => ['Liv'=>'Liv'],
-               // constants::M_LANG_PLPL => ['Ewa'=>'Ewa','Maja'=>'Maja','Jacek'=>'Jacek','Jan'=>'Jan'],
-               // constants::M_LANG_RORO => ['Carmen'=>'Carmen'],
-               // constants::M_LANG_SVSE => ['Astrid'=>'Astrid']
+                constants::M_LANG_NBNO => ['Liv'=>'Liv'],
+                constants::M_LANG_PLPL => ['Ewa'=>'Ewa','Maja'=>'Maja','Jacek'=>'Jacek','Jan'=>'Jan'],
+                constants::M_LANG_RORO => ['Carmen'=>'Carmen'],
+                constants::M_LANG_SVSE => ['Astrid'=>'Astrid']
         );
 
 
