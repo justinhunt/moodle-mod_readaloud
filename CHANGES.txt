@@ -1,5 +1,6 @@
-2.0.77 (xxxx)
+2.0.77 (Build 2022040100)
 - fixed issue in get_course_moduleinfo that could kill backup and restore
+- improved upgrade of readalouds that needed a lot of phonetics and passagesegments upgraded too
 - tweaked polly stuff
 
 2.0.76 (Build 2022020100)

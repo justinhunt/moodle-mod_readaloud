@@ -624,7 +624,8 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
 
         //create a phonetic for each readaloud instance
-        utils::update_all_phonetic_segments();
+        //this would blow up a site with lots of readalouds because of the time taken. So we added a place to do this on activity load in view.php
+        //utils::update_all_phonetic_segments();
 
         $table = new xmldb_table(constants::M_TABLE);
 
