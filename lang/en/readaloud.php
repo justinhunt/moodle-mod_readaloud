@@ -250,6 +250,10 @@ $string['ta-in'] = 'Tamil';
 $string['te-in'] = 'Telegu';
 $string['tr-tr'] = 'Turkish';
 
+$string['uk-ua'] = 'Ukranian';
+$string['eu-es'] = 'Basque';
+$string['fi-FI'] = 'Finnish';
+
 $string['sv-se'] = 'Swedish';
 $string['nb-no'] = 'Norwegian';
 $string['pl-pl'] = 'Polish';
@@ -589,3 +593,4 @@ $string['activityisclosed']="This activity is closed.";
 $string['open']="Open: ";
 $string['until']="Until: ";
 $string['activityopenscloses']="Activity open/close dates";
+$string['nottsvoice']="No TTS Voice";

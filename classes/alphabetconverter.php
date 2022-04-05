@@ -21,6 +21,15 @@ namespace mod_readaloud;
  */
 
 class alphabetconverter {
+//ukranian
+    const numbers_uk = ["1"=>"один", 2=>"два","3"=>"три","4"=>"чотири","5"=>"п'ять",
+"6"=>"шість", "7"=>"сім", "8"=>"вісім", "9"=>"дев'ять", "10"=>"десять", "11"=>"одинадцять",
+"12"=>"дванадцять", "13"=>"тринадцять", "14"=>"чотирнадцять", "15"=>"п'ятнадцять", "16"=>"шістнадцять",
+"17"=>"сімнадцять", "18"=>"вісімнадцять", "19"=>"дев'ятнадцять", "20"=>"двадцять", "30"=>"тридцять", "40"=>"сорок",
+"50"=>"п'ятдесят", "60"=>"шістдесят", "70"=>"сімдесят",
+"80"=>"вісімдесят", "90"=>"дев'яносто", "100"=>"сто "];
+
+
 
 
     /*
@@ -90,10 +99,15 @@ class alphabetconverter {
      * @param string $target the text to run the conversion on
      * @return string the converted text
      */
-    public static function numbers_to_words_convert($passage,$targettext){
+    public static function numbers_to_words_convert($passage,$targettext,$shortlang){
         $passagewords=self::fetchWordArray($passage);
-        $conversions = self::fetch_number_conversions($passagewords);
-
+        switch($shortlang) {
+            case "en":
+                $conversions = self::fetch_number_conversions($passagewords);
+                break;
+            default:
+                $conversions = self::fetch_hundred_number_conversions($passagewords,$shortlang);
+        }
         foreach($conversions as $conversion){
             $targettext = str_replace($conversion['digits'],$conversion['words'],$targettext);
         }
@@ -108,14 +122,51 @@ class alphabetconverter {
      * @return string the converted text
      *
      */
-    public static function words_to_numbers_convert($passage,$targettext){
+    public static function words_to_numbers_convert($passage,$targettext,$shortlang){
         $passagewords=self::fetchWordArray($passage);
-        $conversions = self::fetch_number_conversions($passagewords);
+        switch($shortlang) {
+            case "en":
+                $conversions = self::fetch_number_conversions($passagewords);
+                break;
+            default:
+                $conversions = self::fetch_hundred_number_conversions($passagewords,$shortlang);
+        }
 
         foreach($conversions as $conversion){
             $targettext = str_replace($conversion['words'],$conversion['digits'],$targettext);
         }
         return $targettext;
+    }
+
+    /*
+   * This is just rule based heuristics, keep adding rules when you need 'em
+   * @param mixed $passagewords the passage text or an array of passage words
+   * @return array the digit to word conversions array
+   */
+    public static function fetch_hundred_number_conversions($passagewords,$shortlang)
+    {
+
+        //its possible to call this function with just the passage as text,
+        // which might be useful for callers who want the conversions array to pass to JS and not to run the conversion
+        if (!is_array($passagewords)) {
+            $passagewords = self::fetchWordArray($passagewords);
+        }
+
+        $conversions = array('digits'=>[],'words'=>[]);
+        foreach ($passagewords as $candidate) {
+            //plain numbers
+            if (is_numeric($candidate)) {
+                switch($shortlang){
+                    case 'uk':
+                        if(array_key_exists($candidate,self::numbers_uk)){
+                            $conversions['digits'][]=$candidate;
+                            $conversions['words'][]=self::numbers_uk[$candidate];
+                        }
+                    default:
+                }
+            }
+        }
+        return $conversions;
     }
 
     /*

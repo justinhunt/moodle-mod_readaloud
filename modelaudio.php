@@ -119,16 +119,20 @@ switch ($action) {
 
         break;
     case 'modelaudioclear':
+            $havettsvoice = $moduleinstance->ttsvoice != constants::TTS_NONE;
+            $matches=[];
+            $breaks=[];
+            if($havettsvoice) {
+                $slowpassage = utils::fetch_speech_ssml($moduleinstance->passage, $moduleinstance->ttsspeed);
+                $speechmarks = utils::fetch_polly_speechmarks($token, $moduleinstance->region,
+                    $slowpassage, 'ssml', $moduleinstance->ttsvoice);
+                $matches = utils::speechmarks_to_matches($moduleinstance->passagesegments, $speechmarks, $moduleinstance->ttslanguage);
 
-            $slowpassage = utils::fetch_speech_ssml($moduleinstance->passage,$moduleinstance->ttsspeed);
-            $speechmarks = utils::fetch_polly_speechmarks($token,$moduleinstance->region,
-                    $slowpassage,'ssml',$moduleinstance->ttsvoice);
-            $matches = utils::speechmarks_to_matches($moduleinstance->passagesegments,$speechmarks,$moduleinstance->ttslanguage);
-
-            if(!empty($moduleinstance->modelaudiobreaks)){
-                $breaks = utils::sync_modelaudio_breaks(json_decode($moduleinstance->modelaudiobreaks),$matches);
-            }else{
-                $breaks = utils::guess_modelaudio_breaks($moduleinstance->passagesegments,$matches,$moduleinstance->ttslanguage);
+                if (!empty($moduleinstance->modelaudiobreaks)) {
+                    $breaks = utils::sync_modelaudio_breaks(json_decode($moduleinstance->modelaudiobreaks), $matches);
+                } else {
+                    $breaks = utils::guess_modelaudio_breaks($moduleinstance->passagesegments, $matches, $moduleinstance->ttslanguage);
+                }
             }
 
             $DB->update_record(constants::M_TABLE, array('id' => $moduleinstance->id,
