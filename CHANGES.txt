@@ -1,3 +1,6 @@
+2.0.81 (Build 2022040601)
+ - fixed bug with polish numbers
+
 2.0.80 (Build 2022040600)
   -Added support for POODLL STT for ukranian, russian, basque, polish, finnish, italian, portuguese
   - Better number conversions for Poodll STT languages

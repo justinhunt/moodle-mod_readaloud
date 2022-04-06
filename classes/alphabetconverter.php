@@ -190,6 +190,10 @@ class alphabetconverter {
             return $words[0];
         } else if ($number == 1000) {
             return "tysiąc";
+        } else if ($number < 21) {
+            return $words[$number];
+        }else if(array_key_exists($number,$words)){
+            return $words[$number];
         } else {
             return self::numberToWords_pl(intval($number / 100)) . " " .  $words['hundred'] . " " . self::numberToWords_pl($number % 100);
         }
