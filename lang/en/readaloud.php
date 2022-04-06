@@ -415,6 +415,7 @@ $string['enablelandr_details'] = 'Enables listen and repeat mode. Line by line, 
 $string['savemodelaudio'] = 'Save Recording';
 $string['uploadmodelaudio'] = 'Upload Audio File';
 $string['modelaudioclear'] = 'Clear Audio';
+$string['modelaudiobreaksgenerate'] = 'Re-Generate Model Audio Markup';
 $string['modelaudio_recordinstructions'] = 'Record audio here to be used as the model audio. You can optionally choose to upload audio by pressing the upload audio button. There will be a delay of a few minutes before break point text and audio are automatically synced';
 $string['modelaudio_playerinstructions'] = 'The current model audio can be played using the player below.';
 $string['modelaudio_breaksinstructions'] = 'Tap words in the passage below to add a break at that point in the audio playback in preview and practive modes. The system will automatically sync the audio and the text. Check <i>manual break timing</i> to set tapped breaks to current location of playing audio.';

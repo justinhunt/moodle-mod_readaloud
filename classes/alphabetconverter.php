@@ -492,7 +492,15 @@ class alphabetconverter {
         $conversions = self::fetch_number_conversions($passagewords,$shortlang);
 
         foreach($conversions as $conversion){
-            $targettext = str_replace($conversion['digits'],$conversion['words'],$targettext);
+            //english returns an array of conversion words for varieties eg 2015 two thousand fifteen, twenty fifteen
+            if(is_array($conversion['words'])) {
+                foreach ($conversion['words'] as $convset) {
+                    $targettext = str_replace($convset['digits'], $convset['words'], $targettext);
+                }
+            }else{
+                $targettext = str_replace($conversion['digits'], $conversion['words'], $targettext);
+            }
+
         }
         return $targettext;
     }
@@ -510,7 +518,15 @@ class alphabetconverter {
         $conversions = self::fetch_number_conversions($passagewords,$shortlang);
 
         foreach($conversions as $conversion){
-            $targettext = str_replace($conversion['words'],$conversion['digits'],$targettext);
+
+            //english returns an array of conversion words for varieties eg 2015 two thousand fifteen, twenty fifteen
+            if(is_array($conversion['words'])) {
+                foreach ($conversion['words'] as $digits => $words) {
+                    $targettext = str_replace($words, $digits, $targettext);
+                }
+            }else{
+                $targettext = str_replace($conversion['words'],$conversion['digits'],$targettext);
+            }
         }
         return $targettext;
     }

@@ -258,8 +258,8 @@ class utils {
         switch($moduleinstance->ttslanguage){
             case constants::M_LANG_UKUA:
                 $ret = str_replace(
-                    array("е́","о́","у́","а́","и́","я́","ю́","Е́","О́","У́","А́","И́","Я́","Ю́","“","”","'"),
-                    array("е","о","у","а","и","я","ю","Е","О","У","А","И","Я","Ю","\"","\"","’"),
+                    array("е́","о́","у́","а́","и́","я́","ю́","Е́","О́","У́","А́","И́","Я́","Ю́","“","”","'","́"),
+                    array("е","о","у","а","и","я","ю","Е","О","У","А","И","Я","Ю","\"","\"","’",""),
                     $moduleinstance->passage
                 );
                break;
@@ -1717,7 +1717,7 @@ class utils {
                     case ';':
                     case '、':
                     case '；':
-                        if(($matches->{$i + 1}->audiostart - $lastbreak)>2){
+                        if(($matches->{$i + 1}->audioend - $lastbreak)>2){
                             $letsbreak =true;
                         }
                         break;
@@ -1725,9 +1725,9 @@ class utils {
                 }//end of switch
                 //we add the new break
                 if($letsbreak){
-                    $newbreak = ['wordnumber' => $i + 1, 'audiotime' => $matches->{$i + 1}->audiostart];
+                    $newbreak = ['wordnumber' => $i + 1, 'audiotime' => $matches->{$i + 1}->audioend];
                     $breaks[] = $newbreak;
-                    $lastbreak = $matches->{$i + 1}->audiostart;
+                    $lastbreak = $matches->{$i + 1}->audioend;
                 }
             }//end of for
         }//end of if count > 0
