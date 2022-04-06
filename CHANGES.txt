@@ -3,6 +3,7 @@
   - Better number conversions for Poodll STT languages
   - Fixes for model audio breaks auto generation timing
   - Added a regenerate model audio breaks button
+  - Fixed error message that says something like completion_info lib not found on ajax check for transcript post reading
 
 2.0.79 (Build 2022040200)
     - Fixed bug when restoring into new installed 2.0.76- 2.0.78 versions from older backups (viewstart DB field had no default set)
