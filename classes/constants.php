@@ -205,6 +205,7 @@ class constants {
     const M_LANG_UKUA ='uk-UA';
     const M_LANG_EUES ='eu-ES';
     const M_LANG_FIFI ='fi-FI';
+    const M_LANG_HUHU ='hu-HU';
 
     const TTS_NONE='ttsnone';
 
