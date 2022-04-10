@@ -202,8 +202,8 @@ class constants {
     const M_LANG_PLPL ='pl-PL';
     const M_LANG_RORO ='ro-RO';
     const M_LANG_SVSE ='sv-SE';
-    const M_LANG_UKUA ='uk-ua';
-    const M_LANG_EUES ='eu-es';
+    const M_LANG_UKUA ='uk-UA';
+    const M_LANG_EUES ='eu-ES';
     const M_LANG_FIFI ='fi-FI';
 
     const TTS_NONE='ttsnone';

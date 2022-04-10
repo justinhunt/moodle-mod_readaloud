@@ -158,7 +158,7 @@ class utils {
         global $CFG;
 
         $conf= get_config(constants::M_COMPONENT);
-        if (!empty($conf->apiuser) && !empty($conf->apisecret)) {;
+        if (!empty($conf->apiuser) && !empty($conf->apisecret)) {
             $token = self::fetch_token($conf->apiuser, $conf->apisecret);
             //$token = self::fetch_token('russell', 'Password-123',true);
 
@@ -2049,7 +2049,7 @@ class utils {
                 constants::M_LANG_SVSE => get_string('sv-se', constants::M_COMPONENT),
                 constants::M_LANG_UKUA => get_string('uk-ua',constants::M_COMPONENT),
                 constants::M_LANG_EUES => get_string('eu-es',constants::M_COMPONENT),
-                constants::M_LANG_FIFI => get_string('fi-FI',constants::M_COMPONENT)
+                constants::M_LANG_FIFI => get_string('fi-fi',constants::M_COMPONENT)
         );
         /*
           return array(

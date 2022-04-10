@@ -252,7 +252,7 @@ $string['tr-tr'] = 'Turkish';
 
 $string['uk-ua'] = 'Ukranian';
 $string['eu-es'] = 'Basque';
-$string['fi-FI'] = 'Finnish';
+$string['fi-fi'] = 'Finnish';
 
 $string['sv-se'] = 'Swedish';
 $string['nb-no'] = 'Norwegian';
