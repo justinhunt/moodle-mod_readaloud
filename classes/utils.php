@@ -1986,7 +1986,7 @@ class utils {
                 //constants::M_LANG_TAIN => [],
                 //constants::M_LANG_TEIN => [],
                 constants::M_LANG_TRTR => ['Filiz'=>'Filiz'],
-                constants::M_LANG_ZHCN => ['Zhiyu'],
+                constants::M_LANG_ZHCN => ['Zhiyu'=>'Zhiyu'],
 
             constants::M_LANG_NBNO => ['Liv'=>'Liv','nb-NO-Wavenet-B'=>'Lars_g'],
             constants::M_LANG_PLPL => ['Ewa'=>'Ewa','Maja'=>'Maja','Jacek'=>'Jacek','Jan'=>'Jan'],
@@ -2002,9 +2002,9 @@ class utils {
         $lang_options = self::get_lang_options();
         $ret=[];
         foreach($alllang as $lang=>$voices){
-            foreach($voices as $voice){
-             $neuraltag = in_array($voice,constants::M_NEURALVOICES) ? ' (+)' : '';
-             $ret[$voice]=$voice . $neuraltag . ' - (' . $lang_options[$lang] . ')';
+            foreach($voices as $v=>$voicename){
+             $neuraltag = in_array($v,constants::M_NEURALVOICES) ? ' (+)' : '';
+             $ret[$v]=$voicename . $neuraltag . ' - (' . $lang_options[$lang] . ')';
             }
         }
         $ret = array_merge(array(constants::TTS_NONE => get_string('nottsvoice',constants::M_COMPONENT)), $ret);
