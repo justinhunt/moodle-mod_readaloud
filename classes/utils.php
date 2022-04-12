@@ -67,19 +67,20 @@ class utils {
             case 'dublin':
             case 'sydney':
             default:
-            return (substr($moduleinstance->ttslanguage,0,2)=='en' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='de' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='fr' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='ru' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='eu' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='pl' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='fi' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='it' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='pt' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='uk' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='ro' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='hu' ||
-                            substr($moduleinstance->ttslanguage,0,2)=='es') && trim($moduleinstance->passage)!=="";
+                $shortlang = self::fetch_short_lang($moduleinstance->ttslanguage);
+                return ($shortlang=='en' ||
+                            $shortlang=='de' ||
+                            $shortlang=='fr' ||
+                            $shortlang=='ru' ||
+                            $shortlang=='eu' ||
+                            $shortlang=='pl' ||
+                            $shortlang=='fi' ||
+                            $shortlang=='it' ||
+                            $shortlang=='pt' ||
+                            $shortlang=='uk' ||
+                            $shortlang=='ro' ||
+                            $shortlang=='hu' ||
+                            $shortlang=='es') && trim($moduleinstance->passage)!=="";
         }
     }
 
@@ -91,7 +92,7 @@ class utils {
         global $CFG;
 
         $cleantext = diff::cleanText($moduleinstance->passage);
-        $shortlang = substr($moduleinstance->ttslanguage,0,2);
+        $shortlang = self::fetch_short_lang($moduleinstance->ttslanguage);
 
             //find numbers in the passage, and then replace those with words in the target text
             $cleantext=alphabetconverter::numbers_to_words_convert($cleantext,$cleantext,$shortlang);
@@ -152,6 +153,13 @@ class utils {
         }
     }
 
+    public static function fetch_short_lang($longlang){
+        if(\core_text::strlen($longlang)<=2){return $longlang;}
+        if($longlang=="fil-PH"){return "fil";}
+        $shortlang = substr($longlang,0,2);
+        return $shortlang;
+    }
+
     /*
      * Build a language model for this passage
      *
@@ -174,7 +182,7 @@ class utils {
             $params["passage"]=diff::cleanText($passage);
 
         //strange char or number converter
-        $shortlang = substr($language,0,2);
+        $shortlang = self::fetch_short_lang($language);
         //find numbers in the passage, and then replace those with words in the target text
 
         $params["passage"]=alphabetconverter::numbers_to_words_convert($params["passage"],$params["passage"],$shortlang);

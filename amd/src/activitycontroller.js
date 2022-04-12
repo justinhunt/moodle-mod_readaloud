@@ -218,12 +218,10 @@ define(['jquery', 'jqueryui', 'core/log', 'mod_readaloud/definitions',
             });
             dd.controls.startlandrbutton.click(function(e){
                 dd.dolandrlayout();
-                landr.shadow=false;
             });
             dd.controls.startlandrbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13 ) {
                     dd.dolandrlayout();
-                    landr.shadow=false;
                     e.preventDefault();
                 }
             });
