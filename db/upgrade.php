@@ -683,6 +683,38 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022040200, 'readaloud');
     }
 
+    if ($oldversion < 2022041300){
+        $table = new xmldb_table(constants::M_AITABLE);
+
+        // Adding fields to ai results table.
+        $fields= array();
+        $fields[] = new xmldb_field('selfcorrections', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('sccount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+
+        // Add fields
+        foreach($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        $table = new xmldb_table(constants::M_USERTABLE);
+
+        // Adding fields to attempt table.
+        $fields= array();
+        $fields[] = new xmldb_field('selfcorrections', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('sccount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+        $fields[]=  new xmldb_field('qscore', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0);
+        // Add fields
+        foreach($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2022041300, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }
