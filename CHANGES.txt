@@ -1,3 +1,8 @@
+2.0.82 (Build 2022041300)
+ - added Poodll STT for Hungarian and Romanian
+ - Added shadow mode to listen and speak
+ - fixed logging issue
+
 2.0.81 (Build 2022040601)
  - fixed bug with polish numbers
 
