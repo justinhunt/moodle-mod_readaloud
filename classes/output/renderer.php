@@ -827,9 +827,9 @@ class renderer extends \plugin_renderer_base {
         $recopts['transcriber']=$moduleinstance->transcriber;
         //this will force browser recognition to use Poodll (not chrome or other browser speech)
         if($recopts['transcriber']==constants::TRANSCRIBER_POODLL){
-            $recopts['ds_only'] = true;
+            $recopts['stt_guided'] = true;
         }else {
-            $recopts['ds_only'] = false;
+            $recopts['stt_guided'] = false;
         }
 
         $recopts['language']=$moduleinstance->ttslanguage;

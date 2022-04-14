@@ -29,7 +29,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.language = props.language;
       self.region = props.region;
       self.phonetics = props.phonetics;
-      self.ds_only = props.ds_only;
+      self.stt_guided = props.stt_guided;
       self.shadow = false;//props.shadow;
       self.ttr={};
 
@@ -54,7 +54,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
                   if (self.shadow === true){
                     self.controls.hiddenplayer[0].pause();
                   }
-                  if(self.ds_only || self.ttr.usebrowserrec===false){
+                  if(self.stt_guided || self.ttr.usebrowserrec===false){
                     self.controls.playselfbutton.show();
                   }
                   break;
@@ -77,7 +77,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         //init tt recorder
       var opts = {};
       opts.uniqueid = 'readaloud_ttrecorder';
-      opts.ds_only = self.ds_only;
+      opts.stt_guided = self.stt_guided;
       opts.callback = theCallback;
       opts.shadow = true;
       self.ttr = ttrecorder.clone();
