@@ -390,9 +390,9 @@ $string['landrreading'] = 'Practice';
 $string['transcriber'] = 'Line Transcriber';
 $string['transcriber_details'] = 'The transcription engine to use for line by line reading.';
 $string['transcriber_none'] = 'No transcription';
-$string['transcriber_auto'] = 'Default (recommended)';
-$string['transcriber_poodll'] = 'Use Poodll STT';
-$string['transcriber_strict'] = 'Use Strict STT';
+$string['transcriber_auto'] = 'Open STT (Strict)';
+$string['transcriber_poodll'] = 'Guided STT (Poodll)';
+$string['transcriber_strict'] = 'Open STT (Strict)';
 
 $string['stricttranscribe'] = 'Passage Transcriber';
 $string['stricttranscribe_details'] = 'The transcriber to use for full passage readings.';
