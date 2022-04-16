@@ -311,13 +311,13 @@ $string['machinegrademethod_help'] = "Use machine evaluations or human evaluatio
 $string['machinegradenone'] = "Never use machine eval. for grade";
 $string['machinegradehybrid'] = "Use human or machine eval. for grade";
 $string['machinegrademachineonly'] = "Always use machine eval. grade";
-$string['gradesadmin'] = "Alternatives Admin";
-$string['viewgradesadmin'] = 'Grades Admin';
+$string['admintab'] = "Administrator";
+$string['viewadmintab'] = 'View Administrator Tab';
 $string['machineregradeall'] = 'Save and re-evaluate all attempts';
 $string['pushalltogradebook'] = 'Re-push evaluations to gradebook';
 $string['currenterrorestimate'] = 'Current error estimate: {$a}';
-$string['gradesadmintitle'] = 'Alternatives Administration';
-$string['gradesadmininstructions'] =
+$string['admintabtitle'] = 'Administrator';
+$string['admintabinstructions'] =
         'On this page you can edit the alternatives for the passage while viewing a summary of the mistranscriptions. When you save, all the attempts will be re-evaluated and the adjusted grades to the gradebook.';
 
 $string['noattemptsregrade'] = 'No attempts to regrade';
@@ -390,8 +390,7 @@ $string['landrreading'] = 'Practice';
 $string['transcriber'] = 'Line Transcriber';
 $string['transcriber_details'] = 'The transcription engine to use for line by line reading.';
 $string['transcriber_none'] = 'No transcription';
-$string['transcriber_auto'] = 'Open STT (Strict)';
-$string['transcriber_poodll'] = 'Guided STT (Poodll)';
+$string['transcriber_guided'] = 'Guided STT (Poodll)';
 $string['transcriber_strict'] = 'Open STT (Strict)';
 
 $string['stricttranscribe'] = 'Passage Transcriber';
@@ -596,3 +595,25 @@ $string['open']="Open: ";
 $string['until']="Until: ";
 $string['activityopenscloses']="Activity open/close dates";
 $string['nottsvoice']="No TTS Voice";
+
+$string['guidedtranscriptionadmin']= "Guided Transcription Admin";
+$string['show_guidedtranscriptionadmin']= "Guided Transcription Admin";
+$string['guidedtrans_corpus']="Use corpus texts";
+$string['usecorpus']="Guided Transcription Type";
+$string['usecorpuschanged']="Guided Transcription Type Changed";
+$string['corpusrange']="Corpus range";
+$string['corpusrange_course']="This course";
+$string['corpusrange_site']="This site";
+$string['guidedtrans_corpus']="Use corpus (all ReadAloud passages)";
+$string['guidedtrans_passage']="Use this activity passage";
+$string['guidedtransinstructions']="When using guided transcription the transcriber will steer the transcript towards the guide, i.e the words/phrases in this activity's passage, or the words/phrases in the full corpus of ReadAloud passages. Using the full corpus of ReadAloud passages will provide less 'guidance.' ";
+$string['pushcorpus_details']="The corpus guide is not set or updated automatically. So you should use the button below to update and push when necessary. This will generate a guide from the corpus range, and it will reset all ReadAloud passages within the range that are using guided transcription to use the guide.";
+$string['pushcorpus_button']="Update and push corpus guide";
+$string['corpuspushed']="Corpus guide pushed";
+$string['passagekey'] = 'Passage Key';
+$string['passagekey_details'] =
+    'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier. It is fine to leave it empty.';
+$string['passagekey_help'] =
+    'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier.';
+
+

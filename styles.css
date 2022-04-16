@@ -464,7 +464,7 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
   background-color: grey;
 }
 
-div.mod_readaloud_gradesadmin_cont {
+div.mod_readaloud_admintab_cont {
   margin-bottom: 20px;
   margin-top: 20px;
 }
@@ -692,4 +692,7 @@ div.mod_readaloud_attemptsummarytable {
   100% {-webkit-mask-position:left}
 }
 
+.mod_readaloud_gtinstructions {
+  margin: 8px;
+}
 

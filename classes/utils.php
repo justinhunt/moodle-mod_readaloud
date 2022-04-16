@@ -88,11 +88,11 @@ class utils {
      * Hash the passage and compare
      *
      */
-    public static function fetch_passagehash($moduleinstance) {
+    public static function fetch_passagehash($passage,$language) {
         global $CFG;
 
-        $cleantext = diff::cleanText($moduleinstance->passage);
-        $shortlang = self::fetch_short_lang($moduleinstance->ttslanguage);
+        $cleantext = diff::cleanText($passage);
+        $shortlang = self::fetch_short_lang($language);
 
             //find numbers in the passage, and then replace those with words in the target text
             $cleantext=alphabetconverter::numbers_to_words_convert($cleantext,$cleantext,$shortlang);
@@ -200,7 +200,7 @@ class utils {
             $params["language"]=$language;
             $params["region"]=$region;
 
-            $resp = self::curl_fetch($url,$params);
+            $resp = self::curl_fetch($url,$params,'post');
             $respObj = json_decode($resp);
             $ret = new \stdClass();
             if(isset($respObj->returnCode)){
@@ -253,7 +253,7 @@ class utils {
         return $ret;
     }
 
-    //we might use AWS Transcribe if its strict or no hash(why) and if its not capetown
+    //we might use AWS Transcribe if its strict or no hash(why)
     public static function do_strict_transcribe($instance) {
 
         if($instance->stricttranscribe || empty($instance->passagehash)) {
@@ -1900,6 +1900,17 @@ class utils {
         return $rec_options;
     }
 
+    public static function fetch_options_guidedtranscription(){
+        $options = array( constants::GUIDEDTRANS_PASSAGE => get_string("guidedtrans_passage", constants::M_COMPONENT),
+            constants::GUIDEDTRANS_CORPUS => get_string("guidedtrans_corpus", constants::M_COMPONENT));
+        return $options;
+    }
+    public static function fetch_options_corpusrange(){
+        $options = array( constants::CORPUSRANGE_SITE => get_string("corpusrange_site", constants::M_COMPONENT),
+            constants::CORPUSRANGE_COURSE => get_string("corpusrange_course", constants::M_COMPONENT));
+        return $options;
+    }
+
     public static function get_machinegrade_options() {
         return array(
                 constants::MACHINEGRADE_NONE => get_string("machinegradenone", constants::M_COMPONENT),
@@ -1953,8 +1964,8 @@ class utils {
 
     public static function fetch_options_transcribers() {
         $options =
-                array(constants::TRANSCRIBER_AUTO => get_string("transcriber_auto", constants::M_COMPONENT),
-                        constants::TRANSCRIBER_POODLL => get_string("transcriber_poodll", constants::M_COMPONENT));
+                array(constants::TRANSCRIBER_STRICT => get_string("transcriber_strict", constants::M_COMPONENT),
+                        constants::TRANSCRIBER_GUIDED => get_string("transcriber_guided", constants::M_COMPONENT));
         return $options;
     }
     
@@ -2387,7 +2398,7 @@ class utils {
         //passage transcriber options
         $name = 'stricttranscribe';
         $label = get_string($name, constants::M_COMPONENT);
-        $options = array(0=>get_string('transcriber_poodll',constants::M_COMPONENT),
+        $options = array(0=>get_string('transcriber_guided',constants::M_COMPONENT),
             1=>get_string('transcriber_strict',constants::M_COMPONENT));
         $mform->addElement('select', $name, $label, $options);
         $mform->setDefault($name, $config->{$name});
@@ -2423,10 +2434,30 @@ class utils {
         $mform->disabledIf('accadjust', 'accadjustmethod', 'neq', constants::ACCMETHOD_FIXED);
         $mform->addHelpButton('accadjust', 'accadjust', constants::M_COMPONENT);
 
-        //Submit Raw Audio
-        $mform->addElement('advcheckbox', 'submitrawaudio', get_string('submitrawaudio', constants::M_COMPONENT),
-                get_string('submitrawaudio_details', constants::M_COMPONENT));
-        $mform->setDefault('submitrawaudio', $config->submitrawaudio);
+        //Submit Raw Audio //no longer used
+        $mform->addElement('hidden','submitrawaudio');
+        $mform->setType('submitrawaudio', PARAM_INT);
+        $mform->setDefault('submitrawaudio', 0);
+
+
+        //Corpus Fields
+        $mform->addElement('hidden','corpusrange');
+        $mform->setType('corpusrange', PARAM_INT);
+        $mform->setDefault('corpusrange', constants::CORPUSRANGE_SITE);
+
+        $mform->addElement('hidden','corpushash');
+        $mform->setType('corpushash', PARAM_RAW);
+        $mform->setDefault('corpushash', null);
+
+        $mform->addElement('hidden','usecorpus');
+        $mform->setType('usecorpus', PARAM_INT);
+        $mform->setDefault('usecorpus', constants::GUIDEDTRANS_PASSAGE);
+
+        // Add passagekey
+        $mform->addElement('text', 'passagekey', get_string('passagekey', constants::M_COMPONENT), array('size' => '8'));
+        $mform->setType('passagekey', PARAM_TEXT);
+        $mform->setDefault('passagekey', '');
+        $mform->addHelpButton('passagekey', 'passagekey', constants::M_COMPONENT);
 
         $name = 'activityopenscloses';
         $label = get_string($name, 'readaloud');
@@ -2481,6 +2512,72 @@ class utils {
 
 
     } //end of add_mform_elements
+
+    //fetch_current_corpushash / push_corpus
+    public static function fetch_current_corpus($moduleinstance,$corpusrange){
+        global $DB;
+
+        $conditions = array('ttslanguage'=>$moduleinstance->ttslanguage,'region'=>$moduleinstance->region);
+        if($corpusrange==constants::CORPUSRANGE_COURSE){
+            $conditions['course'] = $moduleinstance->course;
+        }
+        $ra_set = $DB->get_records(constants::M_TABLE,$conditions);
+        $allpassages = '';
+        foreach($ra_set as $ra){
+            $allpassages .= $ra->passage . ' ';
+        }
+        return $allpassages;
+
+    }//end of fetch_current_corpushash
+
+    //fetch_current_corpushash / push_corpus
+    public static function fetch_current_corpushash($moduleinstance,$corpusrange){
+        global $DB;
+
+        $conditions = array('ttslanguage'=>$moduleinstance->ttslanguage,'region'=>$moduleinstance->region);
+        if($corpusrange==constants::CORPUSRANGE_COURSE){
+            $conditions['course'] = $moduleinstance->course;
+        }
+        $ra_set = $DB->get_records(constants::M_TABLE,$conditions);
+        $corpushash = null;
+        foreach($ra_set as $ra){
+            if($ra->id == $moduleinstance->id){continue;}
+            if(!empty($ra->corpushash)){
+                $corpushash=$ra->corpushash;
+                break;
+            }
+        }
+        if($corpushash==null){
+            $corpushash = self::push_corpus($moduleinstance,$corpusrange);
+        }
+        return $corpushash;
+
+    }//end of fetch_current_corpushash
+
+    //fetch_current_corpushash / push_corpus
+    public static function push_corpus($moduleinstance,$corpusrange){
+        global $DB;
+
+        //if its not lang modelable, dont do it
+        if(!self::needs_lang_model($moduleinstance)){return null;}
+
+        $allpassages = self::fetch_current_corpus($moduleinstance,$corpusrange);
+        $corpushash = null;
+        $temphash = utils::fetch_passagehash($allpassages,$moduleinstance->ttslanguage);
+        if($temphash){
+            //build a lang model
+            $result = self::fetch_lang_model($allpassages,$moduleinstance->ttslanguage,$moduleinstance->region);
+            if ($result && isset($result->success) && $result->success){
+                $corpushash =$moduleinstance->region . '|'  . $temphash;
+                $conditions = array('ttslanguage'=>$moduleinstance->ttslanguage,'region'=>$moduleinstance->region, 'usecorpus'=>constants::GUIDEDTRANS_CORPUS);
+                if($corpusrange==constants::CORPUSRANGE_COURSE){
+                    $conditions['course'] = $moduleinstance->course;
+                }
+                $DB->set_field(constants::M_TABLE,'corpushash',$corpushash,$conditions);
+            }
+        }
+        return $corpushash;
+    }
 
     public static function prepare_file_and_json_stuff($moduleinstance, $context){
 
