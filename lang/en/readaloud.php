@@ -622,4 +622,15 @@ $string['passagekey_details'] =
 $string['passagekey_help'] =
     'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier.';
 
+$string['courseattemptsreport'] = 'Course Attempts Report';
+$string['courseattemptsheading'] = 'Course Attempts Report';
+$string['studentid']="St. No.";
+$string['studentname']="Student Name";
+$string['activityname']="RA. Name.";
+$string['errorcount']="No. errors";
+$string['activitywords']="No. Words in Passage";
+$string['readingtime']="Read Time (secs)";
+$string['oralreadingscore']="Oral Reading Score";
+$string['oralreadingscore_p'] = 'Oral Reading Score(%)';
+
 
