@@ -15,8 +15,8 @@ use \mod_readaloud\diff;
 class courseattempts extends basereport {
 
     protected $report = "courseattempts";
-    protected $fields = array('id', 'username','studentname','activityname','passagekey','activitywords',
-        'errorcount','oralreadingscore_p','readingtime', 'wpm','timecreated', 'deletenow');
+    protected $fields = array('studentid', 'username','studentname','activityname','activitywords',
+        'errorcount','oralreadingscore_p','readingtime', 'wpm','timecreated', 'passagekey');
     protected $headingdata = null;
     protected $qcache = array();
     protected $ucache = array();
@@ -26,7 +26,7 @@ class courseattempts extends basereport {
         $user = $this->fetch_cache('user', $record->userid);
         $activitywords=[];
         switch ($field) {
-            case 'id':
+            case 'studentid':
                 $ret = $user->id;
                 break;
 
@@ -81,12 +81,13 @@ class courseattempts extends basereport {
                 $ret = $record->activityname;
                 break;
 
-            case 'passagekey':
-                $ret = $record->passagekey;
-                break;
 
             case 'timecreated':
                 $ret = date("Y-m-d H:i:s", $record->timecreated);
+                break;
+
+            case 'passagekey':
+                $ret = $record->passagekey;
                 break;
 
             default:
