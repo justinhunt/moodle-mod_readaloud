@@ -1911,6 +1911,14 @@ class utils {
         return $options;
     }
 
+    public static function fetch_options_applyrange(){
+        $options = array( constants::APPLY_ACTIVITY => get_string("apply_activity", constants::M_COMPONENT),
+            constants::APPLY_COURSE => get_string("apply_course", constants::M_COMPONENT),
+            constants::APPLY_SITE => get_string("apply_site", constants::M_COMPONENT)
+        );
+        return $options;
+    }
+
     public static function get_machinegrade_options() {
         return array(
                 constants::MACHINEGRADE_NONE => get_string("machinegradenone", constants::M_COMPONENT),
@@ -2533,21 +2541,23 @@ class utils {
     //fetch_current_corpushash / push_corpus
     public static function fetch_current_corpushash($moduleinstance,$corpusrange){
         global $DB;
-
-        $conditions = array('ttslanguage'=>$moduleinstance->ttslanguage,'region'=>$moduleinstance->region);
+        //first return the existing corpushash , for the course or for the site, if we have one
+        $conditions = array('ttslanguage'=>$moduleinstance->ttslanguage,'region'=>$moduleinstance->region,'corpusrange'=>$corpusrange);
         if($corpusrange==constants::CORPUSRANGE_COURSE){
             $conditions['course'] = $moduleinstance->course;
         }
         $ra_set = $DB->get_records(constants::M_TABLE,$conditions);
         $corpushash = null;
         foreach($ra_set as $ra){
+            //we ignore the current activity because its changing, so probably wrong(?)
             if($ra->id == $moduleinstance->id){continue;}
             if(!empty($ra->corpushash)){
                 $corpushash=$ra->corpushash;
                 break;
             }
         }
-        if($corpushash==null){
+        //if we dont have one, then lets make one
+        if($corpushash==null || empty($corpushash)){
             $corpushash = self::push_corpus($moduleinstance,$corpusrange);
         }
         return $corpushash;

@@ -67,15 +67,33 @@ if ($adata) {
 $gt_form = new \mod_readaloud\form\guidedtranscriptionform();
 $gt_data = $gt_form->get_data();
 if ($gt_data) {
-    $gt_update = array('id' => $gt_data->n, 'usecorpus' => $gt_data->usecorpus,'corpusrange' => $gt_data->corpusrange);
     if($gt_data->usecorpus == constants::GUIDEDTRANS_CORPUS &&
         (empty($moduleinstance->corpushash) || $gt_data->corpusrange != $moduleinstance->corpusrange)){
-        $corpushash = utils::fetch_current_corpushash($moduleinstance,$gt_data->corpusrange);
-        if($corpushash){
-            $gt_update['corpushash']=$corpushash;
-        }
+        $gt_data->corpushash = utils::fetch_current_corpushash($moduleinstance,$gt_data->corpusrange);
     }
-    $DB->update_record(constants::M_TABLE, $gt_update);
+
+    $updatefields = ['usecorpus','corpusrange'];
+    if($gt_data->corpushash){
+        $updatefields[] = 'corpushash';
+    }
+    switch($gt_data->applysettingsrange){
+        case constants::APPLY_ACTIVITY:
+            foreach($updatefields as $thefield) {
+                $DB->set_field(constants::M_TABLE, $thefield, $gt_data->{$thefield}, array('id'=> $moduleinstance->id,'ttslanguage' => $moduleinstance->ttslanguage));
+            }
+            break;
+        case constants::APPLY_COURSE:
+            foreach($updatefields as $thefield) {
+                $DB->set_field(constants::M_TABLE, $thefield, $gt_data->{$thefield}, array('course' => $moduleinstance->course, 'ttslanguage' => $moduleinstance->ttslanguage));
+            }
+            break;
+        case constants::APPLY_SITE:
+            foreach($updatefields as $thefield) {
+                $DB->set_field(constants::M_TABLE, $thefield, $gt_data->{$thefield}, array('ttslanguage' => $moduleinstance->ttslanguage));
+            }
+            break;
+    }
+
     $url = new \moodle_url(constants::M_URL . '/admintab.php',
         array('id' => $cm->id,
             'action' => 'menu'));

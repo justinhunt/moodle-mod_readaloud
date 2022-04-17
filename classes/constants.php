@@ -29,10 +29,16 @@ class constants {
     //classes for use in CSS
     const M_CLASS = 'mod_readaloud';
 
+    //Guided transcription uses the passage or a combination of passages (corpus)
     const GUIDEDTRANS_PASSAGE = 0;
     const GUIDEDTRANS_CORPUS = 1;
+    //corpus (combination of packages) covers the whole site or just the course
     const CORPUSRANGE_SITE = 0;
     const CORPUSRANGE_COURSE = 1;
+    //when pushing a setting, apply it activity, course or site wide
+    const APPLY_ACTIVITY = 0;
+    const APPLY_COURSE = 1;
+    const APPLY_SITE = 2;
 
 
 

@@ -66,6 +66,11 @@ class guidedtranscriptionform extends \moodleform {
         $mform->addElement('select', 'corpusrange', get_string("corpusrange", constants::M_COMPONENT), $range_options);
         $mform->setDefault('corpusrange', constants::GUIDEDTRANS_PASSAGE);
 
+        //apply this setting to
+        $range_options =  \mod_readaloud\utils::fetch_options_applyrange();
+        $mform->addElement('select', 'applysettingsrange', get_string("applysettingsrange", constants::M_COMPONENT), $range_options);
+        $mform->setDefault('applysettingsrange', constants::APPLY_ACTIVITY);
+
         $mform->addElement('hidden', 'n');
         $mform->setType('n', PARAM_INT);
 

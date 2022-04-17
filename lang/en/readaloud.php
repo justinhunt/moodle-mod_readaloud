@@ -601,13 +601,19 @@ $string['show_guidedtranscriptionadmin']= "Guided Transcription Admin";
 $string['guidedtrans_corpus']="Use corpus texts";
 $string['usecorpus']="Guided Transcription Type";
 $string['usecorpuschanged']="Guided Transcription Type Changed";
+
+$string['applysettingsrange']="Apply setting to:";
+$string['apply_activity']="this activity";
+$string['apply_course']="this course activities";
+$string['apply_site']="this site activities";
+
 $string['corpusrange']="Corpus range";
 $string['corpusrange_course']="This course";
 $string['corpusrange_site']="This site";
 $string['guidedtrans_corpus']="Use corpus (all ReadAloud passages)";
 $string['guidedtrans_passage']="Use this activity passage";
-$string['guidedtransinstructions']="When using guided transcription the transcriber will steer the transcript towards the guide, i.e the words/phrases in this activity's passage, or the words/phrases in the full corpus of ReadAloud passages. Using the full corpus of ReadAloud passages will provide less 'guidance.' ";
-$string['pushcorpus_details']="The corpus guide is not set or updated automatically. So you should use the button below to update and push when necessary. This will generate a guide from the corpus range, and it will reset all ReadAloud passages within the range that are using guided transcription to use the guide.";
+$string['guidedtransinstructions']="When using guided transcription the transcriber will steer the transcript towards the guide, i.e the words/phrases in this activity's passage, or the words/phrases in the full corpus of ReadAloud passages. Using the full corpus of ReadAloud passages will pick up more reading errors.";
+$string['pushcorpus_details']="The course/site corpus will be updated automatically, but you can use the button below to update and push the corpus if you need to. This will generate a guide from the corpus range, and it will set all ReadAloud activities(using guided transcription) within the range to use the guide.";
 $string['pushcorpus_button']="Update and push corpus guide";
 $string['corpuspushed']="Corpus guide pushed";
 $string['passagekey'] = 'Passage Key';

@@ -646,7 +646,7 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
     //if the region has changed we might need a new corpushash
     if($readaloud->region != $oldrecord->region && $readaloud->usecorpus==constants::GUIDEDTRANS_CORPUS){
         if(utils::needs_lang_model($readaloud)) {
-            $currenthash = utils::fetch_current_corpushash($readaloud, $readaloud->corpusrange);
+            $currenthash = $oldrecord->corpushash;
             $allpassages = utils::fetch_current_corpus($readaloud, $readaloud->corpusrange);
             $temphash = utils::fetch_passagehash($allpassages, $readaloud->ttslanguage);
             if($currenthash != ($readaloud->region . '|' . $temphash)) {
