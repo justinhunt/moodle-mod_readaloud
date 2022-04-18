@@ -632,5 +632,10 @@ $string['activitywords']="No. Words in Passage";
 $string['readingtime']="Read Time (secs)";
 $string['oralreadingscore']="Oral Reading Score";
 $string['oralreadingscore_p'] = 'Oral Reading Score(%)';
+$string['reportsmenutoptext']="Review attempts onn ReadAloud activities using the reports below.";
+$string['courseattempts_explanation']="All the attempts on ReadAloud activities within this course";
+$string['attemptssummary_explanation']="A summary of ReadAloud attempts per user in this activity.";
+
+
 
 

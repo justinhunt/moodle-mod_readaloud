@@ -696,3 +696,19 @@ div.mod_readaloud_attemptsummarytable {
   margin: 8px;
 }
 
+.readaloud_reportsmenu_box {
+  text-align: center;
+  display: flex;
+}
+
+.readaloud_reportsmenu_item {
+  height: 80px;
+  width: 150px;
+  margin: 10px;
+}
+
+.readaloud_reportsmenu_itembutton button{
+  height: 80px;
+  width: 150px;
+}
+
