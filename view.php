@@ -109,7 +109,15 @@ $ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->
 $canattempt = true;
 $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
 if (!$canpreview && $moduleinstance->maxattempts > 0) {
-    if ($attempts && count($attempts) >= $moduleinstance->maxattempts) {
+    $gradeableattempts=0;
+    if($attempts) {
+        foreach ($attempts as $candidate) {
+            if ($candidate->dontgrade == 0) {
+                $gradeableattempts++;
+            }
+        }
+    }
+    if ($attempts && $gradeableattempts >= $moduleinstance->maxattempts) {
         $canattempt = false;
     }
 }
