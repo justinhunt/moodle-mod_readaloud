@@ -4,6 +4,7 @@
 - Put some DB fields in place for comprehension quiz
 - Added passage key for use in reports
 - Fixed broken number converter
+- Fixed calc of attempts/max attempts when shadow mode not set to grade
 
 2.0.82 (Build 2022041300)
  - added Poodll STT for Hungarian and Romanian
