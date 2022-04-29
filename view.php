@@ -209,10 +209,10 @@ if($hasopenclosedates){
     echo $renderer->show_open_close_dates($moduleinstance);
     $current_time=time();
     $closed = false;
-    if ( $current_time>$moduleinstance->viewend){
+    if ( $current_time>$moduleinstance->viewend && $moduleinstance->viewend>0){
         echo get_string('activityisclosed',constants::M_COMPONENT);
         $closed = true;
-    }elseif($current_time<$moduleinstance->viewstart){
+    }elseif($current_time<$moduleinstance->viewstart && $moduleinstance->viewstart>0 ){
         echo get_string('activityisnotopenyet',constants::M_COMPONENT);
         $closed = true;
     }
