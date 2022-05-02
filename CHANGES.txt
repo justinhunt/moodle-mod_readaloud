@@ -1,4 +1,4 @@
-2.0.84 (Build 202204XXXX)
+2.0.84 (Build 2022050200)
 - Removed JQuery UI which was breaking Moodle 4.0 dock
 - Made Listen and Repeat recorder more 'accessible'
 - Fixed issue with activity being closed if open date set, but close data not set
