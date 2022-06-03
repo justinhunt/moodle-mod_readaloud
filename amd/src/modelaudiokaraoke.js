@@ -57,7 +57,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
 
     sort_breaks: function() {
       this.breaks.sort(function(a, b) {
-        return a.audiotime - b.audiotime
+        return a.audiotime - b.audiotime;
       });
     },
 

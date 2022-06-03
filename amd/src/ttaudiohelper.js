@@ -122,8 +122,9 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder'], function ($, log, w
 
         getBuffers: function(event) {
             var buffers = [];
-            for (var ch = 0; ch < 2; ++ch)
+            for (var ch = 0; ch < 2; ++ch) {
                 buffers[ch] = event.inputBuffer.getChannelData(ch);
+            }
             return buffers;
         },
 
