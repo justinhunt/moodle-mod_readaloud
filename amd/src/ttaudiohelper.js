@@ -116,7 +116,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder'], function ($, log, w
             this.therecorder.update_audio('isRecording',false);
             this.audioContext.close();
             this.processor.disconnect();
-            this.tracks.forEach(track => track.stop());
+            this.tracks.forEach(function(track){track.stop();});
             this.onStop(this.encoder.finish());
         },
 
