@@ -635,7 +635,7 @@ $string['activitywords']="No. Words in Passage";
 $string['readingtime']="Read Time (secs)";
 $string['oralreadingscore']="Oral Reading Score";
 $string['oralreadingscore_p'] = 'Oral Reading Score(%)';
-$string['reportsmenutoptext']="Review attempts onn ReadAloud activities using the reports below.";
+$string['reportsmenutoptext']="Review attempts on ReadAloud activities using the reports below.";
 $string['courseattempts_explanation']="All the attempts on ReadAloud activities within this course";
 $string['attemptssummary_explanation']="A summary of ReadAloud attempts per user in this activity.";
 
@@ -643,7 +643,12 @@ $string['customfont']="Custom font";
 $string['customfont_help']="A font name that will override site default for this passage when displayed. Must be exact in spelling and case. eg Andika or Comic Sans MS";
 $string['advancedheader']="Advanced";
 
-
+$string['missedwords']="Missed Words";
+$string['missedwordsheading']="Missed Words";
+$string['missedwordsreport']="Missed Words";
+$string['missedwords_explanation']="The top error words in the most recent attempts";
+$string['missed_count'] = "Missed Count";
+$string['rank'] = "Rank";
 
 
 
