@@ -1,3 +1,6 @@
+Version 2.0.92 (Build 2023031700)
+- Added support for right to left languages, and Hebrew TTS
+
 Version 2.0.91 (Build 2022112701)
 - fixed issue in privacy provider
 

@@ -509,6 +509,18 @@ class renderer extends \plugin_renderer_base {
                         'maxtime' => 15000
                 );
 
+        //For right to left languages we want to add the RTL direction and right justify.
+        switch($moduleinstance->ttslanguage){
+            case constants::M_LANG_ARAE:
+            case constants::M_LANG_ARSA:
+            case constants::M_LANG_FAIR:
+            case constants::M_LANG_HEIL:
+                $data['rtl']=true;
+                break;
+            default:
+                //nothing special
+        }
+
         //passagehash if not empty will be region|hash eg tokyo|2353531453415134545
         //but we only send the hash up so we strip the region
         $thefullhash = $moduleinstance->usecorpus==constants::GUIDEDTRANS_CORPUS ? $moduleinstance->corpushash : $moduleinstance->passagehash;

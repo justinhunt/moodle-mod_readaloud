@@ -229,6 +229,18 @@ class passage_renderer extends \plugin_renderer_base {
         //for some languages we do not want spaces. Japanese, Chinese. For now this is manual
         //TODO auto determine when to use collapsespaces
         $extraclasses = $extraclasses ?  ' ' . $extraclasses : '';
+        //For right to left languages we want to add the RTL direction and right justify.
+        switch($language){
+            case constants::M_LANG_ARAE:
+            case constants::M_LANG_ARSA:
+            case constants::M_LANG_FAIR:
+            case constants::M_LANG_HEIL:
+                $extraclasses .= ' ' . constants::M_CLASS . '_rtl';
+                break;
+            default:
+                //nothing special
+        }
+
         $attributes = [];
         if(!empty($moduleinstance->customfont)){
             $attributes['style']="font-family: '$moduleinstance->customfont', serif;";

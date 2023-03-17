@@ -208,7 +208,10 @@ if ($attempts && $reviewattempts) {
 
 
 //show activity description
-echo $renderer->show_intro($moduleinstance, $cm);
+if( $CFG->version<4.0) {
+    echo $renderer->show_intro($moduleinstance, $cm);
+}
+
 
 //show open close dates
 $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart>0;

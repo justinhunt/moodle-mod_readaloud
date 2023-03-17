@@ -531,7 +531,7 @@ class utils {
         $params['region'] = $region;
         $params['engine'] = self::can_speak_neural($voice, $region)?'neural' : 'standard';
         $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
-        $response = self::curl_fetch($serverurl, $params);
+        $response = self::curl_fetch($serverurl, $params,'post');
         if (!self::is_json($response)) {
             return false;
         }
@@ -569,7 +569,7 @@ class utils {
         $params['region'] = $region;
         $params['engine'] = self::can_speak_neural($voice, $region)?'neural' : 'standard';
         $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
-        $response = self::curl_fetch($serverurl, $params);
+        $response = self::curl_fetch($serverurl, $params, 'post');
         if (!self::is_json($response)) {
             return false;
         }
@@ -2030,34 +2030,34 @@ class utils {
                // constants::M_LANG_ENAB => [],
                 constants::M_LANG_ESUS => ['Miguel'=>'Miguel','Penelope'=>'Penelope','Lupe'=>'Lupe'],
                 constants::M_LANG_ESES => [ 'Enrique'=>'Enrique', 'Conchita'=>'Conchita', 'Lucia'=>'Lucia'],
+                constants::M_LANG_FILPH => ['fil-PH-Wavenet-A'=>'Darna_g','fil-PH-Wavenet-B'=>'Reyna_g','fil-PH-Wavenet-C'=>'Bayani_g','fil-PH-Wavenet-D'=>'Ernesto_g'],
+                constants::M_LANG_FIFI => ['Suvi'=>'Suvi','fi-FI-Wavenet-A'=>'Kaarina_g'],
                 //constants::M_LANG_FAIR => [],
                 constants::M_LANG_FRCA => ['Chantal'=>'Chantal', 'Gabrielle'=>'Gabrielle','Liam'=>'Liam'],
                 constants::M_LANG_FRFR => ['Mathieu'=>'Mathieu','Celine'=>'Celine', 'Lea'=>'Lea'],
+                constants::M_LANG_HEIL => ['he-IL-Wavenet-A'=>'Sarah_g','he-IL-Wavenet-B'=>'Noah_g'],
                 constants::M_LANG_HIIN => ["Aditi"=>"Aditi"],
-                //constants::M_LANG_HEIL => [],
-                //constants::M_LANG_IDID => [],
+                constants::M_LANG_HUHU => ['hu-HU-Wavenet-A'=>'Eszter_g'],
+                constants::M_LANG_IDID => ['id-ID-Wavenet-A'=>'Guntur_g','id-ID-Wavenet-B'=>'Bhoomik_g'],
                 constants::M_LANG_ITIT => ['Carla'=>'Carla',  'Bianca'=>'Bianca', 'Giorgio'=>'Giorgio'],
                 constants::M_LANG_JAJP => ['Takumi'=>'Takumi','Mizuki'=>'Mizuki'],
                 constants::M_LANG_KOKR => ['Seoyeon'=>'Seoyeon'],
                 //constants::M_LANG_MSMY => [],
+                constants::M_LANG_NBNO => ['Liv'=>'Liv','nb-NO-Wavenet-B'=>'Lars_g'],
                 constants::M_LANG_NLNL => ["Ruben"=>"Ruben","Lotte"=>"Lotte","Laura"=>"Laura"],
                 constants::M_LANG_NLBE => ["nl-BE-Wavenet-B"=>"Marc_g","nl-BE-Wavenet-A"=>"Marie_g"],
+                constants::M_LANG_PLPL => ['Ewa'=>'Ewa','Maja'=>'Maja','Jacek'=>'Jacek','Jan'=>'Jan'],
                 constants::M_LANG_PTBR => ['Ricardo'=>'Ricardo', 'Vitoria'=>'Vitoria','Camila'=>'Camila'],
                 constants::M_LANG_PTPT => ["Ines"=>"Ines",'Cristiano'=>'Cristiano'],
+                constants::M_LANG_RORO => ['Carmen'=>'Carmen','ro-RO-Wavenet-A'=>'Sorina_g'],
                 constants::M_LANG_RURU => ["Tatyana"=>"Tatyana","Maxim"=>"Maxim"],
-                //constants::M_LANG_TAIN => [],
-                //constants::M_LANG_TEIN => [],
+                constants::M_LANG_SVSE => ['Astrid'=>'Astrid'],
+                constants::M_LANG_UKUA => ['uk-UA-Wavenet-A'=>'Katya_g'],
+                constants::M_LANG_TAIN => ['ta-IN-Wavenet-A'=>'Dyuthi_g','ta-IN-Wavenet-B'=>'Bhoomik_g'],
+                constants::M_LANG_TEIN => ['te-IN-Standard-A'=>'Anandi_g','te-IN-Standard-B'=>'Kai_g'],
                 constants::M_LANG_TRTR => ['Filiz'=>'Filiz'],
-                constants::M_LANG_ZHCN => ['Zhiyu'=>'Zhiyu'],
+                constants::M_LANG_ZHCN => ['Zhiyu'=>'Zhiyu']
 
-            constants::M_LANG_NBNO => ['Liv'=>'Liv','nb-NO-Wavenet-B'=>'Lars_g'],
-            constants::M_LANG_PLPL => ['Ewa'=>'Ewa','Maja'=>'Maja','Jacek'=>'Jacek','Jan'=>'Jan'],
-            constants::M_LANG_RORO => ['Carmen'=>'Carmen','ro-RO-Wavenet-A'=>'Sorina_g'],
-            constants::M_LANG_SVSE => ['Astrid'=>'Astrid'],
-            constants::M_LANG_UKUA => ['uk-UA-Wavenet-A'=>'Katya_g'],
-            constants::M_LANG_FILPH => ['fil-PH-Wavenet-A'=>'Darna_g','fil-PH-Wavenet-B'=>'Reyna_g','fil-PH-Wavenet-C'=>'Bayani_g','fil-PH-Wavenet-D'=>'Ernesto_g'],
-            constants::M_LANG_FIFI => ['Suvi'=>'Suvi','fi-FI-Wavenet-A'=>'Kaarina_g'],
-            constants::M_LANG_HUHU => ['hu-HU-Wavenet-A'=>'Eszter_g']
         );
 
 

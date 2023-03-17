@@ -711,4 +711,7 @@ div.mod_readaloud_attemptsummarytable {
   height: 80px;
   width: 150px;
 }
-
+.mod_readaloud_rtl {
+  direction: rtl;
+  text-align: right;
+}
