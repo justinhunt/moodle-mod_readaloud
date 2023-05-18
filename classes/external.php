@@ -13,6 +13,10 @@ use \mod_readaloud\diff;
 use \mod_readaloud\alphabetconverter;
 use \mod_readaloud\constants;
 
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
+
 class mod_readaloud_external extends external_api {
 
 
