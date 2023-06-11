@@ -8,10 +8,17 @@
  * @author  Justin Hunt - Poodll.com
  */
 
+global $CFG;
+require_once($CFG->libdir . '/externallib.php');
+
 use \mod_readaloud\utils;
 use \mod_readaloud\diff;
 use \mod_readaloud\alphabetconverter;
 use \mod_readaloud\constants;
+
+use external_api;
+use external_function_parameters;
+use external_value;
 
 class mod_readaloud_external extends external_api {
 
