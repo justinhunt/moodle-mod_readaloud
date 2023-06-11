@@ -283,8 +283,13 @@ if($collapsespaces){
     $extraclasses .= ' collapsespaces';
 }
 
+//add class = readingcontainer to id:readingcontaint
+//add class = readingcontainer_passage to constants::M_PASSAGE_CONTAINER
+//remove  them when done
+
+////// echo "<div id='readingcontainer' class='readingcontainer'>";
 //hide on load, and we can show from ajax
-$extraclasses .= ' hide';
+$extraclasses .= ' readingcontainer_passage hide';
 echo $passagerenderer->render_passage($moduleinstance->passagesegments,$moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
 
 //lets fetch recorder

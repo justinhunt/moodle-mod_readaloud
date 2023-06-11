@@ -965,3 +965,34 @@ div.mod_readaloud_attemptsummarytable {
   position: absolute;
   top: -1px;
 }
+
+/* Experimental stuff */
+.readingcontainer {
+  display: flex; /* displays flex-items (children) inline */
+  flex-direction: column; /* stacks them vertically */
+  height: 100vh;
+}
+.readingcontainer_passage {
+  flex: 1; /* takes the remaining height of the "container" div */
+  overflow: auto; /* to scroll just the "main" div */
+}
+
+.fade-bottom {
+  position: relative;
+  /*overflow: hidden;*/
+}
+
+.fade-bottom::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px; /* Adjust the height of the faded area */
+  background: linear-gradient(rgba(255, 255, 255, 0), white);
+}
+
+.blur {
+  color: transparent;
+  text-shadow: 0 0 8px #000;
+}
