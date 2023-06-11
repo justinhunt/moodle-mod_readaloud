@@ -1,4 +1,5 @@
-define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax','core/notification'], function ($, log, def, str, Ajax, notification) {
+define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax','core/templates','core/notification'],
+    function ($, log, def, str, Ajax,templates, notification) {
     "use strict"; // jshint ;_;
     /*
     This file does small report
@@ -47,7 +48,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.controls.heading = $('.' + def.smallreportheading);
             this.controls.player = $('.' + def.smallreportplayer);
             this.controls.dummyplayer = $('.' + def.smallreportdummyplayer);
-            this.controls.rating = $('.' + def.smallreportrating);
+            this.controls.stars = $('.' + def.smallreportstars);
+            this.controls.cards = $('.' + def.smallreportcards);
             this.controls.status = $('.' + def.smallreportstatus);
             this.controls.fullreportbutton = $('.' + def.fullreportbutton);
         },
@@ -112,14 +114,36 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                         switch (payloadobject.ready) {
                             case true:
                                 log.debug('result fetched');
-                                var emptystar='<i class="fa fa-lg fa-star-o"></i>';
-                                var solidstar='<i class="fa fa-lg fa-star"></i>';
-                                var stars='';
-                                for(var star=0;star<5;star++){
-                                    stars = stars + (payloadobject.rating > star ? solidstar : emptystar);
-                                }
                                 that.controls.heading.text(that.evaluated);
-                                that.controls.rating.html(stars);
+                                var tdata=[];
+                                tdata.ready=payloadobject.ready;
+
+                                //stars
+                                var emptystar='fa-star-o';
+                                var solidstar='fa-star';
+                                var stars=[];
+                                for(var star=0;star<5;star++){
+                                    stars[star] = payloadobject.rating > star ? solidstar : emptystar;
+                                }
+                                tdata.stars=stars;
+                                templates.render('mod_readaloud/smallreportstars',tdata).then(
+                                    function(html,js){
+                                        that.controls.stars.html(html);
+                                    }
+                                );
+
+                                //stats
+                                tdata.wpm=payloadobject.wpm;
+                                tdata.acc=payloadobject.acc;
+                                tdata.totalwords=payloadobject.totalwords;
+
+                                templates.render('mod_readaloud/smallreportcards',tdata).then(
+                                    function(html,js){
+                                        that.controls.cards.html(html);
+                                    }
+                                );
+
+
                                 that.controls.status.hide();
                                 that.controls.fullreportbutton.show();
                                 break;

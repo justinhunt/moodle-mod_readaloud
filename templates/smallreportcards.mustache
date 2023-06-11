@@ -1,0 +1,35 @@
+{{! We have a result !! }}
+{{#ready }}
+    <div class="mod_readaloud_smallreport_card time-goal">
+        <div class="mod_readaloud_smallreport_card_tag">
+            {{#str}}wpm, mod_readaloud{{/str}}
+        </div>
+        <div class="mod_readaloud_smallreport_card_content">
+            <span>{{wpm}}</span>
+            {{#str}}unit_wpm, mod_readaloud{{/str}}
+        </div>
+    </div>
+
+
+    {{! Total words goal }}
+    <div class="mod_readaloud_smallreport_card words-goal">
+        <div class="mod_readaloud_smallreport_card_tag">
+            {{#str}}accuracy, mod_readaloud{{/str}}
+        </div>
+        <div class="mod_readaloud_smallreport_card_content">
+            <span>{{acc}}</span>
+            {{#str}}unit_percent, mod_readaloud{{/str}}
+        </div>
+    </div>
+
+    {{! Total words goal }}
+    <div class="mod_readaloud_smallreport_card words-goal">
+        <div class="mod_readaloud_smallreport_card_tag">
+            {{#str}}totalwords, mod_solo{{/str}}
+        </div>
+        <div class="mod_readaloud_smallreport_card_content">
+            <span>{{totalwords}}</span>
+            {{#str}}unit_words, mod_readaloud{{/str}}
+        </div>
+    </div>
+{{/ready}}

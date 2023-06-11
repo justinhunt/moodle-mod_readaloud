@@ -1,0 +1,148 @@
+<div class='mod_readaloud_hiddenaudioplayer_cont'>
+    <audio id='{{UNIQID}}_mod_readaloud_hiddenaudioplayer' src='{{src}}' class="nomediaplugin nopoodll" crossorigin="anonymous"></audio>
+</div>
+
+<div id="{{UNIQID}}_mod_readaloud_audioplayer" class="mod_readaloud_audioplayer">
+    <button type="button" class="mod_readaloud_audioplayer_play_button"></button>
+    <div class="mod_readaloud_audioplayer_skip_buttons">
+        <button type="button" class="mod_readaloud_audioplayer_skip_button_back">15</button>
+        <button type="button" class="mod_readaloud_audioplayer_skip_button_forward">15</button>
+    </div>
+    <div class="mod_readaloud_audioplayer_bar">
+        <div class="mod_readaloud_audioplayer_bar_behind"></div>
+        <div class="mod_readaloud_audioplayer_bar_front"></div>
+    </div>
+    <div class="mod_readaloud_audioplayer_time">00:45</div>
+</div>
+
+{{#js}}
+    //<script>
+        require(['jquery','core/log'], function($, log) {
+            var selectors ={
+                hiddenplayer: '#{{UNIQID}}_mod_readaloud_hiddenaudioplayer',
+                player: '#{{UNIQID}}_mod_readaloud_audioplayer',
+                ppbutton: '#{{UNIQID}}_mod_readaloud_audioplayer .mod_readaloud_audioplayer_play_button',
+                bar_front: '#{{UNIQID}}_mod_readaloud_audioplayer .mod_readaloud_audioplayer_bar_front',
+                backbutton: '#{{UNIQID}}_mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_back',
+                forwardbutton: '#{{UNIQID}}_mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_forward',
+                timedisplay: '#{{UNIQID}}_mod_readaloud_audioplayer .mod_readaloud_audioplayer_time'
+            }
+            var play_icon_url = require.toUrl('mod/readaloud/pix/play.png');
+            var pause_icon_url = require.toUrl('mod/readaloud/pix/play.png');
+            var skipinterval =15;
+
+            var pr = {
+                init: function(){
+                    this.hplayer = $(selectors.hiddenplayer)[0];
+                    this.vplayer= $(selectors.player);
+                    this.ppbutton = $(selectors.ppbutton);
+                    this.bar_front = $(selectors.bar_front);
+                    this.backbutton = $(selectors.backbutton);
+                    this.forwardbutton = $(selectors.forwardbutton);
+                    this.timedisplay = $(selectors.timedisplay);
+
+                    this.duration = this.hplayer.duration;
+                    log.debug('duration is '+this.duration);
+
+                    this.register_events();
+                    //update time if audio duration is known, if not wait for loadedmetadata event
+                    if(!isNaN(this.duration)){
+                        this.update_time();
+                    }
+
+                },
+                register_events: function(){
+                    var that = this;
+                    $(this.ppbutton).on('click',function(){
+                        that.toggle_play();
+                    });
+                    $(this.backbutton).on('click',function(){
+                        that.skip_back();
+                    });
+                    $(this.forwardbutton).on('click',function(){
+                        that.skip_forward();
+                    });
+                    $(this.hplayer).on('timeupdate',function(){
+                        that.update_time();
+                    });
+                    $(this.hplayer).on('ended',function(){
+                        $(that.ppbutton).css('background-image', play_icon_url);
+                    });
+                    $(this.hplayer).on('loadedmetadata',function(){
+                        that.duration = that.hplayer.duration;
+                        log.debug('duration is '+that.duration);
+                        that.update_time();
+                    });
+                },
+                toggle_play: function(){
+                    var that = this;
+                    if(this.hplayer.paused){
+                        this.hplayer.play().then(function(){
+                            log.debug('play promise resolved');
+                            $(that.ppbutton).css('background-image',pause_icon_url);
+                        }).catch(function(){
+                            log.debug('play promise rejected');
+                        });
+                    }else{
+                        this.hplayer.pause();
+                        $(this.ppbutton).css('background-image:', play_icon_url);
+                    }
+                },
+                update_time: function(){
+                    //update the progress bar
+                    var percent = (this.hplayer.currentTime/this.duration)*100;
+                    $(this.bar_front).css('width', percent+'%');
+                    //update the time display
+                    switch(percent) {
+                        case 0:
+                            $(this.timedisplay).text(this.formatAudioTime(this.duration));
+                            break;
+                        case 100:
+                            $(this.timedisplay).text(this.formatAudioTime(this.duration));
+                            break;
+                        default:
+                            $(this.timedisplay).text(this.formatAudioTime(this.hplayer.currentTime) + '/' + this.formatAudioTime(this.duration));
+                    }
+
+
+                    //handle back and forward buttons
+                    if(this.hplayer.currentTime < skipinterval) {
+                        $(this.backbutton).css('opacity', '50%');
+                    }else{
+                        $(this.backbutton).css('opacity', '100%');
+                    }
+
+                    if(this.hplayer.currentTime > (this.duration - skipinterval)) {
+                        $(this.forwardbutton).css('opacity', '50%');
+                    }else{
+                        $(this.forwardbutton).css('opacity', '100%');
+                    }
+                },
+                skip_back: function(){
+                    if(this.hplayer.currentTime > skipinterval) {
+                        this.hplayer.currentTime = this.hplayer.currentTime - skipinterval;
+                    }else{
+                        this.hplayer.currentTime = 0;
+                    }
+                },
+                skip_forward: function(){
+                    if(this.hplayer.currentTime < (this.duration - skipinterval)) {
+                        this.hplayer.currentTime = this.hplayer.currentTime + skipinterval;
+                    }else{
+                        this.hplayer.currentTime = this.duration;
+                    }
+                },
+                formatAudioTime: function (currentTime) {
+                    const minutes = Math.floor(currentTime / 60);
+                    const seconds = Math.floor(currentTime % 60);
+                    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    return formattedTime;
+                }
+
+        };
+
+            //init the player
+            pr.init();
+        });
+
+{{/js}}

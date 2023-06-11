@@ -79,6 +79,8 @@ define(['jquery', 'core/log'], function ($, log) {
         //small report
         smallreportcontainer: 'mod_readaloud_smallreport_cont',
         smallreportrating: 'mod_readaloud_smallreport_rating',
+        smallreportstars: 'mod_readaloud_smallreport_stars',
+        smallreportcards: 'mod_readaloud_smallreport_cards',
         smallreportplayer: 'mod_readaloud_smallreport_player',
         smallreportdummyplayer: 'mod_readaloud_smallreport_dummyplayer',
         smallreportstatus: 'mod_readaloud_smallreport_status',

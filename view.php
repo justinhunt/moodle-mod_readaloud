@@ -102,7 +102,7 @@ $passagerenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'passage');
 $modelaudiorenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'modelaudio');
 
 //do we have attempts and ai data
-$attempts = $DB->get_records(constants::M_USERTABLE, array('userid' => $USER->id, 'readaloudid' => $moduleinstance->id), 'timecreated DESC');
+$attempts = utils::fetch_user_attempts($moduleinstance);
 $ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->id);
 
 //can attempt ?

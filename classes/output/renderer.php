@@ -241,6 +241,7 @@ class renderer extends \plugin_renderer_base {
 
         //star rating
         if($attempt) {
+            //stars
             $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
             $ready = $rating > -1;
             $stars=[];
@@ -248,6 +249,14 @@ class renderer extends \plugin_renderer_base {
                 $stars[] = $rating > $star ? 'fa-star' : 'fa-star-o';
             }
             $tdata['stars']=$stars;
+
+            //stats
+            $stats = utils::fetch_small_reportdata($attempt, $aigrade);
+            $tdata['wpm']=$stats->wpm;
+            $tdata['acc']=$stats->accuracy;
+            $tdata['totalwords']=$stats->sessionendword;
+
+
         }else{
             $ready = false;
         }

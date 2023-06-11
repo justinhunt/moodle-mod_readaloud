@@ -1296,9 +1296,29 @@ class utils {
     //get all the aievaluations for a user
     public static function get_aieval_byuser($readaloudid, $userid) {
         global $DB;
+
+        $conditions = array("readaloudid"=>$readaloudid, "userid"=>$userid);
         $sql = "SELECT tai.*  FROM {" . constants::M_AITABLE . "} tai INNER JOIN  {" . constants::M_USERTABLE . "}" .
-                " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid=? AND tu.userid=?";
-        $result = $DB->get_records_sql($sql, array($readaloudid, $userid));
+            " tu ON tu.id =tai.attemptid AND tu.readaloudid=tai.readaloudid WHERE tu.readaloudid= :readaloudid AND tu.userid= :userid";
+
+        $isguest = isguestuser();
+        if($isguest) {
+
+            //Fetch from cache and process the results and display
+            $cache = \cache::make_from_params(\cache_store::MODE_SESSION, constants::M_COMPONENT, 'guestattempts');
+            $myattempts = $cache->get('myattempts');
+
+            //if we have attempts then lets get the attempt ids of those
+            if ($myattempts && is_array($myattempts) && count($myattempts) > 0) {
+                $conditions['myattempts'] = implode(',', $myattempts);
+                $sql ." AND tu.id IN (:myattempts) ";
+            } else {
+                //at this point we have no attempts, so just return false
+                return false;
+            }
+        }
+
+        $result = $DB->get_records_sql($sql, $conditions);
         return $result;
     }
 
@@ -1676,6 +1696,24 @@ class utils {
             aigrade::create_record($newattempt, $readaloud->timelimit);
         }
 
+        //If we are the guest user we need to store the attempt id in the session cache
+        //this is to prevent users sharing the same guest account from seeing each other's attempts
+        $isguest = isguestuser();
+        if($isguest){
+            //Fetch from cache and process the results and display
+            $cache = \cache::make_from_params(\cache_store::MODE_SESSION, constants::M_COMPONENT, 'guestattempts');
+            $myattempts = $cache->get('myattempts');
+
+            //if we have attempts then lets get the attempt ids of those
+            if($myattempts && is_array($myattempts)){
+                $myattempts[] = $attemptid;
+            }else{
+                //at this point we have no attempts, so just return false
+                $myattempts=[$attemptid];
+            }
+            $cache->set('myattempts', $myattempts);
+        }
+
         //return the attempt id
         return $attemptid;
     }
@@ -1924,6 +1962,26 @@ class utils {
             if($aigrade->aidata->sessionscore==100){return 5;}
             return floor($aigrade->aidata->sessionscore / 20) + 1;
         }
+    }
+
+    public static function fetch_small_reportdata($attempt,$aigrade){
+        $have_humaneval = $attempt->sessiontime != null;
+        $have_aieval = $aigrade && $aigrade->has_transcripts();
+        $stats = new \stdClass();
+        if(!$have_humaneval && !$have_aieval){
+            $stats->wpm = ".";
+            $stats->accuracy = ".";
+            $stats->sessionendword = ".";
+        }elseif($have_humaneval){
+            $stats->wpm = $attempt->wpm;
+            $stats->accuracy = $attempt->accuracy;
+            $stats->sessionendword = $attempt->sessionendword;
+        }else{
+            $stats->wpm = $aigrade->aidata->wpm;
+            $stats->accuracy = $aigrade->aidata->accuracy;
+            $stats->sessionendword = $aigrade->aidata->sessionendword;
+        }
+        return $stats;
     }
 
     public static function fetch_options_recorders(){
@@ -2648,5 +2706,42 @@ class utils {
         return $moduleinstance;
 
     }//end of prepare_file_and_json_stuff
+
+
+    //fetch user attempts
+    /*
+     * This function fetches the user attempts for the current activity
+     * and limits the results to those of the current session of the user is logged in as "Guest"
+     */
+    public static function fetch_user_attempts($moduleinstance) {
+        global $DB, $USER;
+
+        $conditions= array( 'readaloudid' => $moduleinstance->id, 'userid' => $USER->id);
+        $isguest = isguestuser();
+        if($isguest){
+            //Fetch from cache and process the results and display
+            $cache = \cache::make_from_params(\cache_store::MODE_SESSION, constants::M_COMPONENT, 'guestattempts');
+            $myattempts = $cache->get('myattempts');
+
+            //if we have attempts then lets get the attempt ids of those
+            if($myattempts && is_array($myattempts) && count($myattempts)>0){
+                $conditions['myattempts'] = implode(',',$myattempts);
+            }else{
+                //at this point we have no attempts, so just return false
+                return false;
+            }
+
+            $sql = "SELECT att.*  FROM  {" . constants::M_USERTABLE . "} att " .
+                "  WHERE att.readaloudid= :readaloudid AND att.userid= :userid AND att.id IN (:myattempts) " .
+                " ORDER BY att.timecreated DESC";
+            $attempts = $DB->get_records_sql($sql, $conditions);
+
+        }else{
+            $attempts = $DB->get_records(constants::M_USERTABLE, $conditions, 'timecreated DESC');
+        }
+
+        return $attempts;
+
+    }
 
 }

@@ -57,7 +57,13 @@ class mod_readaloud_external extends external_api {
         }else{
             $ret['ready']=true;
             $ret['src']=$attempt->filename;
+            //stars
             $ret['rating']= utils::fetch_rating($attempt,$aigrade);
+            //stats
+            $stats = utils::fetch_small_reportdata($attempt, $aigrade);
+            $ret['wpm']=$stats->wpm;
+            $ret['acc']=$stats->accuracy;
+            $ret['totalwords']=$stats->sessionendword;
         }
         return json_encode($ret);
     }
