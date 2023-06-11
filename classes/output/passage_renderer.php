@@ -285,6 +285,11 @@ class passage_renderer extends \plugin_renderer_base {
     public function render_audioplayer($audiourl) {
         $audioplayer = \html_writer::tag('audio', '',
                 array('controls' => '', 'src' => $audiourl, 'id' => constants::M_GRADING_PLAYER));
+
+        $data=[];
+        $data['src']=$audiourl;
+        $audioplayer =  $this->render_from_template('mod_readaloud/audioplayer', $data);
+
         $ret = \html_writer::div($audioplayer, constants::M_GRADING_PLAYER_CONTAINER,
                 array('id' => constants::M_GRADING_PLAYER_CONTAINER));
         return $ret;

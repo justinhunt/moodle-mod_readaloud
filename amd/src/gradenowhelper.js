@@ -265,7 +265,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
         register_controls: function () {
 
             this.controls.wordplayer = $('#' + this.cd.wordplayerclass);
-            this.controls.audioplayer = $('#' + this.cd.audioplayerclass);
+            this.controls.audioplayer = $('.' + this.cd.audioplayerclass);
             this.controls.eachword = $('.' + this.cd.wordclass);
             this.controls.eachspace = $('.' + this.cd.spaceclass);
             this.controls.endwordmarker = $('#' + this.cd.spaceclass + '_' + this.options.endwordnumber);
@@ -532,14 +532,18 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
             }
 
             theplayer.currentTime = starttime;
-            $(this.controls.audioplayer).off("timeupdate");
-            $(this.controls.audioplayer).on("timeupdate", function (e) {
+            //we want to start and stop audio playback for spotcheck
+            //but do not want to overwrite any existing timeupdate event handlers
+            //so declare the callback and pass it to the on and off functions
+            var thecallback = function (e) {
                 var currenttime = theplayer.currentTime;
                 if (currenttime >= endtime) {
-                    $(this).off("timeupdate");
+                    $(this).off("timeupdate",thecallback);
                     theplayer.pause();
                 }
-            });
+            }
+            $(this.controls.audioplayer).off("timeupdate", thecallback);
+            $(this.controls.audioplayer).on("timeupdate", thecallback);
             theplayer.play();
         },
 

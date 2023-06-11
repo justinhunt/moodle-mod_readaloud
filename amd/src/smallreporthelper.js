@@ -77,9 +77,18 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                 success: function (data, textStatus, xhr) {
                     switch (xhr.status) {
                         case 200:
-                            that.controls.player.attr('src',that.filename);
-                            that.controls.player.show();
-                            that.controls.dummyplayer.hide();
+
+                            //audioplayer
+                            var tdata=[];
+                            tdata.src=that.filename;
+                            tdata.UNIQID= that.generate_random_string(8);
+                            templates.render('mod_readaloud/audioplayer',tdata).then(
+                                function(html,js){
+                                    //that.controls.player.html(html);
+                                    templates.appendNodeContents('.' + def.smallreportplayer, html, js);
+                                    that.controls.dummyplayer.hide();
+                                }
+                            );
                             break;
                         default:
                             setTimeout(function () {
@@ -89,6 +98,18 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
 
                 }
             });
+        },
+
+       generate_random_string: function(length) {
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+
+            return result;
         },
 
         check_for_results: function (that, seconds) {
@@ -151,7 +172,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                             case false:
                             default:
                                 log.debug('result not fetched');
-                                setTimeout(that.check_for_results,1000,that,15 );
+                                setTimeout(that.check_for_results,1000,that,10);
                                 that.controls.status.text(that.secstillcheck + seconds);
                         }
                     }

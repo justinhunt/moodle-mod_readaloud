@@ -1,8 +1,10 @@
 {{#ready}}
 <!-- audio src="{{{src}}}" controls="controls" class="mod_readaloud_smallreport_player nomediaplugin nopoodll" crossorigin="anonymous"></audio -->
-{{> mod_readaloud/audioplayer}}
+<div class="mod_readaloud_smallreport_player">
+    {{> mod_readaloud/audioplayer}}
+</div>
 {{/ready}}
 {{^ready}}
-    <div class="mod_readaloud_smallreport_dummyplayer mod_readaloud_skeleton_box" style="width: 300px;height: 50px;line-height: 50px; border-radius: 8px;"><i class="fa fa-volume-up"></i></div>
-    <audio src="{{{src}}}" controls="controls" class="mod_readaloud_smallreport_player nomediaplugin nopoodll" crossorigin="anonymous" style="display: none"></audio>
+    <div class="mod_readaloud_smallreport_dummyplayer mod_readaloud_skeleton_box" style="width: 420px;height: 100px;line-height: 100px; border-radius: 8px;"><i class="fa fa-volume-up"></i></div>
+    <div class="mod_readaloud_smallreport_player"></div>
 {{/ready}}

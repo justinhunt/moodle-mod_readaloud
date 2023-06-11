@@ -25,7 +25,7 @@ define(['jquery', 'core/log'], function ($, log) {
         //grade now
         //passagecontainer: 'mod_readaloud_grading_passagecont',
         passagecontainer: 'mod_readaloud_passage_cont',
-        audioplayerclass: 'mod_readaloud_grading_player',
+        audioplayerclass: 'mod_readaloud_hiddenaudioplayer',
         wordplayerclass: 'mod_readaloud_hidden_player',
         wordclass: 'mod_readaloud_grading_passageword',
         spaceclass: 'mod_readaloud_grading_passagespace',

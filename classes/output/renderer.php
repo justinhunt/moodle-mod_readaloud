@@ -745,6 +745,11 @@ class renderer extends \plugin_renderer_base {
         //=======================================
         $hints = new \stdClass();
         $hints->allowearlyexit = $moduleinstance->allowearlyexit;
+        // The readaloud recorder now handles juststart setting
+        $hints->juststart = $moduleinstance->recorder==constants::REC_ONCE ? 1 : 0;
+        if($moduleinstance->recorder==constants::REC_ONCE) {
+            $moduleinstance->recorder=constants::REC_READALOUD;
+        }
 
 
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);

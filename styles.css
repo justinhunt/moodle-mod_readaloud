@@ -258,7 +258,12 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
 }
+.mod_readaloud_scorestable .table thead th {
+  background: #FBB040;
+}
+
 
 .mod_readaloud_hidden_player {
   display: none;
@@ -725,6 +730,10 @@ div.mod_readaloud_attemptsummarytable {
   color: #FBB040;
   text-shadow: 0 0 1px #000000;
 }
+.mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars .fa-star-o {
+  color: lightgrey;
+  text-shadow: none;
+}
 
 
 .mod_readaloud_smallreport_cont  .mod_readaloud_smallreport_cards {
@@ -773,16 +782,10 @@ div.mod_readaloud_attemptsummarytable {
   position: absolute;
   padding: 7px 12px 6px;
   text-align: center;
-  bottom: -18px;
-  top: auto;
+  top: -12px;
+  bottom: auto;
 }
 
-@media screen and (min-width: 768px) {
-  .mod_readaloud_smallreport_card_tag {
-    top: -12px;
-    bottom: auto;
-  }
-}
 
 .mod_readaloud_smallreport_card {
   background: #FAFBFD;
@@ -793,7 +796,7 @@ div.mod_readaloud_attemptsummarytable {
   align-items: center;
   padding: 10px 10px;
   position: relative;
-  min-width: 130px;
+  min-width: 110px;
 }
 
 @media screen and (min-width: 768px) {
@@ -809,20 +812,29 @@ div.mod_readaloud_attemptsummarytable {
 /* Audio player */
 
 .mod_readaloud_audioplayer {
-  background-color: #EFF1FF;
+  background: #FAFBFD;
+  border: 1px solid #DCE0E3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 42px 12px 32px 12px;
-  margin-bottom: 48px;
+  padding: 15px;
+  margin-bottom: 15px;
+  margin-top: 15px;
   position: relative;
 }
 
 @media screen and (min-width: 576px) {
-  .mod_readaloud_audioplayer {
-    padding: 36px;
+  .mod_readaloud_smallreport_player {
+    width: 60%;
+  }
+  .mod_readaloud_audioplayer_play_button {
+    top: 36px
+  }
+  .mod_readaloud_smallreport_card {
+    min-width: 130px;
   }
 }
+
 
 .mod_readaloud_audioplayer_play_button {
   width: 48px;
@@ -835,7 +847,10 @@ div.mod_readaloud_attemptsummarytable {
   border-radius: 100%;
   border: none;
   position: absolute;
-  top: 36px;
+}
+
+.mod_readaloud_audioplayer_play_button[data-state="playing"] {
+  background-image: url([[pix:mod_readaloud|poodll-readaloud-audioplayer-pause-icon]]);
 }
 
 .mod_readaloud_audioplayer_skip_buttons {
@@ -945,7 +960,7 @@ div.mod_readaloud_attemptsummarytable {
 
 .mod_readaloud_audioplayer_bar_front {
   height: 4px;
-  width: 45%;
+  width: 0%;
   background-color: #2D225D;
   position: absolute;
   top: -1px;

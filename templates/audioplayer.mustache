@@ -1,5 +1,5 @@
 <div class='mod_readaloud_hiddenaudioplayer_cont'>
-    <audio id='{{UNIQID}}_mod_readaloud_hiddenaudioplayer' src='{{src}}' class="nomediaplugin nopoodll" crossorigin="anonymous"></audio>
+    <audio id='{{UNIQID}}_mod_readaloud_hiddenaudioplayer' src='{{{src}}}' class="mod_readaloud_hiddenaudioplayer nomediaplugin nopoodll" crossorigin="anonymous"></audio>
 </div>
 
 <div id="{{UNIQID}}_mod_readaloud_audioplayer" class="mod_readaloud_audioplayer">
@@ -12,7 +12,7 @@
         <div class="mod_readaloud_audioplayer_bar_behind"></div>
         <div class="mod_readaloud_audioplayer_bar_front"></div>
     </div>
-    <div class="mod_readaloud_audioplayer_time">00:45</div>
+    <div class="mod_readaloud_audioplayer_time">00:00</div>
 </div>
 
 {{#js}}
@@ -27,12 +27,20 @@
                 forwardbutton: '#{{UNIQID}}_mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_forward',
                 timedisplay: '#{{UNIQID}}_mod_readaloud_audioplayer .mod_readaloud_audioplayer_time'
             }
-            var play_icon_url = require.toUrl('mod/readaloud/pix/play.png');
-            var pause_icon_url = require.toUrl('mod/readaloud/pix/play.png');
             var skipinterval =15;
 
             var pr = {
                 init: function(){
+
+                    // Moodle can run the JS twice
+                    // so ignore it if its the second run (otherwise the event handlers register twice etc).
+                    var theplayer = $(selectors.hiddenplayer);
+                    if (theplayer.attr('data-init')==='done'){
+                        return;
+                    } else {
+                       theplayer.attr('data-init', 'done');
+                    }
+
                     this.hplayer = $(selectors.hiddenplayer)[0];
                     this.vplayer= $(selectors.player);
                     this.ppbutton = $(selectors.ppbutton);
@@ -66,7 +74,14 @@
                         that.update_time();
                     });
                     $(this.hplayer).on('ended',function(){
-                        $(that.ppbutton).css('background-image', play_icon_url);
+                        $(that.ppbutton).attr('data-state','ended');
+                    });
+                    $(this.hplayer).on('pause play', function(e) {
+                        if (e.currentTarget.paused) {
+                            $(that.ppbutton).attr('data-state','paused');
+                        } else {
+                            $(that.ppbutton).attr('data-state','playing');
+                        }
                     });
                     $(this.hplayer).on('loadedmetadata',function(){
                         that.duration = that.hplayer.duration;
@@ -79,13 +94,13 @@
                     if(this.hplayer.paused){
                         this.hplayer.play().then(function(){
                             log.debug('play promise resolved');
-                            $(that.ppbutton).css('background-image',pause_icon_url);
+                            $(that.ppbutton).attr('data-state','playing');
                         }).catch(function(){
                             log.debug('play promise rejected');
                         });
                     }else{
                         this.hplayer.pause();
-                        $(this.ppbutton).css('background-image:', play_icon_url);
+                        $(that.ppbutton).attr('data-state','paused');
                     }
                 },
                 update_time: function(){
