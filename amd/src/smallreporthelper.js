@@ -12,6 +12,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
         controls: {},
         ready: false,
         remotetranscribe: false,
+        showstats: true,
+        showgrades: true,
         attemptid: 0,
         checking: '... checking ...',
         secstillcheck: 'Checking again in: ',
@@ -23,6 +25,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.attemptid=opts['attemptid'];
             this.ready=opts['ready'];
             this.remotetranscribe=opts['remotetranscribe'];
+            this.showstats =opts['showstats'];
+            this.showgrades =opts['showgrades'];
             this.filename=opts['filename'];
             this.register_controls();
             this.register_events();
@@ -140,6 +144,10 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                                 tdata.ready=payloadobject.ready;
 
                                 //stars
+
+                                //if we are not showing grades, everyone gets 5 stars
+                                if(!that.showgrades){payloadobject.rating=5;}
+
                                 var emptystar='fa-star-o';
                                 var solidstar='fa-star';
                                 var stars=[];
@@ -154,6 +162,13 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                                 );
 
                                 //stats
+                                //if we are not showing stats, we really should not be here
+                                if(!that.showstats){
+                                    that.controls.status.hide();
+                                    that.controls.fullreportbutton.show();
+                                    break;
+                                }
+
                                 tdata.wpm=payloadobject.wpm;
                                 tdata.acc=payloadobject.acc;
                                 tdata.totalwords=payloadobject.totalwords;

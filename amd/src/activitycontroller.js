@@ -127,7 +127,8 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
                 startshadowbutton: $('#' + opts['startshadowbutton']),
                 returnmenubutton: $('#' + opts['returnmenubutton']),
                 stopandplay: $('#' + opts['stopandplay']),
-                smallreportcontainer: $('.' + opts['smallreportcontainer'])
+                smallreportcontainer: $('.' + opts['smallreportcontainer']),
+                readingcontainer: $('#' + def.readingcontainer),
             };
             this.controls = controls;
         },
@@ -159,7 +160,18 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
             var on_recording_start = function (eventdata) {
                 dd.rec_time_start = new Date().getTime();
                 dd.dopassagelayout();
-                dd.controls.passagecontainer.show(1000, beginall);
+
+               // dd.controls.passagecontainer.show(1000, beginall);
+                dd.controls.passagecontainer.show(500,beginall);
+                dd.controls.passagecontainer[0].scrollIntoView({behaviour: "smooth", block: "start", inline: "nearest"});
+
+                /*
+                var scrollparent = $("#page");
+                var newtop = scrollparent.scrollTop() + dd.controls.passagecontainer.offset().top - scrollparent.offset().top;
+                if(newtop<0) {newtop=0;}
+                scrollparent.animate({scrollTop: newtop}, 500,beginall);
+                */
+
             };
 
             //originates from the recording:ended event
@@ -383,6 +395,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
             m.controls.modelaudioplayer.hide();
             m.controls.hider.hide();
             m.controls.stopandplay.hide();
+            m.controls.readingcontainer.removeClass(def.containerfillscreen);
 
             modelaudiokaraoke.modeling=true;
         },
@@ -442,6 +455,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
         dopassagelayout: function () {
             var m = this;
             m.controls.introbox.hide();
+            m.controls.readingcontainer.addClass(def.containerfillscreen);
         },
 
         douploadlayout: function () {
@@ -459,6 +473,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
+            m.controls.readingcontainer.removeClass(def.containerfillscreen);
             m.controls.feedbackcontainer.show();
             m.controls.wheretonextcontainer.show();
             m.controls.returnmenubutton.hide();
@@ -468,6 +483,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
             var m = this;
             m.controls.hider.fadeOut('fast');
             m.controls.progresscontainer.fadeOut('fast');
+            m.controls.readingcontainer.removeClass(def.containerfillscreen);
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
             m.controls.errorcontainer.show();

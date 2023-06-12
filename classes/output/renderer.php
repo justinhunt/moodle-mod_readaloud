@@ -238,11 +238,18 @@ class renderer extends \plugin_renderer_base {
 
         //template data for small report
         $tdata = Array();
+        //show grades and stats
+        $showstats = $moduleinstance->humanpostattempt !=constants::POSTATTEMPT_NONE;
+        $showgrades=$moduleinstance->targetwpm>0 && $showstats && $moduleinstance->humanpostattempt !=constants::POSTATTEMPT_EVALERRORSNOGRADE;
 
         //star rating
         if($attempt) {
             //stars
-            $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
+            if($showgrades){
+                $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
+            }else{
+                $rating = 5;
+            }
             $ready = $rating > -1;
             $stars=[];
             for ($star = 0; $star < 5; $star++) {
@@ -274,10 +281,14 @@ class renderer extends \plugin_renderer_base {
 
 
 
+
         //full report button
+        $fullreportcaption = $showstats ? get_string('fullreport', constants::M_COMPONENT) : get_string('fullreportnoeval', constants::M_COMPONENT);
         $fullreportbutton = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
-                array('n' => $moduleinstance->id, 'reviewattempts' => 1)), get_string('fullreport', constants::M_COMPONENT));
+                array('n' => $moduleinstance->id, 'reviewattempts' => 1)), $fullreportcaption);
         $tdata['fullreportbutton']=$fullreportbutton;
+        $tdata['showgrades']=$showgrades;
+        $tdata['showstats']=$showstats;
 
         //finally render template
         $ret = $this->render_from_template('mod_readaloud/smallreport', $tdata);
@@ -298,6 +309,8 @@ class renderer extends \plugin_renderer_base {
         $opts['attemptid'] = $attempt ? $attempt->id : false;
         $opts['ready'] = $ready;
         $opts['remotetranscribe'] = $remotetranscribe;
+        $opts['showgrades'] = $showgrades;
+        $opts['showstats'] = $showstats;
         $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', array($opts));
         $this->page->requires->strings_for_js(['secs_till_check','notgradedyet','evaluatedmessage', 'checking'],constants::M_COMPONENT);
 
@@ -744,9 +757,12 @@ class renderer extends \plugin_renderer_base {
         //recorder
         //=======================================
         $hints = new \stdClass();
-        $hints->allowearlyexit = $moduleinstance->allowearlyexit;
+        //If there is no time limit, or allow early exit is on, we need a stop button
+        $hints->allowearlyexit = $moduleinstance->allowearlyexit || !$moduleinstance->timelimit;
         // The readaloud recorder now handles juststart setting
+        //if the user has selected, just start, ok.
         $hints->juststart = $moduleinstance->recorder==constants::REC_ONCE ? 1 : 0;
+
         if($moduleinstance->recorder==constants::REC_ONCE) {
             $moduleinstance->recorder=constants::REC_READALOUD;
         }
@@ -790,8 +806,8 @@ class renderer extends \plugin_renderer_base {
                         'data-appid' => constants::M_COMPONENT,
                         'data-owner' => hash('md5',$USER->username),
                         'data-type' => $debug ? "upload" : $moduleinstance->recorder,
-                        'data-width' => $debug ? "500" : "360",
-                        'data-height' => $debug ? "500" : "210",
+                        'data-width' => $debug ? "500" : "210",
+                        'data-height' => $debug ? "500" : "130",
                     //'data-iframeclass'=>"letsberesponsive",
                         'data-updatecontrol' => constants::M_UPDATE_CONTROL,
                         'data-timelimit' => $moduleinstance->timelimit,
@@ -992,9 +1008,11 @@ class renderer extends \plugin_renderer_base {
         
         $ret = '';
 
-        //show an attempt summary if we have more than one attempt
-        if(count($attempts)>1) {
-            $showgradesinchart=true;
+        //show an attempt summary if we have more than one attempt and we are not the guest user
+        if(count($attempts)>1 && !isguestuser()) {
+            //if we can calculate a grade, lets do it
+            $showgradesinchart=$moduleinstance->targetwpm>0;
+
             switch ($moduleinstance->humanpostattempt) {
                 case constants::POSTATTEMPT_NONE:
                     //no progress charts if not showing errors
@@ -1051,7 +1069,7 @@ class renderer extends \plugin_renderer_base {
                     $ret .= $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
                     $ret .= $this->fetch_clicktohear_amd($moduleinstance,$token);
                     $ret .= $this->render_hiddenaudioplayer();
-                    $nograde=$latestattempt->dontgrade;
+                    $nograde=$latestattempt->dontgrade || $moduleinstance->targetwpm==0;
                     $ret .= $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces,$nograde);
 
                     break;
@@ -1070,7 +1088,7 @@ class renderer extends \plugin_renderer_base {
                     $ret .= $passagehelper->prepare_javascript($reviewmode, $force_aidata, $readonly);
                     $ret .= $this->fetch_clicktohear_amd($moduleinstance,$token);
                     $ret .= $this->render_hiddenaudioplayer();
-                    $nograde=$latestattempt->dontgrade;
+                    $nograde=$latestattempt->dontgrade ||  $moduleinstance->targetwpm==0;
                     $ret .= $passagerenderer->render_userreview($passagehelper,$moduleinstance->ttslanguage,$collapsespaces, $nograde);
                     break;
 

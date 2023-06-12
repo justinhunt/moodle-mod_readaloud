@@ -55,6 +55,9 @@ define(['jquery', 'core/log'], function ($, log) {
 
         //activity
         passagefinished: 'mod_readaloud_passage_finished',
+        passagefillscreen: 'mod_readaloud_passage_fillscreen',
+        containerfillscreen: 'mod_readaloud_fillscreen_container',
+        readingcontainer: 'mod_readaloud_readingcontainer',
 
         spotcheckbutton: 'mod_readaloud_spotcheckbutton',
         transcriptcheckbutton: 'mod_readaloud_transcriptcheckbutton',

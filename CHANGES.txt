@@ -1,3 +1,7 @@
+Version 2.0.94 (Build 2023061100)
+- Kiosk mode (ie works in guest mode)
+- UI improvements(?)
+
 Version 2.0.93 (Build 2023051900)
 - Support for Moodle 4.1
 

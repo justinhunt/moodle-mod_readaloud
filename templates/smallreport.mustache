@@ -1,6 +1,9 @@
 <div class='mod_readaloud_smallreport_cont mod_readaloud_center'>
     <div class='mod_readaloud_smallreport_heading'>
-        {{#ready}}{{#str}}evaluatedmessage , mod_readaloud{{/str}}{{/ready}}
+        {{#ready}}
+            {{#showstats}}{{#str}}evaluatedmessage , mod_readaloud{{/str}}{{/showstats}}
+            {{^showstats}}{{#str}}hiddenevaluationmessage, mod_readaloud{{/str}}{{/showstats}}
+        {{/ready}}
         {{^ready}}{{#str}}notgradedyet , mod_readaloud{{/str}}{{/ready}}
     </div>
     {{> mod_readaloud/smallreportplayer}}

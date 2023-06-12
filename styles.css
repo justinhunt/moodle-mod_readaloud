@@ -967,14 +967,15 @@ div.mod_readaloud_attemptsummarytable {
 }
 
 /* Experimental stuff */
-.readingcontainer {
+.mod_readaloud_fillscreen_container {
   display: flex; /* displays flex-items (children) inline */
   flex-direction: column; /* stacks them vertically */
-  height: 100vh;
+  height: 90vh;
 }
-.readingcontainer_passage {
+.mod_readaloud_fillscreen_container .mod_readaloud_passage_cont {
   flex: 1; /* takes the remaining height of the "container" div */
-  overflow: auto; /* to scroll just the "main" div */
+  overflow-y: auto;/* overflows to show vertical scrolling */
+  overflow-x: hidden;
 }
 
 .fade-bottom {
