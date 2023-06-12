@@ -263,6 +263,10 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 .mod_readaloud_scorestable .table thead th {
   background: #FBB040;
 }
+.mod_readaloud_scorestable .table thead th,
+.mod_readaloud_scorestable .table tr td {
+  font-size: 1.2em;
+}
 
 
 .mod_readaloud_hidden_player {
