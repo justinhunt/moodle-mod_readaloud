@@ -242,8 +242,13 @@ class renderer extends \plugin_renderer_base {
         $showstats = $moduleinstance->humanpostattempt !=constants::POSTATTEMPT_NONE;
         $showgrades=$moduleinstance->targetwpm>0 && $showstats && $moduleinstance->humanpostattempt !=constants::POSTATTEMPT_EVALERRORSNOGRADE;
 
+        //attempt has been graded yet?
+        $have_humaneval = $attempt->sessiontime != null;
+        $have_aieval = $aigrade && $aigrade->has_transcripts();
+        $graded = $have_humaneval || $have_aieval;
+
         //star rating
-        if($attempt) {
+        if($attempt && $graded) {
             //stars
             if($showgrades){
                 $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
@@ -807,7 +812,7 @@ class renderer extends \plugin_renderer_base {
                         'data-owner' => hash('md5',$USER->username),
                         'data-type' => $debug ? "upload" : $moduleinstance->recorder,
                         'data-width' => $debug ? "500" : "210",
-                        'data-height' => $debug ? "500" : "130",
+                        'data-height' => $debug ? "500" : "150",
                     //'data-iframeclass'=>"letsberesponsive",
                         'data-updatecontrol' => constants::M_UPDATE_CONTROL,
                         'data-timelimit' => $moduleinstance->timelimit,

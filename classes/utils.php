@@ -2725,14 +2725,23 @@ class utils {
 
             //if we have attempts then lets get the attempt ids of those
             if($myattempts && is_array($myattempts) && count($myattempts)>0){
-                $conditions['myattempts'] = implode(',',$myattempts);
+               $attempts_string='';
+                foreach($myattempts as $attemptid) {
+                    if(is_integer($attemptid)) {
+                        if(!empty($attempts_string)){
+                            $attempts_string .= ',';
+                        }
+                        $attempts_string .= $attemptid;
+                    }
+                }
+
             }else{
                 //at this point we have no attempts, so just return false
                 return false;
             }
 
             $sql = "SELECT att.*  FROM  {" . constants::M_USERTABLE . "} att " .
-                "  WHERE att.readaloudid= :readaloudid AND att.userid= :userid AND att.id IN (:myattempts) " .
+                "  WHERE att.readaloudid= :readaloudid AND att.userid= :userid AND att.id IN ($attempts_string) " .
                 " ORDER BY att.timecreated DESC";
             $attempts = $DB->get_records_sql($sql, $conditions);
 

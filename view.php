@@ -43,7 +43,10 @@ if ($id) {
     $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('readaloud', $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    print_error(0,get_string('nocourseid',constants::M_COMPONENT));
+    //soft eject if they get here
+    $redirecturl = new moodle_url('/', array());
+    redirect($redirecturl, get_string('invalidcoursemodule', 'error'));
+    //print_error('invalidcourseid');
 }
 
 $PAGE->set_url('/mod/readaloud/view.php', array('id' => $cm->id,'reviewattempts'=>$reviewattempts));
