@@ -308,7 +308,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                             transcript: null
                         };
                         this.update_audio(newaudio);
-                        this.audiohelper.start();
+                        this.audiohelper.start(this.shadow);
                     }
 
                     //lets notify the caller we stopped recording

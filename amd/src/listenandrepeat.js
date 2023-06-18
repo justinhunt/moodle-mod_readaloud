@@ -79,7 +79,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       opts.uniqueid = 'readaloud_ttrecorder';
       opts.stt_guided = self.stt_guided;
       opts.callback = theCallback;
-      opts.shadow = true;
+      opts.shadow = false;
       self.ttr = ttrecorder.clone();
       self.ttr.init(opts);
 
@@ -202,6 +202,11 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           self.controls.hiddenselfplayer.attr('src', self.ttr.audio.dataURI);
           self.controls.hiddenselfplayer[0].play();
         }
+      });
+
+      self.controls.shadowplaycheckbox.on('change', function(e) {
+        var isChecked = $(this).is(':checked');
+        self.ttr.shadow=isChecked;
       });
 
       self.controls.skipbutton.on('click', function(e) {

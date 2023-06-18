@@ -48,7 +48,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder'], function ($, log, w
             this.canvasCtx = this.canvas[0].getContext("2d");
         },
 
-        start: function() {
+        start: function(shadow) {
 
             var that =this;
 
@@ -69,6 +69,24 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder'], function ($, log, w
                 that.isRecording = true;
                 that.therecorder.update_audio('isRecording',true);
                 that.tracks = stream.getTracks();
+
+                //lets check the noise suppression and echo reduction on thise
+                for(var i=0; i<that.tracks.length; i++){
+                    var track = that.tracks[i];
+                    if(track.kind == "audio"){
+                        var settings = track.getSettings();
+                        if(settings.noiseSuppression){
+                            log.debug("Noise Suppression is on");
+                        }else{
+                            log.debug("Noise Suppression is off");
+                        }
+                        if(settings.echoCancellation){
+                            log.debug("Echo Cancellation is on");
+                        }else{
+                            log.debug("Echo Cancellation is off");
+                        }
+                    }
+                }
 
                 // Create a MediaStreamAudioSourceNode for the microphone
 
@@ -103,9 +121,18 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder'], function ($, log, w
 
 
             // Mic permission
+            var audioconstraints = true;
+            log.debug("Shadow is " + shadow);
+            if(shadow===true){
+                audioconstraints =  {
+                    echoCancellation: false,
+                    noiseSuppression: false
+                }
+            }
             navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: false
+                audio:  audioconstraints,
+                video: false,
+
             }).then(gotStreamMethod).catch(this.onError);
         },
 
