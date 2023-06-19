@@ -768,6 +768,9 @@ class renderer extends \plugin_renderer_base {
         //if the user has selected, just start, ok.
         $hints->juststart = $moduleinstance->recorder==constants::REC_ONCE ? 1 : 0;
 
+        //if we are shadowing we also want to tell the recorder, so that it can disable noise supression and echo cancellation
+        $hints->shadowing = $moduleinstance->enableshadow ? 1 : 0;
+
         if($moduleinstance->recorder==constants::REC_ONCE) {
             $moduleinstance->recorder=constants::REC_READALOUD;
         }
