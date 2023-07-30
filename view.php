@@ -211,7 +211,7 @@ if ($attempts && $reviewattempts) {
 
 
 //show activity description
-if( $CFG->version<4.0) {
+if( $CFG->version<2022041900) {
     echo $renderer->show_intro($moduleinstance, $cm);
 }
 
