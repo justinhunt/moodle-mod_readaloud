@@ -1,3 +1,6 @@
+Version 2.0.96 (Build 2023082500)
+- Fixed issue with description text not showing on pre M4.0 sites
+
 Version 2.0.95 (Build 2023061900)
 - Fixed shadow mode, which on some systems performed sub-optimally
 
