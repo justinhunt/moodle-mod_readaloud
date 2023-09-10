@@ -59,6 +59,9 @@ require_capability('mod/readaloud:pushtoclones', $modulecontext);
 //Get an admin settings 
 $config = get_config(constants::M_COMPONENT);
 
+//fetch the likely number of affected records
+$clonecount = $DB->count_records(constants::M_TABLE, array('name' => $moduleinstance->name, 'masterinstance' => 0));
+
 switch($action){
 
     case constants::M_PUSH_PASSAGE:
@@ -121,6 +124,11 @@ switch($action){
             $DB->set_field(constants::M_TABLE, $thefield, $moduleinstance->{$thefield}, array('name' => $moduleinstance->name, 'masterinstance' => 0));
         }
 
+    case constants::M_PUSH_CANEXITEARLY:
+        $DB->set_field(constants::M_TABLE,'allowearlyexit',$moduleinstance->allowearlyexit,array('name'=>$moduleinstance->name,'masterinstance'=>0));
+        redirect($PAGE->url,get_string('pushcanexitearly_done',constants::M_COMPONENT),10);
+        break;
+
         //this should work, but its turned off. I do not think we should mess with gradebook in this way since UI locks up if grades present
     // and it did not work for grademin grade (so not sure about point/scale/maxgrade ...)
 /*
@@ -149,10 +157,13 @@ $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 
 
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('pushpage', constants::M_COMPONENT));
-if($moduleinstance->masterinstance){
-    echo get_string('pushpage_explanation', constants::M_COMPONENT);
+if($moduleinstance->masterinstance && $clonecount > 0){
+    echo html_writer::div(get_string('pushpage_explanation', constants::M_COMPONENT),constants::M_COMPONENT . '_pushpageexplanation');
+    echo html_writer::div(get_string('pushpage_clonecount', constants::M_COMPONENT,$clonecount),constants::M_COMPONENT . '_clonecount');
     echo $renderer->push_buttons_menu($cm);
-}else{
+}elseif($moduleinstance->masterinstance && $clonecount == 0) {
+    echo get_string('pushpage_noclones', constants::M_COMPONENT);
+} else {
     echo get_string('notmasterinstance', constants::M_COMPONENT);
 }
 

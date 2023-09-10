@@ -252,6 +252,7 @@ class constants {
     const M_PUSH_TIMELIMIT = 6;
     const M_PUSH_MODES = 7;
     const M_PUSH_GRADESETTINGS = 8;
+    const M_PUSH_CANEXITEARLY = 9;
 
     const M_USE_DATATABLES=true;
 

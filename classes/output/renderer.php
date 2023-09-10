@@ -967,7 +967,7 @@ class renderer extends \plugin_renderer_base {
 
     public function push_buttons_menu($cm){
         $templateitems=[];
-        $pushthings = ['passage','ttsmodelaudio','timelimit','targetwpm','questions','alternatives','modes', 'gradesettings'];
+        $pushthings = ['passage','ttsmodelaudio','timelimit','targetwpm','questions','alternatives','modes', 'gradesettings','canexitearly'];
 
         foreach($pushthings as $pushthing){
             switch($pushthing){
@@ -979,6 +979,7 @@ class renderer extends \plugin_renderer_base {
                 case 'alternatives': $action=constants::M_PUSH_ALTERNATIVES;break;
                 case 'modes': $action=constants::M_PUSH_MODES;break;
                 case 'gradesettings': $action=constants::M_PUSH_GRADESETTINGS;break;
+                case 'canexitearly': $action=constants::M_PUSH_CANEXITEARLY;break;
             }
             $templateitems[] = ['title'=>get_string('push' . $pushthing, constants::M_COMPONENT),
                 'description'=>get_string('push' . $pushthing .'_desc', constants::M_COMPONENT),
