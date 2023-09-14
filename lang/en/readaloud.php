@@ -132,6 +132,7 @@ $string['reattempt'] = 'Try Again';
 $string['notgradedyet'] = 'Your submission has been received, but has not been graded yet. It might take a few minutes.';
 $string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
 $string['hiddenevaluationmessage'] = 'Your attempt has been received. Thank you.';
+$string['notaddedtogradebook'] = 'This was a shadow practice, and not added to gradebook.';
 $string['enabletts'] = 'Enable TTS(experimental)';
 $string['enabletts_details'] = 'TTS is currently not implemented';
 //we hijacked this setting for both TTS STT .... bad ... but they are always the same aren't they?
@@ -654,3 +655,5 @@ $string['rank'] = "Rank";
 $string['unit_wpm']="words/min";
 $string['unit_percent']="percent";
 $string['unit_words']="words";
+
+$string['confirm_cancel_recording']="Cancel recording and quit this attempt?";

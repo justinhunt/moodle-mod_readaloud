@@ -241,6 +241,8 @@ class renderer extends \plugin_renderer_base {
         //show grades and stats
         $showstats = $moduleinstance->humanpostattempt !=constants::POSTATTEMPT_NONE;
         $showgrades=$moduleinstance->targetwpm>0 && $showstats && $moduleinstance->humanpostattempt !=constants::POSTATTEMPT_EVALERRORSNOGRADE;
+        //if this is in gradebook or not
+        $notingradebook = $attempt->dontgrade>0;
 
         //attempt has been graded yet?
         $have_humaneval = $attempt->sessiontime != null;
@@ -267,6 +269,7 @@ class renderer extends \plugin_renderer_base {
             $tdata['wpm']=$stats->wpm;
             $tdata['acc']=$stats->accuracy;
             $tdata['totalwords']=$stats->sessionendword;
+            $tdata['notingradebook']=$notingradebook;
 
 
         }else{
@@ -316,8 +319,9 @@ class renderer extends \plugin_renderer_base {
         $opts['remotetranscribe'] = $remotetranscribe;
         $opts['showgrades'] = $showgrades;
         $opts['showstats'] = $showstats;
+        $opts['notingradebook'] = $notingradebook;
         $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', array($opts));
-        $this->page->requires->strings_for_js(['secs_till_check','notgradedyet','evaluatedmessage', 'checking'],constants::M_COMPONENT);
+        $this->page->requires->strings_for_js(['secs_till_check','notgradedyet','evaluatedmessage', 'checking','notaddedtogradebook'],constants::M_COMPONENT);
 
         return $ret;
     }

@@ -3,6 +3,7 @@
         {{#ready}}
             {{#showstats}}{{#str}}evaluatedmessage , mod_readaloud{{/str}}{{/showstats}}
             {{^showstats}}{{#str}}hiddenevaluationmessage, mod_readaloud{{/str}}{{/showstats}}
+            {{#notingradebook}}{{#str}}notaddedtogradebook , mod_readaloud{{/str}}{{/notingradebook}}
         {{/ready}}
         {{^ready}}{{#str}}notgradedyet , mod_readaloud{{/str}}{{/ready}}
     </div>

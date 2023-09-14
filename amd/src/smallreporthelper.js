@@ -14,11 +14,13 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
         remotetranscribe: false,
         showstats: true,
         showgrades: true,
+        notingradebook: false,
         attemptid: 0,
         checking: '... checking ...',
         secstillcheck: 'Checking again in: ',
         notgradedyet: 'Your reading has not been evaluated yet.',
         evaluated: 'Your reading has been evaluated.',
+        notaddedtogradebook: 'This was a shadow practice, and not added to gradebook.',
 
         //init the module
         init: function(opts){
@@ -28,6 +30,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.showstats =opts['showstats'];
             this.showgrades =opts['showgrades'];
             this.filename=opts['filename'];
+            this.notingradebook=opts['notingradebook'];
             this.register_controls();
             this.register_events();
 
@@ -45,6 +48,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
           str.get_string('secs_till_check','mod_readaloud').done(function(s){that.secstillcheck=s;});
           str.get_string('notgradedyet','mod_readaloud').done(function(s){that.notgradedyet=s;});
           str.get_string('evaluatedmessage','mod_readaloud').done(function(s){that.evaluated=s;});
+          str.get_string('notaddedtogradebook','mod_readaloud').done(function(s){that.notaddedtogradebook=s;});
         },
 
         //load all the controls so we do not have to do it later
@@ -139,7 +143,11 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                         switch (payloadobject.ready) {
                             case true:
                                 log.debug('result fetched');
-                                that.controls.heading.text(that.evaluated);
+                                var heading = that.evaluated;
+                                if(that.notingradebook){
+                                    heading = heading + ' ' + that.notaddedtogradebook;
+                                }
+                                that.controls.heading.text(heading);
                                 var tdata=[];
                                 tdata.ready=payloadobject.ready;
 
