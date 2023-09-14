@@ -1,7 +1,10 @@
-Version 2.0.97 (Build 2023091400)
+Version 2.0.98 (Build 2023091400)
 - Added a confirmation step if leave page while still recording
 - Added a new push setting option - allow_early_exit
 - Added a message if dont grade shadowing is set to true, to tell student their attempt was not added to gradebook
+
+Version 2.0.97 (Build 2023091000)
+- Added Can Exit Early to push settings
 
 Version 2.0.96 (Build 2023082500)
 - Fixed issue with description text not showing on pre M4.0 sites

@@ -537,7 +537,7 @@ $string['waiting']='-- waiting --';
 $string['quizcompletedwarning'] = "Quiz completed. Tap to review.";
 
 
-$string['notmasterinstance']='You can not push passage or alternatives unless master instance is checked in activity settings.';
+$string['notmasterinstance']='You can not push settings from this ReadAloud activity unless master instance is checked in activity settings.';
 $string['push']='Push';
 $string['pushpage']='Push Page';
 $string['pushalternatives']='Push Alternatives';
@@ -560,6 +560,10 @@ $string['pushtimelimit']='Time Limit';
 $string['pushtimelimit_desc']='Push the Time Limit setting to all clone instances.';
 $string['pushtimelimit_done']='Time limit has been pushed';
 
+$string['pushcanexitearly']='Can Exit Early';
+$string['pushcanexitearly_desc']='Push the \'Can Exit Early\' setting to all clone instances. This setting allows users to exit the activity before the time limit is reached.';
+$string['pushcanexitearly_done']='Can Exit Early has been pushed';
+
 $string['pushmodes']='Modes';
 $string['pushmodes_desc']='Push the optional activity mode settings (preview, listen and repeat and shadow) from this instance to clone instances.';
 $string['pushmodes_done']='Modes have been pushed';
@@ -576,6 +580,9 @@ $string['masterinstance']='Master Instance';
 $string['masterinstance_details']='Master instance allows the author to push the individual settings of one ReadAloud to existing copies of the same activity. They must have exactly the same name.';
 
 $string['pushpage_explanation']= "Use the buttons on this page to push settings from this ReadAloud instance to clones of it (ie activities with the same name). Be careful there is no going back so be sure of your intention before using.";
+$string['pushpage_clonecount']= 'This activity has {$a} clones. <br><br>';
+$string['pushpage_noclones']= 'This activity IS a master instance, but there are no other activities with the same name (ie clones). So there is nothing to push settings to. Check that this is the right activity. If you are just testing, duplicate this activity and rename the duplicate the same as this one.<br><br>';
+
 
 $string['disableshadowgrading'] = "Disable Shadow Mode Grading";
 $string['disableshadowgrading_details'] = "If checked, attempts made in shadow mode will be evaluated, but no entry passed to the gradebook.";
