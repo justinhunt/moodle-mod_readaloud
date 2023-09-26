@@ -214,7 +214,7 @@ class constants {
     const M_LANG_TAIN ='ta-IN';
     const M_LANG_TEIN ='te-IN';
     const M_LANG_TRTR ='tr-TR';
-
+    const M_LANG_NONO ='no-NO';
     const M_LANG_NBNO ='nb-NO';
     const M_LANG_PLPL ='pl-PL';
     const M_LANG_RORO ='ro-RO';

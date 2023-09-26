@@ -1,3 +1,6 @@
+Version 2.0.99 (Build 2023092600)
+- fix for incorrect language-locale for Norwegian
+
 Version 2.0.98 (Build 2023091400)
 - Added a confirmation step if leave page while still recording
 - Added a new push setting option - allow_early_exit
