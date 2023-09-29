@@ -245,6 +245,7 @@ $string['he-il'] = 'Hebrew';
 $string['id-id'] = 'Indonesian';
 $string['ja-jp'] = 'Japanese';
 $string['ms-my'] = 'Malay';
+$string['mi-nz'] = 'Maori';
 $string['pt-pt'] = 'Portuguese (PT)';
 $string['ru-ru'] = 'Russian';
 $string['ta-in'] = 'Tamil';
@@ -362,7 +363,8 @@ $string['privacy:metadata:wpm'] = 'The Words Per Minute score for the attempt';
 $string['privacy:metadata:accuracy'] = 'The accuracy score for the attempt';
 $string['privacy:metadata:sessionscore'] = 'The session score for the attempt';
 $string['privacy:metadata:sessiontime'] = 'The session time(recording time) for the attempt';
-$string['privacy:metadata:sessionerrors'] = 'The reading errors for the attempt';
+$string['privacy:metadata:sessionerrors']
+    = 'The reading errors for the attempt';
 $string['privacy:metadata:sessionendword'] = 'The position of last word for the attempt';
 $string['privacy:metadata:errorcount'] = 'The reading error count for the attempt';
 $string['privacy:metadata:timemodified'] = 'The last time attempt was modified for the attempt';
