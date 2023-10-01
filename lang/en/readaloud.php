@@ -132,6 +132,7 @@ $string['reattempt'] = 'Try Again';
 $string['notgradedyet'] = 'Your submission has been received, but has not been graded yet. It might take a few minutes.';
 $string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
 $string['hiddenevaluationmessage'] = 'Your attempt has been received. Thank you.';
+$string['notaddedtogradebook'] = 'This was a shadow practice, and not added to gradebook.';
 $string['enabletts'] = 'Enable TTS(experimental)';
 $string['enabletts_details'] = 'TTS is currently not implemented';
 //we hijacked this setting for both TTS STT .... bad ... but they are always the same aren't they?
@@ -244,6 +245,7 @@ $string['he-il'] = 'Hebrew';
 $string['id-id'] = 'Indonesian';
 $string['ja-jp'] = 'Japanese';
 $string['ms-my'] = 'Malay';
+$string['mi-nz'] = 'Maori';
 $string['pt-pt'] = 'Portuguese (PT)';
 $string['ru-ru'] = 'Russian';
 $string['ta-in'] = 'Tamil';
@@ -256,7 +258,8 @@ $string['fi-fi'] = 'Finnish';
 $string['hu-hu'] = 'Hungarian';
 
 $string['sv-se'] = 'Swedish';
-$string['nb-no'] = 'Norwegian';
+$string['no-no'] = 'Norwegian';
+$string['nb-no'] = 'Norwegian'; //unused
 $string['pl-pl'] = 'Polish';
 $string['ro-ro'] = 'Romanian';
 
@@ -360,7 +363,8 @@ $string['privacy:metadata:wpm'] = 'The Words Per Minute score for the attempt';
 $string['privacy:metadata:accuracy'] = 'The accuracy score for the attempt';
 $string['privacy:metadata:sessionscore'] = 'The session score for the attempt';
 $string['privacy:metadata:sessiontime'] = 'The session time(recording time) for the attempt';
-$string['privacy:metadata:sessionerrors'] = 'The reading errors for the attempt';
+$string['privacy:metadata:sessionerrors']
+    = 'The reading errors for the attempt';
 $string['privacy:metadata:sessionendword'] = 'The position of last word for the attempt';
 $string['privacy:metadata:errorcount'] = 'The reading error count for the attempt';
 $string['privacy:metadata:timemodified'] = 'The last time attempt was modified for the attempt';
@@ -661,3 +665,5 @@ $string['rank'] = "Rank";
 $string['unit_wpm']="words/min";
 $string['unit_percent']="percent";
 $string['unit_words']="words";
+
+$string['confirm_cancel_recording']="Cancel recording and quit this attempt?";

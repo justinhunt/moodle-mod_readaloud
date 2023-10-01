@@ -1,8 +1,8 @@
 /* jshint ignore:start */
-define(['jquery', 'core/log', 'mod_readaloud/definitions',
+define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
         'core/ajax','core/notification','mod_readaloud/smallreporthelper','mod_readaloud/listenandrepeat'],
-    function ($, log, def, recorderhelper, modelaudiokaraoke, Ajax, notification, smallreporthelper, landr) {
+    function ($, log, str,def, recorderhelper, modelaudiokaraoke, Ajax, notification, smallreporthelper, landr) {
 
     "use strict"; // jshint ;_;
 
@@ -23,6 +23,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
         enablepreview: false,
         enablelandr: false,
         letsshadow: false,
+        strings: {},
 
 
         //CSS in this file
@@ -76,6 +77,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
             dd.setup_recorder();
             dd.process_html(dd.activitydata);
             dd.register_events();
+            dd.setup_strings();
 
             //set initial mode
             //we used to check the settings but now we just show the non-options greyed out
@@ -84,6 +86,19 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
             }else{
                 dd.doreadinglayout();
             }
+        },
+
+        setup_strings: function(){
+            var dd = this;
+            // Set up strings
+            str.get_strings([
+                { "key": "confirm_cancel_recording", "component": def.component}
+                //more strings here
+            ]).done(function (s) {
+                var i = 0;
+                dd.strings.confirm_cancel_recording= s[i++];
+                //more strings here
+            });
         },
 
         setupmodelaudio: function(){
@@ -268,8 +283,17 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
             });
             dd.controls.returnmenubutton.click(function(e){
                 //in most cases ajax hide show is ok, but L&R stuffs up android for normal readaloud so we reload
-                if(dd.isandroid() && dd.controls.landrinstructionscontainer.is(":visible")){
+                if(dd.isandroid() && dd.controls.landrinstructionscontainer.is(":visible")) {
                     location.reload();
+                }else if(dd.controls.readingcontainer.is(":visible")
+                    && dd.controls.passagecontainer.hasClass('readmode')
+                    && dd.controls.passagecontainer.is(":visible")){
+                    // Display a confirmation dialog
+                    var result = confirm(dd.strings.confirm_cancel_recording);
+                    //there is no way to stop the recorder early, so just reload the page, brutal
+                    if (result) {
+                        location.reload();
+                    }
                 }else {
                     dd.controls.modelaudioplayer[0].currentTime = 0;
                     dd.controls.modelaudioplayer[0].pause();

@@ -189,10 +189,8 @@ class constants {
     const M_LANG_DEAT ='de-AT';
     const M_LANG_ITIT = 'it-IT';
     const M_LANG_PTBR = 'pt-BR';
-
     const M_LANG_DADK = 'da-DK';
     const M_LANG_FILPH = 'fil-PH';
-
     const M_LANG_KOKR = 'ko-KR';
     const M_LANG_HIIN = 'hi-IN';
     const M_LANG_ARAE ='ar-AE';
@@ -214,7 +212,7 @@ class constants {
     const M_LANG_TAIN ='ta-IN';
     const M_LANG_TEIN ='te-IN';
     const M_LANG_TRTR ='tr-TR';
-
+    const M_LANG_NONO ='no-NO';
     const M_LANG_NBNO ='nb-NO';
     const M_LANG_PLPL ='pl-PL';
     const M_LANG_RORO ='ro-RO';
@@ -223,6 +221,7 @@ class constants {
     const M_LANG_EUES ='eu-ES';
     const M_LANG_FIFI ='fi-FI';
     const M_LANG_HUHU ='hu-HU';
+    const M_LANG_MINZ ='mi-NZ';
 
     const TTS_NONE='ttsnone';
 
