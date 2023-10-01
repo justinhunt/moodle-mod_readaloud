@@ -46,11 +46,11 @@ class alphabetconverter {
         list($rub,$kop) = explode('.',sprintf("%015.2f", floatval($num)));
         $out = array();
         if (intval($rub)>0) {
-            foreach(str_split($rub,3) as $uk=>$v) { // by 3 symbols
+            foreach(mb_str_split($rub,3) as $uk=>$v) { // by 3 symbols
                 if (!intval($v)) continue;
                 $uk = sizeof($unit)-$uk-1; // unit key
                 $gender = $unit[$uk][3];
-                list($i1,$i2,$i3) = array_map('intval',str_split($v,1));
+                list($i1,$i2,$i3) = array_map('intval',mb_str_split($v,1));
                 // mega-logic
                 $out[] = $hundred[$i1]; # 1xx-9xx
                 if ($i2>1) $out[]= $tens[$i2].' '.$ten[$gender][$i3]; # 20-99
@@ -85,7 +85,7 @@ class alphabetconverter {
         $triplets = array("", "sata", "tuhat");
 
         // split the number into digits
-        $digits = str_split(strrev((string) $number), 1);
+        $digits = mb_str_split(strrev((string) $number), 1);
 
         // find out how many digits we have
         $num_digits = count($digits);
@@ -756,7 +756,7 @@ class alphabetconverter {
         $levels = (int) (($num_length + 2) / 3);
         $max_length = $levels * 3;
         $num = substr('00' . $num, -$max_length);
-        $num_levels = str_split($num, 3);
+        $num_levels = mb_str_split($num, 3);
         for ($i = 0; $i < count($num_levels); $i++) {
             $levels--;
             $hundreds = (int) ($num_levels[$i] / 100);
