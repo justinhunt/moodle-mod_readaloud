@@ -25,7 +25,7 @@ class constants {
 
     const M_NEURALVOICES = array("Amy","Emma","Brian","Olivia","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly",
             "Salli","Joey","Justin","Kevin","Matthew","Lupe", "Gabrielle", "Vicki", "Seoyeon","Takumi","lucia",
-        "Lea","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila");
+        "Lea","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila","Ida","Kazuha","Tomoko","Elin");
 
     //classes for use in CSS
     const M_CLASS = 'mod_readaloud';
@@ -222,6 +222,18 @@ class constants {
     const M_LANG_FIFI ='fi-FI';
     const M_LANG_HUHU ='hu-HU';
     const M_LANG_MINZ ='mi-NZ';
+
+    const M_LANG_BGBG = 'bg-BG';
+    const M_LANG_CSCZ = 'cs-CZ';
+    const M_LANG_ELGR = 'el-GR';
+    const M_LANG_HRHR = 'hr-HR';
+    const M_LANG_LTLT = 'lt-LT';
+    const M_LANG_LVLV = 'lv-LV';
+    const M_LANG_SKSK = 'sk-SK';
+    const M_LANG_SLSI = 'sl-SI';
+    const M_LANG_ISIS = 'is-IS';
+    const M_LANG_MKMK = 'mk-MK';
+    const M_LANG_SRRS = 'sr-RS';
 
     const TTS_NONE='ttsnone';
 

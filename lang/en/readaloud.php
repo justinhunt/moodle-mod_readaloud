@@ -263,6 +263,23 @@ $string['nb-no'] = 'Norwegian'; //unused
 $string['pl-pl'] = 'Polish';
 $string['ro-ro'] = 'Romanian';
 
+
+$string['bg-bg'] = 'Bulgarian'; // Bulgarian
+$string['cs-cz'] = 'Czech'; // Czech
+$string['el-gr'] = 'Greek'; // Greek
+$string['hr-hr'] = 'Croatian'; // Croatian
+$string['lt-lt'] = 'Lithuanian'; // Lithuanian
+$string['lv-lv'] = 'Latvian'; // Latvian
+$string['sk-sk'] = 'Slovak'; // Slovak
+$string['sl-si'] = 'Slovenian'; // Slovenian
+$string['is-is'] = 'Icelandic'; // Icelandic
+$string['mk-mk'] = 'Macedonian'; // Macedonian
+$string['sr-rs'] = 'Serbian'; // Serbian
+
+
+
+
+
 $string['awsregion'] = 'AWS Region';
 $string['region'] = 'AWS Region';
 $string['awsregion_details']='Choose the region closest to you. Your data will stay within that region. Capetown region only supports English and German.';

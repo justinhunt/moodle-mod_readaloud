@@ -1,4 +1,4 @@
-- added Maori language
+- added Maori language and more languages
 
 Version 2.0.99 (Build 2023092600)
 - fix for incorrect language-locale for Norwegian
