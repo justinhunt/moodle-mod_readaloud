@@ -137,6 +137,10 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         self.newBreak = newbreak;
         self.currentAudioStart = oldbreak.audiotime;
         self.currentAudioEnd = newbreak.audiotime;
+        //in some cases ttrecorder wants to know the currentsentence
+        if(self.quizhelper.use_ttrecorder()) {
+          self.ttr.currentPrompt=self.currentSentence;
+        }
 
         if(self.currentAudioStart===self.currentAudioEnd){
             //This is a special case where the end of the audio has been reached in MAK, and there is now no next break

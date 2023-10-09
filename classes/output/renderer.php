@@ -807,6 +807,13 @@ class renderer extends \plugin_renderer_base {
             }
         }
 
+        //for now we just use the passage as transcribevocab if its guided and language is minz (maori)
+        $iswhisper=$moduleinstance->ttslanguage==constants::M_LANG_MINZ;
+        if($transcribevocab=='none' && $iswhisper && !$moduleinstance->stricttranscribe){
+            //If we are using whisper we want to send a prompt to OpenAI
+            $transcribevocab = $moduleinstance->passage;
+        }
+
 
         $recorderdiv = \html_writer::div('', constants::M_CLASS . '_center',
                 array('id' => constants::M_RECORDERID,
