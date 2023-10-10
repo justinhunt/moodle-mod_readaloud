@@ -312,6 +312,45 @@ class utils {
         return (json_last_error() == JSON_ERROR_NONE);
     }
 
+    //Is the lang code probably going to be passage transcribed by whisper?
+    // Actually if its not English or a DeepSpeech language then yes is probably the answer
+    //DeepSpeech  = 'en','de','fr','es',  'eu','ru', 'fi':'pt','pl','it','uk','ro', 'hu'
+    public static function is_whisper($langcode){
+
+        switch ($langcode){
+            case constants::M_LANG_ARAE:
+            case constants::M_LANG_ARSA:
+            case constants::M_LANG_DADK:
+            case constants::M_LANG_FAIR:
+            case constants::M_LANG_HIIN:
+            case constants::M_LANG_HEIL:
+            case constants::M_LANG_FILPH:
+            case constants::M_LANG_IDID:
+            case constants::M_LANG_JAJP:
+            case constants::M_LANG_KOKR:
+            case constants::M_LANG_MSMY:
+            case constants::M_LANG_NLNL:
+            case constants::M_LANG_NLBE:
+            case constants::M_LANG_ZHCN:
+            case constants::M_LANG_NONO:
+            case constants::M_LANG_MINZ:
+            case constants::M_LANG_BGBG:
+            case constants::M_LANG_CSCZ:
+            case constants::M_LANG_ELGR:
+            case constants::M_LANG_HRHR:
+            case constants::M_LANG_LVLV:
+            case constants::M_LANG_LTLT:
+            case constants::M_LANG_SKSK:
+            case constants::M_LANG_SLSI:
+            case constants::M_LANG_ISIS:
+            case constants::M_LANG_MKMK:
+            case constants::M_LANG_SRRS:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     //Insert spaces in between segments in order to create "words"
     public static function segment_japanese($passage){
         $segments = \mod_readaloud\jp\Analyzer::segment($passage);

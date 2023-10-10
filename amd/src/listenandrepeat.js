@@ -138,7 +138,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         self.currentAudioStart = oldbreak.audiotime;
         self.currentAudioEnd = newbreak.audiotime;
         //in some cases ttrecorder wants to know the currentsentence
-        if(self.quizhelper.use_ttrecorder()) {
+        if(!self.ttr.usebrowserrec) {
           self.ttr.currentPrompt=self.currentSentence;
         }
 
