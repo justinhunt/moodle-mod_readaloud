@@ -130,6 +130,7 @@ $string['nodataavailable'] = 'No Data Available Yet';
 $string['saveandnext'] = 'Save .... and next';
 $string['reattempt'] = 'Try Again';
 $string['notgradedyet'] = 'Your submission has been received, but has not been graded yet. It might take a few minutes.';
+$string['notmanuallygradedyet'] = 'Your submission has been received, but has not been graded yet.';
 $string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
 $string['hiddenevaluationmessage'] = 'Your attempt has been received. Thank you.';
 $string['notaddedtogradebook'] = 'This was a shadow practice, and not added to gradebook.';
@@ -554,6 +555,7 @@ $string['avgtotaltime'] = 'Av. Duration';
 $string['nodataavailable'] = 'No data available';
 $string['quiz'] = 'Quiz';
 $string['waiting']='-- waiting --';
+$string['waitingforteacher'] = 'Your teacher will check your reading soon.';
 $string['quizcompletedwarning'] = "Quiz completed. Tap to review.";
 
 

@@ -34,12 +34,15 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.register_controls();
             this.register_events();
 
-            if(!this.ready && this.remotetranscribe && this.attemptid){
-                //check for ai results
-                this.check_for_results(this,15);
+            if(!this.ready && this.attemptid){
+                if(this.remotetranscribe) {
+                    //check for ai results
+                    this.check_for_results(this, 15);
+                }
                 //check for audio audio
                 this.check_for_audio(0);
             }
+
         },
 
         init_strings: function(){

@@ -163,7 +163,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
                     if (m.options.aidata && m.options.aidata.sessiontime) {
                         m.options.totalseconds = m.options.aidata.sessiontime;
                     } else {
-                        var audioplayer = $('#' + m.cd.audioplayerclass);
+                        var audioplayer = $('.' + m.cd.audioplayerclass);
                         var duration = audioplayer.prop('duration');
                         //this can fail if audio is not loaded yet. Lets wait for it to load and reset stuff
                         //its better not to need this, but calcs all fail if we do not know the recording time

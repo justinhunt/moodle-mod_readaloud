@@ -1,3 +1,6 @@
+Version 2.1.1 (Build 2023103000)
+ - Fixed broken no-ai mode
+
 Version 2.1.0 (Build 2023101000)
 - added Maori language and more languages
 

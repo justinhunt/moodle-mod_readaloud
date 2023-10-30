@@ -287,6 +287,13 @@ class renderer extends \plugin_renderer_base {
             $tdata['src']= $attempt->filename;
         }
 
+        //If there is no remote transcriber
+        //we do not want to get users hopes up by trying to fetch a transcript with ajax
+        if(utils::can_transcribe($moduleinstance)){
+            $remotetranscribe = true;
+        }else{
+            $remotetranscribe = false;
+        }
 
 
 
@@ -297,19 +304,10 @@ class renderer extends \plugin_renderer_base {
         $tdata['fullreportbutton']=$fullreportbutton;
         $tdata['showgrades']=$showgrades;
         $tdata['showstats']=$showstats;
+        $tdata['remotetranscribe'] = $remotetranscribe;
 
         //finally render template
         $ret = $this->render_from_template('mod_readaloud/smallreport', $tdata);
-
-
-        //If there is no remote transcriber
-        //we do not want to get users hopes up by trying to fetch a transcript with ajax
-        if(utils::can_transcribe($moduleinstance)){
-            $remotetranscribe = true;
-        }else{
-            $remotetranscribe = false;
-        }
-
 
         //Js to refresh small report
         $opts = Array();

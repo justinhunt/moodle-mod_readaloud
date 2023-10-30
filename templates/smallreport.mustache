@@ -5,12 +5,26 @@
             {{^showstats}}{{#str}}hiddenevaluationmessage, mod_readaloud{{/str}}{{/showstats}}
             {{#notingradebook}}{{#str}}notaddedtogradebook , mod_readaloud{{/str}}{{/notingradebook}}
         {{/ready}}
-        {{^ready}}{{#str}}notgradedyet , mod_readaloud{{/str}}{{/ready}}
+        {{^ready}}
+            {{#remotetranscribe}}
+                {{#str}}notgradedyet , mod_readaloud{{/str}}
+            {{/remotetranscribe}}
+            {{^remotetranscribe}}
+                {{#str}}notmanuallygradedyet , mod_readaloud{{/str}}
+            {{/remotetranscribe}}
+        {{/ready}}
     </div>
     {{> mod_readaloud/smallreportplayer}}
     {{> mod_readaloud/smallreportrating}}
     <div class='mod_readaloud_smallreport_status'>
-            {{^ready}}{{#str}}waiting , mod_readaloud{{/str}}{{/ready}}
+            {{^ready}}
+                {{#remotetranscribe}}
+                    {{#str}}waiting , mod_readaloud{{/str}}
+                {{/remotetranscribe}}
+                {{^remotetranscribe}}
+                    {{#str}}waitingforteacher , mod_readaloud{{/str}}
+                {{/remotetranscribe}}
+            {{/ready}}
     </div>
     <div class='mod_readaloud_smallreport_fullreportbutton {{^ready}}hide{{/ready}}'>
         {{{fullreportbutton}}}
