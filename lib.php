@@ -951,7 +951,7 @@ function readaloud_extend_settings_navigation(settings_navigation $settingsnav, 
 }
 function mod_readaloud_cm_info_dynamic(cm_info $cm) {
         global $USER,$DB;
-        $moduleinstance= $DB->get_record('readaloud', array('id' => $cm->instance,), '*', MUST_EXIST);
+        $moduleinstance= $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
         if(method_exists($cm,'override_customdata')) {
             $cm->override_customdata('duedate', $moduleinstance->viewend);
             $cm->override_customdata('allowsubmissionsfromdate', $moduleinstance->viewstart);
@@ -960,7 +960,7 @@ function mod_readaloud_cm_info_dynamic(cm_info $cm) {
 }
 function readaloud_get_coursemodule_info($coursemodule) {
     global $DB;
-    if(!$moduleinstance= $DB->get_record('readaloud', array('id' => $coursemodule->instance,), '*')){
+    if(!$moduleinstance= $DB->get_record('readaloud', array('id' => $coursemodule->instance), '*')){
         return false;
     }
     $result = new cached_cm_info();
