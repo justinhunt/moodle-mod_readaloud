@@ -1,3 +1,6 @@
+Version xx
+- Fixed poor number -word conversion
+
 Version 2.1.1 (Build 2023103000)
  - Fixed broken no-ai mode
 

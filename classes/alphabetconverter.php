@@ -46,11 +46,11 @@ class alphabetconverter {
         list($rub,$kop) = explode('.',sprintf("%015.2f", floatval($num)));
         $out = array();
         if (intval($rub)>0) {
-            foreach(mb_str_split($rub,3) as $uk=>$v) { // by 3 symbols
+            foreach(self::do_mb_str_split($rub,3) as $uk=>$v) { // by 3 symbols
                 if (!intval($v)) continue;
                 $uk = sizeof($unit)-$uk-1; // unit key
                 $gender = $unit[$uk][3];
-                list($i1,$i2,$i3) = array_map('intval',mb_str_split($v,1));
+                list($i1,$i2,$i3) = array_map('intval',self::do_mb_str_split($v,1));
                 // mega-logic
                 $out[] = $hundred[$i1]; # 1xx-9xx
                 if ($i2>1) $out[]= $tens[$i2].' '.$ten[$gender][$i3]; # 20-99
@@ -85,7 +85,7 @@ class alphabetconverter {
         $triplets = array("", "sata", "tuhat");
 
         // split the number into digits
-        $digits = mb_str_split(strrev((string) $number), 1);
+        $digits = self::do_mb_str_split(strrev((string) $number), 1);
 
         // find out how many digits we have
         $num_digits = count($digits);
@@ -525,8 +525,8 @@ class alphabetconverter {
 
             //english returns an array of conversion words for varieties eg 2015 two thousand fifteen, twenty fifteen
             if(is_array($conversion['words'])) {
-                foreach ($conversion['words'] as $digits => $words) {
-                    $targettext = str_replace($words['words'], $words['digits'], $targettext);
+                foreach ($conversion['words'] as $wdset) {
+                    $targettext = str_replace($wdset['words'], $wdset['digits'], $targettext);
                 }
             }else{
                 $targettext = str_replace($conversion['words'],$conversion['digits'],$targettext);
@@ -756,7 +756,7 @@ class alphabetconverter {
         $levels = (int) (($num_length + 2) / 3);
         $max_length = $levels * 3;
         $num = substr('00' . $num, -$max_length);
-        $num_levels = mb_str_split($num, 3);
+        $num_levels = self::do_mb_str_split($num, 3);
         for ($i = 0; $i < count($num_levels); $i++) {
             $levels--;
             $hundreds = (int) ($num_levels[$i] / 100);
@@ -848,7 +848,7 @@ class alphabetconverter {
             $arr[2] = '二';
             $arr[1] = '一';
 
-            $arrayWithNumbers = mb_str_split($words);
+            $arrayWithNumbers = self::do_mb_str_split($words);
             $suji = null;
             foreach($arrayWithNumbers as $jpKanji){
                 $keyVal = array_search($jpKanji, $arr);
@@ -1026,6 +1026,62 @@ class alphabetconverter {
         $thetext = implode(' ', $textbits);
         return $thetext;
     }
+
+    public static function do_mb_str_split($string, $split_length = 1, $encoding = null)
+    {
+        //for greater than PHP 7.4
+        if (version_compare(PHP_VERSION, '7.4.0', '>=')) {
+            // Code for PHP 7.4 and above
+            return mb_str_split($string, $split_length, $encoding);
+        }
+
+        //for less than PHP 7.4
+        if (null !== $string && !\is_scalar($string) && !(\is_object($string) && \method_exists($string, '__toString'))) {
+            trigger_error('mb_str_split(): expects parameter 1 to be string, '.\gettype($string).' given', E_USER_WARNING);
+            return null;
+        }
+        if (null !== $split_length && !\is_bool($split_length) && !\is_numeric($split_length)) {
+            trigger_error('mb_str_split(): expects parameter 2 to be int, '.\gettype($split_length).' given', E_USER_WARNING);
+            return null;
+        }
+        $split_length = (int) $split_length;
+        if (1 > $split_length) {
+            trigger_error('mb_str_split(): The length of each segment must be greater than zero', E_USER_WARNING);
+            return false;
+        }
+        if (null === $encoding) {
+            $encoding = mb_internal_encoding();
+        } else {
+            $encoding = (string) $encoding;
+        }
+
+        if (! in_array($encoding, mb_list_encodings(), true)) {
+            static $aliases;
+            if ($aliases === null) {
+                $aliases = [];
+                foreach (mb_list_encodings() as $encoding) {
+                    $encoding_aliases = mb_encoding_aliases($encoding);
+                    if ($encoding_aliases) {
+                        foreach ($encoding_aliases as $alias) {
+                            $aliases[] = $alias;
+                        }
+                    }
+                }
+            }
+            if (! in_array($encoding, $aliases, true)) {
+                trigger_error('mb_str_split(): Unknown encoding "'.$encoding.'"', E_USER_WARNING);
+                return null;
+            }
+        }
+
+        $result = [];
+        $length = mb_strlen($string, $encoding);
+        for ($i = 0; $i < $length; $i += $split_length) {
+            $result[] = mb_substr($string, $i, $split_length, $encoding);
+        }
+        return $result;
+    }
+
 
 
 }
