@@ -2389,7 +2389,7 @@ class utils {
 
         //Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::M_COMPONENT),
-                1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5',);
+                1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5');
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', constants::M_COMPONENT), $attemptoptions);
 
 
