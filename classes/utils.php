@@ -2139,8 +2139,8 @@ class utils {
                 constants::M_LANG_ITIT => ['Carla'=>'Carla',  'Bianca'=>'Bianca', 'Giorgio'=>'Giorgio'],
                 constants::M_LANG_JAJP => ['Takumi'=>'Takumi','Mizuki'=>'Mizuki','Kazuha'=>'Kazuha','Tomoko'=>'Tomoko'],
                 constants::M_LANG_KOKR => ['Seoyeon'=>'Seoyeon'],
-                //constants::M_LANG_MSMY => [],
-                //constants::M_LANG_MINZ => [],
+                constants::M_LANG_MSMY => ['ms-MY-Whisper-alloy'=>'Afsah','ms-MY-Whisper-shimmer'=>'Siti'],
+                constants::M_LANG_MINZ => ['mi-NZ-Whisper-alloy'=>'Tane','mi-NZ-Whisper-shimmer'=>'Aroha'],
                 constants::M_LANG_NONO => ['Liv'=>'Liv','Ida'=>'Ida','nb-NO-Wavenet-B'=>'Lars_g','nb-NO-Wavenet-A'=>'Hedda_g','nb-NO-Wavenet-D'=>'Anders_g'],
                 constants::M_LANG_NLNL => ["Ruben"=>"Ruben","Lotte"=>"Lotte","Laura"=>"Laura"],
                 constants::M_LANG_NLBE => ["nl-BE-Wavenet-B"=>"Marc_g","nl-BE-Wavenet-A"=>"Marie_g"],
@@ -2160,15 +2160,15 @@ class utils {
                 constants::M_LANG_BGBG => array('bg-BG-Standard-A' => 'Mila_g'),//nikolai
                 constants::M_LANG_CSCZ => array('cs-CZ-Wavenet-A' => 'Zuzana_g', 'cs-CZ-Standard-A' => 'Karolina_g'),
                 constants::M_LANG_ELGR => array('el-GR-Wavenet-A' => 'Sophia_g', 'el-GR-Standard-A' => 'Isabella_g'),
-               // constants::M_LANG_HRHR => array('A' => 'Ivana', 'B' => 'Marko'),
+                constants::M_LANG_HRHR => ['hr-HR-Whisper-alloy'=>'Marko','hr-HR-Whisper-shimmer'=>'Ivana'],
 
                 constants::M_LANG_LVLV => array('lv-LV-Standard-A' => 'Janis_g'),
                 constants::M_LANG_LTLT => array('lt-LT-Standard-A' => 'Matas_g'),
 
                 constants::M_LANG_SKSK => array('sk-SK-Wavenet-A' => 'Laura_g', 'sk-SK-Standard-A' => 'Natalia_g'),
-             //   constants::M_LANG_SLSI => array('A' => 'Pia', 'B' => 'Vid'),
+                constants::M_LANG_SLSI => ['sl-SI-Whisper-alloy'=>'Vid','sl-SI-Whisper-shimmer'=>'Pia'],
                 constants::M_LANG_ISIS => array('Dora' => 'Dora', 'Karl' => 'Karl'),
-            //    constants::M_LANG_MKMK => array('A' => 'Marija', 'B' => 'Trajko'),
+                constants::M_LANG_MKMK => ['mk-MK-Whisper-alloy'=>'Trajko','mk-MK-Whisper-shimmer'=>'Marija'],
                 constants::M_LANG_SRRS => array('sr-RS-Standard-A' => 'Milena_g'),
 
         );
