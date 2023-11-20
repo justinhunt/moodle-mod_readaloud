@@ -169,7 +169,8 @@ $string['passage_help'] = "The passage that will be shown to the student to read
 $string['passage_descr'] = "Enter the reading passage above. It should not be longer than 3000 characters if you wish audio to be generated for it.";
 $string['timelimit_help'] = "Sets a time limit on the reading. Reading time is used in the WPM calculation. Consider also checking - Allow Early Exit";
 $string['ttslanguage_help'] = "This value is used for speech recognition and text to speech.";
-$string['ttsvoice_help'] = "The machine voice used to read the passage aloud. You should select a voice that matches the language famly of the passage language. Use the model audio tab to record or upload an alternative model audio.";
+$string['ttsvoice_descr'] = "The machine voice used to read the passage aloud. If it is followed by a + symbol it is a better quality voice. It is followed by a ! symbol you will need to manually add speech breaks in the model audio tab.";
+$string['ttsvoice_help'] = "The machine voice used to read the passage aloud. You should select a voice that matches the language famly of the passage language. If it is followed by a + symbol it is a better quality voice. It is followed by a ! symbol you will need to manually add speech breaks in the model audio tab. Use the model audio tab to record or upload an alternative model audio, or to manually set speech breaks.";
 $string['ttsspeed_help'] = "The machine voice reading speed. Slow or Extra Slow are good for learners, but can distort the audio.";
 $string['alternatives_help'] = "Specify matching options for specific passage words. 1 word set per line. e.g their|there|they're See <a href=\"https://support.poodll.com/support/solutions/articles/19000096937-tuning-your-read-aloud-activity\">docs</a> for more details.";
 

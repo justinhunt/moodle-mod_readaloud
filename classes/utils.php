@@ -2116,7 +2116,8 @@ class utils {
                 constants::M_LANG_DEAT => ['Hannah'=>'Hannah'],
                 //constants::M_LANG_DECH => [],
                 constants::M_LANG_ENUS => ['Joey'=>'Joey','Justin'=>'Justin','Kevin'=>'Kevin','Matthew'=>'Matthew','Ivy'=>'Ivy',
-                'Joanna'=>'Joanna','Kendra'=>'Kendra','Kimberly'=>'Kimberly','Salli'=>'Salli'],
+                'Joanna'=>'Joanna','Kendra'=>'Kendra','Kimberly'=>'Kimberly','Salli'=>'Salli',
+                'en-US-Whisper-alloy'=>'Ricky','en-US-Whisper-onyx'=>'Ed','en-US-Whisper-nova'=>'Tiffany','en-US-Whisper-shimmer'=>'Tammy'],
                 constants::M_LANG_ENGB => ['Brian'=>'Brian','Amy'=>'Amy', 'Emma'=>'Emma'],
                 constants::M_LANG_ENAU => ['Russell'=>'Russell','Nicole'=>'Nicole','Olivia'=>'Olivia'],
                 constants::M_LANG_ENNZ => ['Aria'=>'Aria'],
@@ -2176,10 +2177,30 @@ class utils {
 
         $lang_options = self::get_lang_options();
         $ret=[];
+        //make up the array of voices with some indicators if they are neural or have speechmarks
         foreach($alllang as $lang=>$voices){
             foreach($voices as $v=>$voicename){
-             $neuraltag = in_array($v,constants::M_NEURALVOICES) ? ' (+)' : '';
-             $ret[$v]=$voicename . $neuraltag . ' - (' . $lang_options[$lang] . ')';
+             $tags='';
+             $neuraltag = in_array($v,constants::M_NEURALVOICES) ? '+' : '';
+             //whisper voices are currently only as good as polly neural for en-US (20231118)
+             if($neuraltag=='') {
+                 $neuraltag = strpos($v, 'en-US-Whisper') !== false ? '+' : '';
+             }
+             $tags.=$neuraltag;
+
+             $no_speechmarks_tag='';
+             $ttsengines=["Whisper", "Standard", "Wavenet"];
+             foreach($ttsengines as $ttsengine){
+                 if (strpos($v, $ttsengine) !== false) {
+                     $no_speechmarks_tag='!';
+                 }
+             }
+             $tags.=$no_speechmarks_tag;
+
+             if(!empty($tags)){
+                 $tags=' ('.$tags.')';
+             }
+             $ret[$v]=$voicename . $tags . ' - (' . $lang_options[$lang] . ')';
             }
         }
         $ret = array_merge(array(constants::TTS_NONE => get_string('nottsvoice',constants::M_COMPONENT)), $ret);
@@ -2329,11 +2350,21 @@ class utils {
         $mform->addElement('select', 'ttsvoice', get_string('ttsvoice', constants::M_COMPONENT), $langoptions);
         $mform->setDefault('ttsvoice', $config->ttsvoice);
         $mform->addHelpButton('ttsvoice', 'ttsvoice', constants::M_COMPONENT);
+        $mform->addElement('static', 'ttsvoicedescr', '',
+            get_string('ttsvoice_descr', constants::M_COMPONENT));
+
 
         $speedoptions = \mod_readaloud\utils::get_ttsspeed_options();
         $mform->addElement('select', 'ttsspeed', get_string('ttsspeed', constants::M_COMPONENT), $speedoptions);
         $mform->setDefault('ttsspeed', constants::TTSSPEED_SLOW);
         $mform->addHelpButton('ttsspeed', 'ttsspeed', constants::M_COMPONENT);
+        $m35 = $CFG->version >= 2018051700;
+        $whisperkeys = array_keys(constants::M_WHISPERVOICES);
+        if($m35){
+            $mform->hideIf('ttsspeed','ttsvoice','in', $whisperkeys);
+        }else {
+            $mform->disabledIf('ttsspeed','ttsvoice','in', $whisperkeys);
+        }
 
         //The alternatives declaration
         $mform->addElement('textarea', 'alternatives', get_string("alternatives", constants::M_COMPONENT),

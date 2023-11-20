@@ -27,6 +27,14 @@ class constants {
             "Salli","Joey","Justin","Kevin","Matthew","Lupe", "Gabrielle", "Vicki", "Seoyeon","Takumi","lucia",
         "Lea","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila","Ida","Kazuha","Tomoko","Elin");
 
+    const M_WHISPERVOICES = array('en-US-Whisper-alloy'=>'Ricky','en-US-Whisper-onyx'=>'Ed',
+        'en-US-Whisper-nova'=>'Tiffany','en-US-Whisper-shimmer'=>'Tammy',
+        'ms-MY-Whisper-alloy'=>'Afsah','ms-MY-Whisper-shimmer',
+        'mi-NZ-Whisper-alloy'=>'Tane','mi-NZ-Whisper-shimmer'=>'Aroha',
+        'hr-HR-Whisper-alloy'=>'Marko','hr-HR-Whisper-shimmer'=>'Ivana',
+        'sl-SI-Whisper-alloy'=>'Vid','sl-SI-Whisper-shimmer'=>'Pia',
+        'mk-MK-Whisper-alloy'=>'Trajko','mk-MK-Whisper-shimmer'=>'Marija');
+
     //classes for use in CSS
     const M_CLASS = 'mod_readaloud';
 
