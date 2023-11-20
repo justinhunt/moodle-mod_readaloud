@@ -1,5 +1,7 @@
-Version 2.1.x
+Version 2.1.3 (Build 2023111800)
 - Fixed poor number -word conversion
+- Added Whisper voices
+- Tweaks to TTS options
 
 2.1.2 (Build 2023111200)
 - Fixed lang string issue
