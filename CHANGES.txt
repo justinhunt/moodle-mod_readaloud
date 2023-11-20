@@ -1,3 +1,6 @@
+Version 2.1.4 (Build 2023112000)
+- Some hard coded strings existed (ie only English), now those strings are translatable
+
 Version 2.1.3 (Build 2023111800)
 - Fixed poor number -word conversion
 - Added Whisper voices

@@ -31,8 +31,10 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.showgrades =opts['showgrades'];
             this.filename=opts['filename'];
             this.notingradebook=opts['notingradebook'];
+            this.init_strings();
             this.register_controls();
             this.register_events();
+
 
             if(!this.ready && this.attemptid){
                 if(this.remotetranscribe) {
