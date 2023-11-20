@@ -2200,7 +2200,7 @@ class utils {
              if(!empty($tags)){
                  $tags=' ('.$tags.')';
              }
-             $ret[$v]=$voicename . $tags . ' - (' . $lang_options[$lang] . ')';
+             $ret[$v]= $lang_options[$lang] . ' ' . $voicename . $tags;
             }
         }
         $ret = array_merge(array(constants::TTS_NONE => get_string('nottsvoice',constants::M_COMPONENT)), $ret);
