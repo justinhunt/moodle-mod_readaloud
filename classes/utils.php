@@ -1856,7 +1856,8 @@ class utils {
     }//end of function
 
     //This is a semi duplicate of passage_renderer::render_passage
-    // but its for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
+    // but it
+    //7s for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
     public static function fetch_passage_as_words($passage,$language){
 
             // load the HTML document
@@ -2249,7 +2250,8 @@ class utils {
                 constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
                 constants::M_LANG_ZHCN => get_string('zh-cn', constants::M_COMPONENT),
                 constants::M_LANG_NONO => get_string('no-no', constants::M_COMPONENT),
-                //constants::M_LANG_NBNO => get_string('nb-no', constants::M_COMPONENT),
+               // constants::M_LANG_NBNO => get_string('nb-no', constants::M_COMPONENT),
+               // constants::M_LANG_NNNO => get_string('nn-no', constants::M_COMPONENT),
                 constants::M_LANG_PLPL => get_string('pl-pl', constants::M_COMPONENT),
                 constants::M_LANG_RORO => get_string('ro-ro', constants::M_COMPONENT),
                 constants::M_LANG_SVSE => get_string('sv-se', constants::M_COMPONENT),
