@@ -1,5 +1,6 @@
-Version 2.1.5 (Build 202403XXXX)
+Version 2.1.5 (Build 2024032400)
 - Tweaks to prevent stop and play buttons affecting passage layout
+- Better display of language options in settings
 
 Version 2.1.4 (Build 2023112001)
 - Some hard coded strings existed (ie only English), now those strings are translatable
