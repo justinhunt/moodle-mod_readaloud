@@ -577,6 +577,7 @@ div.mod_readaloud_attemptsummarytable {
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 20px;
 }
 
 .mod_readaloud_modal_target_word {
