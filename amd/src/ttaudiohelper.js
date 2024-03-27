@@ -129,6 +129,14 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder'], function ($, log, w
                     noiseSuppression: false
                 }
             }
+
+            //for ios we need to do this to keep playback volume high
+            if ("audioSession" in navigator) {
+                navigator.audioSession.type = 'play-and-record';
+                console.log("AudioSession API is supported");
+            }
+
+            //get media stream
             navigator.mediaDevices.getUserMedia({
                 audio:  audioconstraints,
                 video: false,
