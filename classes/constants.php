@@ -25,7 +25,7 @@ class constants {
 
     const M_NEURALVOICES = array("Amy","Emma","Brian","Olivia","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly",
             "Salli","Joey","Justin","Kevin","Matthew","Lupe", "Gabrielle", "Vicki", "Seoyeon","Takumi","lucia",
-        "Lea","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila","Ida","Kazuha","Tomoko","Elin");
+        "Lea","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila","Ida","Kazuha","Tomoko","Elin","Hala","Zayd");
 
     const M_WHISPERVOICES = array('en-US-Whisper-alloy'=>'Ricky','en-US-Whisper-onyx'=>'Ed',
         'en-US-Whisper-nova'=>'Tiffany','en-US-Whisper-shimmer'=>'Tammy',
