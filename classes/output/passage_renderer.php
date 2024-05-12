@@ -169,7 +169,7 @@ class passage_renderer extends \plugin_renderer_base {
         foreach ($nodes as $node) {
 
             //if its empty space, move on
-            $trimmednode = trim($node->nodeValue);
+            $trimmednode = \core_text::trim_utf8_bom($node->nodeValue);
             if (empty($trimmednode)) {
                 continue;
             }

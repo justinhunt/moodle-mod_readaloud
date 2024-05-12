@@ -107,7 +107,7 @@ class report_renderer extends \plugin_renderer_base {
 
         // Use the sectiontitle as the file name. Clean it and change any non-filename characters to '_'.
         $name = clean_param($sectiontitle, PARAM_FILE);
-        $name = preg_replace("/[^A-Z0-9]+/i", "_", trim($name));
+        $name = preg_replace("/[^A-Z0-9]+/i", "_", \core_text::trim_utf8_bom($name));
         $quote = '"';
         $delim = ",";//"\t";
         $newline = "\r\n";

@@ -10,19 +10,17 @@
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
 
 use \mod_readaloud\utils;
 use \mod_readaloud\diff;
 use \mod_readaloud\alphabetconverter;
 use \mod_readaloud\constants;
 
-use external_api;
-use external_function_parameters;
-use external_value;
 
 class mod_readaloud_external extends external_api {
-
-
 
     public static function check_for_results_parameters() {
         return new external_function_parameters([

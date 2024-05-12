@@ -1,3 +1,6 @@
+Version 2.1.6 (Build 2024051200)
+- Tweaks to format functions for PHP8.2
+
 Version 2.1.5 (Build 2024032400)
 - Tweaks to prevent stop and play buttons affecting passage layout
 - Better display of language options in settings
