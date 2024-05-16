@@ -1,3 +1,6 @@
+Version 2.1.7 (Build 2024051600)
+- Fixes for external API calls on pre M40 sites
+
 Version 2.1.6 (Build 2024051200)
 - Tweaks to format functions for PHP8.2
 
