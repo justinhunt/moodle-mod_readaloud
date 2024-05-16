@@ -1,3 +1,6 @@
+Version 2.1.8 (Build 2024051601)
+- Missing view start and end in backup and restore
+
 Version 2.1.7 (Build 2024051600)
 - Fixes for external API calls on pre M40 sites
 
