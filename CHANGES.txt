@@ -1,3 +1,6 @@
+Version 2.1.9 (Build 2024052900)
+- Fixed issue with audio sometimes not playing on "grade now" page (after playing it on "grades" page)
+
 Version 2.1.8 (Build 2024051601)
 - Missing view start and end in backup and restore
 
