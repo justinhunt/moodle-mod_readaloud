@@ -683,7 +683,7 @@ class renderer extends \plugin_renderer_base {
     public function render_hiddenaudioplayer($audiourl=false) {
         $src = $audiourl? $audiourl : '';
         $audioplayer = \html_writer::tag('audio', '',
-                array('src' => $src, 'id' => constants::M_HIDDEN_PLAYER, 'class' => constants::M_HIDDEN_PLAYER));
+                array('src' => $src, 'id' => constants::M_HIDDEN_PLAYER, 'class' => constants::M_HIDDEN_PLAYER, 'crossorigin'=>'anonymous'));
         return $audioplayer;
     }
 
