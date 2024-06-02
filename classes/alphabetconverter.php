@@ -732,6 +732,27 @@ class alphabetconverter {
         return $eraword;
     }
 
+    //number to word conversion basically assumes that number_digits in the passage, might be transcribed as number_words
+    //so the other code around here is mainly to cover that. But the other case is number_words in the passage are transcribed as number_digits
+    //We want to cover that too. But only for very basic numbers. For the most part we ask activity authors to use number_digits in the passage
+    //we use the alternates feature of the diff algorithm to pass in a set of equivalent words.
+    //eg "one|1"
+    // "two|2"
+    // "three|3"
+    public static function fetch_numerical_alternates($shortlang){
+        $rawnumbers=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,30,40,50,60,70,80,90];
+        $digits_words= self::fetch_number_conversions($rawnumbers,$shortlang);
+        $number_alternates='';
+        foreach ($digits_words as $dw){
+            $number_word=$dw['words'][0]['words'] ;
+            $number_digit=$dw['words'][0]['digits'];
+            if(!empty($number_word) && !empty($number_digit)){
+                $number_alternates.=$number_word . '|' . $number_digit . PHP_EOL;
+            }
+        }
+        return $number_alternates;
+    }
+
     /*
     * The script "borrowed" from: https://stackoverflow.com/a/30299572
      * and modified to clean up extra spaces and add " and " where needed

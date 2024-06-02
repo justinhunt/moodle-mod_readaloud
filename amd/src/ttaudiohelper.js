@@ -149,7 +149,11 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder'], function ($, log, w
             this.canvasCtx.clearRect(0, 0, this.canvas.width()*2, this.waveHeight * 2);
             this.isRecording = false;
             this.therecorder.update_audio('isRecording',false);
-            this.audioContext.close();
+            //we check audiocontext is not in an odd state before closing
+            //superclickers can get it in an odd state
+            if (this.audioContext!==null && this.audioContext.state !== "closed") {
+                this.audioContext.close();
+            }
             this.processor.disconnect();
             this.tracks.forEach(function(track){track.stop();});
             this.onStop(this.encoder.finish());

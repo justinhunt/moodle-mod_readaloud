@@ -50,6 +50,12 @@ define(['jquery', 'core/log'], function ($, log) {
         },
 
         finish: function(mimeType) {
+
+            //this would be an event that occurs after recorder has stopped lets just ignore it
+            if(this.dataViews===undefined){
+                return;
+            }
+
             var dataSize = this.numChannels * this.numSamples * 2;
             var view = new DataView(new ArrayBuffer(44));
             this.setString(view, 0, 'RIFF');

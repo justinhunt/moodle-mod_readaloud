@@ -1149,10 +1149,17 @@ class utils {
 
         //turn the passage and transcript into an array of words
         $passagebits = diff::fetchWordArray($passage);
-        $alternatives = diff::fetchAlternativesArray($alternatives);
+
         $transcriptbits = diff::fetchWordArray($transcript);
         $wildcards = diff::fetchWildcardsArray($alternatives);
         $passagephonetic_bits = diff::fetchWordArray($passagephonetic);
+
+        //a little massaging for numbers in the passage
+        //get a short language code, eg en-US => en
+        $shortlang = utils::fetch_short_lang($language);
+        //we also want to fetch the alternatives for the number_words in passage (though we expect number_digits there)
+        $alternatives .= PHP_EOL . alphabetconverter::fetch_numerical_alternates($shortlang);  //"four|for|4";
+        $alternativesArray = diff::fetchAlternativesArray($alternatives);
 
         //If this is Japanese we want to segment it into "words"
         if($language == constants::M_LANG_JAJP) {
@@ -1169,7 +1176,7 @@ class utils {
         // then prepare an array of "differences"
         $passagecount = count($passagebits);
         $transcriptcount = count($transcriptbits);
-        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language,$transcriptphonetic_bits,$passagephonetic_bits);
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternativesArray, $language,$transcriptphonetic_bits,$passagephonetic_bits);
 
         $debugsequences = array();
         if ($debug) {
@@ -1234,7 +1241,7 @@ class utils {
 
         //also  capture match information for debugging and audio point matching
         //we can only map transcript to audio from match data
-        $matches = utils::fetch_audio_points($fulltranscript, $matches, $alternatives);
+        $matches = utils::fetch_audio_points($fulltranscript, $matches, $alternativesArray);
 
         return[$matches,$sessionendword,$sessionerrors,$errorcount,$debugsequences];
 
