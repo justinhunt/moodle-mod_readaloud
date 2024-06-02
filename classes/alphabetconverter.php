@@ -62,7 +62,7 @@ class alphabetconverter {
         else $out[] = $nul;
         $out[] = self::ru_morph(intval($rub), $unit[1][0],$unit[1][1],$unit[1][2]); // rub
         $out[] = $kop.' '.self::ru_morph($kop,$unit[0][0],$unit[0][1],$unit[0][2]); // kop
-        return \core_text::trim_utf8_bom(preg_replace('/ {2,}/', ' ', join(' ',$out)));
+        return trim(preg_replace('/ {2,}/', ' ', join(' ',$out)));
     }
 
     static function ru_morph($n, $f1, $f2, $f5) {
@@ -668,7 +668,7 @@ class alphabetconverter {
      * Eras are common in passages e.g "during the 1860s women were not free to...."
      */
     public static function convert_years_to_words($num=false,$isera=false){
-        $num = str_replace(array(',', ' '), '' , \core_text::trim_utf8_bom($num));
+        $num = str_replace(array(',', ' '), '' , trim($num));
         if(! $num) {
             return false;
         }
@@ -708,7 +708,7 @@ class alphabetconverter {
                     $remainderword = self::convert_numbers_to_words($remainder);
                 }
         }
-        $ret = \core_text::trim_utf8_bom($centuryword . ' ' . $remainderword);
+        $ret = trim($centuryword . ' ' . $remainderword);
         $ret = preg_replace('/\s+/', ' ', $ret);
         return $ret;
     }
@@ -759,7 +759,7 @@ class alphabetconverter {
     */
     public static function convert_numbers_to_words($num = false)
     {
-        $num = str_replace(array(',', ' '), '' , \core_text::trim_utf8_bom($num));
+        $num = str_replace(array(',', ' '), '' , trim($num));
         if(! $num) {
             return false;
         }
@@ -799,7 +799,7 @@ class alphabetconverter {
         if ($commas > 1) {
             $commas = $commas - 1;
         }
-        $ret= \core_text::trim_utf8_bom(implode(' ', $words));
+        $ret= trim(implode(' ', $words));
         $ret = preg_replace('/\s+/', ' ', $ret);
         return $ret;
     }
