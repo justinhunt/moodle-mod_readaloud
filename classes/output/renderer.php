@@ -655,7 +655,7 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_intro($readaloud, $cm) {
         $ret = "";
-        if (\core_text::trim_utf8_bom(strip_tags($readaloud->intro))) {
+        if (utils::super_trim(strip_tags($readaloud->intro))) {
             $ret .= $this->output->box_start(constants::M_INTRO_CONTAINER . ' ' . constants::M_CLASS . '_center ');
             $ret .= format_module_intro('readaloud', $readaloud, $cm->id);
             $ret .= $this->output->box_end();

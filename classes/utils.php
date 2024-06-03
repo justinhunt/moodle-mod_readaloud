@@ -80,7 +80,7 @@ class utils {
                             $shortlang=='uk' ||
                             $shortlang=='ro' ||
                             $shortlang=='hu' ||
-                            $shortlang=='es') && \core_text::trim_utf8_bom($moduleinstance->passage)!=="";
+                            $shortlang=='es') && self::super_trim($moduleinstance->passage)!=="";
         }
     }
 
@@ -788,8 +788,8 @@ class utils {
                         get_string('refreshtoken', constants::M_COMPONENT)) . '<br>';
 
         $message = '';
-        $apiuser = \core_text::trim_utf8_bom($apiuser);
-        $apisecret = \core_text::trim_utf8_bom($apisecret);
+        $apiuser = self::super_trim($apiuser);
+        $apisecret = self::super_trim($apisecret);
         if (empty($apiuser)) {
             $message .= get_string('noapiuser', constants::M_COMPONENT) . '<br>';
         }
@@ -841,8 +841,8 @@ class utils {
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
         $tokenuser = $cache->get('recentpoodlluser');
-        $apiuser = \core_text::trim_utf8_bom($apiuser);
-        $apisecret = \core_text::trim_utf8_bom($apisecret);
+        $apiuser = self::super_trim($apiuser);
+        $apisecret = self::super_trim($apisecret);
 
         //if we got a token and its less than expiry time
         // use the cached one
@@ -1554,7 +1554,7 @@ class utils {
         }
 
         $ret = implode(" ", $retarray);
-        if (\core_text::trim_utf8_bom($ret) == '') {
+        if (self::super_trim($ret) == '') {
             return false;
         } else {
             return $ret;
@@ -1883,7 +1883,7 @@ class utils {
             foreach ($nodes as $node) {
 
                 //if its empty space, move on
-                $trimmednode = \core_text::trim_utf8_bom($node->nodeValue);
+                $trimmednode = self::super_trim($node->nodeValue);
                 if (empty($trimmednode)) {
                     continue;
                 }
@@ -2670,6 +2670,15 @@ class utils {
 
         return $attempts;
 
+    }
+
+    public static function super_trim($str){
+        if($str==null){
+            return '';
+        }else{
+            $str = trim($str);
+            return $str;
+        }
     }
 
 }
