@@ -1,3 +1,8 @@
+Version 2.1.10 (Build 202406xxxx)
+-- fixed wrong trim function
+- added a bit more robustness to prevent superclickers from breaking the audio recorder
+- fixed wrong dialect labels for Arabic voices:  Arabic (modern standard) / Arabic (gulf)
+
 Version 2.1.9 (Build 2024052900)
 - Fixed issue with audio sometimes not playing on "grade now" page (after playing it on "grades" page)
 

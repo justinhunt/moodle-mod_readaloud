@@ -36,8 +36,8 @@ class constants {
         'mk-MK-Whisper-alloy'=>'Trajko','mk-MK-Whisper-shimmer'=>'Marija');
 
     const ALL_VOICES = array(
-        constants::M_LANG_ARAE => ['Zeina'=>'Zeina','ar-XA-Wavenet-B'=>'Amir_g','ar-XA-Wavenet-A'=>'Salma_g'],
-        constants::M_LANG_ARSA =>  ['Hala'=>'Hala','Zayd'=>'Zayd'],
+        constants::M_LANG_ARAE => ['Hala'=>'Hala','Zayd'=>'Zayd'],
+        constants::M_LANG_ARSA => ['Zeina'=>'Zeina','ar-XA-Wavenet-B'=>'Amir_g','ar-XA-Wavenet-A'=>'Salma_g'],
         constants::M_LANG_BGBG => ['bg-BG-Standard-A' => 'Mila_g'],//nikolai
         constants::M_LANG_HRHR => ['hr-HR-Whisper-alloy'=>'Marko','hr-HR-Whisper-shimmer'=>'Ivana'],
         constants::M_LANG_ZHCN => ['Zhiyu'=>'Zhiyu'],
