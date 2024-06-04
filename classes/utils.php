@@ -2151,6 +2151,13 @@ class utils {
         return $ret;
     }
 
+    public static function get_english_langcodes(){
+        $langcodes =[constants::M_LANG_ENUS ,
+            constants::M_LANG_ENGB , constants::M_LANG_ENAU , constants::M_LANG_ENPH , constants::M_LANG_ENNZ , constants::M_LANG_ENZA ,
+            constants::M_LANG_ENIN , constants::M_LANG_ENIE , constants::M_LANG_ENWL , constants::M_LANG_ENAB];
+        return $langcodes;
+    }
+
     public static function get_lang_options() {
         return array(
                 constants::M_LANG_ARAE => get_string('ar-ae', constants::M_COMPONENT),
@@ -2213,15 +2220,13 @@ class utils {
                 constants::M_LANG_UKUA => get_string('uk-ua',constants::M_COMPONENT),
                // constants::M_LANG_NBNO => get_string('nb-no', constants::M_COMPONENT),
                // constants::M_LANG_NNNO => get_string('nn-no', constants::M_COMPONENT),
-
-
         );
-
     }
 
     public static function add_mform_elements($mform, $context,$cmid,$setuptab=false) {
-        global $CFG, $COURSE;
+        global $CFG, $COURSE, $OUTPUT;
         $config = get_config(constants::M_COMPONENT);
+        $m35 = $CFG->version >= 2018051700;
 
         //if this is setup tab we need to add a field to tell it the id of the activity
         if($setuptab) {
@@ -2263,9 +2268,19 @@ class utils {
         $mform->setDefault('timelimit', 60);
         $mform->addHelpButton('timelimit', 'timelimit', constants::M_COMPONENT);
 
-        //add other editors
-        //could add files but need the context/mod info. So for now just rich text
-        $config = get_config(constants::M_COMPONENT);
+
+        //Text Generator Form
+        $textgendata = ['cloudpoodlltoken'=>self::fetch_token($config->apiuser,$config->apisecret)];
+        $textgenerator  = $OUTPUT->render_from_template( constants::M_COMPONENT . '/textgenerator',$textgendata);
+        $mform->addElement('static', 'textgeneratorform', '',
+                $textgenerator);
+        if($m35){
+            $englishes=self::get_english_langcodes();
+            //this doesn't work because statics are not hidden in Moodle
+            //i dont know if not in is real either
+            $mform->hideIf('textgeneratorform','ttslanguage','notin', $englishes);
+        }
+
 
         //The passage
         //we stopped allowing rich text. It does not show anyway.
@@ -2275,7 +2290,6 @@ class utils {
         $mform->addElement('editor', 'passage_editor', get_string('passagelabel', constants::M_COMPONENT), $opts, $ednofileoptions);
         $mform->addHelpButton('passage_editor', 'passage_editor', constants::M_COMPONENT);
         */
-        //The alternatives declaration
         $mform->addElement('textarea', 'passage', get_string("passagelabel", constants::M_COMPONENT),
             'wrap="virtual" rows="15" cols="100"');
         $mform->setDefault('passage', '');
@@ -2303,7 +2317,6 @@ class utils {
         $mform->addElement('select', 'ttsspeed', get_string('ttsspeed', constants::M_COMPONENT), $speedoptions);
         $mform->setDefault('ttsspeed', constants::TTSSPEED_SLOW);
         $mform->addHelpButton('ttsspeed', 'ttsspeed', constants::M_COMPONENT);
-        $m35 = $CFG->version >= 2018051700;
         $whisperkeys = array_keys(constants::M_WHISPERVOICES);
         if($m35){
             $mform->hideIf('ttsspeed','ttsvoice','in', $whisperkeys);

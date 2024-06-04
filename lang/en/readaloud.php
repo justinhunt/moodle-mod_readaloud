@@ -687,3 +687,16 @@ $string['unit_percent']="percent";
 $string['unit_words']="words";
 
 $string['confirm_cancel_recording']="Cancel recording and quit this attempt?";
+$string['textgeneratorshow']="Show Text Generator (Beta)";
+$string['textgeneratorhide']="Hide Text Generator (Beta)";
+$string['textgenerator_instructions']="Enter a short non fiction topic description and press the button to generate a passage. It will often not be factually accurate. Please be careful be using it with students.";
+$string['article-topic-here']="e.g Pros and cons of social media";
+$string['generate-text']="Generate Passage";
+$string['entersomething']="Please enter a topic in order to generate a passage";
+$string['text-too-long-100']="Your topic should be no more than 100 characters. Simply describe the topic, don't write a full sentence, or give additional instructions.";
+$string['textgeneratorconfirm']="Overwrite Confirmation";
+$string['reallyoverwritepassage']="Overwrite the current passage with a new one?";
+$string['overwrite']="Overwrite";
+$string['cancel']="Cancel";
+
+

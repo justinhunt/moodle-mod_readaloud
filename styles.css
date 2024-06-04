@@ -1002,3 +1002,18 @@ div.mod_readaloud_attemptsummarytable {
   color: transparent;
   text-shadow: 0 0 8px #000;
 }
+
+.mra_tg_togglebutton{
+  float: right;
+}
+.mra_tg_promptbox {
+  width: 100%;
+}
+.mra_tg_heading {
+  font-weight: bold;
+}
+
+.mra_tg_message, .mra_tg_gobuttoncontainer {
+  text-align: center;
+  margin: 5px;
+}
