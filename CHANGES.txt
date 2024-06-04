@@ -1,3 +1,6 @@
+2.1.11 (Build 2024060401)
+- Fixed broken CSV export from earlier update
+
 Version 2.1.10 (Build 2024060400)
 - fixed wrong trim function
 - added a bit more robustness to prevent superclickers from breaking the audio recorder
