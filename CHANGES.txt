@@ -1,3 +1,6 @@
+2.1.12 (Build 2024061500)
+- Fixed broken speech rec on some langs from previous update
+
 2.1.11 (Build 2024060401)
 - Fixed broken CSV export from earlier update
 
