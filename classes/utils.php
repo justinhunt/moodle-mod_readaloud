@@ -2270,15 +2270,15 @@ class utils {
 
 
         //Text Generator Form
-        $textgendata = ['cloudpoodlltoken'=>self::fetch_token($config->apiuser,$config->apisecret)];
-        $textgenerator  = $OUTPUT->render_from_template( constants::M_COMPONENT . '/textgenerator',$textgendata);
-        $mform->addElement('static', 'textgeneratorform', '',
-                $textgenerator);
+        $textutilsdata = ['cloudpoodlltoken'=>self::fetch_token($config->apiuser,$config->apisecret)];
+        $textutils  = $OUTPUT->render_from_template( constants::M_COMPONENT . '/textutils',$textutilsdata);
+        $mform->addElement('static', 'textutils', '',
+                $textutils);
         if($m35){
             $englishes=self::get_english_langcodes();
             //this doesn't work because statics are not hidden in Moodle
-            //i dont know if not in is real either
-            $mform->hideIf('textgeneratorform','ttslanguage','notin', $englishes);
+            //i dont know if 'notin' is a real condition either
+            $mform->hideIf('textutils','ttslanguage','notin', $englishes);
         }
 
 

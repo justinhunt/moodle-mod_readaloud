@@ -163,7 +163,7 @@ define(['jquery', 'core/log','core/ajax'], function ($, log,ajax) {
                 + "&language=" + language
                 + "&subject=" + subject
                 + "&action=" + action
-                + '&appid=' + 'mod_ogte'
+                + '&appid=' + 'mod_readaloud'
                 + '&owner=poodll'
                 + '&region=useast1';
 

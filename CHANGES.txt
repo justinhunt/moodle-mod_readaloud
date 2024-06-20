@@ -1,3 +1,7 @@
+2.1.13 (Build 2024061500)
+- Added language strings for datatables
+- Added text simplifier tools to instance settings page
+
 2.1.12 (Build 2024061500)
 - Fixed broken speech rec on some langs from previous update
 

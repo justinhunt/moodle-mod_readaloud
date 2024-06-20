@@ -1,0 +1,137 @@
+<div id="{{uniqid}}" class="mod_readaloud_textutils">
+    <!-- If API user then show a link + js to poke creds in -->
+    <a href="#" class="mra_tg_togglebutton">{{#str}}aitextutilsshow, mod_readaloud{{/str}}</a>
+        <div class="mra_tg_maincontainer" style="display: none">
+            <a href="#" class="mra_tg_togglebutton" style="display: none">{{#str}}aitextutilshide, mod_readaloud{{/str}}</a>
+            <ul class="nav nav-tabs" id="ra_textutils" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="tab-generator-tab" data-toggle="tab" href="#tab-generator" role="tab" aria-controls="tab-generator" aria-selected="false">{{#str}}generate-text, mod_readaloud{{/str}}</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="tab-simplifier-tab" data-toggle="tab" href="#tab-simplifier" role="tab" aria-controls="tab-simplifier" aria-selected="false">{{#str}}simplify-text, mod_readaloud{{/str}}</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="ra_textutilscontent">
+                <div class="tab-pane fade show active" id="tab-generator" role="tabpanel" aria-labelledby="tab-generator-tab">
+                    <div class="mra_tg_instructions">{{#str}}textgenerator_instructions, mod_readaloud{{/str}}</div><br/>
+                    <input type="text" class="mra_tg_promptbox" placeholder="{{#str}}article-topic-here, mod_readaloud{{/str}}"></input>
+                    <div class="mra_tg_gobuttoncontainer">
+                        <button id="mra_tg_generatebutton" type="button" class="btn btn-primary mra_tg_generatebutton">{{#str}}generate-text, mod_readaloud{{/str}}</button>
+                    </div>
+                    <div class="mra_tg_message" style="text-align: center"></div>
+                </div>
+                <div class="tab-pane fade" id="tab-simplifier" role="tabpanel" aria-labelledby="tab-simplifier-tab">
+                    <div class="mra_tg_instructions">{{#str}}textsimplifier_instructions, mod_readaloud{{/str}}</div><br/>
+                   
+                   <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn btn-secondary active">
+                                <input type="radio" name="simplifylevel" value="1"> {{#str}}one_simplest,mod_readaloud{{/str}}
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="simplifylevel" value="2" checked> {{#str}}two,mod_readaloud{{/str}}
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="simplifylevel" value="3"> {{#str}}three,mod_readaloud{{/str}}
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="simplifylevel" value="4"> {{#str}}four,mod_readaloud{{/str}}
+                            </label>
+                            <label class="btn btn-secondary">
+                                <input type="radio" name="simplifylevel" value="5"> {{#str}}five,mod_readaloud{{/str}}
+                            </label>
+                    </div>
+                    <div class="mra_tg_gobuttoncontainer">
+                        <button id="mra_tg_simplifybutton" type="button" class="btn btn-primary mra_tg_simplifybutton">{{#str}}simplify-text, mod_readaloud{{/str}}</button>
+                    </div>
+                    <div class="mra_tg_message" style="text-align: center"></div>
+                </div>
+            </div>
+        </div>
+
+</div>
+{{^element.frozen}}
+    {{#js}}
+    //<script>
+        require(['jquery','core/notification','mod_readaloud/textutils'],function($,notification,textutils) {
+            var maincontainer = $(".mod_readaloud_textutils .mra_tg_maincontainer");
+            var togglebuttons = $(".mod_readaloud_textutils .mra_tg_togglebutton");
+            var promptbox = $(".mod_readaloud_textutils .mra_tg_promptbox");
+            var passagebox = $("#id_passage");
+            var messagearea = $(".mod_readaloud_textutils .mra_tg_message");
+            var generatebutton = $(".mod_readaloud_textutils #mra_tg_generatebutton");
+            var simplifybutton = $(".mod_readaloud_textutils #mra_tg_simplifybutton");
+            var passagelanguage= $("#id_ttslanguage");
+
+            textutils.setCloudPoodllToken('{{cloudpoodlltoken}}');
+
+            togglebuttons.on("click", function() {
+                event.preventDefault();
+                //toggle the container
+                maincontainer.toggle();
+                //also toggle the buttons
+                togglebuttons.toggle();
+            });
+
+            generatebutton.on('click',function(){
+                var currentText = passagebox.val().trim();
+                var fetchPassageFunc = function() {
+                    //show a spinner
+                    messagearea.html('<i class="fa fa-spinner fa-spin fa-sm"></i>');
+                    var theprompt = promptbox.val();
+                    //no super long readings or empty ones
+                    if (!theprompt || theprompt.trim() === '') {
+                        messagearea.text("{{#str}}entersomething, mod_readaloud{{/str}}");
+                        return;
+                    }
+                    if (theprompt.length > 100) {
+                        messagearea.text("{{#str}}text-too-long-100, mod_readaloud{{/str}}");
+                        return;
+                    }
+                    var language = 'en-US';
+                    textutils.call_ai(theprompt, passagelanguage.val(), '', 'generate_article', function (thearticle) {
+                        messagearea.text('');
+                        passagebox.val(thearticle);
+                    });
+                };
+
+                if(currentText !==''){
+                    notification.confirm("{{#str}}textoverwriteconfirm, mod_readaloud{{/str}}",
+                        "{{#str}}reallyoverwritepassage, mod_readaloud{{/str}}",
+                        "{{#str}}overwrite, mod_readaloud{{/str}}",
+                        "{{#str}}cancel, mod_readaloud{{/str}}",fetchPassageFunc);
+                }else{
+                    fetchPassageFunc();
+                }
+            });
+
+            simplifybutton.on('click',function(){
+                var currentText = passagebox.val().trim();
+                var simplifyLevel = $('input[name="simplifylevel"]:checked').val();
+                var fetchPassageFunc = function() {
+                    //show a spinner
+                    messagearea.html('<i class="fa fa-spinner fa-spin fa-sm"></i>');
+                    var theprompt = promptbox.val();
+                    //no super long readings or empty ones
+                    if (!currentText || currentText.trim() === '') {
+                        messagearea.text("{{#str}}entersomething, mod_readaloud{{/str}}");
+                        return;
+                    }
+                    textutils.call_ai(currentText, passagelanguage.val(), simplifyLevel, 'rewrite_article', function (thearticle) {
+                        messagearea.text('');
+                        passagebox.val(thearticle);
+                    });
+                };
+
+                if(currentText !==''){
+                    notification.confirm("{{#str}}textoverwriteconfirm, mod_readaloud{{/str}}",
+                        "{{#str}}reallyoverwritepassage, mod_readaloud{{/str}}",
+                        "{{#str}}overwrite, mod_readaloud{{/str}}",
+                        "{{#str}}cancel, mod_readaloud{{/str}}",fetchPassageFunc);
+                }else{
+                    fetchPassageFunc();
+                }
+            });
+
+        });
+    {{/js}}
+{{/element.frozen}}
