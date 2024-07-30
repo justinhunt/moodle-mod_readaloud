@@ -1,3 +1,6 @@
+2.1.14 (Build 2024073000)
+- Added silence detection for guided audio recorder
+
 2.1.13 (Build 2024062000)
 - Added language strings for datatables
 - Added text simplifier tools to instance settings page

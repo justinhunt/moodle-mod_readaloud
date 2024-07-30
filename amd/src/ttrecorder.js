@@ -174,6 +174,12 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                 this.waveHeight=this.controls.recorderbutton.data('waveheight');
             },
 
+            silence_detected: function(){
+                if(this.audio.isRecording){
+                    this.toggleRecording();
+                }
+            },
+
             update_audio: function(newprops,val){
                 if (typeof newprops === 'string') {
                     log.debug('update_audio:' + newprops + ':' + val);
