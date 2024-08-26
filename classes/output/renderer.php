@@ -39,6 +39,7 @@ class renderer extends \plugin_renderer_base {
         $this->page->set_title($title);
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
+
         if(!$moduleinstance->foriframe) {
             $thetitle = $this->output->heading($activityname, 3, 'main');
             $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');

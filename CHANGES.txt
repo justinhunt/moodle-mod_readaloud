@@ -1,3 +1,6 @@
+2.1.15 (Build 2024082600)
+- Fix for layout(display of introduction) issue on Adaptable theme
+
 2.1.14 (Build 2024073000)
 - Added silence detection for guided audio recorder
 
