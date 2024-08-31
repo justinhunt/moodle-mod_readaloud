@@ -153,6 +153,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $this->add_related_files(constants::M_COMPONENT, 'welcome', null);
         $this->add_related_files(constants::M_COMPONENT, 'passage', null);
         $this->add_related_files(constants::M_COMPONENT, 'feedback', null);
+        $this->add_related_files(constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, null);
 
         //question stuff
         //do question areas

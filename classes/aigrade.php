@@ -45,6 +45,20 @@ class aigrade {
                 if ($success) {
                     $this->do_diff();
                     $this->send_to_gradebook();
+
+                    //little hack to generate a flowercard
+                    //TO DO put this in the correct location
+                    if(class_exists('\block_readaloudstudent\flower') && $this->attemptdata->flowerid==0){
+                        if($this->activitydata->stdashboardid){
+                            $block_context= \core\context\block::instance($this->activitydata->stdashboardid,IGNORE_MISSING);
+                            if($block_context){
+                                $flower=new \block_readaloudstudent\flower($block_context);
+                                $newflower=$flower->fetch_newflower($this->attemptdata->readaloudid,$this->attemptdata->userid);
+                                $DB->update_record(constants::M_USERTABLE, array('id' => $attemptid,'flowerid'=>$newflower['id']));
+                            }
+                        }   
+                    }
+
                 }
             }
         } else {

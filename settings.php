@@ -227,5 +227,12 @@ if ($ADMIN->fulltree) {
             get_string('enablesetuptab', constants::M_COMPONENT), get_string('enablesetuptab_details',constants::M_COMPONENT), 0));
 
 
+        //St Dashboard Id
+        $name = 'stdashboardid';
+        $label = get_string($name, constants::M_COMPONENT);
+        $details = get_string($name . '_details', constants::M_COMPONENT);
+        $default = 0;
+        $settings->add(new admin_setting_configtext(constants::M_COMPONENT . "/$name",
+                $label, $details, $default, PARAM_INT));
 
 }

@@ -134,7 +134,8 @@ class constants {
     const TEXTCHOICE = 'textchoice';
     const TEXTBOXCHOICE = 'textboxchoice';
     const CORRECTANSWER = 'correctanswer';
-
+    const PASSAGEPICTURE='passagepicture';
+    const PASSAGEPICTURE_FILEAREA = 'passagepicture';
 
 
     //grading options

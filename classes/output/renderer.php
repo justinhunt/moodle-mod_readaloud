@@ -1157,5 +1157,38 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
+        /**
+     * Show the reading passage for print, just a dummy function for now
+     * TO DO implement this
+     */
+    public function fetch_passage_forprint($moduleinstance,$cm,$markeduppassage){
+
+        $comp_test =  new \mod_readaloud\comprehensiontest($cm);
+
+        //passage picture
+        if($moduleinstance->passagepicture) {
+            $zeroitem = new \stdClass();
+            $zeroitem->id = 0;
+            $picurl = $comp_test->fetch_media_url(constants::PASSAGEPICTURE_FILEAREA, $zeroitem);
+            $picture = \html_writer::img($picurl, '', array('role' => 'decoration'));
+            $picturecontainer = \html_writer::div($picture, constants::M_COMPONENT . '-passage-pic');
+        }else{
+            $picturecontainer ='';
+        }
+
+        //passage
+        if($markeduppassage){
+            $passage = $markeduppassage;
+        }else{
+            $passage =  utils::lines_to_brs($moduleinstance->passage);
+        }
+
+        $ret = "";
+        $ret .= \html_writer::div( $picturecontainer . $passage ,constants::M_PASSAGE_CONTAINER . ' '  . constants::M_MSV_MODE . ' '  . constants::M_POSTATTEMPT,
+                array('id'=>constants::M_PASSAGE_CONTAINER));
+
+        return $ret;
+    }
+
 
 }

@@ -1723,9 +1723,26 @@ class utils {
         $newattempt->sessionerrors = '';
         $newattempt->errorcount = 0;
         $newattempt->wpm = 0;
-        $newattempt->dontgrade = $gradeable ? 0 : 1 ;
+        $readaloud= $gradeable ? 0 : 1 ;
         $newattempt->timecreated = time();
         $newattempt->timemodified = time();
+
+        //generate a flowercard - flower id
+        //we could do this here, but there is not check student produced anything, so doing this in aigrade
+        /*
+        if(class_exists('\block_readaloudstudent\flower')){
+            if($readaloud->stdashboardid){
+                $block_context= \core\context\block::instance($readaloud->stdashboardid,IGNORE_MISSING);
+                if($block_context){
+                    $flower=new \block_readaloudstudent\flower($block_context);
+                    $newflower=$flower->fetch_newflower($readaloud->id,$USER->id);
+                    $newattempt->flowerid=$newflower['id'];
+                }
+            }   
+        }
+         */
+
+
         $attemptid = $DB->insert_record(constants::M_USERTABLE, $newattempt);
         if (!$attemptid) {
             return false;
@@ -2298,6 +2315,11 @@ class utils {
             get_string('passage_descr', constants::M_COMPONENT));
         $mform->addHelpButton('passage', 'passage', constants::M_COMPONENT);
 
+        //Image to accompany passage in quiz part of activity
+        $ppoptions = readaloud_picturefile_options($context);
+        $mform->addElement('filemanager', 'passagepicture', get_string('passagepicture',constants::M_COMPONENT), null, $ppoptions);
+
+
         //tts options
         $langoptions = \mod_readaloud\utils::get_lang_options();
         $mform->addElement('select', 'ttslanguage', get_string('ttslanguage', constants::M_COMPONENT), $langoptions);
@@ -2382,7 +2404,7 @@ class utils {
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', constants::M_COMPONENT), $attemptoptions);
 
 
-        // Appearance.
+        // Advanced.
         $mform->addElement('header', 'advancedheader', get_string('advancedheader', constants::M_COMPONENT));
 
         // Adding the customfont field
@@ -2415,6 +2437,11 @@ class utils {
                     get_string('masterinstance_details', constants::M_COMPONENT));
         }
         $mform->setDefault('masterinstance', 0);
+
+         //Student Dashboard
+         $mform->addElement('text', 'stdashboardid', get_string('stdashboardid', constants::M_COMPONENT), array('size'=>'8'));
+         $mform->setType('stdashboardid', PARAM_INT);
+         $mform->setDefault('stdashboardid', $config->stdashboardid);
 
         // Appearance.
         $mform->addElement('header', 'recordingaiheader', get_string('recordingaiheader', constants::M_COMPONENT));
@@ -2627,7 +2654,7 @@ class utils {
     }
 
     public static function prepare_file_and_json_stuff($moduleinstance, $context){
-
+        //nb basically moduleinstance = formdata here
         $ednofileoptions = readaloud_editor_no_files_options($context);
         $editors = readaloud_get_editornames();
         $itemid = 0;
@@ -2635,6 +2662,14 @@ class utils {
              $moduleinstance = file_prepare_standard_editor((object) $moduleinstance, $editor, $ednofileoptions, $context,
                    constants::M_COMPONENT, $editor, $itemid);
         }
+
+        //passage picture
+        $ppoptions = readaloud_picturefile_options($context);
+        $draftitemid = file_get_submitted_draft_itemid('passagepicture');
+        file_prepare_draft_area($draftitemid, $context->id, constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, 0,
+            $ppoptions);
+        $moduleinstance->passagepicture=$draftitemid;
+
         return $moduleinstance;
 
     }//end of prepare_file_and_json_stuff

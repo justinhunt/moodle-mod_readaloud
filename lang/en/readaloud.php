@@ -719,5 +719,8 @@ $string['two']="two";
 $string['three']="three";
 $string['four']="four";
 $string['five']="five";
+$string['passagepicture']='Passage picture';
+$string['stdashboardid']='Student Dashboard ID';
+$string['stdashboardid_details']='1f the student dashboard block is installed, put the id of the block here.';
 
 

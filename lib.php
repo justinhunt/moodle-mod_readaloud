@@ -103,6 +103,11 @@ function readaloud_editor_no_files_options($context) {
     return array('maxfiles' => 0, 'noclean' => true, 'context' => $context);
 }
 
+function readaloud_picturefile_options($context){
+    return array('maxfiles' => EDITOR_UNLIMITED_FILES,
+        'noclean' => true, 'context' => $context, 'subdirs' => true, 'accepted_types' => array('image'));
+}
+
 /**
  * Removes all grades from gradebook
  *
@@ -486,6 +491,10 @@ function readaloud_process_editors(stdClass $readaloud, mod_readaloud_mod_form $
         $readaloud = file_postupdate_standard_editor($readaloud, $editor, $edoptions, $context, constants::M_COMPONENT, $editor,
             $itemid);
     }
+    //do the passage picture field
+    $ppoptions=readaloud_picturefile_options($context);
+    file_save_draft_area_files($readaloud->{constants::PASSAGEPICTURE}, $context->id, constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, 0, $ppoptions);
+
     return $readaloud;
 }
 
