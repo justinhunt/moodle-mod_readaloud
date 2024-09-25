@@ -96,6 +96,7 @@ class constants {
         constants::M_LANG_TEIN => ['te-IN-Standard-A'=>'Anandi_g','te-IN-Standard-B'=>'Kai_g'],
         constants::M_LANG_TRTR => ['Filiz'=>'Filiz'],
         constants::M_LANG_UKUA => ['uk-UA-Wavenet-A'=>'Katya_g'],
+        constants::M_LANG_VIVN => ['vi-VN-Wavenet-A'=>'Huyen_g','vi-VN-Wavenet-B'=>'Duy_g'],
     );
 
     //classes for use in CSS
@@ -294,6 +295,7 @@ class constants {
     const M_LANG_FIFI ='fi-FI';
     const M_LANG_HUHU ='hu-HU';
     const M_LANG_MINZ ='mi-NZ';
+    const M_LANG_VIVN ='vi-VN';
 
     const M_LANG_BGBG = 'bg-BG';
     const M_LANG_CSCZ = 'cs-CZ';

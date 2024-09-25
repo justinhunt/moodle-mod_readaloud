@@ -2204,6 +2204,7 @@ class utils {
                 constants::M_LANG_TRTR => get_string('tr-tr', constants::M_COMPONENT),
                 constants::M_LANG_NONO => get_string('no-no', constants::M_COMPONENT),
                 constants::M_LANG_UKUA => get_string('uk-ua',constants::M_COMPONENT),
+                constants::M_LANG_VIVN => get_string('vi-vn',constants::M_COMPONENT),
                // constants::M_LANG_NBNO => get_string('nb-no', constants::M_COMPONENT),
                // constants::M_LANG_NNNO => get_string('nn-no', constants::M_COMPONENT),
 
