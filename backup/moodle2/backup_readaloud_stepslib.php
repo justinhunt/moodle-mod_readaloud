@@ -57,14 +57,14 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
                 'ttslanguage','ttsvoice','ttsspeed','enablepreview','enableshadow','enablelandr' ,'transcriber', 'modelaudiourl','modelaudiobreaks',
                 'modelaudiotrans','modelaudiofulltrans','modelaudiomatches',
                 'enableai', 'allowearlyexit','expiredays' ,'region', 'activitylink','submitrawaudio','stricttranscribe','recorder','foriframe',
-                'usecorpus','corpushash','passagekey','corpusrange','customfont','timecreated', 'timemodified','viewstart','viewend'
+                'usecorpus','corpushash','passagepicture','passagekey','corpusrange','customfont',"stdashboardid",'timecreated', 'timemodified','viewstart','viewend'
         ));
 
         //attempts
         $attempts = new backup_nested_element('attempts');
         $attempt = new backup_nested_element('attempt', array('id'), array(
                 constants::M_MODNAME . "id", "courseid", "userid", "status", "filename", "wpm", "accuracy",
-                "sessionscore", "sessiontime", "sessionerrors", "sessionendword", "errorcount","selfcorrections","sccount","qscore","qdetails","dontgrade", "timecreated", "timemodified"
+                "sessionscore", "sessiontime", "sessionerrors", "sessionendword", "errorcount","selfcorrections","sccount","qscore","qdetails","dontgrade","flowerid", "timecreated", "timemodified"
         ));
 
         //ai results
@@ -116,6 +116,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
         $oneactivity->annotate_files(constants::M_COMPONENT, 'welcome', null);
         $oneactivity->annotate_files(constants::M_COMPONENT, 'passage', null);
         $oneactivity->annotate_files(constants::M_COMPONENT, 'feedback', null);
+        $oneactivity->annotate_files(constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, null);
         //question stuff
         $oneactivity->annotate_files(constants::M_COMPONENT, constants::TEXTQUESTION_FILEAREA, 'id');
 

@@ -164,30 +164,39 @@ class mod_readaloud_external extends external_api {
         if($cmid > 0){
             $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
             $readaloud = $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
-            $alternatives = diff::fetchAlternativesArray($readaloud->alternatives);
+            $alternatives =$readaloud->alternatives;
             $region = $readaloud->region;
         }else {
-            $alternatives = diff::fetchAlternativesArray('');
+            $alternatives = '';
             $region ='tokyo';
         }
+        //get a short language code, eg en-US => en
+        $shortlang = utils::fetch_short_lang($language);
+
+        //we also want to fetch the alternatives for the number_words in passage (though we expect number_digits there)
+        $alternatives .= PHP_EOL . alphabetconverter::fetch_numerical_alternates($shortlang);  //"four|for|4";
+        $alternativesArray = diff::fetchAlternativesArray($alternatives);
 
 
         //Fetch phonetics and segments
         list($transcript_phonetic,$transcript) = utils::fetch_phones_and_segments($transcript,$language,$region);
-        $shortlang = utils::fetch_short_lang($language);
+        ;
 
         //conv. number words to digits (if that is what they originally were)
         switch ($shortlang){
             case 'ja':
-                //find digits in original passage, and convert number words to digits in the target passage
+                //find digits in original passage, and convert number words to digits in the target passage (transcript)
                 //this works but segmented digits are a bit messed up, not sure its worthwhile. more testing needed
                 //from here and aigrade
                 $transcript=alphabetconverter::words_to_suji_convert($passage,$transcript);
                 break;
             case 'en':
             default:
-                //find digits in original passage, and convert number words to digits in the target passage
+                //find digits in original passage, and convert number words to digits in the target passage (transcript)
+                //eg passage "more than 4 million people" transcript "more than four million people" => "more than 4 million people"
+                //eg passage "more than 50,000 people" transcript "more than fifty thousand people" => "more than 50 thousand people"
                 $transcript=alphabetconverter::words_to_numbers_convert($passage,$transcript,$shortlang);
+
                 break;
         }
 
@@ -205,7 +214,7 @@ class mod_readaloud_external extends external_api {
         //turn the passage and transcript into an array of words
         $passagebits = diff::fetchWordArray($passage);
         $transcriptbits = diff::fetchWordArray($transcript);
-        $wildcards = diff::fetchWildcardsArray($alternatives);
+        $wildcards = diff::fetchWildcardsArray($alternativesArray);
         $transcriptphonetic_bits = diff::fetchWordArray($transcript_phonetic);
         $passagephonetic_bits = diff::fetchWordArray($passagephonetic);
 
@@ -213,7 +222,7 @@ class mod_readaloud_external extends external_api {
         // then prepare an array of "differences"
         $passagecount = count($passagebits);
         $transcriptcount = count($transcriptbits);
-        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language,$transcriptphonetic_bits,$passagephonetic_bits);
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternativesArray, $language,$transcriptphonetic_bits,$passagephonetic_bits);
         //fetch diffs
         $debug=false;
         $diffs = diff::fetchDiffs($sequences, $passagecount, $transcriptcount, $debug);

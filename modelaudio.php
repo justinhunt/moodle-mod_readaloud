@@ -166,7 +166,7 @@ $PAGE->set_context($modulecontext);
 if($config->enablesetuptab){
     $PAGE->set_pagelayout('popup');
 }else{
-    $PAGE->set_pagelayout('course');
+    $PAGE->set_pagelayout('incourse');
 }
 
 

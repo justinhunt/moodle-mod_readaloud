@@ -9,6 +9,7 @@
 namespace mod_readaloud\output;
 
 use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 class report_renderer extends \plugin_renderer_base {
 
@@ -107,7 +108,7 @@ class report_renderer extends \plugin_renderer_base {
 
         // Use the sectiontitle as the file name. Clean it and change any non-filename characters to '_'.
         $name = clean_param($sectiontitle, PARAM_FILE);
-        $name = preg_replace("/[^A-Z0-9]+/i", "_", \core_text::trim_utf8_bom($name));
+        $name = preg_replace("/[^A-Z0-9]+/i", "_", utils::super_trim($name));
         $quote = '"';
         $delim = ",";//"\t";
         $newline = "\r\n";
@@ -171,9 +172,26 @@ class report_renderer extends \plugin_renderer_base {
 
         //if datatables set up datatables
         if(constants::M_USE_DATATABLES) {
+            $dtlang = [];
+            $dtlang['search'] = get_string('datatables_search', constants::M_COMPONENT);
+            $dtlang['emptyTable'] = get_string('datatables_emptytable', constants::M_COMPONENT);
+            $dtlang['zeroRecords'] = get_string('datatables_zerorecords', constants::M_COMPONENT);
+            $dtlang['paginate']=[];
+            $dtlang['paginate']['first'] = get_string('datatables_paginate_first', constants::M_COMPONENT);
+            $dtlang['paginate']['last'] = get_string('datatables_paginate_last', constants::M_COMPONENT);
+            $dtlang['paginate']['next'] = get_string('datatables_paginate_next', constants::M_COMPONENT);
+            $dtlang['paginate']['previous'] = get_string('datatables_paginate_previous', constants::M_COMPONENT);
+            $dtlang['aria']=[];
+            $dtlang['aria']['sortAscending'] = get_string('datatables_aria_sortascending', constants::M_COMPONENT);
+            $dtlang['aria']['sortDescending'] = get_string('datatables_aria_sortdescending', constants::M_COMPONENT);
+            $dtlang['info'] = get_string('datatables_info', constants::M_COMPONENT);
+            $dtlang['infoEmpty'] = get_string('datatables_infoempty', constants::M_COMPONENT);
+            $dtlang['lengthMenu'] = get_string('datatables_lengthmenu', constants::M_COMPONENT);
+
             $tableprops = [];
             $tableprops['paging']=true;
             $tableprops['pageLength']=10;
+            $tableprops['language']=$dtlang;
             $opts = Array();
             $opts['tableid'] = $tableid;
             $opts['tableprops'] = $tableprops;

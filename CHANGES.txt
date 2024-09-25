@@ -1,3 +1,32 @@
+2.1.16 (Build 2024082901)
+- Added more ui elements
+- Add support for student dashboard
+
+2.1.15 (Build 2024082600)
+- Fix for layout(display of introduction) issue on Adaptable theme
+
+2.1.14 (Build 2024073000)
+- Added silence detection for guided audio recorder
+
+2.1.13 (Build 2024062000)
+- Added language strings for datatables
+- Added text simplifier tools to instance settings page
+
+2.1.12 (Build 2024061500)
+- Fixed broken speech rec on some langs from previous update
+
+2.1.11 (Build 2024060401)
+- Fixed broken CSV export from earlier update
+
+Version 2.1.10 (Build 2024060400)
+- fixed wrong trim function
+- added a bit more robustness to prevent superclickers from breaking the audio recorder
+- fixed wrong dialect labels for Arabic voices:  Arabic (modern standard) / Arabic (gulf)
+- added passage generator
+
+Version 2.1.9 (Build 2024052900)
+- Fixed issue with audio sometimes not playing on "grade now" page (after playing it on "grades" page)
+
 Version 2.1.8 (Build 2024051601)
 - Missing view start and end in backup and restore
 

@@ -80,7 +80,7 @@ class utils {
                             $shortlang=='uk' ||
                             $shortlang=='ro' ||
                             $shortlang=='hu' ||
-                            $shortlang=='es') && \core_text::trim_utf8_bom($moduleinstance->passage)!=="";
+                            $shortlang=='es') && self::super_trim($moduleinstance->passage)!=="";
         }
     }
 
@@ -788,8 +788,8 @@ class utils {
                         get_string('refreshtoken', constants::M_COMPONENT)) . '<br>';
 
         $message = '';
-        $apiuser = \core_text::trim_utf8_bom($apiuser);
-        $apisecret = \core_text::trim_utf8_bom($apisecret);
+        $apiuser = self::super_trim($apiuser);
+        $apisecret = self::super_trim($apisecret);
         if (empty($apiuser)) {
             $message .= get_string('noapiuser', constants::M_COMPONENT) . '<br>';
         }
@@ -841,8 +841,8 @@ class utils {
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
         $tokenuser = $cache->get('recentpoodlluser');
-        $apiuser = \core_text::trim_utf8_bom($apiuser);
-        $apisecret = \core_text::trim_utf8_bom($apisecret);
+        $apiuser = self::super_trim($apiuser);
+        $apisecret = self::super_trim($apisecret);
 
         //if we got a token and its less than expiry time
         // use the cached one
@@ -1149,10 +1149,17 @@ class utils {
 
         //turn the passage and transcript into an array of words
         $passagebits = diff::fetchWordArray($passage);
-        $alternatives = diff::fetchAlternativesArray($alternatives);
+
         $transcriptbits = diff::fetchWordArray($transcript);
         $wildcards = diff::fetchWildcardsArray($alternatives);
         $passagephonetic_bits = diff::fetchWordArray($passagephonetic);
+
+        //a little massaging for numbers in the passage
+        //get a short language code, eg en-US => en
+        $shortlang = utils::fetch_short_lang($language);
+        //we also want to fetch the alternatives for the number_words in passage (though we expect number_digits there)
+        $alternatives .= PHP_EOL . alphabetconverter::fetch_numerical_alternates($shortlang);  //"four|for|4";
+        $alternativesArray = diff::fetchAlternativesArray($alternatives);
 
         //If this is Japanese we want to segment it into "words"
         if($language == constants::M_LANG_JAJP) {
@@ -1169,7 +1176,7 @@ class utils {
         // then prepare an array of "differences"
         $passagecount = count($passagebits);
         $transcriptcount = count($transcriptbits);
-        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language,$transcriptphonetic_bits,$passagephonetic_bits);
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternativesArray, $language,$transcriptphonetic_bits,$passagephonetic_bits);
 
         $debugsequences = array();
         if ($debug) {
@@ -1234,7 +1241,7 @@ class utils {
 
         //also  capture match information for debugging and audio point matching
         //we can only map transcript to audio from match data
-        $matches = utils::fetch_audio_points($fulltranscript, $matches, $alternatives);
+        $matches = utils::fetch_audio_points($fulltranscript, $matches, $alternativesArray);
 
         return[$matches,$sessionendword,$sessionerrors,$errorcount,$debugsequences];
 
@@ -1547,7 +1554,7 @@ class utils {
         }
 
         $ret = implode(" ", $retarray);
-        if (\core_text::trim_utf8_bom($ret) == '') {
+        if (self::super_trim($ret) == '') {
             return false;
         } else {
             return $ret;
@@ -1716,9 +1723,26 @@ class utils {
         $newattempt->sessionerrors = '';
         $newattempt->errorcount = 0;
         $newattempt->wpm = 0;
-        $newattempt->dontgrade = $gradeable ? 0 : 1 ;
+        $readaloud= $gradeable ? 0 : 1 ;
         $newattempt->timecreated = time();
         $newattempt->timemodified = time();
+
+        //generate a flowercard - flower id
+        //we could do this here, but there is not check student produced anything, so doing this in aigrade
+        /*
+        if(class_exists('\block_readaloudstudent\flower')){
+            if($readaloud->stdashboardid){
+                $block_context= \core\context\block::instance($readaloud->stdashboardid,IGNORE_MISSING);
+                if($block_context){
+                    $flower=new \block_readaloudstudent\flower($block_context);
+                    $newflower=$flower->fetch_newflower($readaloud->id,$USER->id);
+                    $newattempt->flowerid=$newflower['id'];
+                }
+            }   
+        }
+         */
+
+
         $attemptid = $DB->insert_record(constants::M_USERTABLE, $newattempt);
         if (!$attemptid) {
             return false;
@@ -1876,7 +1900,7 @@ class utils {
             foreach ($nodes as $node) {
 
                 //if its empty space, move on
-                $trimmednode = \core_text::trim_utf8_bom($node->nodeValue);
+                $trimmednode = self::super_trim($node->nodeValue);
                 if (empty($trimmednode)) {
                     continue;
                 }
@@ -2144,6 +2168,13 @@ class utils {
         return $ret;
     }
 
+    public static function get_english_langcodes(){
+        $langcodes =[constants::M_LANG_ENUS ,
+            constants::M_LANG_ENGB , constants::M_LANG_ENAU , constants::M_LANG_ENPH , constants::M_LANG_ENNZ , constants::M_LANG_ENZA ,
+            constants::M_LANG_ENIN , constants::M_LANG_ENIE , constants::M_LANG_ENWL , constants::M_LANG_ENAB];
+        return $langcodes;
+    }
+
     public static function get_lang_options() {
         return array(
                 constants::M_LANG_ARAE => get_string('ar-ae', constants::M_COMPONENT),
@@ -2207,15 +2238,13 @@ class utils {
                 constants::M_LANG_VIVN => get_string('vi-vn',constants::M_COMPONENT),
                // constants::M_LANG_NBNO => get_string('nb-no', constants::M_COMPONENT),
                // constants::M_LANG_NNNO => get_string('nn-no', constants::M_COMPONENT),
-
-
         );
-
     }
 
     public static function add_mform_elements($mform, $context,$cmid,$setuptab=false) {
-        global $CFG, $COURSE;
+        global $CFG, $COURSE, $OUTPUT;
         $config = get_config(constants::M_COMPONENT);
+        $m35 = $CFG->version >= 2018051700;
 
         //if this is setup tab we need to add a field to tell it the id of the activity
         if($setuptab) {
@@ -2257,9 +2286,19 @@ class utils {
         $mform->setDefault('timelimit', 60);
         $mform->addHelpButton('timelimit', 'timelimit', constants::M_COMPONENT);
 
-        //add other editors
-        //could add files but need the context/mod info. So for now just rich text
-        $config = get_config(constants::M_COMPONENT);
+
+        //Text Generator Form
+        $textutilsdata = ['cloudpoodlltoken'=>self::fetch_token($config->apiuser,$config->apisecret)];
+        $textutils  = $OUTPUT->render_from_template( constants::M_COMPONENT . '/textutils',$textutilsdata);
+        $mform->addElement('static', 'textutils', '',
+                $textutils);
+        if($m35){
+            $englishes=self::get_english_langcodes();
+            //this doesn't work because statics are not hidden in Moodle
+            //i dont know if 'notin' is a real condition either
+            $mform->hideIf('textutils','ttslanguage','notin', $englishes);
+        }
+
 
         //The passage
         //we stopped allowing rich text. It does not show anyway.
@@ -2269,7 +2308,6 @@ class utils {
         $mform->addElement('editor', 'passage_editor', get_string('passagelabel', constants::M_COMPONENT), $opts, $ednofileoptions);
         $mform->addHelpButton('passage_editor', 'passage_editor', constants::M_COMPONENT);
         */
-        //The alternatives declaration
         $mform->addElement('textarea', 'passage', get_string("passagelabel", constants::M_COMPONENT),
             'wrap="virtual" rows="15" cols="100"');
         $mform->setDefault('passage', '');
@@ -2277,6 +2315,11 @@ class utils {
         $mform->addElement('static', 'passagedescr', '',
             get_string('passage_descr', constants::M_COMPONENT));
         $mform->addHelpButton('passage', 'passage', constants::M_COMPONENT);
+
+        //Image to accompany passage in quiz part of activity
+        $ppoptions = readaloud_picturefile_options($context);
+        $mform->addElement('filemanager', 'passagepicture', get_string('passagepicture',constants::M_COMPONENT), null, $ppoptions);
+
 
         //tts options
         $langoptions = \mod_readaloud\utils::get_lang_options();
@@ -2297,7 +2340,6 @@ class utils {
         $mform->addElement('select', 'ttsspeed', get_string('ttsspeed', constants::M_COMPONENT), $speedoptions);
         $mform->setDefault('ttsspeed', constants::TTSSPEED_SLOW);
         $mform->addHelpButton('ttsspeed', 'ttsspeed', constants::M_COMPONENT);
-        $m35 = $CFG->version >= 2018051700;
         $whisperkeys = array_keys(constants::M_WHISPERVOICES);
         if($m35){
             $mform->hideIf('ttsspeed','ttsvoice','in', $whisperkeys);
@@ -2363,7 +2405,7 @@ class utils {
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', constants::M_COMPONENT), $attemptoptions);
 
 
-        // Appearance.
+        // Advanced.
         $mform->addElement('header', 'advancedheader', get_string('advancedheader', constants::M_COMPONENT));
 
         // Adding the customfont field
@@ -2396,6 +2438,11 @@ class utils {
                     get_string('masterinstance_details', constants::M_COMPONENT));
         }
         $mform->setDefault('masterinstance', 0);
+
+         //Student Dashboard
+         $mform->addElement('text', 'stdashboardid', get_string('stdashboardid', constants::M_COMPONENT), array('size'=>'8'));
+         $mform->setType('stdashboardid', PARAM_INT);
+         $mform->setDefault('stdashboardid', $config->stdashboardid);
 
         // Appearance.
         $mform->addElement('header', 'recordingaiheader', get_string('recordingaiheader', constants::M_COMPONENT));
@@ -2608,7 +2655,7 @@ class utils {
     }
 
     public static function prepare_file_and_json_stuff($moduleinstance, $context){
-
+        //nb basically moduleinstance = formdata here
         $ednofileoptions = readaloud_editor_no_files_options($context);
         $editors = readaloud_get_editornames();
         $itemid = 0;
@@ -2616,6 +2663,14 @@ class utils {
              $moduleinstance = file_prepare_standard_editor((object) $moduleinstance, $editor, $ednofileoptions, $context,
                    constants::M_COMPONENT, $editor, $itemid);
         }
+
+        //passage picture
+        $ppoptions = readaloud_picturefile_options($context);
+        $draftitemid = file_get_submitted_draft_itemid('passagepicture');
+        file_prepare_draft_area($draftitemid, $context->id, constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, 0,
+            $ppoptions);
+        $moduleinstance->passagepicture=$draftitemid;
+
         return $moduleinstance;
 
     }//end of prepare_file_and_json_stuff
@@ -2664,6 +2719,15 @@ class utils {
 
         return $attempts;
 
+    }
+
+    public static function super_trim($str){
+        if($str==null){
+            return '';
+        }else{
+            $str = trim($str);
+            return $str;
+        }
     }
 
 }

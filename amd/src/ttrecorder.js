@@ -55,6 +55,11 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                 //set up events
                 var on_gotstream=  function(stream) {
 
+                    //clear any existing interval
+                    if(that.interval!==undefined){
+                        clearInterval(that.interval);
+                    }
+
                     var newaudio={stream: stream, isRecording: true};
                     that.update_audio(newaudio);
                     that.currentTime = 0;
@@ -90,6 +95,11 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
 
                 var on_stopped = function(blob) {
                     clearInterval(that.interval);
+
+                    //if the blob is undefined then the user is super clicking or something
+                    if(blob===undefined){
+                        return;
+                    }
 
                     //if ds recc
                     var newaudio = {
@@ -162,6 +172,12 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                 this.lang =this.controls.recorderbutton.data('lang');
                 this.maxTime=this.controls.recorderbutton.data('maxtime');
                 this.waveHeight=this.controls.recorderbutton.data('waveheight');
+            },
+
+            silence_detected: function(){
+                if(this.audio.isRecording){
+                    this.toggleRecording();
+                }
             },
 
             update_audio: function(newprops,val){

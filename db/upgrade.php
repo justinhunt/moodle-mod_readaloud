@@ -757,6 +757,33 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2023092600, 'readaloud');
     }
 
+       // Add passage picture to readaloud table
+    if ($oldversion < 2024082901) {
+        $activitytable = new xmldb_table(constants::M_TABLE);
+        $attempttable = new xmldb_table(constants::M_USERTABLE);
+
+        // Define field expiredays to be added to readseed
+        $field_picture = new xmldb_field('passagepicture', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null);
+        $field_flower= new xmldb_field('flowerid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $field_stdashboardid= new xmldb_field('stdashboardid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+
+        // add picture field to readaloud table
+        if (!$dbman->field_exists($activitytable, $field_picture)) {
+            $dbman->add_field($activitytable, $field_picture);
+        }
+        // add stdashboard id field to readaloud table
+        if (!$dbman->field_exists($activitytable, $field_stdashboardid)) {
+            $dbman->add_field($activitytable,  $field_stdashboardid);
+        }
+        // add flower id field to attempts table
+        if (!$dbman->field_exists($attempttable, $field_flower)) {
+            $dbman->add_field($attempttable, $field_flower);
+        }
+
+        
+        upgrade_mod_savepoint(true, 2024082901, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

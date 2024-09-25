@@ -35,15 +35,13 @@ class alphabetconverter {
         $tens=array(2=>'двадцать','тридцать','сорок','пятьдесят','шестьдесят','семьдесят' ,'восемьдесят','девяносто');
         $hundred=array('','сто','двести','триста','четыреста','пятьсот','шестьсот', 'семьсот','восемьсот','девятьсот');
         $unit=array( // Units
-            array('коп.','коп.','коп.',	 1),
-            array('руб.','руб.','руб.',	 0),
             array('тыс.','тыс.','тыс.',	 1),
             array('млн.','млн.','млн.',	 0),
             array('млрд.','млрд.','млрд.',	 0),
             array('trilyon','trilyon','trilyon',	 0),
         );
         //
-        list($rub,$kop) = explode('.',sprintf("%015.2f", floatval($num)));
+        $rub = sprintf("%015.2f", floatval($num));
         $out = array();
         if (intval($rub)>0) {
             foreach(self::do_mb_str_split($rub,3) as $uk=>$v) { // by 3 symbols
@@ -60,9 +58,7 @@ class alphabetconverter {
             } //foreach
         }
         else $out[] = $nul;
-        $out[] = self::ru_morph(intval($rub), $unit[1][0],$unit[1][1],$unit[1][2]); // rub
-        $out[] = $kop.' '.self::ru_morph($kop,$unit[0][0],$unit[0][1],$unit[0][2]); // kop
-        return \core_text::trim_utf8_bom(preg_replace('/ {2,}/', ' ', join(' ',$out)));
+        return trim(preg_replace('/ {2,}/', ' ', join(' ',$out)));
     }
 
     static function ru_morph($n, $f1, $f2, $f5) {
@@ -537,13 +533,11 @@ class alphabetconverter {
 
     /*
    * This fetches an array of digits and word number equivalents
-     *
    * @param mixed $passagewords the passage text or an array of passage words
    * @return array the digit to word conversions array
    */
     public static function fetch_number_conversions($passagewords,$shortlang)
     {
-
         //its possible to call this function with just the passage as text,
         // which might be useful for callers who want the conversions array to pass to JS and not to run the conversion
         if (!is_array($passagewords)) {
@@ -625,7 +619,9 @@ class alphabetconverter {
                     $conversions[] = ['digits'=>$candidate,'words'=>$numberwords];
                     //lets also save a version without 'and'
                     $no_and_numberwords = str_replace(' and ', ' ',  $numberwords);
+                    if($no_and_numberwords != $numberwords){
                     $conversions[] = ['digits'=>$candidate,'words'=>$no_and_numberwords];
+                    }
                 }
 
             //dollar numbers [currently $ is stripped before we get here. sorry. no currencies]
@@ -668,7 +664,7 @@ class alphabetconverter {
      * Eras are common in passages e.g "during the 1860s women were not free to...."
      */
     public static function convert_years_to_words($num=false,$isera=false){
-        $num = str_replace(array(',', ' '), '' , \core_text::trim_utf8_bom($num));
+        $num = str_replace(array(',', ' '), '' , trim($num));
         if(! $num) {
             return false;
         }
@@ -708,7 +704,7 @@ class alphabetconverter {
                     $remainderword = self::convert_numbers_to_words($remainder);
                 }
         }
-        $ret = \core_text::trim_utf8_bom($centuryword . ' ' . $remainderword);
+        $ret = trim($centuryword . ' ' . $remainderword);
         $ret = preg_replace('/\s+/', ' ', $ret);
         return $ret;
     }
@@ -732,18 +728,58 @@ class alphabetconverter {
         return $eraword;
     }
 
+    //number to word conversion basically assumes that number_digits in the passage, might be transcribed as number_words
+    //so the other code around here is mainly to cover that. But the other case is number_words in the passage are transcribed as number_digits
+    //We want to cover that too. But only for very basic numbers. For the most part we ask activity authors to use number_digits in the passage
+    //It gets a bit complex because English and some others might return an array of words, not a single one..
+    //we build and return a string of equivalent number-words per number-digit to pass in to the alternates feature of the diff algorithm 
+    //eg "one|1"
+    // "two|2"
+    // "three|3"
+    public static function fetch_numerical_alternates($shortlang){
+        $rawnumbers=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,30,40,50,60,70,80,90];
+        $digits_words= self::fetch_number_conversions($rawnumbers,$shortlang);
+        $number_alternates='';
+        foreach ($digits_words as $dw){
+            $number_digit=$dw['digits'];
+            if(is_array($dw['words'])){
+                $prev_word='';
+                foreach($dw['words'] as $number_word){
+                    $the_number_word=$number_word['words'];
+                    if(!empty($the_number_word) && $the_number_word != $prev_word){                        
+                        $number_alternates.=$the_number_word . '|' . $number_digit . PHP_EOL;
+                        $prev_word=$the_number_word;
+                    }
+            $number_word=$dw['words'][0]['words'] ;
+                }
+            }else{
+                $number_word=$dw['words'];
+                if(!empty($number_word)){
+                $number_alternates.=$number_word . '|' . $number_digit . PHP_EOL;
+                }
+            }
+        }
+        return $number_alternates;
+    }
+
     /*
     * The script "borrowed" from: https://stackoverflow.com/a/30299572
      * and modified to clean up extra spaces and add " and " where needed
     */
     public static function convert_numbers_to_words($num = false)
     {
-        $num = str_replace(array(',', ' '), '' , \core_text::trim_utf8_bom($num));
-        if(! $num) {
+        $num = str_replace(array(',', ' '), '' , trim($num));
+
+        //we make a special case for zero and just return if its not numbery
+        if($num===0 || $num==='0'){
+            return 'zero';
+        }elseif(! $num) {
             return false;
         }
+
         $num = (int) $num;
         $words = array();
+
         $list1 = array('', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven',
                 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
         );
@@ -778,7 +814,7 @@ class alphabetconverter {
         if ($commas > 1) {
             $commas = $commas - 1;
         }
-        $ret= \core_text::trim_utf8_bom(implode(' ', $words));
+        $ret= trim(implode(' ', $words));
         $ret = preg_replace('/\s+/', ' ', $ret);
         return $ret;
     }
@@ -1081,7 +1117,6 @@ class alphabetconverter {
         }
         return $result;
     }
-
 
 
 }

@@ -39,6 +39,7 @@ class renderer extends \plugin_renderer_base {
         $this->page->set_title($title);
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
+
         if(!$moduleinstance->foriframe) {
             $thetitle = $this->output->heading($activityname, 3, 'main');
             $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
@@ -655,7 +656,7 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_intro($readaloud, $cm) {
         $ret = "";
-        if (\core_text::trim_utf8_bom(strip_tags($readaloud->intro))) {
+        if (utils::super_trim(strip_tags($readaloud->intro))) {
             $ret .= $this->output->box_start(constants::M_INTRO_CONTAINER . ' ' . constants::M_CLASS . '_center ');
             $ret .= format_module_intro('readaloud', $readaloud, $cm->id);
             $ret .= $this->output->box_end();
@@ -683,7 +684,7 @@ class renderer extends \plugin_renderer_base {
     public function render_hiddenaudioplayer($audiourl=false) {
         $src = $audiourl? $audiourl : '';
         $audioplayer = \html_writer::tag('audio', '',
-                array('src' => $src, 'id' => constants::M_HIDDEN_PLAYER, 'class' => constants::M_HIDDEN_PLAYER));
+                array('src' => $src, 'id' => constants::M_HIDDEN_PLAYER, 'class' => constants::M_HIDDEN_PLAYER, 'crossorigin'=>'anonymous'));
         return $audioplayer;
     }
 
@@ -1153,6 +1154,39 @@ class renderer extends \plugin_renderer_base {
         */
         $ret .= $this->jump_tomenubutton($moduleinstance);
         $ret .= $this->footer();
+        return $ret;
+    }
+
+        /**
+     * Show the reading passage for print, just a dummy function for now
+     * TO DO implement this
+     */
+    public function fetch_passage_forprint($moduleinstance,$cm,$markeduppassage){
+
+        $comp_test =  new \mod_readaloud\comprehensiontest($cm);
+
+        //passage picture
+        if($moduleinstance->passagepicture) {
+            $zeroitem = new \stdClass();
+            $zeroitem->id = 0;
+            $picurl = $comp_test->fetch_media_url(constants::PASSAGEPICTURE_FILEAREA, $zeroitem);
+            $picture = \html_writer::img($picurl, '', array('role' => 'decoration'));
+            $picturecontainer = \html_writer::div($picture, constants::M_COMPONENT . '-passage-pic');
+        }else{
+            $picturecontainer ='';
+        }
+
+        //passage
+        if($markeduppassage){
+            $passage = $markeduppassage;
+        }else{
+            $passage =  utils::lines_to_brs($moduleinstance->passage);
+        }
+
+        $ret = "";
+        $ret .= \html_writer::div( $picturecontainer . $passage ,constants::M_PASSAGE_CONTAINER . ' '  . constants::M_MSV_MODE . ' '  . constants::M_POSTATTEMPT,
+                array('id'=>constants::M_PASSAGE_CONTAINER));
+
         return $ret;
     }
 
