@@ -279,10 +279,6 @@ $string['mk-mk'] = 'Macedonian'; // Macedonian
 $string['sr-rs'] = 'Serbian'; // Serbian
 $string['vi-vn'] = 'Vietnamese'; // Vietnamese
 
-
-
-
-
 $string['awsregion'] = 'AWS Region';
 $string['region'] = 'AWS Region';
 $string['awsregion_details']='Choose the region closest to you. Your data will stay within that region. Capetown region only supports English and German.';
@@ -721,7 +717,8 @@ $string['three']="three";
 $string['four']="four";
 $string['five']="five";
 $string['passagepicture']='Passage picture';
+$string['passagepicture_descr']='*The passage picture is not used yet. It is part of an upcoming feature*';
 $string['stdashboardid']='Student Dashboard ID';
-$string['stdashboardid_details']='1f the student dashboard block is installed, put the id of the block here.';
+$string['stdashboardid_details']='If the student dashboard block is installed, put the id of the block here.';
 
 

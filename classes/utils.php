@@ -2319,6 +2319,8 @@ class utils {
         //Image to accompany passage in quiz part of activity
         $ppoptions = readaloud_picturefile_options($context);
         $mform->addElement('filemanager', 'passagepicture', get_string('passagepicture',constants::M_COMPONENT), null, $ppoptions);
+        $mform->addElement('static', 'passagepicturedescr', '',
+            get_string('passagepicture_descr', constants::M_COMPONENT));
 
 
         //tts options

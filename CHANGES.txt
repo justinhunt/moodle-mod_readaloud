@@ -1,6 +1,7 @@
-2.1.16 (Build 2024082901)
-- Added more ui elements
+2.1.16 (Build 2024092500)
+- Added picture field (not used yet) - coming soon
 - Add support for student dashboard
+- Added Vietnamese
 
 2.1.15 (Build 2024082600)
 - Fix for layout(display of introduction) issue on Adaptable theme
