@@ -1,3 +1,6 @@
+2.1.17 (Build 202410XXXX)
+- fix for block context fetching for picture field
+
 2.1.16 (Build 2024092500)
 - Added picture field (not used yet) - coming soon
 - Add support for student dashboard

@@ -50,7 +50,7 @@ class aigrade {
                     //TO DO put this in the correct location
                     if(class_exists('\block_readaloudstudent\flower') && $this->attemptdata->flowerid==0){
                         if($this->activitydata->stdashboardid){
-                            $block_context= \core\context\block::instance($this->activitydata->stdashboardid,IGNORE_MISSING);
+                            $block_context= \context_block::instance($this->activitydata->stdashboardid);
                             if($block_context){
                                 $flower=new \block_readaloudstudent\flower($block_context);
                                 $newflower=$flower->fetch_newflower($this->attemptdata->readaloudid,$this->attemptdata->userid);
