@@ -1723,24 +1723,9 @@ class utils {
         $newattempt->sessionerrors = '';
         $newattempt->errorcount = 0;
         $newattempt->wpm = 0;
-        $readaloud= $gradeable ? 0 : 1 ;
+        $newattempt->dontgrade = $gradeable ? 0 : 1 ;
         $newattempt->timecreated = time();
         $newattempt->timemodified = time();
-
-        //generate a flowercard - flower id
-        //we could do this here, but there is not check student produced anything, so doing this in aigrade
-        /*
-        if(class_exists('\block_readaloudstudent\flower')){
-            if($readaloud->stdashboardid){
-                $block_context= \core\context\block::instance($readaloud->stdashboardid,IGNORE_MISSING);
-                if($block_context){
-                    $flower=new \block_readaloudstudent\flower($block_context);
-                    $newflower=$flower->fetch_newflower($readaloud->id,$USER->id);
-                    $newattempt->flowerid=$newflower['id'];
-                }
-            }   
-        }
-         */
 
 
         $attemptid = $DB->insert_record(constants::M_USERTABLE, $newattempt);
