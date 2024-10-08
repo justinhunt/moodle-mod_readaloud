@@ -27,8 +27,48 @@ use mod_readaloud\constants;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Class aigrade
+ *
+ * This class handles the AI grading for the readaloud module.
+ *
+ * @package mod_readaloud
+ */
 class aigrade {
-    function __construct($attemptid, $modulecontextid = 0, $streamingresults=false) {
+
+    /**
+     * @var int The ID of the attempt
+     */
+    public $attemptid;
+    /**
+     * @var int The ID of the module context
+     */
+    public $modulecontextid;
+    /**
+     * @var object The data of the attempt
+     */
+    public $attemptdata;
+    /**
+     * @var object The data of the activity
+     */
+    public $activitydata;
+    /**
+     * @var int The ID of the record
+     */
+    public $recordid;
+    /**
+     * @var object The AI data associated with the attempt
+     */
+    public $aidata;
+
+    /**
+     * Constructor for the aigrade class.
+     *
+     * @param int $attemptid The ID of the attempt
+     * @param int $modulecontextid The ID of the module context (optional)
+     * @param bool $streamingresults Whether to process streaming results (optional)
+     */
+    public function __construct($attemptid, $modulecontextid = 0, $streamingresults=false) {
         global $DB;
         $this->attemptid = $attemptid;
         $this->modulecontextid = $modulecontextid;
@@ -83,7 +123,12 @@ class aigrade {
         }
     }
 
-    // just a simple interface to manage returning read only property data
+    /**
+     * a simple interface to manage returning read only property data
+     *
+     * @param string $property The property name to retrieve.
+     * @return mixed The value of the specified property.
+     */
     public function aidetails($property) {
         switch ($property) {
             case 'sessionscore':

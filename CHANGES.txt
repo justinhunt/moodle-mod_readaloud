@@ -1,3 +1,6 @@
+2.1.18 (Build 2024100700)
+- Fixes for PHP 8.3 and 8.2
+
 2.1.17 (Build 2024100400)
 - fix for block context fetching for picture field
 - fix for bug on ai grading
