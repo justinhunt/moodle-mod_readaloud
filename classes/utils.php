@@ -1873,7 +1873,7 @@ class utils {
             $doc = new \DOMDocument;
             // it will assume ISO-8859-1  encoding, so we need to hint it:
             //see: http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
-            @$doc->loadHTML(mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8'));
+            @$doc->loadHTML(htmlspecialchars($passage, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8'));
 
 
             // select all the text nodes
