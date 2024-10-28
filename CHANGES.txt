@@ -7,7 +7,7 @@
 
 2.1.16 (Build 2024092500)
 - Added picture field (not used yet) - coming soon
-- Add support for student dashboard
+- Add support for student dashboard - coming soon
 - Added Vietnamese
 
 2.1.15 (Build 2024082600)
