@@ -26,24 +26,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-defined('MOODLE_INTERNAL') || die();
-
 $addons = [
     'mod_readaloud' => [
         'handlers' => [
-            'hello' => [
-                'delegate' => 'CoreMainMenuDelegate',
-                'method' => 'view_hello',
+            'coursereadaloud' => [
+                'delegate' => 'CoreCourseModuleDelegate',
+                'method' => 'mobile_course_view', // Main function in \mod_readaloud\output\mobile.
                 'displaydata' => [
-                    'title' => 'modulename',
-                    'icon' => 'earth',
+                    'icon' => $CFG->wwwroot . '/mod/readaloud/pix/icon.svg',
+                    'class' => '',
                 ],
             ],
         ],
-        'lang' => [
-            ['modulename', 'mod_readaloud'],
-        ],
     ],
 ];
-
-
