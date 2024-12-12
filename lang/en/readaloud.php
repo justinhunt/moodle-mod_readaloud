@@ -720,5 +720,4 @@ $string['passagepicture']='Passage picture';
 $string['passagepicture_descr']='*The passage picture is not used yet. It is part of an upcoming feature*';
 $string['stdashboardid']='Student Dashboard ID';
 $string['stdashboardid_details']='If the student dashboard block is installed, put the id of the block here.';
-
-
+$string['eventreadaloudattemptsubmitted'] = 'ReadAloud attempt submitted';
