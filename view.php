@@ -31,8 +31,21 @@ use \mod_readaloud\utils;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $reviewattempts= optional_param('reviewattempts', 0, PARAM_INT); // course_module ID, or
-$n = optional_param('n', 0, PARAM_INT);  // readaloud instance ID - it should be named as the first character of the module
+$n = optional_param('n', 0, PARAM_INT);  // readaloud instance ID - it should be named as the first character of the module.
 $debug = optional_param('debug', 0, PARAM_INT);
+$embed = optional_param('embed', 0, PARAM_INT);
+
+// Allow login through an authentication token.
+$userid = optional_param('user_id', null, PARAM_ALPHANUMEXT);
+$secret  = optional_param('secret', null, PARAM_RAW);
+// Formerly had !isloggedin() check, but we want tologin afresh on each embedded access.
+if (!empty($userid) && !empty($secret) ) {
+    if (mobile_auth::has_valid_token($userid, $secret)) {
+        $user = get_complete_user_data('id', $userid);
+        complete_user_login($user);
+        $embed = 2;
+    }
+}
 
 if ($id) {
     $cm = get_coursemodule_from_id('readaloud', $id, 0, false, MUST_EXIST);
@@ -43,34 +56,34 @@ if ($id) {
     $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('readaloud', $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    //soft eject if they get here
+    // Soft eject if they get here.
     $redirecturl = new moodle_url('/', array());
     redirect($redirecturl, get_string('invalidcoursemodule', 'error'));
-    //print_error('invalidcourseid');
+    // print_error('invalidcourseid');
 }
 
-$PAGE->set_url('/mod/readaloud/view.php', array('id' => $cm->id,'reviewattempts'=>$reviewattempts));
+$PAGE->set_url('/mod/readaloud/view.php', ['id' => $cm->id,'reviewattempts' => $reviewattempts,'embed' => $embed]);
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
 // Trigger module viewed event.
-$event = \mod_readaloud\event\course_module_viewed::create(array(
+$event = \mod_readaloud\event\course_module_viewed::create([
         'objectid' => $moduleinstance->id,
         'context' => $modulecontext
-));
+]);
 $event->add_record_snapshot('course_modules', $cm);
 $event->add_record_snapshot('course', $course);
 $event->add_record_snapshot('readaloud', $moduleinstance);
 $event->trigger();
 
-//if we got this far, we can consider the activity "viewed"
+// If we got this far, we can consider the activity "viewed".
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
-//are we a teacher or a student?
+// Are we a teacher or a student?
 $mode = "view";
 
-//In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now
+// In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
 if($moduleinstance->passagesegments===null) {
     $olditem = false;
     list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($moduleinstance, $olditem);
@@ -81,34 +94,47 @@ if($moduleinstance->passagesegments===null) {
     }
 }
 
-
-//Get an admin settings
+// Get an admin settings.
 $config = get_config(constants::M_COMPONENT);
 
-/// Set up the page header
+// Set up the page header.
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-if($config->enablesetuptab){
+// We want readaloud to embed nicely, or display according to layout settings.
+if ($moduleinstance->foriframe == 1  || $moduleinstance->pagelayout == 'embedded' || $embed == 1) {
+    $PAGE->set_pagelayout('embedded');
+} elseif ($config->enablesetuptab || $moduleinstance->pagelayout == 'popup' || $embed == 2){
     $PAGE->set_pagelayout('popup');
-}else{
+    $PAGE->add_body_class('poodll-readaloud-embed');
+} else {
+    if (has_capability('mod/' . constants::M_MODNAME . ':' . 'manage', $modulecontext)) {
+        $PAGE->set_pagelayout('incourse');
+    } else {
+        $PAGE->set_pagelayout($moduleinstance->pagelayout);
+    }
+}
+
+if ($config->enablesetuptab) {
+    $PAGE->set_pagelayout('popup');
+} else {
     $PAGE->set_pagelayout('incourse');
 }
 
-//we need to load jquery for some old themes (Essential mainly)
+// We need to load jquery for some old themes (Essential mainly).
 $PAGE->requires->jquery();
 
-//Get our renderers
+// Get our renderers.
 $renderer = $PAGE->get_renderer('mod_readaloud');
 $passagerenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'passage');
 $modelaudiorenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'modelaudio');
 
-//do we have attempts and ai data
+// Do we have attempts and ai data.
 $attempts = utils::fetch_user_attempts($moduleinstance);
 $ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->id);
 
-//can attempt ?
+// Can attempt ?
 $canattempt = true;
 $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
 if (!$canpreview && $moduleinstance->maxattempts > 0) {
@@ -129,7 +155,6 @@ if (!$canpreview && $moduleinstance->maxattempts > 0) {
 if (!$canpreview) {
     $debug = false;
 }
-
 
 //for Japanese (and later other languages we collapse spaces)
 $collapsespaces=false;
@@ -174,23 +199,23 @@ if($attempts) {
     $latest_aigrade = false;
 }
 
-//if we need a non standard font we can do that from here
+// If we need a non standard font we can do that from here.
 if(!empty($moduleinstance->customfont)){
     if(!in_array($moduleinstance->customfont,constants::M_STANDARD_FONTS)){
         $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css?family=' . $moduleinstance->customfont));
     }
 }
 
-//From here we actually display the page.
-//if we are teacher we see tabs. If student we just see the activity
+// From here we actually display the page.
+// If we are teacher we see tabs. If student we just see the activity.
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
 
-//if we have no content, and its setup tab, we send to setup tab
-if($config->enablesetuptab && empty($moduleinstance->passage)) {
+// If we have no content, and its setup tab, we send to setup tab.
+if ($config->enablesetuptab && empty($moduleinstance->passage)) {
     if (has_capability('mod/readaloud:manage', $modulecontext)) {
-        echo $renderer->show_no_content($cm,true);
-    }else{
-        echo $renderer->show_no_content($cm,false);
+        echo $renderer->show_no_content($cm, true);
+    } else {
+        echo $renderer->show_no_content($cm, false);
     }
     echo $renderer->footer();
     return;
@@ -205,16 +230,13 @@ if ($attempts && $reviewattempts) {
     return;
 }
 
-
 //show all the main parts. Many will be hidden and displayed by JS
 // so here we just put them on the page in the correct sequenc
-
 
 //show activity description
 if( $CFG->version<2022041900) {
     echo $renderer->show_intro($moduleinstance, $cm);
 }
-
 
 //show open close dates
 $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart>0;
@@ -235,7 +257,6 @@ if($hasopenclosedates){
         exit;
     }
 }
-
 
 //show small report
 if($attempts) {
@@ -258,7 +279,6 @@ if(!empty($problembox)){
     return;
 }
 
-
 //activity instructions
 echo $renderer->show_instructions($moduleinstance->welcome);
 echo $renderer->show_previewinstructions(get_string('previewhelp',constants::M_COMPONENT));
@@ -267,7 +287,6 @@ echo $renderer->show_landrinstructions(get_string('landrhelp',constants::M_COMPO
 //feedback or errors
 echo $renderer->show_feedback($moduleinstance);
 echo $renderer->show_error($moduleinstance, $cm);
-
 
 //show menu buttons
 echo $renderer->show_menubuttons($moduleinstance,$canattempt);
