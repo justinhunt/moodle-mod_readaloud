@@ -145,18 +145,18 @@ if (!$canpreview && $moduleinstance->maxattempts > 0) {
     }
 }
 
-//debug mode is for teachers only
+// Debug mode is for teachers only.
 if (!$canpreview) {
     $debug = false;
 }
 
-//for Japanese (and later other languages we collapse spaces)
+// For Japanese (and later other languages we collapse spaces).
 $collapsespaces=false;
 if($moduleinstance->ttslanguage==constants::M_LANG_JAJP){
     $collapsespaces=true;
 }
 
-//fetch a token and report a failure to a display item: $problembox
+// Fetch a token and report a failure to a display item: $problembox.
 $problembox='';
 $token="";
 if(empty($config->apiuser) || empty($config->apisecret)){
@@ -164,17 +164,17 @@ if(empty($config->apiuser) || empty($config->apisecret)){
             $CFG->wwwroot . constants::M_PLUGINSETTINGS);
     $problembox=$renderer->show_problembox($message);
 }else {
-    //fetch token
+    // Fetch token.
     $token = utils::fetch_token($config->apiuser, $config->apisecret);
 
-    //check token authenticated and no errors in it
+    // Check token authenticated and no errors in it.
     $errormessage = utils::fetch_token_error($token);
     if(!empty($errormessage)){
         $problembox = $renderer->show_problembox($errormessage);
     }
 }
 
-//fetch attempt information
+// Fetch attempt information.
 if($attempts) {
     $latestattempt = current($attempts);
 
@@ -215,8 +215,8 @@ if ($config->enablesetuptab && empty($moduleinstance->passage)) {
     return;
 }
 
-//If we are reviewing attempts we do that here and return.
-//If we are going to the dashboard we output that below
+// If we are reviewing attempts we do that here and return.
+// If we are going to the dashboard we output that below
 if ($attempts && $reviewattempts) {
     $attemptreview_html = $renderer->show_attempt_for_review($moduleinstance, $attempts,
             $have_humaneval, $have_aieval, $collapsespaces,$latestattempt, $token, $modulecontext, $passagerenderer);
@@ -224,15 +224,15 @@ if ($attempts && $reviewattempts) {
     return;
 }
 
-//show all the main parts. Many will be hidden and displayed by JS
-// so here we just put them on the page in the correct sequenc
+// Show all the main parts. Many will be hidden and displayed by JS
+// so here we just put them on the page in the correct sequence.
 
-//show activity description
+// Show activity description.
 if( $CFG->version<2022041900) {
     echo $renderer->show_intro($moduleinstance, $cm);
 }
 
-//show open close dates
+// Show open close dates.
 $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart>0;
 if($hasopenclosedates){
     echo $renderer->show_open_close_dates($moduleinstance);
@@ -245,80 +245,80 @@ if($hasopenclosedates){
         echo get_string('activityisnotopenyet',constants::M_COMPONENT);
         $closed = true;
     }
-    //if we are not a teacher and the activity is closed/not-open leave at this point
+    // If we are not a teacher and the activity is closed/not-open leave at this point.
     if(!has_capability('mod/readaloud:preview',$modulecontext) && $closed){
         echo $renderer->footer();
         exit;
     }
 }
 
-//show small report
+// Show small report.
 if($attempts) {
     if(!$latestattempt){$latestattempt = current($attempts);}
     echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade, $embed);
 }
 
-//welcome message
+// Welcome message.
 $welcomemessage = get_string('welcomemenu',constants::M_COMPONENT);
 if (!$canattempt) {
    $welcomemessage .= '<br>' . get_string("exceededattempts", constants::M_COMPONENT, $moduleinstance->maxattempts);
 }
 echo $renderer->show_welcome_menu($welcomemessage);
 
-//if we have a problem (usually with auth/token) we display and return
+// If we have a problem (usually with auth/token) we display and return.
 if(!empty($problembox)){
     echo $problembox;
-    // Finish the page
+    // Finish the page.
     echo $renderer->footer();
     return;
 }
 
-//activity instructions
+// Activity instructions.
 echo $renderer->show_instructions($moduleinstance->welcome);
 echo $renderer->show_previewinstructions(get_string('previewhelp',constants::M_COMPONENT));
 echo $renderer->show_landrinstructions(get_string('landrhelp',constants::M_COMPONENT));
 
-//feedback or errors
+// Feedback or errors.
 echo $renderer->show_feedback($moduleinstance);
 echo $renderer->show_error($moduleinstance, $cm);
 
-//show menu buttons
+// Show menu buttons.
 echo $renderer->show_menubuttons($moduleinstance,$canattempt);
 
-//Show model audio player
+// Show model audio player.
 $visible=false;
 echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $visible);
 
-//show stop and play buttons
+// Show stop and play buttons.
 echo $renderer->show_stopandplay($moduleinstance);
 
-//we put some CSS at the top of the passage container to control things like padding word separation etc
+// We put some CSS at the top of the passage container to control things like padding word separation etc.
 $extraclasses = 'readmode';
-//for Japanese (and later other languages we collapse spaces)
+// For Japanese (and later other languages we collapse spaces).
 if($collapsespaces){
     $extraclasses .= ' collapsespaces';
 }
 
-//add class = readingcontainer to id:mod_readaloud_readingcontainer
-//add class = mod_readaloud to constants::M_PASSAGE_CONTAINER
-//remove  them when done
+// Add class = readingcontainer to id:mod_readaloud_readingcontainer.
+// Add class = mod_readaloud to constants::M_PASSAGE_CONTAINER.
+// Remove them when done.
 
 echo "<div id='mod_readaloud_readingcontainer'>";
-//hide on load, and we can show from ajax
+// Hide on load, and we can show from ajax.
 $extraclasses .= ' hide';
 echo $passagerenderer->render_passage($moduleinstance->passagesegments,$moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
 
-//lets fetch recorder
+// Lets fetch recorder.
 echo $renderer->show_recorder($moduleinstance, $token, $debug);
-echo "</div";//close readingcontainer
+echo "</div";// Close readingcontainer.
 
 echo $renderer->show_progress($moduleinstance, $cm);
 echo $renderer->show_wheretonext($moduleinstance, $embed);
 
-//show listen and repeat dialog
+// Show listen and repeat dialog.
 echo $renderer->show_landr($moduleinstance, $token);
 
-//show quiz
+// Show quiz.
 /*
 $comprehensiontest = new \mod_readaloud\comprehensiontest($cm);
 $items = $comprehensiontest->fetch_items();
