@@ -31,7 +31,7 @@ use mod_readaloud\utils;
 use mod_readaloud\mobile_auth;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
-$reviewattempts= optional_param('reviewattempts', 0, PARAM_INT); // course_module ID, or
+$reviewattempts = optional_param('reviewattempts', 0, PARAM_INT); // course_module ID, or
 $n = optional_param('n', 0, PARAM_INT);  // readaloud instance ID - it should be named as the first character of the module.
 $debug = optional_param('debug', 0, PARAM_INT);
 $embed = optional_param('embed', 0, PARAM_INT);
@@ -70,7 +70,7 @@ $modulecontext = context_module::instance($cm->id);
 // Trigger module viewed event.
 $event = \mod_readaloud\event\course_module_viewed::create([
         'objectid' => $moduleinstance->id,
-        'context' => $modulecontext
+        'context' => $modulecontext,
 ]);
 $event->add_record_snapshot('course_modules', $cm);
 $event->add_record_snapshot('course', $course);
@@ -85,13 +85,13 @@ $completion->set_module_viewed($cm);
 $mode = "view";
 
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
-if($moduleinstance->passagesegments===null) {
+if ($moduleinstance->passagesegments === null) {
     $olditem = false;
     list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($moduleinstance, $olditem);
     if (!empty($thephonetic)) {
         $DB->update_record(constants::M_TABLE, array('id' => $moduleinstance->id, 'phonetic' => $thephonetic, 'passagesegments' => $thepassagesegments));
-        $moduleinstance->phonetic=$thephonetic;
-        $moduleinstance->passagesegments=$thepassagesegments;
+        $moduleinstance->phonetic = $thephonetic;
+        $moduleinstance->passagesegments = $thepassagesegments;
     }
 }
 
@@ -132,8 +132,8 @@ $ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->
 $canattempt = true;
 $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
 if (!$canpreview && $moduleinstance->maxattempts > 0) {
-    $gradeableattempts=0;
-    if($attempts) {
+    $gradeableattempts = 0;
+    if ($attempts) {
         foreach ($attempts as $candidate) {
             if ($candidate->dontgrade == 0) {
                 $gradeableattempts++;
@@ -151,31 +151,31 @@ if (!$canpreview) {
 }
 
 // For Japanese (and later other languages we collapse spaces).
-$collapsespaces=false;
-if($moduleinstance->ttslanguage==constants::M_LANG_JAJP){
-    $collapsespaces=true;
+$collapsespaces = false;
+if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+    $collapsespaces = true;
 }
 
 // Fetch a token and report a failure to a display item: $problembox.
-$problembox='';
-$token="";
-if(empty($config->apiuser) || empty($config->apisecret)){
-    $message = get_string('nocredentials',constants::M_COMPONENT,
+$problembox = '';
+$token = "";
+if (empty($config->apiuser) || empty($config->apisecret)) {
+    $message = get_string('nocredentials', constants::M_COMPONENT,
             $CFG->wwwroot . constants::M_PLUGINSETTINGS);
-    $problembox=$renderer->show_problembox($message);
-}else {
+    $problembox = $renderer->show_problembox($message);
+} else {
     // Fetch token.
     $token = utils::fetch_token($config->apiuser, $config->apisecret);
 
     // Check token authenticated and no errors in it.
     $errormessage = utils::fetch_token_error($token);
-    if(!empty($errormessage)){
+    if (!empty($errormessage)) {
         $problembox = $renderer->show_problembox($errormessage);
     }
 }
 
 // Fetch attempt information.
-if($attempts) {
+if ($attempts) {
     $latestattempt = current($attempts);
 
     if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
@@ -186,16 +186,16 @@ if($attempts) {
 
     $have_humaneval = $latestattempt->sessiontime != null;
     $have_aieval = $latest_aigrade && $latest_aigrade->has_transcripts();
-}else{
+} else {
     $latestattempt = false;
     $have_humaneval = false;
-    $have_aieval =false;
+    $have_aieval = false;
     $latest_aigrade = false;
 }
 
 // If we need a non standard font we can do that from here.
-if(!empty($moduleinstance->customfont)){
-    if(!in_array($moduleinstance->customfont,constants::M_STANDARD_FONTS)){
+if (!empty($moduleinstance->customfont)) {
+    if (!in_array($moduleinstance->customfont, constants::M_STANDARD_FONTS)) {
         $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css?family=' . $moduleinstance->customfont));
     }
 }
@@ -216,11 +216,12 @@ if ($config->enablesetuptab && empty($moduleinstance->passage)) {
 }
 
 // If we are reviewing attempts we do that here and return.
-// If we are going to the dashboard we output that below
+// If we are going to the dashboard we output that below.
 if ($attempts && $reviewattempts) {
     $attemptreview_html = $renderer->show_attempt_for_review($moduleinstance, $attempts,
-            $have_humaneval, $have_aieval, $collapsespaces,$latestattempt, $token, $modulecontext, $passagerenderer);
+            $have_humaneval, $have_aieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer);
     echo $attemptreview_html;
+
     return;
 }
 
@@ -228,45 +229,47 @@ if ($attempts && $reviewattempts) {
 // so here we just put them on the page in the correct sequence.
 
 // Show activity description.
-if( $CFG->version<2022041900) {
+if ( $CFG->version < 2022041900) {
     echo $renderer->show_intro($moduleinstance, $cm);
 }
 
 // Show open close dates.
-$hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart>0;
-if($hasopenclosedates){
+$hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
+if ($hasopenclosedates) {
     echo $renderer->show_open_close_dates($moduleinstance);
-    $current_time=time();
+    $current_time = time();
     $closed = false;
-    if ( $current_time>$moduleinstance->viewend && $moduleinstance->viewend>0){
-        echo get_string('activityisclosed',constants::M_COMPONENT);
+    if ($current_time > $moduleinstance->viewend && $moduleinstance->viewend > 0) {
+        echo get_string('activityisclosed', constants::M_COMPONENT);
         $closed = true;
-    }elseif($current_time<$moduleinstance->viewstart && $moduleinstance->viewstart>0 ){
-        echo get_string('activityisnotopenyet',constants::M_COMPONENT);
+    } elseif ($current_time < $moduleinstance->viewstart && $moduleinstance->viewstart > 0) {
+        echo get_string('activityisnotopenyet', constants::M_COMPONENT);
         $closed = true;
     }
     // If we are not a teacher and the activity is closed/not-open leave at this point.
-    if(!has_capability('mod/readaloud:preview',$modulecontext) && $closed){
+    if (!has_capability('mod/readaloud:preview', $modulecontext) && $closed) {
         echo $renderer->footer();
         exit;
     }
 }
 
 // Show small report.
-if($attempts) {
-    if(!$latestattempt){$latestattempt = current($attempts);}
+if ($attempts) {
+    if (!$latestattempt) {
+        $latestattempt = current($attempts);
+    }
     echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade, $embed);
 }
 
 // Welcome message.
-$welcomemessage = get_string('welcomemenu',constants::M_COMPONENT);
+$welcomemessage = get_string('welcomemenu', constants::M_COMPONENT);
 if (!$canattempt) {
-   $welcomemessage .= '<br>' . get_string("exceededattempts", constants::M_COMPONENT, $moduleinstance->maxattempts);
+    $welcomemessage .= '<br>' . get_string("exceededattempts", constants::M_COMPONENT, $moduleinstance->maxattempts);
 }
 echo $renderer->show_welcome_menu($welcomemessage);
 
 // If we have a problem (usually with auth/token) we display and return.
-if(!empty($problembox)){
+if (!empty($problembox)) {
     echo $problembox;
     // Finish the page.
     echo $renderer->footer();
@@ -275,18 +278,18 @@ if(!empty($problembox)){
 
 // Activity instructions.
 echo $renderer->show_instructions($moduleinstance->welcome);
-echo $renderer->show_previewinstructions(get_string('previewhelp',constants::M_COMPONENT));
-echo $renderer->show_landrinstructions(get_string('landrhelp',constants::M_COMPONENT));
+echo $renderer->show_previewinstructions(get_string('previewhelp', constants::M_COMPONENT));
+echo $renderer->show_landrinstructions(get_string('landrhelp', constants::M_COMPONENT));
 
 // Feedback or errors.
 echo $renderer->show_feedback($moduleinstance);
 echo $renderer->show_error($moduleinstance, $cm);
 
 // Show menu buttons.
-echo $renderer->show_menubuttons($moduleinstance,$canattempt);
+echo $renderer->show_menubuttons($moduleinstance, $canattempt);
 
 // Show model audio player.
-$visible=false;
+$visible = false;
 echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $visible);
 
 // Show stop and play buttons.
@@ -295,7 +298,7 @@ echo $renderer->show_stopandplay($moduleinstance);
 // We put some CSS at the top of the passage container to control things like padding word separation etc.
 $extraclasses = 'readmode';
 // For Japanese (and later other languages we collapse spaces).
-if($collapsespaces){
+if ($collapsespaces) {
     $extraclasses .= ' collapsespaces';
 }
 
@@ -306,7 +309,7 @@ if($collapsespaces){
 echo "<div id='mod_readaloud_readingcontainer'>";
 // Hide on load, and we can show from ajax.
 $extraclasses .= ' hide';
-echo $passagerenderer->render_passage($moduleinstance->passagesegments,$moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
+echo $passagerenderer->render_passage($moduleinstance->passagesegments, $moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
 
 // Lets fetch recorder.
 echo $renderer->show_recorder($moduleinstance, $token, $debug);
@@ -332,3 +335,4 @@ echo $renderer->show_returntomenu_button($embed);
 
 // Finish the page.
 echo $renderer->footer();
+
