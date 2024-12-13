@@ -80,7 +80,7 @@ class renderer extends \plugin_renderer_base {
 
     public function show_attempt_summary($attemptsummary,$showgrades){
 
-        //set up our table
+        // Set up our table.
         $tableattributes = array('class' => 'generaltable ' . constants::M_CLASS . '_table');
 
         $htmltable = new \html_table();
@@ -197,24 +197,24 @@ class renderer extends \plugin_renderer_base {
       $hasaudiobreaks = !empty($moduleinstance->modelaudiobreaks);
 
         $data=[];
-        //are we previewing?
+        // Are we previewing?
         if(!$moduleinstance->enablepreview) {
             $data['nopreview'] = 1;
         }
 
-        //do we have audio breaks ?
+        // Do we have audio breaks?
         if(!$hasaudiobreaks) {
             $data['noaudiobreaks'] = 1;
         }
-        //is listen and repeat enabled?
+        // Is listen and repeat enabled?
         if(!$moduleinstance->enablelandr) {
             $data['nolandr'] = 1;
         }
-        //is shadow enabled
+        // Is shadow enabled?
         if(!$moduleinstance->enableshadow) {
             $data['noshadow'] = 1;
         }
-        //can we attempt this activity
+        // Can we attempt this activity?
         $disableshadowgrading = get_config(constants::M_COMPONENT,'disableshadowgrading');
         if(!$canattempt) {
             $data['cantattempt'] = 1;
@@ -223,10 +223,10 @@ class renderer extends \plugin_renderer_base {
             }
         }
 
-        //no quiz
+        // No quiz.
         $data['noquiz'] = 1;
 
-        //finally render template and return
+        // Finally render template and return.
         return $this->render_from_template('mod_readaloud/bigbuttonmenu', $data);
     }
 
@@ -468,7 +468,7 @@ class renderer extends \plugin_renderer_base {
 
         global $CFG;
 
-        //set up our table
+        // Set up our table.
         $tableattributes = array('class' => 'generaltable ' . constants::M_CLASS . '_table');
 
         $htmltable = new \html_table();
@@ -485,7 +485,7 @@ class renderer extends \plugin_renderer_base {
         $rowcount = 0;
         $total_mistranscriptions = 0;
         foreach ($items as $row) {
-            //if this was not a mistranscription, skip
+            // If this was not a mistranscription, skip.
             if (!$row->mistranscriptions) {
                 continue;
             }
@@ -531,7 +531,7 @@ class renderer extends \plugin_renderer_base {
                     array('class' => constants::M_CLASS . '_totalmistranscriptions'));
             $html .= \html_writer::table($htmltable);
 
-            //set up datatables
+            // Set up datatables.
             $tableprops = new \stdClass();
             $opts = Array();
             $opts['tableid'] = $tableid;
@@ -543,7 +543,7 @@ class renderer extends \plugin_renderer_base {
         return $html;
     }
 
-    //fetch modal container
+    // Fetch modal container.
     function fetch_modalcontainer($title,$content,$containertag){
         $data=[];
         $data['title']=$title;
@@ -555,10 +555,10 @@ class renderer extends \plugin_renderer_base {
 
     public function show_landr($moduleinstance, $token){
         global $CFG, $USER;
-        //recorder modal
+        // Recorder modal.
         $title = get_string('landrreading',constants::M_COMPONENT);
 
-        //the TT recorder stuff
+        // The TT recorder stuff.
         $data=array( 'data-id' => 'readaloud_ttrecorder',
                         'data-language' => $moduleinstance->ttslanguage,
                         'data-region' => $moduleinstance->region,
@@ -566,7 +566,7 @@ class renderer extends \plugin_renderer_base {
                         'maxtime' => 15000
                 );
 
-        //For right to left languages we want to add the RTL direction and right justify.
+        // For right to left languages we want to add the RTL direction and right justify.
         switch($moduleinstance->ttslanguage){
             case constants::M_LANG_ARAE:
             case constants::M_LANG_ARSA:
@@ -575,11 +575,11 @@ class renderer extends \plugin_renderer_base {
                 $data['rtl']=true;
                 break;
             default:
-                //nothing special
+                // Nothing special.
         }
 
-        //passagehash if not empty will be region|hash eg tokyo|2353531453415134545
-        //but we only send the hash up so we strip the region
+        // Passagehash if not empty will be region|hash eg tokyo|2353531453415134545
+        // but we only send the hash up so we strip the region.
         $thefullhash = $moduleinstance->usecorpus==constants::GUIDEDTRANS_CORPUS ? $moduleinstance->corpushash : $moduleinstance->passagehash;
         if(!empty($thefullhash)){
             $hashbits = explode('|',$thefullhash);
@@ -588,10 +588,11 @@ class renderer extends \plugin_renderer_base {
             }
         }
 
-        //fetch lang services url
+        // Fetch lang services url.
         $data['asrurl'] = utils::fetch_lang_server_url($moduleinstance->region,'transcribe');
 
-        //this will set some opts for the recorder, but others are set by fetch_activity_amd and it is applied in listen and repeat.js
+        // This will set some opts for the recorder, but others are set by fetch_activity_amd
+        // and it is applied in listen and repeat.js.
         $content =  $this->render_from_template('mod_readaloud/listenandrepeat', $data);
         $containertag = 'landr_container';
         $amodalcontainer = $this->fetch_modalcontainer($title,$content,$containertag);
@@ -698,8 +699,8 @@ class renderer extends \plugin_renderer_base {
         $ret = "";
         $displaypassage = utils::lines_to_brs($readaloud->passage);
 
-        //for some languages we do not want spaces. Japanese, Chinese. For now this is manual
-        //TODO auto determine when to use collapsespaces
+        // For some languages we do not want spaces. Japanese, Chinese. For now this is manual.
+        // TODO: auto determine when to use collapsespaces.
         $collapsespaces = $collapsespaces ? ' reviewmode collapsespaces' : '';
 
         $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER . ' '
@@ -789,16 +790,17 @@ class renderer extends \plugin_renderer_base {
     public function show_recorder($moduleinstance, $token, $debug = false) {
         global $CFG,$USER;
 
-        //recorder
+        // Recorder.
         //=======================================
         $hints = new \stdClass();
-        //If there is no time limit, or allow early exit is on, we need a stop button
+        // If there is no time limit, or allow early exit is on, we need a stop button.
         $hints->allowearlyexit = $moduleinstance->allowearlyexit || !$moduleinstance->timelimit;
-        // The readaloud recorder now handles juststart setting
-        //if the user has selected, just start, ok.
+        // The readaloud recorder now handles juststart setting.
+        // If the user has selected, just start, ok.
         $hints->juststart = $moduleinstance->recorder==constants::REC_ONCE ? 1 : 0;
 
-        //if we are shadowing we also want to tell the recorder, so that it can disable noise supression and echo cancellation
+        // If we are shadowing we also want to tell the recorder
+        // so that it can disable noise supression and echo cancellation.
         $hints->shadowing = $moduleinstance->enableshadow ? 1 : 0;
 
         if($moduleinstance->recorder==constants::REC_ONCE) {
@@ -808,7 +810,7 @@ class renderer extends \plugin_renderer_base {
 
         $can_transcribe = \mod_readaloud\utils::can_transcribe($moduleinstance);
 
-        //We no longer want to use AWS streaming transcription.
+        // We no longer want to use AWS streaming transcription.
         switch ($moduleinstance->transcriber){
             case constants::TRANSCRIBER_STRICT:
             case constants::TRANSCRIBER_GUIDED:
@@ -817,10 +819,10 @@ class renderer extends \plugin_renderer_base {
                 $speechevents="0";
         }
 
-        //we encode any hints
+        // We encode any hints.
         $string_hints = base64_encode(json_encode($hints));
-        //get passage hash as key for transcription vocab
-        //we sneakily add "[region]|" when we save passage hash .. so if user changes region ..we re-generate lang model
+        // Get passage hash as key for transcription vocab
+        // We sneakily add "[region]|" when we save passage hash .. so if user changes region ..we re-generate lang model
         $transcribevocab = 'none';
         $thefullhash = $moduleinstance->usecorpus==constants::GUIDEDTRANS_CORPUS ? $moduleinstance->corpushash : $moduleinstance->passagehash;
         if(!empty($thefullhash) && !$moduleinstance->stricttranscribe){
@@ -828,15 +830,15 @@ class renderer extends \plugin_renderer_base {
             if(count($hashbits)==2){
                 $transcribevocab = $hashbits[1];
             }else{
-                //in the early days there was no region prefix, so we just use the passagehash as is
+                // In the early days there was no region prefix, so we just use the passagehash as is.
                 $transcribevocab = $moduleinstance->passagehash;
             }
         }
 
-        //for now we just use the passage as transcribevocab if its guided and language is minz (maori)
+        // For now we just use the passage as transcribevocab if its guided and language is minz (maori).
         $iswhisper=utils::is_whisper($moduleinstance->ttslanguage);
         if($transcribevocab=='none' && $iswhisper && !$moduleinstance->stricttranscribe){
-            //If we are using whisper we want to send a prompt to OpenAI
+            // If we are using whisper we want to send a prompt to OpenAI.
             $transcribevocab = $moduleinstance->passage;
         }
 
@@ -875,27 +877,27 @@ class renderer extends \plugin_renderer_base {
 
         $recordingdiv = \html_writer::div($containerdiv, constants::M_RECORDING_CONTAINER);
 
-        //prepare output
+        // Prepare output.
         $ret = "";
         $ret .= $recordingdiv;
-        //return it
+        // Return it.
         return $ret;
     }
 
     function fetch_activity_amd($cm, $moduleinstance,$token, $embed=0) {
         global $CFG,$USER;
-        //any html we want to return to be sent to the page
+        // Any html we want to return to be sent to the page.
         $ret_html = '';
 
-        //here we set up any info we need to pass into javascript
+        // Here we set up any info we need to pass into javascript.
 
         $recopts = Array();
-        //recorder html ids
+        // Recorder html ids.
         $recopts['recorderid'] = constants::M_RECORDERID;
         $recopts['recordingcontainer'] = constants::M_RECORDING_CONTAINER;
         $recopts['recordercontainer'] = constants::M_RECORDER_CONTAINER;
 
-        //activity html ids
+        // Activity html ids.
         $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
         $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
         $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
@@ -934,7 +936,7 @@ class renderer extends \plugin_renderer_base {
         }
 
         $recopts['transcriber']=$moduleinstance->transcriber;
-        //this will force browser recognition to use Poodll (not chrome or other browser speech)
+        // This will force browser recognition to use Poodll (not chrome or other browser speech).
         if($recopts['transcriber']==constants::TRANSCRIBER_GUIDED){
             $recopts['stt_guided'] = true;
         }else {
@@ -949,42 +951,42 @@ class renderer extends \plugin_renderer_base {
         $recopts['appid']=constants::M_COMPONENT;
         $recopts['expiretime']=300;//max expire time is 300 seconds
 
-        //we need an update control tp hold the recorded filename, and one for draft item id
+        // We need an update control tp hold the recorded filename, and one for draft item id.
         $ret_html = $ret_html . \html_writer::tag('input', '', array('id' => constants::M_UPDATE_CONTROL, 'type' => 'hidden'));
 
-        //this inits the M.mod_readaloud thingy, after the page has loaded.
-        //we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
-        //convert opts to json
+        // This inits the M.mod_readaloud thingy, after the page has loaded.
+        // We put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
+        // convert opts to json.
         $jsonstring = json_encode($recopts);
         $widgetid = constants::M_RECORDERID . '_opts_9999';
         $opts_html =
                 \html_writer::tag('input', '', array('id' => 'amdopts_' . $widgetid, 'type' => 'hidden', 'value' => $jsonstring));
 
-        //the recorder div
+        // The recorder div.
         $ret_html = $ret_html . $opts_html;
 
         $opts = array('cmid' => $cm->id, 'widgetid' => $widgetid);
         $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', array($opts));
         $this->page->requires->strings_for_js(array('gotnosound', 'done', 'beginreading'), constants::M_COMPONENT);
 
-        //these need to be returned and echo'ed to the page
+        // These need to be returned and echo'ed to the page.
         return $ret_html;
     }
 
     function fetch_clicktohear_amd($moduleinstance,$token) {
         global $USER;
-        //any html we want to return to be sent to the page
+        // Any html we want to return to be sent to the page.
         $ret_html = "";
         $opts = array('token'=>$token,'owner' => hash('md5',$USER->username),
                 'region' => $moduleinstance->region, 'ttsvoice'=>$moduleinstance->ttsvoice);
         $this->page->requires->js_call_amd("mod_readaloud/clicktohear", 'init', array($opts));
 
-        //these need to be returned and echo'ed to the page
+        // These need to be returned and echo'ed to the page.
         return "";
     }
 
     function fetch_clicktohear($moduleinstance,$token) {
-        //any html we want to return to be sent to the page
+        // Any html we want to return to be sent to the page.
         $ret_html = $this->render_hiddenaudioplayer();
         $ret_html .= $this->fetch_clicktohear_amd($moduleinstance,$token);
         return $ret_html;
@@ -1024,7 +1026,7 @@ class renderer extends \plugin_renderer_base {
                     array('id'=>$cm->id,'action'=>$action)),get_string('push' . $pushthing,constants::M_COMPONENT))];
         }
 
-        //Generate and return menu
+        // Generate and return menu.
         $ret = $this->output->render_from_template( constants::M_COMPONENT . '/manybuttonsmenu', ['items'=>$templateitems]);
 
         return $ret;
@@ -1054,19 +1056,19 @@ class renderer extends \plugin_renderer_base {
         
         $ret = '';
 
-        //show an attempt summary if we have more than one attempt and we are not the guest user
+        // Show an attempt summary if we have more than one attempt and we are not the guest user.
         if(count($attempts)>1 && !isguestuser()) {
-            //if we can calculate a grade, lets do it
+            // If we can calculate a grade, lets do it.
             $showgradesinchart=$moduleinstance->targetwpm>0;
 
             switch ($moduleinstance->humanpostattempt) {
                 case constants::POSTATTEMPT_NONE:
-                    //no progress charts if not showing errors
+                    // No progress charts if not showing errors.
                     break;
 
                 case constants::POSTATTEMPT_EVALERRORSNOGRADE:
                     $showgradesinchart=false;
-                //no break here .. we want to flow on
+                // No break here .. we want to flow on.
                 case constants::POSTATTEMPT_EVAL:
                 case constants::POSTATTEMPT_EVALERRORS:
                     $attemptsummary = utils::fetch_attempt_summary($moduleinstance);
@@ -1078,21 +1080,21 @@ class renderer extends \plugin_renderer_base {
             }
         }
 
-        //show feedback summary
+        // Show feedback summary.
         $ret .= $this->show_feedback_postattempt($moduleinstance);
 
-        //if we have token problems show them here
+        // If we have token problems show them here.
         if(!empty($problembox)) {
             $ret .= $problembox;
         }
 
         if ($have_humaneval || $have_aieval) {
-            //we useed to distingush between humanpostattempt and machinepostattempt but we simplified it,
-            // /and just use the human value for all
+            // We useed to distingush between humanpostattempt and machinepostattempt but we simplified it,
+            // and just use the human value for all.
             switch ($moduleinstance->humanpostattempt) {
                 case constants::POSTATTEMPT_NONE:
-                    //we need more control over passage display than a word dump allows so we user gradenow renderer
-                    //$ret .= $this->show_passage_postattempt($moduleinstance,$collapsespaces);
+                    // We need more control over passage display than a word dump allows so we user gradenow renderer.
+                    // $ret .= $this->show_passage_postattempt($moduleinstance,$collapsespaces);
                     $extraclasses = 'readmode';
                     if($collapsespaces){
                         $extraclasses = ' collapsespaces';
@@ -1160,8 +1162,8 @@ class renderer extends \plugin_renderer_base {
             $ret .= $this->show_ungradedyet();
             $ret .= $this->fetch_clicktohear_amd($moduleinstance,$token);
             $ret .= $this->render_hiddenaudioplayer();
-            //we need more control over passage display than a word dump allows so we user gradenow renderer
-            //$ret .= $this->show_passage_postattempt($moduleinstance,$collapsespaces);
+            // We need more control over passage display than a word dump allows so we user gradenow renderer.
+            // $ret .= $this->show_passage_postattempt($moduleinstance,$collapsespaces);
             $extraclasses = 'readmode';
             if($collapsespaces){
                 $extraclasses = ' collapsespaces';
@@ -1170,8 +1172,8 @@ class renderer extends \plugin_renderer_base {
 
         }
 
-        //TO DO move logic to menu dashboard
-        //show  button or a label depending on of can retake
+        // TODO: Move logic to menu dashboard.
+        // Show button or a label depending on of can retake.
         /*
         if ($canattempt) {
             $ret .= $this->reattemptbutton($moduleinstance);
@@ -1192,7 +1194,7 @@ class renderer extends \plugin_renderer_base {
 
         $comp_test =  new \mod_readaloud\comprehensiontest($cm);
 
-        //passage picture
+        // Passage picture.
         if($moduleinstance->passagepicture) {
             $zeroitem = new \stdClass();
             $zeroitem->id = 0;
@@ -1203,7 +1205,7 @@ class renderer extends \plugin_renderer_base {
             $picturecontainer ='';
         }
 
-        //passage
+        // Passage.
         if($markeduppassage){
             $passage = $markeduppassage;
         }else{
@@ -1216,6 +1218,4 @@ class renderer extends \plugin_renderer_base {
 
         return $ret;
     }
-
-
 }
