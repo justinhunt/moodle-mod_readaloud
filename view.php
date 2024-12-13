@@ -63,7 +63,7 @@ if ($id) {
     // print_error('invalidcourseid');
 }
 
-$PAGE->set_url('/mod/readaloud/view.php', ['id' => $cm->id,'reviewattempts' => $reviewattempts,'embed' => $embed]);
+$PAGE->set_url('/mod/readaloud/view.php', ['id' => $cm->id, 'reviewattempts' => $reviewattempts, 'embed' => $embed]);
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -95,7 +95,7 @@ if($moduleinstance->passagesegments===null) {
     }
 }
 
-// Get an admin settings.
+// Get admin settings.
 $config = get_config(constants::M_COMPONENT);
 
 // Set up the page header.
@@ -104,21 +104,16 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
 // We want readaloud to embed nicely.
-if ($moduleinstance->foriframe == 1  || $embed == 1) {
+if ($moduleinstance->foriframe == 1 || $embed == 1) {
     $PAGE->set_pagelayout('embedded');
-} elseif ($embed == 2){
+} elseif ($config->enablesetuptab || $embed == 2) {
     $PAGE->set_pagelayout('popup');
     $PAGE->add_body_class('poodll-readaloud-embed');
 } else {
-    if (has_capability('mod/' . constants::M_MODNAME . ':' . 'manage', $modulecontext)) {
+    // Default layout for users with the 'manage' capability.
+    if (has_capability('mod/' . constants::M_MODNAME . ':manage', $modulecontext)) {
         $PAGE->set_pagelayout('incourse');
     }
-}
-
-if ($config->enablesetuptab) {
-    $PAGE->set_pagelayout('popup');
-} else {
-    $PAGE->set_pagelayout('incourse');
 }
 
 // We need to load jquery for some old themes (Essential mainly).
@@ -318,7 +313,7 @@ echo $renderer->show_recorder($moduleinstance, $token, $debug);
 echo "</div";//close readingcontainer
 
 echo $renderer->show_progress($moduleinstance, $cm);
-echo $renderer->show_wheretonext($moduleinstance);
+echo $renderer->show_wheretonext($moduleinstance, $embed);
 
 //show listen and repeat dialog
 echo $renderer->show_landr($moduleinstance, $token);
@@ -329,11 +324,11 @@ $comprehensiontest = new \mod_readaloud\comprehensiontest($cm);
 $items = $comprehensiontest->fetch_items();
 echo $renderer->show_quiz($moduleinstance,$items);
 */
-echo $renderer->fetch_activity_amd($cm, $moduleinstance,$token, $embed);
+echo $renderer->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
 
-//return to menu button
+// Return to menu button.
 echo "<hr/>";
 echo $renderer->show_returntomenu_button($embed);
 
-// Finish the page
+// Finish the page.
 echo $renderer->footer();

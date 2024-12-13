@@ -8,8 +8,8 @@
 
 namespace mod_readaloud\output;
 
-use \mod_readaloud\constants;
-use \mod_readaloud\utils;
+use mod_readaloud\constants;
+use mod_readaloud\utils;
 
 class renderer extends \plugin_renderer_base {
 
@@ -32,19 +32,18 @@ class renderer extends \plugin_renderer_base {
             $title = $this->page->course->shortname . ": " . $activityname . ": " . $extrapagetitle;
         }
 
-        // Build the buttons
+        // Build the buttons.
         $context = \context_module::instance($cm->id);
 
-        /// Header setup
+        // Header setup.
         $this->page->set_title($title);
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
 
-        if(!$moduleinstance->foriframe) {
+        if (!$moduleinstance->foriframe) {
             $thetitle = $this->output->heading($activityname, 3, 'main');
             $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
             $output .= $displaytext;
-
         }
 
 
@@ -231,87 +230,96 @@ class renderer extends \plugin_renderer_base {
         return $this->render_from_template('mod_readaloud/bigbuttonmenu', $data);
     }
 
-    /*
-     * Show a small summary of the activity
+
+    /**
+     * Show the small report.
+     *
+     * @param mixed $moduleinstance The module instance.
+     * @param mixed $attempt The attempt.
+     * @param mixed $aigrade The AI grade.
+     * @param int $embed The embed parameter, default is 0, set to 2 if authenticated via token.
+     * @return string The HTML for the small report.
      */
-    public function show_smallreport ($moduleinstance, $attempt=false, $aigrade=false, $embed=0) {
-        global $CFG;
+    public function show_smallreport($moduleinstance, $attempt=false, $aigrade=false, $embed=0) {
 
-        //template data for small report
-        $tdata = Array();
-        //show grades and stats
-        $showstats = $moduleinstance->humanpostattempt !=constants::POSTATTEMPT_NONE;
-        $showgrades=$moduleinstance->targetwpm>0 && $showstats && $moduleinstance->humanpostattempt !=constants::POSTATTEMPT_EVALERRORSNOGRADE;
-        //if this is in gradebook or not
-        $notingradebook = $attempt->dontgrade>0;
+        // Template data for small report.
+        $tdata = [];
+        // Show grades and stats.
+        $showstats = $moduleinstance->humanpostattempt != constants::POSTATTEMPT_NONE;
+        $showgrades = $moduleinstance->targetwpm > 0 && $showstats && $moduleinstance->humanpostattempt != constants::POSTATTEMPT_EVALERRORSNOGRADE;
+        // If this is in gradebook or not.
+        $notingradebook = $attempt->dontgrade > 0;
 
-        //attempt has been graded yet?
+        // Attempt has been graded yet?
         $have_humaneval = $attempt->sessiontime != null;
         $have_aieval = $aigrade && $aigrade->has_transcripts();
         $graded = $have_humaneval || $have_aieval;
 
-        //star rating
-        if($attempt && $graded) {
-            //stars
-            if($showgrades){
-                $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5
-            }else{
+        // Star rating.
+        if ($attempt && $graded) {
+            // Stars.
+            if ($showgrades) {
+                $rating = utils::fetch_rating($attempt, $aigrade); // 0,1,2,3,4 or 5.
+            } else {
                 $rating = 5;
             }
             $ready = $rating > -1;
-            $stars=[];
+            $stars = [];
             for ($star = 0; $star < 5; $star++) {
                 $stars[] = $rating > $star ? 'fa-star' : 'fa-star-o';
             }
-            $tdata['stars']=$stars;
+            $tdata['stars'] = $stars;
 
-            //stats
+            // Stats.
             $stats = utils::fetch_small_reportdata($attempt, $aigrade);
-            $tdata['wpm']=$stats->wpm;
-            $tdata['acc']=$stats->accuracy;
-            $tdata['totalwords']=$stats->sessionendword;
-            $tdata['notingradebook']=$notingradebook;
+            $tdata['wpm'] = $stats->wpm;
+            $tdata['acc'] = $stats->accuracy;
+            $tdata['totalwords'] = $stats->sessionendword;
+            $tdata['notingradebook'] = $notingradebook;
 
-
-        }else{
+        } else {
             $ready = false;
         }
-        if($ready) {
-            $tdata['ready']=true;
+
+        if ($ready) {
+            $tdata['ready'] = true;
         }
 
-        //audio  filename
-        $tdata['src']='';
-        if($ready && $attempt->filename){
-            //we set the filename here. If attempt is not ready yet, audio may not be ready, so we blank it here
-            //and set it from JS pinging every 500ms or so till audio is ready
-            $tdata['src']= $attempt->filename;
+        // Audio  filename.
+        $tdata['src'] = '';
+        if ($ready && $attempt->filename) {
+            // We set the filename here. If attempt is not ready yet, audio may not be ready, so we blank it here
+            // and set it from JS pinging every 500ms or so till audio is ready.
+            $tdata['src'] = $attempt->filename;
         }
 
-        //If there is no remote transcriber
-        //we do not want to get users hopes up by trying to fetch a transcript with ajax
-        if(utils::can_transcribe($moduleinstance)){
+        // If there is no remote transcriber
+        // we do not want to get users hopes up by trying to fetch a transcript with ajax.
+        if (utils::can_transcribe($moduleinstance)) {
             $remotetranscribe = true;
-        }else{
+        } else {
             $remotetranscribe = false;
         }
 
-
-
-        //full report button
+        // Full report button.
         $fullreportcaption = $showstats ? get_string('fullreport', constants::M_COMPONENT) : get_string('fullreportnoeval', constants::M_COMPONENT);
         $fullreportbutton = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
-                array('n' => $moduleinstance->id, 'reviewattempts' => 1, 'embed' => $embed)), $fullreportcaption);
-        $tdata['fullreportbutton']=$fullreportbutton;
-        $tdata['showgrades']=$showgrades;
-        $tdata['showstats']=$showstats;
+                [
+                    'n' => $moduleinstance->id,
+                    'reviewattempts' => 1,
+                    'embed' => $embed,
+                ]
+            ), $fullreportcaption);
+        $tdata['fullreportbutton'] = $fullreportbutton;
+        $tdata['showgrades'] = $showgrades;
+        $tdata['showstats'] = $showstats;
         $tdata['remotetranscribe'] = $remotetranscribe;
 
-        //finally render template
+        // Finally render template.
         $ret = $this->render_from_template('mod_readaloud/smallreport', $tdata);
 
-        //Js to refresh small report
-        $opts = Array();
+        // JS to refresh small report.
+        $opts = [];
         $opts['filename'] = $attempt->filename;
         $opts['attemptid'] = $attempt ? $attempt->id : false;
         $opts['ready'] = $ready;
@@ -319,15 +327,26 @@ class renderer extends \plugin_renderer_base {
         $opts['showgrades'] = $showgrades;
         $opts['showstats'] = $showstats;
         $opts['notingradebook'] = $notingradebook;
-        $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', array($opts));
-        $this->page->requires->strings_for_js(['secs_till_check','notgradedyet','evaluatedmessage', 'checking','notaddedtogradebook'],constants::M_COMPONENT);
+        $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', [$opts]);
+        $this->page->requires->strings_for_js(['secs_till_check', 'notgradedyet', 'evaluatedmessage', 'checking', 'notaddedtogradebook'], constants::M_COMPONENT);
 
         return $ret;
     }
 
-    public function show_returntomenu_button($embed){
-        $returnbutton =  \html_writer::tag('button', "<i class='fa fa-arrow-left'></i> ".get_string("returnmenu", constants::M_COMPONENT),
-                array('class'=>constants::M_CLASS . '_center btn-block btn btn-secondary ' . constants::M_RETURNMENU,'type'=>'button','style'=>'display: none','id'=>constants::M_RETURNMENU, 'embed' => $embed));
+    /**
+     * Show the return to menu button.
+     *
+     * @param int $embed The embed parameter, default is 0, set to 2 if authenticated via token.
+     * @return string The HTML for the return to menu button.
+     */
+    public function show_returntomenu_button($embed) {
+        $returnbutton = \html_writer::tag('button', "<i class='fa fa-arrow-left'></i> ".get_string("returnmenu", constants::M_COMPONENT),
+                [
+                    'class' => constants::M_CLASS . '_center btn-block btn btn-secondary ' . constants::M_RETURNMENU,
+                    'type' => 'button',
+                    'style' => 'display: none', 'id' => constants::M_RETURNMENU, 'embed' => $embed,
+                ]
+            );
         return $returnbutton;
     }
 
@@ -358,27 +377,35 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
+     * Show where to next.
      *
+     * @param object $moduleinstance The module instance.
+     * @param int $embed The embed parameter, default is 0, set to 2 if authenticated via token.
+     * @return string The HTML for the next button.
      */
-    public function show_wheretonext($moduleinstance) {
+    public function show_wheretonext($moduleinstance, $embed = 0) {
 
         $nextactivity = utils::fetch_next_activity($moduleinstance->activitylink);
-        //show activity link if we are up to it
-        $buttons=[];
+        // Show activity link if we are up to it.
+        $buttons = [];
 
-        //back to menu button
-        $buttons[] =  \html_writer::link(new \moodle_url(constants::M_URL . '/view.php',
-                array('n' => $moduleinstance->id)), get_string("backtotop", constants::M_COMPONENT),
-                array('class'=>constants::M_CLASS . '_center btn btn-secondary ' . constants::M_BACKTOTOP,'id'=>constants::M_BACKTOTOP));
+        // Back to menu button.
+        $buttons[] = \html_writer::link(new \moodle_url(constants::M_URL . '/view.php',
+                ['n' => $moduleinstance->id]), get_string("backtotop", constants::M_COMPONENT),
+                [
+                    'class' => constants::M_CLASS . '_center btn btn-secondary ' . constants::M_BACKTOTOP,
+                    'id' => constants::M_BACKTOTOP,
+                    'embed' => $embed,
+                ]);
 
-        //next activity button
+        // Next activity button.
         if ($nextactivity->url) {
-            $buttons[]= $this->output->single_button($nextactivity->url, $nextactivity->label);
+            $buttons[] = $this->output->single_button($nextactivity->url, $nextactivity->label);
         }
 
-        $ret = \html_writer::div(implode('<br><br>',$buttons), constants::M_WHERETONEXT_CONTAINER);
-        return $ret;
+        $ret = \html_writer::div(implode('<br><br>', $buttons), constants::M_WHERETONEXT_CONTAINER);
 
+        return $ret;
     }
 
     /**
