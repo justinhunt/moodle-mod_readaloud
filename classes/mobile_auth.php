@@ -85,6 +85,7 @@ class mobile_auth {
         // Splitting into two halves and allowing both allows for fractions roundup in the time factor.
         list($generatedtoken) = self::create_embed_auth_token($secret, $timefactor);
         list($generatedtoken2) = self::create_embed_auth_token($secret, $timefactor - 1);
+
         return $token === $generatedtoken || $token === $generatedtoken2;
     }
 
@@ -129,6 +130,8 @@ class mobile_auth {
      * @return float
      */
     public static function get_time_factor() {
-        return ceil(time() / self::VALID_TIME);
+        $factor = ceil(time() / self::VALID_TIME);
+
+        return $factor;
     }
 }

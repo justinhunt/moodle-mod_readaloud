@@ -26,8 +26,9 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
-use \mod_readaloud\constants;
-use \mod_readaloud\utils;
+use mod_readaloud\constants;
+use mod_readaloud\utils;
+use mod_readaloud\mobile_auth;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $reviewattempts= optional_param('reviewattempts', 0, PARAM_INT); // course_module ID, or
@@ -102,17 +103,15 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-// We want readaloud to embed nicely, or display according to layout settings.
-if ($moduleinstance->foriframe == 1  || $moduleinstance->pagelayout == 'embedded' || $embed == 1) {
+// We want readaloud to embed nicely.
+if ($moduleinstance->foriframe == 1  || $embed == 1) {
     $PAGE->set_pagelayout('embedded');
-} elseif ($config->enablesetuptab || $moduleinstance->pagelayout == 'popup' || $embed == 2){
+} elseif ($embed == 2){
     $PAGE->set_pagelayout('popup');
     $PAGE->add_body_class('poodll-readaloud-embed');
 } else {
     if (has_capability('mod/' . constants::M_MODNAME . ':' . 'manage', $modulecontext)) {
         $PAGE->set_pagelayout('incourse');
-    } else {
-        $PAGE->set_pagelayout($moduleinstance->pagelayout);
     }
 }
 
@@ -261,7 +260,7 @@ if($hasopenclosedates){
 //show small report
 if($attempts) {
     if(!$latestattempt){$latestattempt = current($attempts);}
-    echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade);
+    echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade, $embed);
 }
 
 //welcome message
@@ -330,11 +329,11 @@ $comprehensiontest = new \mod_readaloud\comprehensiontest($cm);
 $items = $comprehensiontest->fetch_items();
 echo $renderer->show_quiz($moduleinstance,$items);
 */
-echo $renderer->fetch_activity_amd($cm, $moduleinstance,$token);
+echo $renderer->fetch_activity_amd($cm, $moduleinstance,$token, $embed);
 
 //return to menu button
 echo "<hr/>";
-echo $renderer->show_returntomenu_button();
+echo $renderer->show_returntomenu_button($embed);
 
 // Finish the page
 echo $renderer->footer();

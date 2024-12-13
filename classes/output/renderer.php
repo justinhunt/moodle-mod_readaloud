@@ -234,7 +234,7 @@ class renderer extends \plugin_renderer_base {
     /*
      * Show a small summary of the activity
      */
-    public function show_smallreport ($moduleinstance, $attempt=false, $aigrade=false) {
+    public function show_smallreport ($moduleinstance, $attempt=false, $aigrade=false, $embed=0) {
         global $CFG;
 
         //template data for small report
@@ -301,7 +301,7 @@ class renderer extends \plugin_renderer_base {
         //full report button
         $fullreportcaption = $showstats ? get_string('fullreport', constants::M_COMPONENT) : get_string('fullreportnoeval', constants::M_COMPONENT);
         $fullreportbutton = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
-                array('n' => $moduleinstance->id, 'reviewattempts' => 1)), $fullreportcaption);
+                array('n' => $moduleinstance->id, 'reviewattempts' => 1, 'embed' => $embed)), $fullreportcaption);
         $tdata['fullreportbutton']=$fullreportbutton;
         $tdata['showgrades']=$showgrades;
         $tdata['showstats']=$showstats;
@@ -325,9 +325,9 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function show_returntomenu_button(){
+    public function show_returntomenu_button($embed){
         $returnbutton =  \html_writer::tag('button', "<i class='fa fa-arrow-left'></i> ".get_string("returnmenu", constants::M_COMPONENT),
-                array('class'=>constants::M_CLASS . '_center btn-block btn btn-secondary ' . constants::M_RETURNMENU,'type'=>'button','style'=>'display: none','id'=>constants::M_RETURNMENU));
+                array('class'=>constants::M_CLASS . '_center btn-block btn btn-secondary ' . constants::M_RETURNMENU,'type'=>'button','style'=>'display: none','id'=>constants::M_RETURNMENU, 'embed' => $embed));
         return $returnbutton;
     }
 
@@ -855,7 +855,7 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    function fetch_activity_amd($cm, $moduleinstance,$token) {
+    function fetch_activity_amd($cm, $moduleinstance,$token, $embed=0) {
         global $CFG,$USER;
         //any html we want to return to be sent to the page
         $ret_html = '';
