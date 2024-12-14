@@ -25,6 +25,17 @@ class renderer extends \plugin_renderer_base {
     public function header($moduleinstance, $cm, $currenttab = '', $itemid = null, $extrapagetitle = null) {
         global $CFG;
 
+        switch($this->page->pagelayout) {
+            case 'popup':
+                $embed = 2;
+                break;
+            case 'embedded':
+                $embed = 1;
+                break;
+            default:
+                $embed = 0;
+        }
+
         $activityname = format_string($moduleinstance->name, true, $moduleinstance->course);
         if (empty($extrapagetitle)) {
             $title = $this->page->course->shortname . ": " . $activityname;
@@ -40,13 +51,13 @@ class renderer extends \plugin_renderer_base {
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
 
-        if (!$moduleinstance->foriframe) {
+        if (!$moduleinstance->foriframe && $embed !== 2) {
             $thetitle = $this->output->heading($activityname, 3, 'main');
             $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
             $output .= $displaytext;
         }
 
-        if (has_capability('mod/readaloud:viewreports', $context)) {
+        if (has_capability('mod/readaloud:viewreports', $context) && $embed !== 2) {
             //   $output .= $this->output->heading_with_help($activityname, 'overview', constants::M_COMPONENT);
 
             if (!empty($currenttab)) {
@@ -144,7 +155,7 @@ class renderer extends \plugin_renderer_base {
 
     public function show_progress_chart($chartdata, $showgrades) {
         global $CFG;
-        // If no chart data or lower than Moodle 3.2 we do not shopw the chart.
+        // If no chart data or lower than Moodle 3.2 we do not show the chart.
         if (!$chartdata || $CFG->version < 2016120500) {
             return '';
         }
@@ -281,7 +292,7 @@ class renderer extends \plugin_renderer_base {
             $tdata['ready'] = true;
         }
 
-        // Audio  filename.
+        // Audio filename.
         $tdata['src'] = '';
         if ($ready && $attempt->filename) {
             // We set the filename here. If attempt is not ready yet, audio may not be ready, so we blank it here
