@@ -219,7 +219,7 @@ if ($config->enablesetuptab && empty($moduleinstance->passage)) {
 // If we are going to the dashboard we output that below.
 if ($attempts && $reviewattempts) {
     $attemptreview_html = $renderer->show_attempt_for_review($moduleinstance, $attempts,
-            $have_humaneval, $have_aieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer);
+            $have_humaneval, $have_aieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer, $embed);
     echo $attemptreview_html;
 
     return;

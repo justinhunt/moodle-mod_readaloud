@@ -351,7 +351,8 @@ class renderer extends \plugin_renderer_base {
                 [
                     'class' => constants::M_CLASS . '_center btn-block btn btn-secondary ' . constants::M_RETURNMENU,
                     'type' => 'button',
-                    'style' => 'display: none', 'id' => constants::M_RETURNMENU, 'embed' => $embed,
+                    'style' => 'display: none', 'id' => constants::M_RETURNMENU,
+                    'embed' => $embed,
                 ]
             );
 
@@ -374,10 +375,15 @@ class renderer extends \plugin_renderer_base {
     /**
      *
      */
-    public function jump_tomenubutton($moduleinstance) {
+    public function jump_tomenubutton($moduleinstance, $embed=0) {
 
         $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
-                array('n' => $moduleinstance->id, 'reviewattempts' => 0)), get_string('returntomenu', constants::M_COMPONENT));
+                array(
+                    'n' => $moduleinstance->id,
+                    'reviewattempts' => 0,
+                    'embed' => $embed)),
+                    get_string('returntomenu',
+                    constants::M_COMPONENT));
 
         $ret = \html_writer::div($button, constants::M_CLASS . '_afterattempt_cont');
 
@@ -1084,7 +1090,7 @@ class renderer extends \plugin_renderer_base {
      *
      */
     public function show_attempt_for_review($moduleinstance, $attempts,
-            $have_humaneval, $have_aieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer) {
+            $have_humaneval, $have_aieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer, $embed=0) {
 
         $ret = '';
 
@@ -1213,7 +1219,7 @@ class renderer extends \plugin_renderer_base {
             $ret .= $this->exceededattempts($moduleinstance);
         }
         */
-        $ret .= $this->jump_tomenubutton($moduleinstance);
+        $ret .= $this->jump_tomenubutton($moduleinstance, $embed);
         $ret .= $this->footer();
         return $ret;
     }
