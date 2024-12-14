@@ -1,3 +1,7 @@
+2.1.21 (Build 2024120400)
+ - Implemented support for mobile app
+ - Fix for error if wildcards ended up as a string
+
 2.1.20 (Build 2024113000)
 - Fix for audio sometimes not playing on attempt list and grading pages
 

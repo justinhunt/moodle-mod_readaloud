@@ -405,11 +405,10 @@ class renderer extends \plugin_renderer_base {
 
         // Back to menu button.
         $buttons[] = \html_writer::link(new \moodle_url(constants::M_URL . '/view.php',
-                ['n' => $moduleinstance->id]), get_string("backtotop", constants::M_COMPONENT),
+                ['n' => $moduleinstance->id, 'embed' => $embed]), get_string("backtotop", constants::M_COMPONENT),
                 [
                     'class' => constants::M_CLASS . '_center btn btn-secondary ' . constants::M_BACKTOTOP,
-                    'id' => constants::M_BACKTOTOP,
-                    'embed' => $embed,
+                    'id' => constants::M_BACKTOTOP
                 ]);
 
         // Next activity button.
