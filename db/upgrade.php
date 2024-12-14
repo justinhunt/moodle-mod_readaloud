@@ -780,8 +780,28 @@ function xmldb_readaloud_upgrade($oldversion) {
             $dbman->add_field($attempttable, $field_flower);
         }
 
-        
         upgrade_mod_savepoint(true, 2024082901, 'readaloud');
+    }
+
+    // Add auth table.
+    if ($oldversion < 2024120400) {
+        $table = new xmldb_table('readaloud_auth');
+
+        // Add fields.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('created_at', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('secret', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null);
+
+        // Add keys and index.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('user_id', XMLDB_INDEX_UNIQUE, ['user_id']);
+
+        // Create table if it does not exist.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        upgrade_mod_savepoint(true, 2024120400, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

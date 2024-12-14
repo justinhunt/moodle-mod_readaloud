@@ -19,14 +19,16 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function ($, log, de
 
         register_controls: function () {
             this.controls.hiddenplayer = $('.' + this.hiddenplayer);
-            this.controls.hiddenplayerbutton = $('.' + this.hiddenplayerbutton);
+            //we stopped using this because of a race condition where buttons arrived on page after this was called
+            //this.controls.hiddenplayerbutton = $('.' + this.hiddenplayerbutton);
         },
 
         register_events: function () {
             var that = this;
             var audioplayer = this.controls.hiddenplayer;
-            //handle the button click
-            this.controls.hiddenplayerbutton.click(function (e) {
+
+            // Use event delegation to handle the button click
+            $(document).on('click', '.' + this.hiddenplayerbutton, function (e) {
                 var audiosrc = $(this).attr('data-audiosource');
                 if (audiosrc === audioplayer.attr('src') && !(audioplayer.prop('paused'))) {
                     that.dohiddenstop();
@@ -34,7 +36,6 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function ($, log, de
                     that.dohiddenplay(audiosrc);
                 }
             });
-
         },
 
         dohiddenplay: function (audiosrc) {
@@ -63,10 +64,11 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function ($, log, de
         dobuttonicons: function (theaudiosrc) {
             var m = this;
             var audioplayer = m.controls.hiddenplayer;
+            var thebuttons = $('.' + this.hiddenplayerbutton);
             if (!theaudiosrc) {
                 theaudiosrc = audioplayer.attr('src');
             }
-            m.controls.hiddenplayerbutton.each(function (index) {
+            thebuttons.each(function (index) {
                 var audiosrc = $(this).attr('data-audiosource');
                 if (audiosrc === theaudiosrc) {
                     $(this).addClass(m.hiddenplayerbuttonactive);

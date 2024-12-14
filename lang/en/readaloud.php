@@ -683,6 +683,8 @@ $string['unit_wpm']="words/min";
 $string['unit_percent']="percent";
 $string['unit_words']="words";
 
+$string['totalwords']="Total Words";
+
 $string['confirm_cancel_recording']="Cancel recording and quit this attempt?";
 $string['aitextutilsshow']="Show AI Text Utils (Beta)";
 $string['aitextutilshide']="Hide AI Text Utils (Beta)";
