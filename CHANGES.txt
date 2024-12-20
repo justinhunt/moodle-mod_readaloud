@@ -1,3 +1,6 @@
+2.1.21 (Build 2024122000)
+- Fix for recorded model audio clear button not working properly
+
 2.1.20 (Build 2024113000)
 - Fix for audio sometimes not playing on attempt list and grading pages
 

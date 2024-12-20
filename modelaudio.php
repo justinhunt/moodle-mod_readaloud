@@ -140,7 +140,8 @@ switch ($action) {
                 $matches = utils::speechmarks_to_matches($moduleinstance->passagesegments, $speechmarks, $moduleinstance->ttslanguage);
 
                 if (!empty($moduleinstance->modelaudiobreaks)) {
-                    $breaks = utils::sync_modelaudio_breaks(json_decode($moduleinstance->modelaudiobreaks), $matches);
+                    $breaks= json_decode($moduleinstance->modelaudiobreaks,true);
+                    $breaks = utils::sync_modelaudio_breaks($breaks, $matches);
                 } else {
                     $breaks = utils::guess_modelaudio_breaks($moduleinstance->passagesegments, $matches, $moduleinstance->ttslanguage);
                 }

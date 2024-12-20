@@ -1813,9 +1813,10 @@ class utils {
         return $breaks;
     }//end of function
 
-    //Make a good effort to mark up the passage from scratch
-    //the break occurs after the current word.  matches array  is 0 based and words array is 0 based
-    //So if break 1: word tapped is wordnumber 2, break->3 we want the audiostart position of next as audiotime. That is matches[3].audiostart
+    // Make a good effort to mark up the passage from scratch.
+    // the break occurs after the current word.  matches array  is 0 based and words array is 0 based.
+    // So if break 1: word tapped is wordnumber 2, break->3 we want the audiostart position of next as audiotime.
+    // That is matches[3].audiostart.
     public static function guess_modelaudio_breaks($passage,$matches,$language) {
         $breaks=[];
         $words = self::fetch_passage_as_words($passage,$language);

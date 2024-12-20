@@ -459,8 +459,15 @@ class diff {
      * We put the passageword as array key , so later we can search for it by array_key_exists .. uurrgh
      */
     public static function fetchWildcardsArray($alternatives) {
-        $wildcards = array();
-
+        $wildcards = [];
+        //if alternatives are empty, we return an empty array
+        if(empty($alternatives)){
+            return $wildcards;
+        }
+        //sometimes the code passes the string in, and sometimes, an array, lets just turn strings into array
+        if(!is_array($alternatives)){
+            $alternatives = self::fetchAlternativesArray($alternatives);
+        }
         //loop through all alternatives
         //and then through each alternative->wordset
         foreach ($alternatives as $alternateset) {
@@ -473,7 +480,7 @@ class diff {
                 }
             }//end of for setindex
         }//end of for each alternatives
-        //we return the wildczrds
+        //we return the wildcards
         return $wildcards;
     }
 
