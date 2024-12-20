@@ -1763,7 +1763,7 @@ class utils {
         }
 
         //return the attempt id
-        return $attemptid;
+        return $newattempt;
     }
 
     //streaming results are not the same format as non streaming, we massage the streaming to look like a non streaming

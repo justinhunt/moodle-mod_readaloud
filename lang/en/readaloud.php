@@ -683,6 +683,8 @@ $string['unit_wpm']="words/min";
 $string['unit_percent']="percent";
 $string['unit_words']="words";
 
+$string['totalwords']="Total Words";
+
 $string['confirm_cancel_recording']="Cancel recording and quit this attempt?";
 $string['aitextutilsshow']="Show AI Text Utils (Beta)";
 $string['aitextutilshide']="Hide AI Text Utils (Beta)";
@@ -720,5 +722,4 @@ $string['passagepicture']='Passage picture';
 $string['passagepicture_descr']='*The passage picture is not used yet. It is part of an upcoming feature*';
 $string['stdashboardid']='Student Dashboard ID';
 $string['stdashboardid_details']='If the student dashboard block is installed, put the id of the block here.';
-
-
+$string['eventreadaloudattemptsubmitted'] = 'ReadAloud attempt submitted';

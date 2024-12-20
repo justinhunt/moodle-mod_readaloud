@@ -460,6 +460,7 @@ class diff {
      */
     public static function fetchWildcardsArray($alternatives) {
         $wildcards = [];
+
         //if alternatives are empty, we return an empty array
         if(empty($alternatives)){
             return $wildcards;
@@ -468,6 +469,7 @@ class diff {
         if(!is_array($alternatives)){
             $alternatives = self::fetchAlternativesArray($alternatives);
         }
+
         //loop through all alternatives
         //and then through each alternative->wordset
         foreach ($alternatives as $alternateset) {

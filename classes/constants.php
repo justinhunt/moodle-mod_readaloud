@@ -18,6 +18,7 @@ class constants {
     const M_USERTABLE = 'readaloud_attempt';
     const M_AITABLE = 'readaloud_ai_result';
     const M_QTABLE = 'readaloud_rsquestions';
+    const M_AUTHTABLE='readaloud_auth';
     const M_MODNAME = 'readaloud';
     const M_URL = '/mod/readaloud';
 
@@ -194,6 +195,7 @@ class constants {
     const M_RECORDER_INSTRUCTIONS_LEFT = 'mod_readaloud_recorder_instr_left';
     const M_INSTRUCTIONS_CONTAINER = 'mod_readaloud_instructions_cont';
     const M_INSTRUCTIONS = 'mod_readaloud_instructions';
+    const M_MSV_MODE = 'mod_readaloud_msvmode';
     const M_ACTIVITYINSTRUCTIONS_CONTAINER = 'mod_readaloud_activityinstructions_const';
     const M_MENUINSTRUCTIONS_CONTAINER = 'mod_readaloud_menuinstructions_const';
     const M_MENUBUTTONS_CONTAINER = 'mod_readaloud_menubuttons_cont';
