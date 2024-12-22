@@ -32,8 +32,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use \mod_readaloud\utils;
-use \mod_readaloud\constants;
+use mod_readaloud\utils;
+use mod_readaloud\constants;
 
 /**
  * Execute readaloud upgrade from the given old version
