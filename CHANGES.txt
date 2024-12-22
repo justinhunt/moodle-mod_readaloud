@@ -1,4 +1,5 @@
-2.1.21 (Build 2024120400)
+2.1.21 (Build 2024122000)
+ - Fix for recorded model audio clear button not working properly
  - Implemented support for mobile app
  - Fix for error if wildcards ended up as a string
 

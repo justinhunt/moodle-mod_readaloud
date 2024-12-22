@@ -460,8 +460,14 @@ class diff {
      */
     public static function fetchWildcardsArray($alternatives) {
         $wildcards = [];
-        if (empty($alternatives)) {
+
+        //if alternatives are empty, we return an empty array
+        if(empty($alternatives)){
             return $wildcards;
+        }
+        //sometimes the code passes the string in, and sometimes, an array, lets just turn strings into array
+        if(!is_array($alternatives)){
+            $alternatives = self::fetchAlternativesArray($alternatives);
         }
 
         //loop through all alternatives
@@ -476,7 +482,7 @@ class diff {
                 }
             }//end of for setindex
         }//end of for each alternatives
-        //we return the wildczrds
+        //we return the wildcards
         return $wildcards;
     }
 
