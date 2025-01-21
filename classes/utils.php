@@ -2663,6 +2663,91 @@ class utils {
 
     }//end of prepare_file_and_json_stuff
 
+    // reset the item order for questions in a ReadAloud
+    public static function reset_item_order($moduleid) {
+        global $DB;
+
+        $allitems = $DB->get_records(constants::M_QTABLE, ['readaloud' => $moduleid], 'itemorder ASC');
+        if($allitems &&count($allitems) > 0 ){
+            $i = 0;
+            foreach($allitems as $theitem){
+                $i++;
+                $theitem->itemorder = $i + 1;
+                $DB->update_record(constants::M_QTABLE, $theitem);
+            }
+        }
+    }
+
+    public static function fetch_item_from_itemrecord($itemrecord, $moduleinstance, $context=false) {
+        // Set up the item type specific parts of the form data
+        switch($itemrecord->type){
+            case constants::TYPE_MULTICHOICE:
+                return new local\itemtype\item_multichoice($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_MULTIAUDIO:
+                return new local\itemtype\item_multiaudio($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_PAGE:
+                return new local\itemtype\item_page($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_SHORTANSWER:
+                return new local\itemtype\item_shortanswer($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_SGAPFILL:
+                return new local\itemtype\item_speakinggapfill($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_LGAPFILL:
+                return new local\itemtype\item_listeninggapfill($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_TGAPFILL:
+                return new local\itemtype\item_typinggapfill($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_FREEWRITING:
+                return new local\itemtype\item_freewriting($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_FREESPEAKING:
+                return new local\itemtype\item_freespeaking($itemrecord, $moduleinstance, $context);
+            default:
+        }
+    }
+
+
+    public static function fetch_itemform_classname($itemtype) {
+        // Fetch the correct form
+        switch($itemtype){
+            case constants::TYPE_MULTICHOICE:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\multichoiceform';
+            case constants::TYPE_MULTIAUDIO:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\multiaudioform';
+            case constants::TYPE_PAGE:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\pageform';
+            case constants::TYPE_SHORTANSWER:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\shortanswerform';
+            case constants::TYPE_SGAPFILL:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\speakinggapfillform';
+            case constants::TYPE_LGAPFILL:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\listeninggapfillform';
+            case constants::TYPE_TGAPFILL:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\typinggapfillform';
+            case constants::TYPE_FREEWRITING:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\freewritingform';
+            case constants::TYPE_FREESPEAKING:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\freespeakingform';
+            default:
+                return false;
+        }
+    }
+
+    public static function fetch_options_textprompt() {
+        $options = [constants::TEXTPROMPT_DOTS => get_string("textprompt_dots", constants::M_COMPONENT),
+                constants::TEXTPROMPT_WORDS => get_string("textprompt_words", constants::M_COMPONENT)];
+        return $options;
+    }
+
+    public static function fetch_options_yesno() {
+        $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
+        return $yesnooptions;
+    }
+
+    public static function fetch_options_listenorread() {
+        $options = [constants::LISTENORREAD_READ => get_string("listenorread_read", constants::M_COMPONENT),
+                constants::LISTENORREAD_LISTEN => get_string("listenorread_listen", constants::M_COMPONENT),
+                    constants::LISTENORREAD_LISTENANDREAD => get_string("listenorread_listenandread", constants::M_COMPONENT)];
+        return $options;
+    }
+
 
     //fetch user attempts
     /*
@@ -2707,6 +2792,15 @@ class utils {
 
         return $attempts;
 
+    }
+
+    public static function get_relevance_options() {
+        $ret = [
+            constants::RELEVANCETYPE_NONE => get_string('relevancetype_none', constants::M_COMPONENT),
+            constants::RELEVANCETYPE_QUESTION => get_string('relevancetype_question', constants::M_COMPONENT),
+            constants::RELEVANCETYPE_MODELANSWER => get_string('relevancetype_modelanswer', constants::M_COMPONENT),
+        ];
+        return $ret;
     }
 
     public static function super_trim($str){

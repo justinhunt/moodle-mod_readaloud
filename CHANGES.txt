@@ -1,3 +1,5 @@
+2.1.22 (Build 20250118XX)
+
 2.1.21 (Build 2024122000)
  - Fix for recorded model audio clear button not working properly
  - Implemented support for mobile app

@@ -91,7 +91,30 @@ define(['jquery', 'core/log'], function ($, log) {
         fullreportbutton: 'mod_readaloud_smallreport_fullreportbutton',
 
         //listen and repeat container
-        landrcontainer: 'mod_readaloud_landr_container'
+        landrcontainer: 'mod_readaloud_landr_container',
+
+         //rsquestions
+         noitemscontainer: 'mod_readaloud_noitems_cont',
+         itemscontainer: 'mod_readaloud_items_cont',
+         itemstable: 'mod_readaloud_qpanel',
+         itemrow: 'mod_readaloud_item_row',
+         movearrow: 'mod_readaloud_item_move',
+
+         // rsquestion item types
+        qtype_page: 'page',
+        qtype_multichoice: 'multichoice',
+        qtype_multiaudio: 'multiaudio',
+        qtype_shortanswer: 'shortanswer',
+        qtype_listeninggapfill: 'listeninggapfill',
+        qtype_speakinggapfill: 'speakinggapfill',
+        qtype_typinggapfill: 'typinggapfill',
+        qtype_freespeaking: 'freespeaking',
+
+        
+        neural_voices: ["Amy","Emma","Brian","Olivia","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly",
+            "Salli","Joey","Justin","Kevin","Matthew","Camila","Lupe","Lucia","Gabrielle","Lea", "Vicki", "Seoyeon", "Takumi","Lucia",
+            "Lea","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila","Ida","Kazuha","Tomoko","Elin","Hala","Zayd"]
+
 
     };//end of return value
 });

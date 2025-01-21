@@ -374,4 +374,124 @@ class mod_readaloud_external extends external_api {
     public static function fetch_streaming_diffs_returns() {
         return new external_value(PARAM_RAW);
     }
+
+    public static function delete_item_parameters() {
+        return new external_function_parameters(
+                [
+                        'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
+                        'itemid' => new external_value(PARAM_INT, 'The itemid to delete'),
+                        'formname' => new external_value(PARAM_TEXT, 'The formname'),
+                ]
+        );
+    }
+
+    public static function delete_item($contextid, $itemid, $formname) {
+        global $CFG, $DB, $USER;
+
+        // We always must pass webservice params through validate_parameters.
+        $params = self::validate_parameters(self::delete_item_parameters(),
+                ['contextid' => $contextid, 'itemid' => $itemid, 'formname' => $formname]);
+
+        $context = context::instance_by_id($params['contextid'], MUST_EXIST);
+
+        // We always must call validate_context in a webservice.
+        self::validate_context($context);
+
+        // DO DELETE
+        // get the objects we need
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        $success = \mod_readaloud\local\itemtype\item::delete_item($itemid, $context);
+
+        $ret = new \stdClass();
+        $ret->itemid = $itemid;
+        $ret->error = false;
+        return json_encode($ret);
+    }
+
+    public static function delete_item_returns() {
+        return new external_value(PARAM_RAW);
+        // return new external_value(PARAM_INT, 'group id');
+    }
+
+    public static function move_item_parameters() {
+        return new external_function_parameters(
+                [
+                        'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
+                        'itemid' => new external_value(PARAM_INT, 'The itemid to move'),
+                        'direction' => new external_value(PARAM_TEXT, 'The move direction'),
+                ]
+        );
+    }
+
+    public static function move_item($contextid, $itemid, $direction) {
+        global $CFG, $DB, $USER;
+
+        // We always must pass webservice params through validate_parameters.
+        $params = self::validate_parameters(self::move_item_parameters(),
+                ['contextid' => $contextid, 'itemid' => $itemid, 'direction' => $direction]);
+
+        $context = context::instance_by_id($params['contextid'], MUST_EXIST);
+
+        // We always must call validate_context in a webservice.
+        self::validate_context($context);
+
+        // DO move
+        // get the objects we need
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        \mod_readaloud\local\itemform\helper::move_item($moduleinstance, $itemid, $direction);
+
+        $ret = new \stdClass();
+        $ret->itemid = $itemid;
+        $ret->error = false;
+        return json_encode($ret);
+    }
+
+    public static function move_item_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    public static function duplicate_item_parameters() {
+        return new external_function_parameters(
+            [
+                'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
+                'itemid' => new external_value(PARAM_INT, 'The itemid to move'),
+            ]
+        );
+    }
+
+    public static function duplicate_item($contextid, $itemid) {
+        global $CFG, $DB, $USER;
+
+        // We always must pass webservice params through validate_parameters.
+        $params = self::validate_parameters(self::duplicate_item_parameters(),
+            ['contextid' => $contextid, 'itemid' => $itemid]);
+
+        $context = context::instance_by_id($params['contextid'], MUST_EXIST);
+
+        // We always must call validate_context in a webservice.
+        self::validate_context($context);
+
+        // DO move
+        // get the objects we need
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        list($newitemid, $newitemname, $type, $typelabel) = \mod_readaloud\local\itemform\helper::duplicate_item($moduleinstance, $context, $itemid);
+
+        $ret = new \stdClass();
+        $ret->olditemid = $itemid;
+        $ret->newitemid = $newitemid;
+        $ret->newitemname = $newitemname;
+        $ret->type = $type;
+        $ret->typelabel = $typelabel;
+        $ret->error = false;
+        return json_encode($ret);
+    }
+
+    public static function duplicate_item_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+
 }

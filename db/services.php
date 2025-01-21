@@ -51,5 +51,33 @@ $functions = array(
                 'capabilities'=> 'mod/readaloud:view',
                 'type'        => 'read',
                 'ajax'        => true,
-    )
+    ),
+
+    
+    'mod_readaloud_delete_item' => array(
+        'classname'   => 'mod_readaloud_external',
+        'methodname'  => 'delete_item',
+        'description' => 'delete item.',
+        'capabilities' => 'mod/readaloud:managequestions',
+        'type'        => 'write',
+        'ajax'        => true,
+),
+
+'mod_readaloud_move_item' => array(
+        'classname'   => 'mod_readaloud_external',
+        'methodname'  => 'move_item',
+        'description' => 'move item.',
+        'capabilities' => 'mod/readaloud:managequestions',
+        'type'        => 'write',
+        'ajax'        => true,
+),
+
+'mod_readaloud_duplicate_item' => array(
+    'classname'   => 'mod_readaloud_external',
+    'methodname'  => 'duplicate_item',
+    'description' => 'duplicate item.',
+    'capabilities' => 'mod/readaloud:managequestions',
+    'type'        => 'write',
+    'ajax'        => true,
+),
 );

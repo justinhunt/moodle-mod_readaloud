@@ -50,7 +50,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions', 'mod_readaloud/pollyhe
                 var wordnumber = parseInt($(this).attr('data-wordnumber'));
                 var word = $('#' + that.cd.wordclass + '_' + wordnumber);
                 var text = word.text();
-                pollyhelper.fetch_polly_url(text,"text",that.ttsvoice);
+                pollyhelper.request_polly_url(text,"text",that.ttsvoice);
             });
         }//end of register events
 

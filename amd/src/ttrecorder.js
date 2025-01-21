@@ -43,7 +43,6 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             init: function(opts){
 
                 var that = this;
-
                 this.uniqueid=opts['uniqueid'];
                 this.callback=opts['callback'];
                 this.stt_guided = opts['stt_guided'] ? opts['stt_guided'] : false;

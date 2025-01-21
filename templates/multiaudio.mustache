@@ -1,0 +1,28 @@
+{{> mod_readaloud/questionheader}}
+    {{#sentences}}
+        <div class="row mcplayrow" id="{{uniqueid}}_option{{indexplusone}}">
+            <div class="col-md-1 mcaudioplayer_{{indexplusone}}">
+                <div class="mc_playbutton_container">
+                    <button class="readaloud_mc_audioplayer mcplaytrigger btn btn-secondary" data-index="{{index}}" id="{{uniqueid}}_audioplayer{{indexplusone}}">
+                        <i class="fa fa-play readaloud_mc_playstate"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-11 mcaudiotranscript_{{index}}">
+                <div class="readaloud_mc_response {{rtl}}" data-index="{{index}}" name="{{uniqueid}}_options" >
+                    <span class="readaloud_sentence">{{prompt}}</span>
+                    <span class="readaloud_mc_resultbox">
+                    <i class="fa fa-check fa-lg readaloud_mc_right" style="display: none;"></i>
+                    <i class="fa fa-times fa-lg readaloud_mc_wrong" style="display: none;"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    {{/sentences}}
+
+
+
+    {{> mod_readaloud/cloudpushrecorder}}
+    {{> mod_readaloud/quiz_ttrecorder}}
+
+{{> mod_readaloud/questionfooter}}

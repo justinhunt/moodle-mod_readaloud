@@ -804,6 +804,55 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2024120400, 'readaloud');
     }
 
+    // Add iteminstructions to minilesson table.
+    if ($oldversion < 2025011802) { 
+        $questiontable = new xmldb_table(constants::M_QTABLE);
+
+        // Define fields ,lessonkey,to be added to minilesson.
+        $fields = [];
+        $fields[] = new xmldb_field('iteminstructions', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('timelimit', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('itemttsautoplay', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('layout', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::LAYOUT_AUTO);
+        $fields[] = new xmldb_field('itemtts', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('itemttsvoice', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'Amy');
+        $fields[] = new xmldb_field('itemttsoption', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::TTS_NORMAL);
+        $fields[] = new xmldb_field('itemtextarea', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('customdata1', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('customdata2', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('customdata3', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('customdata4', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('customdata5', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('customint1', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0);
+        $fields[] = new xmldb_field('customint2', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0);
+        $fields[] = new xmldb_field('customint3', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0);
+        $fields[] = new xmldb_field('customint4', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0);
+        $fields[] = new xmldb_field('customint5', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, 0);
+        $fields[] = new xmldb_field('customtext5', XMLDB_TYPE_TEXT, null, null, null, null);
+        $fields[] = new xmldb_field('customtext5format', XMLDB_TYPE_INTEGER, '2', null, false, null);
+
+        // Add fields.
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($questiontable, $field)) {
+                $dbman->add_field($questiontable, $field);
+            }
+        }
+
+        // Activity Table.
+        $activitytable = new xmldb_table(constants::M_TABLE);
+        $afields = [];
+        $afields[] = new xmldb_field('showquiz', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::M_QUIZ_NONE);
+        $afields[] = new xmldb_field('showitemreview', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $afields[] = new xmldb_field('showqtitles', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
+        // Add fields.
+        foreach ($afields as $field) {
+            if (!$dbman->field_exists($activitytable, $field)) {
+                $dbman->add_field($activitytable, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2025011802, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

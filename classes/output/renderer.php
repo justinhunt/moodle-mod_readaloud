@@ -574,6 +574,7 @@ class renderer extends \plugin_renderer_base {
 
         // The TT recorder stuff.
         $data = array( 'data-id' => 'readaloud_ttrecorder',
+                        'uniqueid' => 'readaloud_ttrecorder',
                         'data-language' => $moduleinstance->ttslanguage,
                         'data-region' => $moduleinstance->region,
                         'waveheight' => 75,
