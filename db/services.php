@@ -80,4 +80,14 @@ $functions = array(
     'type'        => 'write',
     'ajax'        => true,
 ),
+
+'mod_readaloud_report_quizstep_grade' => array(
+                'classname'   => 'mod_readaloud_external',
+                'methodname'  => 'report_quizstep_grade',
+                'description' => 'Reports the grade of a quiz step',
+                'capabilities' => 'mod/readaloud:view',
+                'type'        => 'write',
+                'ajax'        => true,
+        ),
+
 );

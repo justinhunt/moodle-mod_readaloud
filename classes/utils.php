@@ -2803,6 +2803,109 @@ class utils {
         return $ret;
     }
 
+    public static function update_quizstep_grade($cmid, $stepdata) {
+
+        global $CFG, $USER, $DB;
+
+        $message = '';
+        $returndata = false;
+
+        $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        $modulecontext = \context_module::instance($cm->id);
+        $moduleinstance  = $DB->get_record(constants::M_MODNAME, ['id' => $cm->instance], '*', MUST_EXIST);
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'id DESC');
+
+        // Get or create attempt.
+       // if (!$attempts) {
+      ///      $latestattempt = self::create_new_attempt($moduleinstance->course, $moduleinstance->id);
+     //   } else {
+            $latestattempt = reset($attempts);
+     //   }
+
+        // Get or create sessiondata.
+        if (empty($latestattempt->qdetails)) {
+            $qdetails = new \stdClass();
+            $qdetails->steps = [];
+        } else {
+            $qdetails = json_decode($latestattempt->qdetails);
+        }
+
+        // if qdetails is not an array, reconstruct it as an array
+        if (!is_array($qdetails->steps)) {
+            $qdetails->steps = self::remake_quizsteps_as_array($qdetails->steps);
+        }
+        // add our latest step to session
+        $qdetails->steps[$stepdata->index] = $stepdata;
+
+        // grade quiz results
+        $quizhelper = new quizhelper($cm);
+        $totalitems = $quizhelper->fetch_item_count();
+
+        // raise step submitted event
+        $latestattempt->qdetails = json_encode($qdetails);
+       // \mod_readaloud\event\step_submitted::create_from_attempt($latestattempt, $modulecontext, $stepdata->index)->trigger();
+
+        // close out the attempt and update the grade
+        // there should never be more steps than items
+        // [hack] but there seem to be times when there are fewer( when an update_step_grade failed or didnt arrive),
+        // so we also allow the final item. Though it's not ideal because we will have missed one or more
+        if($totalitems <= count($qdetails->steps) || $stepdata->index == $totalitems - 1) {
+            $newgrade = true;
+            $latestattempt->qscore = self::calculate_quiz_score($qdetails->steps);
+            $latestattempt->status = constants::M_STATE_QUIZCOMPLETE;
+           // \mod_readaloud\event\attempt_submitted::create_from_attempt($latestattempt, $modulecontext)->trigger();
+        }else{
+            $newgrade = false;
+        }
+
+        // update the record
+        $result = $DB->update_record(constants::M_USERTABLE, $latestattempt);
+        if($result) {
+            $returndata = '';
+            if($newgrade) {
+                require_once($CFG->dirroot . constants::M_PATH . '/lib.php');
+                readaloud_update_grades($moduleinstance, $USER->id, false);
+            }
+        }else{
+            $message = 'unable to update attempt record';
+        }
+
+        // return_to_page($result,$message,$returndata);
+        return [$result, $message, $returndata];
+    }
+
+    public static function calculate_quiz_score($steps) {
+        $results = array_filter($steps, function($step){return $step->hasgrade;});
+        $correctitems = 0;
+        $totalitems = 0;
+        foreach($results as $result){
+            $correctitems += $result->correctitems;
+            $totalitems += $result->totalitems;
+        }
+        $totalpercent = round(($correctitems / $totalitems) * 100, 0);
+        return $totalpercent;
+    }
+
+     // JSON stringify functions will make objects(not arrays) if keys are not sequential
+    // sometimes we seem to miss a step. Remedying that with this function prevents an all out disaster.
+    // But we should not miss steps
+    public static function remake_quizsteps_as_array($stepsobject) {
+        if(is_array($stepsobject)) {
+            return $stepsobject;
+        }else{
+            $steps = [];
+            foreach ($stepsobject as $key => $value)
+            {
+                if(is_numeric($key)){
+                    $key = intval($key);
+                    $steps[$key] = $value;
+                }
+
+            }
+            return $steps;
+        }
+    }
+
     public static function super_trim($str){
         if($str==null){
             return '';

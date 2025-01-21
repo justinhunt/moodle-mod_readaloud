@@ -75,8 +75,8 @@ class helper
     
     public static function get_new_itemorder($cm){
         //get itemorder
-        $comprehensiontest = new \mod_readaloud\comprehensiontest($cm);
-        $currentitems = $comprehensiontest->fetch_items();
+        $quizhelper = new \mod_readaloud\quizhelper($cm);
+        $currentitems = $quizhelper->fetch_items();
         if (count($currentitems) > 0) {
             $lastitem = array_pop($currentitems);
             $itemorder = $lastitem->itemorder + 1;

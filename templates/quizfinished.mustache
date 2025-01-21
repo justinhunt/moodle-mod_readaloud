@@ -1,5 +1,5 @@
 <h1 class="text-center">{{#str}}totalscore, mod_readaloud{{/str}} {{total}}%</h1>
-<div class="quizrating">
+<div class="quizrating text-center">
     {{#yellowstars}}
         <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/yellow_star.png"/></span>
     {{/yellowstars}}
@@ -29,19 +29,26 @@
                         <li><div class="mod_readaloud_question_text"><b>{{#str}}questiontext, mod_readaloud{{/str}}: </b><br/>{{{questext}}}</div></li>
                         <li><div class="mod_readaloud_result_score"><b>{{#str}}score, mod_readaloud{{/str}}: </b><br/>{{correctitems}}/{{totalitems}}</div></li>
                         <li><div class="mod_readaloud_result_grade"><b>{{#str}}grade, mod_readaloud{{/str}}: </b><br/>{{grade}}%</div></li>
-
-                            <li> <div class="mod_readaloud_result_correctanswer"><b>{{#str}}correctanswer, mod_readaloud{{/str}}</b><br/>
-                                {{#correctans}}<span class="mod_readaloud_finishedanswer">{{{sentence}}}</span>{{/correctans}}
+                        {{#hascorrectanswer}}
+                            <li>
+                                <div class="mod_readaloud_result_correctanswer"><b>{{#str}}correctanswer, mod_readaloud{{/str}}</b><br/>
+                                    {{#correctans}}<span class="mod_readaloud_finishedanswer">{{{sentence}}}</span>{{/correctans}}
+                                </div>
+                            </li>
+                        {{/hascorrectanswer}}
+                        {{#hasincorrectanswer}}
+                            <li><div class="mod_readaloud_result_incorrectanswer"><b>{{#str}}incorrectanswer, mod_readaloud{{/str}} </b><br/>
+                                {{#incorrectans}}<span class="mod_readaloud_finishedanswer">{{{sentence}}}</span>{{/incorrectans}}
                             </div>
                             </li>
-                            {{#hasincorrectanswer}}
-                                <li><div class="mod_readaloud_result_incorrectanswer"><b>{{#str}}incorrectanswer, mod_readaloud{{/str}} </b><br/>
-                                    {{#incorrectans}}<span class="mod_readaloud_finishedanswer">{{{sentence}}}</span>{{/incorrectans}}
-                                </div>
-                                </li>
-                            {{/hasincorrectanswer}}
-
-
+                        {{/hasincorrectanswer}}
+                        {{#hasanswerdetails}}
+                        <li>
+                            <div class="mod_readaloud_result_answerdetails"><b>{{#str}}answerdetails, mod_readaloud{{/str}}</b><br/>
+                                <a class="mod_readaloud_finishedanswerdetailslink" data-target="ml_answerdetails_container_{{index}}" data-resultstemplate="{{resultstemplate}}" data-resultsdata="{{resultsdatajson}}" href="#">{{#str}}seeanswerdetails, mod_readaloud{{/str}}</a>
+                            </div>
+                        </li>
+                        {{/hasanswerdetails}}
                         <li><div class="mod_readaloud_result_rating">
                             {{#yellowstars}}
                                 <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/yellow_star.png"/></span>
@@ -52,6 +59,7 @@
                         </div>
                         </li>
                     </ul>
+                    <div id="ml_answerdetails_container_{{index}}" class="ml_qf_itemresults" style="display: none"></div>
                 </div>
             </div>
         </div>
@@ -59,11 +67,6 @@
 </div>
 {{/results}}
 </div>
-{{#backtocourse}}
-<div class="readaloud_actionbutton">
-<a class="btn btn-secondary backtocourse center" href="{{{courseurl}}}">{{#str}}backtotop, mod_readaloud{{/str}}</a>
-</div>
-{{/backtocourse}}
 {{#reattempturl}}
 <div class="readaloud_actionbutton">
 <a class="btn btn-secondary btn_finished_attempt center" href="{{{reattempturl}}}" data-href="{{{reattempturl}}}" data-action="reattempt">

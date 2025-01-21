@@ -63,33 +63,15 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         var dd = this;
         $.each(quizdata, function(index, item) {
           switch (item.type) {
-            case def.qtype_dictation:
-              dictation.clone().init(index, item, dd, polly);
-              break;
-            case def.qtype_dictationchat:
-              dictationchat.clone().init(index, item, dd, polly);
-              break;
             case def.qtype_multichoice:
               multichoice.clone().init(index, item, dd);
               break;
             case def.qtype_multiaudio:
                 multiaudio.clone().init(index, item, dd);
                 break;
-            case def.qtype_speechcards:
-              //speechcards init needs to occur when it is visible. lame.
-              // so we do that in do_next function, down below
-              speechcards.clone().init(index, item, dd);
-              break;
-            case def.qtype_listenrepeat:
-              listenrepeat.clone().init(index, item, dd);
-              break;
 
              case def.qtype_page:
                   page.clone().init(index, item, dd);
-                  break;
-
-              case def.qtype_smartframe:
-                  smartframe.clone().init(index, item, dd);
                   break;
 
               case def.qtype_shortanswer:
@@ -108,14 +90,6 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
                   speakinggapfill.clone().init(index, item, dd);
                   break;
 
-              case def.qtype_spacegame:
-                spacegame.clone().init(index, item, dd);
-                break;    
-
-              case def.qtype_fluency:
-                  fluency.clone().init(index, item, dd);
-                  break;
-
               case def.qtype_freespeaking:
                 freespeaking.clone().init(index, item, dd);
                 break;
@@ -123,22 +97,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
               case def.qtype_freewriting:
                 freewriting.clone().init(index, item, dd);
                 break;
-
-              case def.qtype_passagereading:
-                passagereading.clone().init(index, item, dd);
-                break;
-                  
-              case def.qtype_buttonquiz:
-                buttonquiz.clone().init(index, item, dd);
-                break;
                 
-              case def.qtype_conversation:
-                conversation.clone().init(index, item, dd);
-                break;
-
-              case def.qtype_compquiz:
-                compquiz.clone().init(index, item, dd);
-                break;
           }
 
         });
@@ -211,13 +170,15 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
          // log.debug("reporting step grade");
         dd.report_step_grade(stepdata);
          // log.debug("reported step grade");
-        //hide current question
+        
         var theoldquestion = $("#" + currentitem.uniqueid + "_container");
-        theoldquestion.hide();
+        
         //show next question or End Screen
         if (dd.quizdata.length > currentquizdataindex+1) {
           var nextindex = currentquizdataindex+ 1;
           var nextitem = this.quizdata[nextindex];
+          //hide current question
+          theoldquestion.hide();
             //show the question
             $("#" + nextitem.uniqueid + "_container").show();
           //any per question type init that needs to occur can go here
@@ -256,34 +217,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
             setTimeout(function () {
                // log.debug("forwarding to finished page");
                 window.location.href=dd.activityurl;
-            }, 200);
+            }, 500);
 
           return;
-
-          //no longer do this
-            /*
-          var results = dd.stepresults.filter(function(e){return e.hasgrade;});
-          var correctitems = 0;
-          var totalitems = 0;
-          results.forEach(function(result,i){
-            result.index=i+1;
-            result.title=dd.quizdata[i].title;
-            correctitems += result.correctitems;
-            totalitems += result.totalitems;
-          });
-          var totalpercent = Math.round((correctitems/totalitems)*100);
-          console.log(results,correctitems,totalitems,totalpercent);
-          var finishedparams ={results:results,total:totalpercent, courseurl: this.courseurl};
-          if(this.reattempturl!=''){finishedparams.reattempturl = this.reattempturl;}
-          if(this.backtocourse!=''){finishedparams.backtocourse = true;}
-          templates.render('mod_readaloud/quizfinished',finishedparams).then(
-              function(html,js){
-                  dd.controls.quizfinished.html(html);
-                  dd.controls.quizfinished.show();
-                  templates.runTemplateJS(js);
-              }
-          );
-          */
 
         }//end of if has more questions
 
@@ -302,7 +238,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
 
         //push results to server
         var ret = Ajax.call([{
-          methodname: 'mod_readaloud_report_step_grade',
+          methodname: 'mod_readaloud_report_quizstep_grade',
           args: {
             cmid: dd.cmid,
             step: JSON.stringify(stepdata),

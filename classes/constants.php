@@ -18,9 +18,11 @@ class constants {
     const M_USERTABLE = 'readaloud_attempt';
     const M_AITABLE = 'readaloud_ai_result';
     const M_QTABLE = 'readaloud_rsquestions';
-    const M_AUTHTABLE='readaloud_auth';
+    const M_AUTHTABLE = 'readaloud_auth';
     const M_MODNAME = 'readaloud';
     const M_URL = '/mod/readaloud';
+    const M_PATH = '/mod/readaloud';
+    const M_STATE_QUIZCOMPLETE = 2;
 
     const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
 

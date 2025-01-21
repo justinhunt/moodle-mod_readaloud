@@ -493,5 +493,21 @@ class mod_readaloud_external extends external_api {
         return new external_value(PARAM_RAW);
     }
 
+    public static function report_quizstep_grade_parameters() {
+        return new external_function_parameters([
+                'cmid' => new external_value(PARAM_INT),
+                'step' => new external_value(PARAM_RAW),
+        ]);
+    }
+
+    public static function report_quizstep_grade($cmid, $step) {
+        $stepdata = json_decode($step);
+        list($success, $message, $returndata) = utils::update_quizstep_grade($cmid, $stepdata);
+        return $success;
+    }
+    public static function report_quizstep_grade_returns() {
+        return new external_value(PARAM_BOOL);
+    }
+
 
 }

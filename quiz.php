@@ -126,7 +126,8 @@ if (!$canpreview && $moduleinstance->maxattempts > 0) {
 
 // create a new attempt or just fall through to no-items or finished modes
 if (!$attempts || ($canattempt && $retake == 1)) {
-    $latestattempt = utils::create_new_attempt($moduleinstance->course, $moduleinstance->id);
+    $latestattempt = reset($attempts);
+     /// $latestattempt = utils::create_new_attempt($moduleinstance->course, $moduleinstance->id);
 } else {
     $latestattempt = reset($attempts);
 }
@@ -181,8 +182,7 @@ if ($CFG->version < 2022041900) {
     $introcontent = '';
 }
 
-//if ($latestattempt->status == constants::M_STATE_COMPLETE) {
-if (false) {
+if ($latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) {
     echo $rsquestionrenderer->show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed);
 } else if ($itemcount > 0) {
     echo $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
