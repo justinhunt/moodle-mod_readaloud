@@ -307,7 +307,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $context = \context_module::instance($cm->id);
 
         // steps data
-        $steps = json_decode($latestattempt->qdata)->steps;
+        $steps = json_decode($latestattempt->qdetails)->steps;
 
         // prepare results for display
         if(!is_array($steps)){$steps = utils::remake_quizsteps_as_array($steps);
@@ -434,7 +434,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
             $latestattempt->courseid . '#section-'. ($cm->section - 1);
 
         // depending on finish screen settings
-        $fullresults  = false;
+        $fullresults  = true;
         switch($fullresults){
             case true:
                 $tdata->results = $useresults;

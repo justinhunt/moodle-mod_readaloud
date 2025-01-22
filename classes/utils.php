@@ -2906,6 +2906,60 @@ class utils {
         }
     }
 
+    public static function do_mb_str_split($string, $splitlength = 1, $encoding = null) {
+        // for greater than PHP 7.4
+        if (version_compare(PHP_VERSION, '7.4.0', '>=')) {
+            // Code for PHP 7.4 and above
+            return mb_str_split($string, $splitlength, $encoding);
+        }
+
+        // for less than PHP 7.4
+        if (null !== $string && !\is_scalar($string) && !(\is_object($string) && \method_exists($string, '__toString'))) {
+            trigger_error('mb_str_split(): expects parameter 1 to be string, '.\gettype($string).' given', E_USER_WARNING);
+            return null;
+        }
+        if (null !== $splitlength && !\is_bool($splitlength) && !\is_numeric($splitlength)) {
+            trigger_error('mb_str_split(): expects parameter 2 to be int, '.\gettype($splitlength).' given', E_USER_WARNING);
+            return null;
+        }
+        $splitlength = (int) $splitlength;
+        if (1 > $splitlength) {
+            trigger_error('mb_str_split(): The length of each segment must be greater than zero', E_USER_WARNING);
+            return false;
+        }
+        if (null === $encoding) {
+            $encoding = mb_internal_encoding();
+        } else {
+            $encoding = (string) $encoding;
+        }
+
+        if (! in_array($encoding, mb_list_encodings(), true)) {
+            static $aliases;
+            if ($aliases === null) {
+                $aliases = [];
+                foreach (mb_list_encodings() as $encoding) {
+                    $encodingaliases = mb_encoding_aliases($encoding);
+                    if ($encodingaliases) {
+                        foreach ($encodingaliases as $alias) {
+                            $aliases[] = $alias;
+                        }
+                    }
+                }
+            }
+            if (! in_array($encoding, $aliases, true)) {
+                trigger_error('mb_str_split(): Unknown encoding "'.$encoding.'"', E_USER_WARNING);
+                return null;
+            }
+        }
+
+        $result = [];
+        $length = mb_strlen($string, $encoding);
+        for ($i = 0; $i < $length; $i += $splitlength) {
+            $result[] = mb_substr($string, $i, $splitlength, $encoding);
+        }
+        return $result;
+    }
+
     public static function super_trim($str){
         if($str==null){
             return '';

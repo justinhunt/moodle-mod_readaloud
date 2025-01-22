@@ -292,7 +292,7 @@ define(['jquery',
                 self.items[self.game.pointer].typed = false;
                 //if they got it correct, make the input boxes green and move forward
                 log.debug("correct!!");
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + " input").addClass("ml_gapfill_char_correct");
+                $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + " input").addClass("ra_gapfill_char_correct");
 
 
                 //if they cant retry OR the time limit is up, move on

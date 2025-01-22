@@ -1090,7 +1090,7 @@ div.mod_readaloud_attemptsummarytable {
 }
 
 
-.mod_readaloud_result_div {
+.mod_readaloud_quizresult_div {
   display: inline-block;
   width: 100%;
   height: auto;
@@ -1103,7 +1103,7 @@ div.mod_readaloud_attemptsummarytable {
 }
 
 /* RESULTS */
-.mod_readaloud_result_index {
+.mod_readaloud_quizresult_index {
   font-weight: bold;
   position: absolute;
   left: 0;
@@ -1121,7 +1121,7 @@ div.mod_readaloud_attemptsummarytable {
   padding: 6px;
 }
 
-.mod_readaloud_result_title {
+.mod_readaloud_quizresult_title {
   position:inherit;
   top: 0;
   right: 9px;
@@ -1917,7 +1917,7 @@ div.mod_readaloud_attemptsummarytable {
   right: 10px;
 }
 /* the background color of gapfill words char inputs when marked correct */
-.ml_gapfill_char_correct {
+.ra_gapfill_char_correct {
   background-color: palegreen;
 }
 body.poodll-readaloud-embed #page {
@@ -1927,7 +1927,7 @@ body.poodll-readaloud-embed #page {
   direction: rtl;
   text-align: right;
 }
-.ml_mediaprompt_instructions {
+.ra_mediaprompt_instructions {
   margin-bottom: 5px;
 }
 
@@ -2483,10 +2483,7 @@ body.poodll-readaloud-embed #page {
   position: absolute;
   right: 10px;
 }
-/* the background color of gapfill words char inputs when marked correct */
-.ml_gapfill_char_correct {
-  background-color: palegreen;
-}
+
 body.poodll-readaloud-embed #page {
   margin-top: 5px;
 }
@@ -2494,6 +2491,29 @@ body.poodll-readaloud-embed #page {
   direction: rtl;
   text-align: right;
 }
-.ml_mediaprompt_instructions {
+
+div#mod_readaloud_quiz_finished {
+  text-align: center;
+}
+
+.readaloud_quiz_result {
+  list-style: none;
+    display: flex;
+    margin-left: 0;
+    padding-left: 0;
+    justify-content: space-between;
+}
+
+.ra_qf_itemresults {
+  max-width: 80%;
+  margin: auto;
+}
+
+/* the background color of gapfill words char inputs when marked correct */
+.ra_gapfill_char_correct {
+  background-color: palegreen;
+}
+
+.ra_mediaprompt_instructions {
   margin-bottom: 5px;
 }

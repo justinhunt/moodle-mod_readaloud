@@ -299,7 +299,7 @@ define(['jquery',
                 feedback.addClass("fa fa-check");
                 //make the input boxes green and move forward
                 log.debug('applying correct class to input boxes');
-                $("#" + self.itemdata.uniqueid + "_container .sgapfill_reply_" + self.game.pointer + " input").addClass("ml_gapfill_char_correct");
+                $("#" + self.itemdata.uniqueid + "_container .sgapfill_reply_" + self.game.pointer + " input").addClass("ra_gapfill_char_correct");
 
                 self.items[self.game.pointer].answered = true;
                 self.items[self.game.pointer].correct = true;
