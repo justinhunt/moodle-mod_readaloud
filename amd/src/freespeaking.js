@@ -36,6 +36,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions','mod_readaloud/cloudpo
       stepdata.totalitems = self.itemdata.totalmarks;
       stepdata.correctitems = self.rawscore > 0 ? self.rawscore : 0;
       stepdata.grade = self.percentscore;
+      stepdata.resultsdata = self.transcript_evaluation;
       self.quizhelper.do_next(stepdata);
     },
 
@@ -100,7 +101,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions','mod_readaloud/cloudpo
             break;
 
           case 'speech':
-            log.debug("speech at speechcards");
+            log.debug("speech at free speaking");
             var speechtext = message.capturedspeech;
 
             //update the wordcount

@@ -554,6 +554,11 @@ class utils {
     public static function fetch_polly_url($token,$region,$speaktext,$texttype, $voice) {
         global $USER;
 
+        // Do a little sanity checking.
+        if( empty($speaktext) || empty($voice) || $voice==constants::TTS_NONE){
+         return false;
+        }
+
         //The REST API we are calling
         $functionname = 'local_cpapi_fetch_polly_url';
 
@@ -1866,8 +1871,7 @@ class utils {
     }//end of function
 
     //This is a semi duplicate of passage_renderer::render_passage
-    // but it
-    //7s for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
+    // but it's for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
     public static function fetch_passage_as_words($passage,$language){
 
             // load the HTML document
@@ -2041,6 +2045,22 @@ class utils {
         return $rec_options;
     }
 
+    public static function fetch_options_qfinishscreen() {
+        $options = [constants::FINISHSCREEN_SIMPLE => get_string("qfinishscreen_simple", constants::M_COMPONENT),
+            constants::FINISHSCREEN_FULL => get_string("qfinishscreen_full", constants::M_COMPONENT),
+            constants::FINISHSCREEN_CUSTOM => get_string("qfinishscreen_custom", constants::M_COMPONENT),
+           ];
+        return $options;
+    }
+
+    public static function fetch_options_showquiz() {
+        $options = [constants::M_SHOWQUIZ_NONE => get_string("showquiz_none", constants::M_COMPONENT),
+                constants::M_SHOWQUIZ_PASSAGE => get_string("showquiz_passage", constants::M_COMPONENT),
+                constants::M_SHOWQUIZ_NOPASSAGE => get_string("showquiz_nopassage", constants::M_COMPONENT)
+           ];
+        return $options;
+    }
+
     public static function fetch_options_guidedtranscription(){
         $options = array( constants::GUIDEDTRANS_PASSAGE => get_string("guidedtrans_passage", constants::M_COMPONENT),
             constants::GUIDEDTRANS_CORPUS => get_string("guidedtrans_corpus", constants::M_COMPONENT));
@@ -2117,8 +2137,38 @@ class utils {
                         constants::TRANSCRIBER_GUIDED => get_string("transcriber_guided", constants::M_COMPONENT));
         return $options;
     }
+
+    public static function get_tts_voices_bylang($langcode, $showall) {
+        $alllang = constants::ALL_VOICES;
+
+        if(array_key_exists($langcode, $alllang) && !$showall) {
+            return $alllang[$langcode];
+        }else if($showall) {
+            $usearray = [];
+
+            // add current language first (in some cases there is no TTS for the lang)
+            if(isset($alllang[$langcode])) {
+                foreach ($alllang[$langcode] as $v => $thevoice) {
+                    $neuraltag = in_array($v, constants::M_NEURALVOICES) ? ' (+)' : '';
+                    $usearray[$v] = get_string(strtolower($langcode), constants::M_COMPONENT) . ': ' . $thevoice . $neuraltag;
+                }
+            }
+            // then all the rest
+            foreach($alllang as $lang => $voices){
+                if($lang == $langcode){continue;
+                }
+                foreach($voices as $v => $thevoice){
+                    $neuraltag = in_array($v, constants::M_NEURALVOICES) ? ' (+)' : '';
+                    $usearray[$v] = get_string(strtolower($lang), constants::M_COMPONENT) . ': ' . $thevoice . $neuraltag;
+                }
+            }
+            return $usearray;
+        }else{
+                return $alllang[constants::M_LANG_ENUS];
+        }
+    }
     
-    public static function fetch_ttsvoice_options($langcode=''){
+    public static function fetch_ttsvoice_options(){
         $alllang= constants::ALL_VOICES;
 
 
@@ -2392,6 +2442,39 @@ class utils {
                 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5');
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', constants::M_COMPONENT), $attemptoptions);
 
+        // Quiz Options
+        $mform->addElement('header', 'quizsettingsheader', get_string('quizsettingsheader', constants::M_COMPONENT));
+
+
+       // show quiz options
+       $showquizoptions = self::fetch_options_showquiz();
+       $mform->addElement('select', 'showquiz', get_string('showquiz', constants::M_COMPONENT), $showquizoptions);
+       $mform->addHelpButton('showquiz', 'showquiz', constants::M_COMPONENT);
+       $mform->setDefault('showquiz', constants::M_SHOWQUIZ_NONE);
+
+        // show question titles
+        $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
+        $mform->addElement('select', 'showqtitles', get_string('showqtitles', constants::M_COMPONENT), $yesnooptions);
+        $mform->setDefault('showqtitles', 0);
+        $mform->addHelpButton('showqtitles', 'showqtitles', constants::M_COMPONENT);
+
+        //show question review
+        $mform->addElement('select', 'showqreview', get_string('showqreview', constants::M_COMPONENT),
+        $yesnooptions);
+        $mform->setDefault('showqreview', 1);
+        $mform->addHelpButton('showqreview', 'showqreview', constants::M_COMPONENT);
+
+       // quiz finish screen
+       $screenoptions = self::fetch_options_qfinishscreen();
+       $mform->addElement('select', 'qfinishscreen', get_string('qfinishscreen', constants::M_COMPONENT), $screenoptions);
+       $mform->addHelpButton('qfinishscreen', 'qfinishscreen', constants::M_COMPONENT);
+       $mform->setDefault('qfinishscreen', constants::FINISHSCREEN_FULL);
+
+       // custom finish screen
+       $mform->addElement('textarea', 'qfinishscreencustom', get_string('qfinishscreencustom', constants::M_COMPONENT), ['wrap' => 'virtual', 'style' => 'width: 100%;']);
+       $mform->addHelpButton('qfinishscreencustom', 'qfinishscreencustom', constants::M_COMPONENT);
+       $mform->setType('qfinishscreencustom', PARAM_RAW);
+       $mform->HideIf('qfinishscreencustom', 'qfinishscreen', 'neq', constants::FINISHSCREEN_CUSTOM);
 
         // Advanced.
         $mform->addElement('header', 'advancedheader', get_string('advancedheader', constants::M_COMPONENT));
@@ -2794,6 +2877,202 @@ class utils {
 
     }
 
+    public static function evaluate_transcript($transcript, $itemid, $cmid) {
+        global $CFG, $USER, $DB, $OUTPUT, $PAGE;
+
+        $token = false;
+        $conf = get_config(constants::M_COMPONENT);
+        if (!empty($conf->apiuser) && !empty($conf->apisecret)) {
+            $token = self::fetch_token($conf->apiuser, $conf->apisecret);
+        }
+        if(!$token || empty($token)){
+            return false;
+        }
+        $cm         = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        $moduleinstance  = $DB->get_record(constants::M_MODNAME, ['id' => $cm->instance], '*', MUST_EXIST);
+        $item = $DB->get_record(constants::M_QTABLE, ['id' => $itemid, 'readaloudid' => $moduleinstance->id], '*', MUST_EXIST);
+
+        // AI Grade
+        $maxmarks = $item->{constants::TOTALMARKS};
+        $instructions = new \stdClass();
+        $instructions->feedbackscheme = $item->{constants::AIGRADE_FEEDBACK};
+        $instructions->feedbacklanguage = $item->{constants::AIGRADE_FEEDBACK_LANGUAGE};
+        $instructions->markscheme = $item->{constants::AIGRADE_INSTRUCTIONS};
+        $instructions->maxmarks = $maxmarks;
+        $instructions->questiontext = strip_tags($item->itemtext);
+        $instructions->modeltext = $item->{constants::AIGRADE_MODELANSWER};
+        $aigraderesults = self::fetch_ai_grade($token, $moduleinstance->region,
+         $moduleinstance->ttslanguage, $transcript, $instructions);
+
+         // Mark up AI Grade corrections
+        if ($aigraderesults && isset($aigraderesults->correctedtext)) {
+            // if we have corrections mark those up and return them
+            $direction = "r2l";// "l2r";
+            list($grammarerrors, $grammarmatches, $insertioncount) = self::fetch_grammar_correction_diff($transcript, $aigraderesults->correctedtext, $direction);
+            $aigraderesults->markedupcorrections = quizhelper::render_passage($aigraderesults->correctedtext,  'corrections');
+            $aigraderesults->markeduppassage = quizhelper::render_passage($transcript,'passage');
+            $aigraderesults->grammarerrors = $grammarerrors;
+            $aigraderesults->grammarmatches  = $grammarmatches;
+            $aigraderesults->insertioncount  = $insertioncount;
+        }
+
+         // STATS
+        $userlanguage = false;
+        $targetembedding = false;
+        $targetwords = [];
+        if($item->{constants::RELEVANCE} == constants::RELEVANCETYPE_QUESTION){
+            $targettopic = strip_tags($item->itemtext);
+        }
+        $textanalyser = new textanalyser($token, $transcript, $moduleinstance->region,
+        $moduleinstance->ttslanguage, $targetembedding, $userlanguage, $targettopic);
+        $aigraderesults->stats = $textanalyser->process_some_stats($targetwords);
+
+        return $aigraderesults;
+
+    }
+
+    
+    public static function fetch_grammar_correction_diff($selftranscript, $correction, $direction='l2r') {
+
+        // turn the passage and transcript into an array of words
+        $alternatives = diff::fetchAlternativesArray('');
+        $wildcards = diff::fetchWildcardsArray($alternatives);
+
+        // the direction of diff depends on which text we want to mark up. Because we only highlight
+        // this is because if we show the pre-text (eg student typed text) we can not highlight corrections .. they are not there
+        // if we show post-text (eg corrections) we can not highlight mistakes .. they are not there
+        // the diffs tell us where the diffs are with relation to text A
+        if($direction == 'l2r') {
+            $passagebits = diff::fetchWordArray($selftranscript);
+            $transcriptbits = diff::fetchWordArray($correction);
+        }else {
+            $passagebits = diff::fetchWordArray($correction);
+            $transcriptbits = diff::fetchWordArray($selftranscript);
+        }
+
+        // fetch sequences of transcript/passage matched words
+        // then prepare an array of "differences"
+        $passagecount = count($passagebits);
+        $transcriptcount = count($transcriptbits);
+        // rough estimate of insertions
+        $insertioncount = $transcriptcount - $passagecount;
+        if($insertioncount < 0){$insertioncount = 0;
+        }
+
+        $language = constants::M_LANG_ENUS;
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language);
+
+        // fetch diffs
+        $diffs = diff::fetchDiffs($sequences, $passagecount, $transcriptcount);
+        $diffs = diff::applyWildcards($diffs, $passagebits, $wildcards);
+
+        // from the array of differences build error data, match data, markers, scores and metrics
+        $errors = new \stdClass();
+        $matches = new \stdClass();
+        $currentword = 0;
+        $lastunmodified = 0;
+        // loop through diffs
+        foreach($diffs as $diff){
+            $currentword++;
+            switch($diff[0]){
+                case Diff::UNMATCHED:
+                    // we collect error info so we can count and display them on passage
+                    $error = new \stdClass();
+                    $error->word = $passagebits[$currentword - 1];
+                    $error->wordnumber = $currentword;
+                    $errors->{$currentword} = $error;
+                    break;
+
+                case Diff::MATCHED:
+                    // we collect match info so we can play audio from selected word
+                    $match = new \stdClass();
+                    $match->word = $passagebits[$currentword - 1];
+                    $match->pposition = $currentword;
+                    $match->tposition = $diff[1];
+                    $match->audiostart = 0;// not meaningful when processing corrections
+                    $match->audioend = 0;// not meaningful when processing corrections
+                    $match->altmatch = $diff[2];// not meaningful when processing corrections
+                    $matches->{$currentword} = $match;
+                    $lastunmodified = $currentword;
+                    break;
+
+                default:
+                    // do nothing
+                    // should never get here
+
+            }
+        }
+        $sessionendword = $lastunmodified;
+
+        // discard errors that happen after session end word.
+        $errorcount = 0;
+        $finalerrors = new \stdClass();
+        foreach($errors as $key => $error) {
+            if ($key < $sessionendword) {
+                $finalerrors->{$key} = $error;
+                $errorcount++;
+            }
+        }
+        // finalise and serialise session errors
+        $sessionerrors = json_encode($finalerrors);
+        $sessionmatches = json_encode($matches);
+
+        return [$sessionerrors, $sessionmatches, $insertioncount];
+    }
+
+    // fetch the AI Grade
+    public static function fetch_ai_grade($token, $region, $ttslanguage, $studentresponse, $instructions) {
+        global $USER;
+        $instructionsjson = json_encode($instructions);
+        // The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = [];
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'autograde_text';
+        $params['appid'] = 'mod_readaloud';
+        $params['prompt'] = $instructionsjson;
+        $params['language'] = $ttslanguage;
+        $params['subject'] = $studentresponse;
+        $params['region'] = $region;
+        $params['owner'] = hash('md5', $USER->username);
+
+        // log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        // returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            // if all good, then lets return
+        } else if ($payloadobject->returnCode === 0) {
+            $autograderesponse = $payloadobject->returnMessage;
+            // clean up the correction a little
+            if(\core_text::strlen($autograderesponse) > 0 && self::is_json($autograderesponse)){
+                $autogradeobj = json_decode($autograderesponse);
+                if(isset($autogradeobj->feedback) && $autogradeobj->feedback == null){
+                    unset($autogradeobj->feedback);
+                }
+                if(isset($autogradeobj->marks) && $autogradeobj->marks == null){
+                    unset($autogradeobj->marks);
+                }
+                return $autogradeobj;
+            }else{
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+
     public static function get_relevance_options() {
         $ret = [
             constants::RELEVANCETYPE_NONE => get_string('relevancetype_none', constants::M_COMPONENT),
@@ -2902,6 +3181,8 @@ class utils {
                 }
 
             }
+            //sort asc according to the key (itemorder)
+            ksort($steps);
             return $steps;
         }
     }

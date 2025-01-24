@@ -804,11 +804,11 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2024120400, 'readaloud');
     }
 
-    // Add iteminstructions to minilesson table.
-    if ($oldversion < 2025011802) { 
+    // Add iteminstructions to rs questions table.
+    if ($oldversion < 2025011805) {
         $questiontable = new xmldb_table(constants::M_QTABLE);
 
-        // Define fields ,lessonkey,to be added to minilesson.
+        // Define fields to be added .
         $fields = [];
         $fields[] = new xmldb_field('iteminstructions', XMLDB_TYPE_TEXT, null, null, null, null);
         $fields[] = new xmldb_field('timelimit', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
@@ -841,16 +841,18 @@ function xmldb_readaloud_upgrade($oldversion) {
         // Activity Table.
         $activitytable = new xmldb_table(constants::M_TABLE);
         $afields = [];
-        $afields[] = new xmldb_field('showquiz', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::M_QUIZ_NONE);
-        $afields[] = new xmldb_field('showitemreview', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $afields[] = new xmldb_field('showquiz', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::M_SHOWQUIZ_NONE);
+        $afields[] = new xmldb_field('showqreview', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
         $afields[] = new xmldb_field('showqtitles', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
+        $afields[] = new xmldb_field('qfinishscreen', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, constants::FINISHSCREEN_FULL);
+        $afields[] = new xmldb_field('qfinishscreencustom', XMLDB_TYPE_TEXT, null, null, null, null);
         // Add fields.
         foreach ($afields as $field) {
             if (!$dbman->field_exists($activitytable, $field)) {
                 $dbman->add_field($activitytable, $field);
             }
         }
-        upgrade_mod_savepoint(true, 2025011802, 'readaloud');
+        upgrade_mod_savepoint(true, 2025011805, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

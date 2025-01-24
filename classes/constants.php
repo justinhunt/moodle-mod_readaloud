@@ -453,5 +453,13 @@ const M_QUIZ_SKELETONBOX='mod_readaloud_skeleton_box';
 const M_QUIZ_FINISHED = "mod_readaloud_quiz_finished";
 const M_QUIZ_REATTEMPT = "mod_readaloud_quiz_reattempt";
 
+// Finish screen options.
+const FINISHSCREEN_SIMPLE=1;
+const FINISHSCREEN_FULL=0;
+const FINISHSCREEN_CUSTOM=2;
+
+const M_SHOWQUIZ_NONE = 0;
+const M_SHOWQUIZ_PASSAGE = 1;
+const M_SHOWQUIZ_NOPASSAGE = 2;
   
 }

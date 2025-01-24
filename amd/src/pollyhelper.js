@@ -86,8 +86,15 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function ($, log, de
                         }
                     }
                 };
-                var texttype='ssml';
 
+                //in the case we get a bad voice we just reject without calling the web service
+                if(voice == 'ttsnone'){
+                    reject('Polly Signed URL Request: ttsnone is not a valid voice');
+                    log.debug('Polly Signed URL Request: ttsnone is not a valid voice');
+                }
+
+                //now look at voice options (Speed basically)
+                var texttype='ssml';
                 switch(parseInt(voiceoption)){
 
                     //slow
@@ -152,6 +159,12 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function ($, log, de
                 //set up our ajax request
                 var xhr = new XMLHttpRequest();
                 var that = this;
+
+                //in the case we get a bad voice we just reject without calling the web service
+                if(voice == 'ttsnone'){
+                    log.debug('Polly Signed URL Request: ttsnone is not a valid voice');
+                    return false;
+                }
 
                 //set up our handler for the response
                 xhr.onreadystatechange = function (e) {

@@ -1,0 +1,64 @@
+<div id="{{uniqid}}" class="ml_listitem_results">
+  <div class="ml_listitem_results_header">
+    <h3><i class="fa fa-trophy"></i> {{correctitems}}/{{totalitems}} {{#str}}correct , mod_readaloud{{/str}}</h3>
+    <hr />
+  </div>
+  <audio class="ml_listitem_resultsplayer"></audio>
+  {{#items}}
+    <div class="ml_listitem_result">
+      {{#audio}}
+      <a class="btn ml_li_resultaudio" data-src="{{{audio.src}}}" tabindex="0">
+        <i class="fa fa-play"></i>
+      </a>
+      {{/audio}}
+      <div class="ml_li_resultitem">
+      {{target}}
+      </div>
+      {{#correct}}
+        <div class="ml_li_resultstatus ml_correct"><i class="fa fa-lg fa-check"></i></div>
+      {{/correct}}
+      {{^correct}}
+        <div class="ml_li_resultstatus ml_incorrect"><i class="fa fa-lg fa-times"></i></div>
+      {{/correct}}
+    </div>
+  {{/items}}
+</div>
+{{^element.frozen}}
+{{#js}}
+    require(['jquery', 'core/log'], function($, log) {
+      var audiobutton = $('#{{uniqid}} .ml_li_resultaudio');
+      var audio = $('#{{uniqid}} .ml_listitem_resultsplayer');
+      audiobutton.on('click',function(e){
+         e.preventDefault();
+         var itag = $(this).find('i');
+        if(!audio[0].paused && itag.hasClass('fa-stop')){
+          audio[0].pause();
+          audio[0].currentTime = 0;
+          itag.removeClass('fa-stop');
+          itag.addClass('fa-play');
+        }else{
+          audiobutton.find('i').removeClass('fa-stop');
+          audiobutton.find('i').addClass('fa-play');
+          itag.removeClass('fa-play');
+          itag.addClass('fa-stop');
+          var src = $(this).data('src');
+          audio.attr('src',src);
+          audio[0].load();
+          audio[0].play();
+        }
+      });
+      audiobutton.on('keydown', function(event) {
+        if (event.key === ' ' || event.key === 'Enter') {
+          event.preventDefault();
+          $(this).click();
+        }
+      });
+      // Add event listener for the ended event
+      audio.on('ended', function() {
+        log.debug('Audio playback ended');
+        audiobutton.find('i').removeClass('fa-stop');
+        audiobutton.find('i').addClass('fa-play');
+      });
+    });
+{{/js}}
+{{/element.frozen}}

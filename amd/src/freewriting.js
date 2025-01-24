@@ -34,6 +34,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/correc
           stepdata.totalitems = self.itemdata.totalmarks;
           stepdata.correctitems = self.rawscore > 0 ? self.rawscore : 0;
           stepdata.grade = self.percentscore;
+          stepdata.resultsdata = self.transcript_evaluation;
           self.quizhelper.do_next(stepdata);
         },
 
@@ -63,7 +64,6 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/correc
         },
 
         register_events: function(index, itemdata, quizhelper) {
-
           var self = this;
           self.index = index;
           self.quizhelper = quizhelper;
@@ -142,7 +142,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/correc
 
               log.debug(transcript_evaluation);
               //display results
-              templates.render('mod_readaloud/freespeakingresults',transcript_evaluation).then(
+              templates.render('mod_readaloud/freewritingresults',transcript_evaluation).then(
                   function(html,js){
                     self.resultsbox.html(html);
                     //do corrections markup

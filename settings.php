@@ -235,4 +235,5 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_configtext(constants::M_COMPONENT . "/$name",
                 $label, $details, $default, PARAM_INT));
 
+
 }

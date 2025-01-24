@@ -2517,3 +2517,85 @@ div#mod_readaloud_quiz_finished {
 .ra_mediaprompt_instructions {
   margin-bottom: 5px;
 }
+span.mod_readaloud_finishedanswer {
+  display: block;
+}
+
+.readaloud_landr_player_box  .landr_start_btn,
+.readaloud_dictate_player_box  .dictate_start_btn,
+.readaloud_tgapfill_player_box  .tgapfill_start_btn ,
+.readaloud_lgapfill_player_box  .lgapfill_start_btn,
+.readaloud_sgapfill_player_box  .sgapfill_start_btn {
+  /* position: absolute; */
+  /* bottom: 0; */
+  margin-left: auto;
+  height: 50px;
+  width: 60%;
+  margin-right: auto;
+  margin-top: 80px;
+}
+
+/* corrections markup */
+
+/* FreeSpeaking freewriting*/
+
+.mod_readaloud_quiz_cont div.mod_readaloud_postattempt .mod_readaloud_grading_unreadword {
+  text-decoration: none;
+  background-color: lightgrey;
+}
+
+.mod_readaloud_quiz_cont div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
+  background-color: lightgrey;
+  padding: 0px 2px;
+}
+
+.mod_readaloud_quiz_cont .mod_readaloud_grading_unreadword {
+color: #F13B3B;
+font-weight: 700;
+}
+
+.mod_readaloud_quiz_cont .mod_readaloud_mu_passage_word.mod_readaloud_aicorrected,
+.mod_readaloud_quiz_cont .mod_readaloud_mu_passage_space.mod_readaloud_aicorrected {
+background-color: lightpink;
+}
+
+.mod_readaloud_quiz_cont .mod_readaloud_mu_passage_word.asf_cp_aiomitted, .mod_readaloud_quiz_cont .mod_readaloud_quiz_cont .mod_readaloud_mu_passage_space.asf_cp_aiomitted {
+text-decoration: line-through;
+}
+
+.mod_readaloud_quiz_cont .mod_readaloud_mu_passage_space.mod_readaloud_aiunmatched {
+  /*background-color: lightgrey;*/
+  text-decoration: underline #0000FF;
+  font-weight: bold;
+}
+
+.mod_readaloud_quiz_cont .mod_readaloud_corrections {
+	text-align: left;
+	font-style: normal;
+}
+
+/* delete? */
+.mod_readaloud_quiz_cont span.mod_readaloud_corrections_suggestedword {
+	font-weight: bold;
+	background-color: lightgreen;
+}
+
+.mod_readaloud_quiz_cont span.mod_readaloud_corrections_insertionword {
+	font-weight: bold;
+	background-color: lightgreen;
+}
+
+.mod_readaloud_quiz_cont span.mod_readaloud_corrections_omittedword {
+	font-weight: bold;
+	background-color: lightgreen;
+	word-spacing: 5px;
+}
+.mod_readaloud_quiz_cont span.mod_readaloud_mu_original_preword,
+.mod_readaloud_quiz_cont span.mod_readaloud_mu_original_postword {
+	font-weight: 500;
+	background-color: antiquewhite;
+}
+
+.mod_readaloud_quiz_cont .mod_readaloud_overflow_auto {
+overflow: auto;
+}

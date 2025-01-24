@@ -95,7 +95,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/pollyh
           var achieved = checked == itemdata.correctanswer ? 1 : 0;
           var percent = achieved * 100;
 
-          if(quizhelper.showitemreview) {
+          if(quizhelper.showqreview) {
               //hide the confirm choice button
               confirmchoicebutton.hide();
 

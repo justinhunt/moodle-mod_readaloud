@@ -50,10 +50,12 @@
 {{/feedback}}
 </ul>
 </div>
+{{^noreattempt}}
 <div class="readaloud_actionbutton">
 <a class="btn btn-secondary center" href="#" id = "{{uniqid}}_reattempt">
     {{#str}}reattempt, mod_readaloud{{/str}}</a>
 </div>
+{{/noreattempt}}
 {{^element.frozen}}
 {{#js}}
     require(['jquery', 'core/notification', 'core/log'], function($, notification, log) {
@@ -64,9 +66,9 @@
                             '{{#str}}reallyreattempt, mod_readaloud{{/str}}',
                             '{{#str}}reattempt, mod_readaloud{{/str}}','',
                             function(){
-                                reattemptbutton .closest('.ml_freespeaking_resultsbox').hide();
-                                reattemptbutton .closest('.ml_freespeaking_pendingbox').hide();
-                                reattemptbutton .closest('.ml_freespeaking_resultsbox').siblings('.ml_freespeaking_actionbox').show();
+                                reattemptbutton .closest('.ml_freewriting_resultsbox').hide();
+                                reattemptbutton .closest('.ml_freewriting_pendingbox').hide();
+                                reattemptbutton .closest('.ml_freewriting_resultsbox').siblings('.ml_freewriting_actionbox').show();
                             });
             
             

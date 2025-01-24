@@ -257,7 +257,7 @@ define(['jquery',
 
             setTimeout(function() {
                 $(".readaloud_nextbutton").prop("disabled",false);
-                if(self.quizhelper.showitemreview){
+                if(self.quizhelper.showqreview){
                     self.show_item_review();
                 }else{
                     self.next_question();

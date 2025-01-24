@@ -123,7 +123,7 @@ abstract class item implements templatable, renderable {
         $this->forcetitles = $this->moduleinstance->showqtitles;
         $this->region = $this->moduleinstance->region;
         $this->language = $this->moduleinstance->ttslanguage;
-        $this->showitemreview = $this->moduleinstance->showitemreview;
+        $this->showqreview = $this->moduleinstance->showqreview;
     }
 
     /*
@@ -417,7 +417,6 @@ abstract class item implements templatable, renderable {
                 continue;
             }
 
-            // TO DO replace [x] with gaps
             $prompt = $sentence;
 
             $s = new \stdClass();
@@ -427,7 +426,6 @@ abstract class item implements templatable, renderable {
             $s->prompt = $prompt;
             $s->displayprompt = $prompt;
             $s->length = \core_text::strlen($s->sentence);
-
             $index++;
             $sentenceobjects[] = $s;
         }

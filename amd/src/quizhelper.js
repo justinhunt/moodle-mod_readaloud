@@ -44,7 +44,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         this.stt_guided = activitydata.stt_guided;
         this.wwwroot = activitydata.wwwroot;
         this.useanimatecss  = activitydata.useanimatecss;
-        this.showitemreview  = activitydata.showitemreview;
+        this.showqreview  = activitydata.showqreview;
 
         this.prepare_html();
         this.init_questions(this.quizdata,polly);
@@ -377,10 +377,10 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
                args: {
                    passage: passage,
                    transcript: transcript,
-                   alternatives: alternatives,
-                   passagephonetic: passagephonetic,
+                   //alternatives: alternatives,
+                   passagephonetic: '',//passagephonetic,
                    language: language,
-                   region: this.region,
+                   //region: this.region,
                    cmid: this.cmid
                },
               async: false

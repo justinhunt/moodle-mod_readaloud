@@ -109,6 +109,7 @@ define(['jquery', 'core/log'], function ($, log) {
         qtype_speakinggapfill: 'speakinggapfill',
         qtype_typinggapfill: 'typinggapfill',
         qtype_freespeaking: 'freespeaking',
+        qtype_freewriting: 'freewriting',
 
         
         neural_voices: ["Amy","Emma","Brian","Olivia","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly",

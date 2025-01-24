@@ -89,5 +89,13 @@ $functions = array(
                 'type'        => 'write',
                 'ajax'        => true,
         ),
+'mod_readaloud_evaluate_transcript' => array(
+                'classname'   => 'mod_readaloud_external',
+                'methodname'  => 'evaluate_transcript',
+                'description' => 'evaluate transcript',
+                'capabilities' => 'mod/readaloud:view',
+                'type'        => 'read',
+                'ajax'        => true,
+            ),
 
 );

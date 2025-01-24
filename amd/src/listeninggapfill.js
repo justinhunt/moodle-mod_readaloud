@@ -378,7 +378,7 @@ define(['jquery',
             //disable the buttons and go to next question or review
             setTimeout(function() {
                 $(".readaloud_nextbutton").prop("disabled",false);
-                if(self.quizhelper.showitemreview){
+                if(self.quizhelper.showqreview){
                     self.show_item_review();
                 }else{
                     self.next_question();

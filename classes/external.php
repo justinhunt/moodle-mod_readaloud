@@ -509,5 +509,24 @@ class mod_readaloud_external extends external_api {
         return new external_value(PARAM_BOOL);
     }
 
+    public static function evaluate_transcript_parameters() {
+        return new external_function_parameters(
+                ['transcript' => new external_value(PARAM_TEXT, 'The transcript of speaking or writing', VALUE_REQUIRED),
+                        'itemid' => new external_value(PARAM_INT, 'The item id in the readaloud quiz', VALUE_REQUIRED),
+                        'cmid' => new external_value(PARAM_INT, 'The cmid', VALUE_REQUIRED),
+                ]
+        );
+    }
+
+    public static function evaluate_transcript($transcript, $itemid, $cmid) {
+        global $DB;
+        $ret = utils::evaluate_transcript($transcript, $itemid, $cmid);
+        return json_encode($ret);
+    }
+
+    public static function evaluate_transcript_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
 
 }

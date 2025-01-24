@@ -523,7 +523,7 @@ abstract class baseform extends \moodleform {
     final protected function add_voiceselect($name, $label = null, $hideiffield=false, $hideifvalue=false) {
         global $CFG;
         $showall = true;
-        $allvoiceoptions = utils::fetch_ttsvoice_options($this->moduleinstance->ttslanguage, $showall);
+        $allvoiceoptions = utils::get_tts_voices_bylang($this->moduleinstance->ttslanguage, $showall);
         $defaultvoice = array_pop($allvoiceoptions );
         $this->add_dropdown($name, $label, $allvoiceoptions, $defaultvoice);
         if($hideiffield !== false) {
