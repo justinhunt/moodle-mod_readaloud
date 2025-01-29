@@ -905,3 +905,13 @@ $string["qfinishscreen_custom"]="Custom";
 $string["qfinishscreencustom"]="Custom finish screen";
 $string["qfinishscreencustom_help"]="The custom screen is an advanced feature, that allows you to build a custom finish screen using mustache notation and variables. Some of the variables are: {total} {courseurl} {coursename} {yellowstars} {graystars} {reattempturl} and an array of {results} each with {title}, {grade}, {yellowstars} and {graystars} variables.";
 $string['qfinishscreencustom_details'] = "If the quiz finish screen options are set to 'custom' this will be the default mustache template that generates the finish screen. It can be overridden at the quiz level.";
+
+
+// Modes.
+$string['mode_listen'] = 'Listen';
+$string['mode_practice'] = 'Practice';
+$string['mode_quiz'] = 'Quiz';
+$string['mode_read'] = 'Read';
+$string['mode_shadow'] = 'Shadow';
+$string['mode_listenandrepeat'] = 'Listen and Repeat';
+
