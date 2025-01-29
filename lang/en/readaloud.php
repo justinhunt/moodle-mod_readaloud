@@ -723,3 +723,12 @@ $string['passagepicture_descr']='*The passage picture is not used yet. It is par
 $string['stdashboardid']='Student Dashboard ID';
 $string['stdashboardid_details']='If the student dashboard block is installed, put the id of the block here.';
 $string['eventreadaloudattemptsubmitted'] = 'ReadAloud attempt submitted';
+
+// Modes.
+$string['mode_listen'] = 'Listen';
+$string['mode_practice'] = 'Practice';
+$string['mode_quiz'] = 'Quiz';
+$string['mode_read'] = 'Read';
+$string['mode_shadow'] = 'Shadow';
+$string['mode_listenandrepeat'] = 'Listen and Repeat';
+

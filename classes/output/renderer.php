@@ -71,7 +71,6 @@ class renderer extends \plugin_renderer_base {
         return $output;
     }
 
-
     public function show_no_content($cm, $showsetup) {
         $displaytext = $this->output->box_start();
         $displaytext .= $this->output->heading(get_string('nopassage', constants::M_COMPONENT), 3, 'main');
@@ -179,15 +178,6 @@ class renderer extends \plugin_renderer_base {
         return $html;
     }
 
-    public function show_stopandplay($moduleinstance) {
-        $ret = "<div id='".constants::M_STOPANDPLAY."'>";
-        $ret .= "<button id='".constants::M_PLAY_BTN."' style='margin:10px;width:40%;float:left;' class='btn btn-secondary'><i class='fa fa-play'></i> ".get_string("playbutton", constants::M_COMPONENT)."</button>";
-        $ret .= "<button id='".constants::M_STOP_BTN."' style='margin:10px;width:40%;float:right;' class='btn btn-secondary'><i class='fa fa-stop'></i> ".get_string("stopbutton", constants::M_COMPONENT)."</button>";
-        $ret .= "</div>";
-
-        return $ret;
-    }
-
     public function show_quiz($moduleinstance, $items) {
         global $CFG;
         $data = [];
@@ -196,47 +186,6 @@ class renderer extends \plugin_renderer_base {
         // Finally render template and return.
         return $this->render_from_template('mod_readaloud/quiz', $data);
     }
-
-    public function show_menubuttons($moduleinstance, $canattempt) {
-
-      global $CFG;
-
-      $hasaudiobreaks = !empty($moduleinstance->modelaudiobreaks);
-
-        $data = [];
-        // Are we previewing?
-        if (!$moduleinstance->enablepreview) {
-            $data['nopreview'] = 1;
-        }
-
-        // Do we have audio breaks?
-        if (!$hasaudiobreaks) {
-            $data['noaudiobreaks'] = 1;
-        }
-        // Is listen and repeat enabled?
-        if (!$moduleinstance->enablelandr) {
-            $data['nolandr'] = 1;
-        }
-        // Is shadow enabled?
-        if (!$moduleinstance->enableshadow) {
-            $data['noshadow'] = 1;
-        }
-        // Can we attempt this activity?
-        $disableshadowgrading = get_config(constants::M_COMPONENT,'disableshadowgrading');
-        if (!$canattempt) {
-            $data['cantattempt'] = 1;
-            if (!$disableshadowgrading){
-                $data['cantshadowattempt'] = 1;
-            }
-        }
-
-        // No quiz.
-        $data['noquiz'] = 1;
-
-        // Finally render template and return.
-        return $this->render_from_template('mod_readaloud/bigbuttonmenu', $data);
-    }
-
 
     /**
      * Show the small report.
@@ -360,19 +309,6 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
-     *  NO LONGER USED
-     */
-    public function reattemptbutton($moduleinstance) {
-
-        $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/view.php',
-                array('n' => $moduleinstance->id, 'retake' => 1)), get_string('reattempt', constants::M_COMPONENT));
-
-        $ret = \html_writer::div($button, constants::M_CLASS . '_afterattempt_cont');
-
-        return $ret;
-    }
-
-    /**
      *
      */
     public function jump_tomenubutton($moduleinstance, $embed=0) {
@@ -390,35 +326,26 @@ class renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    /**
-     * Show where to next.
-     *
-     * @param object $moduleinstance The module instance.
-     * @param int $embed The embed parameter, default is 0, set to 2 if authenticated via token.
-     * @return string The HTML for the next button.
-     */
     public function show_wheretonext($moduleinstance, $embed = 0) {
-
         $nextactivity = utils::fetch_next_activity($moduleinstance->activitylink);
-        // Show activity link if we are up to it.
-        $buttons = [];
 
-        // Back to menu button.
-        $buttons[] = \html_writer::link(new \moodle_url(constants::M_URL . '/view.php',
-                ['n' => $moduleinstance->id, 'embed' => $embed]), get_string("backtotop", constants::M_COMPONENT),
-                [
-                    'class' => constants::M_CLASS . '_center btn btn-secondary ' . constants::M_BACKTOTOP,
-                    'id' => constants::M_BACKTOTOP
-                ]);
+        // Back to menu button data.
+        $backtotop = [
+            'url' => (new \moodle_url(constants::M_URL . '/view.php', [
+                'n' => $moduleinstance->id,
+                'embed' => $embed
+            ]))->out(),
+            'label' => get_string("backtotop", constants::M_COMPONENT),
+        ];
 
-        // Next activity button.
-        if ($nextactivity->url) {
-            $buttons[] = $this->output->single_button($nextactivity->url, $nextactivity->label);
-        }
-
-        $ret = \html_writer::div(implode('<br><br>', $buttons), constants::M_WHERETONEXT_CONTAINER);
-
-        return $ret;
+        // Prepare data for template.
+        return [
+            'backtotop' => $backtotop,
+            'nextactivity' => !empty($nextactivity->url) ? [
+                'url' => $nextactivity->url->out(),
+                'label' => $nextactivity->label,
+            ] : null
+        ];
     }
 
     /**
@@ -558,27 +485,66 @@ class renderer extends \plugin_renderer_base {
         return $html;
     }
 
-    // Fetch modal container.
-    function fetch_modalcontainer($title, $content, $containertag) {
-        $data = [];
-        $data['title'] = $title;
-        $data['content'] = $content;
-        $data['containertag'] = $containertag;
-        return $this->render_from_template('mod_readaloud/modalcontainer', $data);
-    }
+    // public function show_landr($moduleinstance, $token) {
+    //     global $CFG, $USER;
+    //     // Recorder modal.
+    //     $title = get_string('landrreading', constants::M_COMPONENT);
 
-    public function show_landr($moduleinstance, $token) {
-        global $CFG, $USER;
+    //     // The TT recorder stuff.
+    //     $data = array( 'data-id' => 'readaloud_ttrecorder',
+    //                     'data-language' => $moduleinstance->ttslanguage,
+    //                     'data-region' => $moduleinstance->region,
+    //                     'waveheight' => 75,
+    //                     'maxtime' => 15000,
+    //             );
+
+    //     // For right to left languages we want to add the RTL direction and right justify.
+    //     switch($moduleinstance->ttslanguage){
+    //         case constants::M_LANG_ARAE:
+    //         case constants::M_LANG_ARSA:
+    //         case constants::M_LANG_FAIR:
+    //         case constants::M_LANG_HEIL:
+    //             $data['rtl'] = true;
+    //             break;
+    //         default:
+    //             // Nothing special.
+    //     }
+
+    //     // Passagehash if not empty will be region|hash eg tokyo|2353531453415134545
+    //     // but we only send the hash up so we strip the region.
+    //     $thefullhash = $moduleinstance->usecorpus == constants::GUIDEDTRANS_CORPUS ? $moduleinstance->corpushash : $moduleinstance->passagehash;
+    //     if (!empty($thefullhash)) {
+    //         $hashbits = explode('|', $thefullhash);
+    //         if (count($hashbits) == 2) {
+    //             $data['passagehash']  = $hashbits[1];
+    //         }
+    //     }
+
+    //     // Fetch lang services url.
+    //     $data['asrurl'] = utils::fetch_lang_server_url($moduleinstance->region,'transcribe');
+
+    //     // This will set some opts for the recorder, but others are set by fetch_activity_amd
+    //     // and it is applied in listen and repeat.js.
+    //     $content = $this->render_from_template('mod_readaloud/listenandrepeat', $data);
+    //     $containertag = 'landr_container';
+    //     $amodalcontainer = $this->fetch_modalcontainer($title, $content, $containertag);
+
+    //     return $amodalcontainer;
+    // }
+
+    public function show_landr($moduleinstance) {
+
         // Recorder modal.
         $title = get_string('landrreading', constants::M_COMPONENT);
 
         // The TT recorder stuff.
-        $data = array( 'data-id' => 'readaloud_ttrecorder',
-                        'data-language' => $moduleinstance->ttslanguage,
-                        'data-region' => $moduleinstance->region,
-                        'waveheight' => 75,
-                        'maxtime' => 15000,
-                );
+        $data = [
+            'data-id' => 'readaloud_ttrecorder',
+            'data-language' => $moduleinstance->ttslanguage,
+            'data-region' => $moduleinstance->region,
+            'waveheight' => 75,
+            'maxtime' => 15000,
+        ];
 
         // For right to left languages we want to add the RTL direction and right justify.
         switch($moduleinstance->ttslanguage){
@@ -608,11 +574,22 @@ class renderer extends \plugin_renderer_base {
         // This will set some opts for the recorder, but others are set by fetch_activity_amd
         // and it is applied in listen and repeat.js.
         $content = $this->render_from_template('mod_readaloud/listenandrepeat', $data);
-        $containertag = 'landr_container';
-        $amodalcontainer = $this->fetch_modalcontainer($title, $content, $containertag);
 
-        return $amodalcontainer;
+        $data['containertag'] = 'landr_container';
+        $data['title'] = $title;
+        $data['content'] = $content;
+
+        return $data;
     }
+
+        // Fetch modal container.
+        // function fetch_modalcontainer($title, $content, $containertag) {
+        //     $data = [];
+        //     $data['title'] = $title;
+        //     $data['content'] = $content;
+        //     $data['containertag'] = $containertag;
+        //     return $this->render_from_template('mod_readaloud/modalcontainer', $data);
+        // }
 
     /**
      *
@@ -641,62 +618,6 @@ class renderer extends \plugin_renderer_base {
         $displaytext .= \html_writer::div($showinstructions, constants::M_CLASS . '_center');
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext);
-
-        return $ret;
-    }
-
-    /**
-     *  Show instructions/welcome
-     */
-    public function show_instructions($showtext) {
-        $displaytext = $this->output->box_start();
-        $displaytext .= \html_writer::div($showtext,
-                constants::M_CLASS . '_center ' . constants::M_INSTRUCTIONS);
-        $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext, constants::M_ACTIVITYINSTRUCTIONS_CONTAINER,
-                array('id' => constants::M_ACTIVITYINSTRUCTIONS_CONTAINER));
-
-        return $ret;
-    }
-
-    /**
-     *  Show instructions/welcome
-     */
-    public function show_previewinstructions($showtext) {
-        $displaytext = $this->output->box_start();
-        $displaytext .= \html_writer::div($showtext,
-                constants::M_CLASS . '_center ' . constants::M_PREVIEWINSTRUCTIONS);
-        $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext, constants::M_PREVIEWINSTRUCTIONS_CONTAINER,
-                array('id' => constants::M_PREVIEWINSTRUCTIONS_CONTAINER));
-
-        return $ret;
-    }
-
-    /**
-     *  Show listen and repeat instructions
-     */
-    public function show_landrinstructions($showtext) {
-        $displaytext = $this->output->box_start();
-        $displaytext .= \html_writer::div($showtext,
-                constants::M_CLASS . '_center ' . constants::M_LANDRINSTRUCTIONS);
-        $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext, constants::M_LANDRINSTRUCTIONS_CONTAINER,
-                array('id' => constants::M_LANDRINSTRUCTIONS_CONTAINER));
-
-        return $ret;
-    }
-
-    /**
-     *  Show instructions/welcome
-     */
-    public function show_welcome_menu() {
-        $displaytext = $this->output->box_start();
-        $displaytext .= \html_writer::div(get_string('welcomemenu', constants::M_COMPONENT),
-                constants::M_CLASS . '_center ' . constants::M_INSTRUCTIONS);
-        $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext, constants::M_MENUINSTRUCTIONS_CONTAINER,
-                array('id' => constants::M_MENUINSTRUCTIONS_CONTAINER));
 
         return $ret;
     }
@@ -741,7 +662,6 @@ class renderer extends \plugin_renderer_base {
         return $audioplayer;
     }
 
-
     /**
      * Show the reading passage
      */
@@ -751,20 +671,6 @@ class renderer extends \plugin_renderer_base {
         $displaypassage = utils::lines_to_brs($readaloud->passage);
         $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER,
                 array('id' => constants::M_PASSAGE_CONTAINER));
-
-        return $ret;
-    }
-
-    /**
-     *  Show a progress circle overlay while uploading
-     */
-    public function show_progress($readaloud, $cm) {
-        $hider = \html_writer::div('', constants::M_HIDER, array('id' => constants::M_HIDER));
-        $message = \html_writer::tag('h4', get_string('processing', constants::M_COMPONENT), array());
-        $spinner = \html_writer::tag('i', '', array('class' => 'fa fa-spinner fa-5x fa-spin'));
-        $progressdiv = \html_writer::div($message . $spinner, constants::M_PROGRESS_CONTAINER,
-                array('id' => constants::M_PROGRESS_CONTAINER));
-        $ret = $hider . $progressdiv;
 
         return $ret;
     }
@@ -779,18 +685,6 @@ class renderer extends \plugin_renderer_base {
     /**
      * Show the feedback set in the activity settings
      */
-    public function show_feedback($readaloud) {
-        $displaytext = $this->output->box_start();
-        $displaytext .= \html_writer::div($readaloud->feedback, constants::M_CLASS . '_center');
-        $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext, constants::M_FEEDBACK_CONTAINER, array('id' => constants::M_FEEDBACK_CONTAINER));
-
-        return $ret;
-    }
-
-    /**
-     * Show the feedback set in the activity settings
-     */
     public function show_feedback_postattempt($readaloud) {
 
         $displaytext = $this->output->box_start();
@@ -798,19 +692,6 @@ class renderer extends \plugin_renderer_base {
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext, constants::M_FEEDBACK_CONTAINER . ' ' . constants::M_POSTATTEMPT,
                 array('id' => constants::M_FEEDBACK_CONTAINER));
-
-        return $ret;
-    }
-
-    /**
-     * Show error (but when?)
-     */
-    public function show_error($readaloud, $cm) {
-        $displaytext = $this->output->box_start();
-        $displaytext .= $this->output->heading(get_string('errorheader', constants::M_COMPONENT), 3, 'main');
-        $displaytext .= \html_writer::div(get_string('uploadconverterror', constants::M_COMPONENT), '', array());
-        $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext, constants::M_ERROR_CONTAINER, array('id' => constants::M_ERROR_CONTAINER));
 
         return $ret;
     }
@@ -1066,24 +947,6 @@ class renderer extends \plugin_renderer_base {
     }
 
     /*
-    * Show open and close dates to the activity
-    *
-    *
-    */
-    public function show_open_close_dates($moduleinstance) {
-        $tdata = [];
-        if ($moduleinstance->viewstart > 0) {
-            $tdata['opendate'] = $moduleinstance->viewstart;
-        }
-        if ($moduleinstance->viewend > 0) {
-            $tdata['closedate'] = $moduleinstance->viewend;
-        }
-        $ret = $this->output->render_from_template( constants::M_COMPONENT . '/openclosedates', $tdata);
-
-        return $ret;
-    }
-
-    /*
      * Show attempt for review by student. called from view php
      *
      *
@@ -1254,5 +1117,115 @@ class renderer extends \plugin_renderer_base {
                 array('id' => constants::M_PASSAGE_CONTAINER));
 
         return $ret;
+    }
+
+    /**
+     * Get the mode visibility data.
+     *
+     * @param mixed $moduleinstance The module instance.
+     * @param mixed $canattempt Whether the user can attempt the activity.
+     * @return array The mode visibility data.
+     */
+    private function get_mode_visibility($moduleinstance, $canattempt) {
+        $hasaudiobreaks = !empty($moduleinstance->modelaudiobreaks);
+        $disableshadowgrading = get_config(constants::M_COMPONENT, 'disableshadowgrading');
+
+        return [
+            // Feature availability.
+            'enablepreview' => (bool)$moduleinstance->enablepreview,
+            'enablelandr' => (bool)$moduleinstance->enablelandr,
+            'enableshadow' => (bool)$moduleinstance->enableshadow,
+            'enablenoshadow' => (bool)$canattempt,
+            'enablequiz' => false, // Adjust if quizzes can be enabled later.
+
+            // Permission-based availability.
+            'canattempt' => (bool)$canattempt,
+            'canshadowattempt' => $canattempt && $disableshadowgrading,
+
+            // Other conditions.
+            'hasaudiobreaks' => (bool)$hasaudiobreaks,
+        ];
+    }
+
+    /**
+     * Get the data for the view page.
+     *
+     * @param mixed $moduleinstance The module instance.
+     * @param mixed $cm The course module.
+     * @param mixed $context The context.
+     * @param mixed $canattempt Whether the user can attempt the activity.
+     * @param mixed $attempts The attempts.
+     * @param mixed $config The configuration.
+     * @param mixed $embed The embed option.
+     * @return array The view page data.
+     */
+    public function get_view_page_data($moduleinstance, $cm, $context, $canattempt, $attempts, $config, $embed, $token) {
+        global $CFG;
+
+        // TODO: remove moodle/mod/readaloud/templates/openclosedates.mustache
+
+        // Need to check why this outputs twice.
+        $showintro = ($CFG->version < 2022041900) ? $this->show_intro($moduleinstance, $cm) : '';
+
+        $welcomemessage = $canattempt ? get_string('welcomemenu', constants::M_COMPONENT) :
+        get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts);
+
+        // Render the passage.
+        $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
+        $passagehtml = $passagerenderer->render_passage(
+            $moduleinstance->passagesegments,
+            $moduleinstance->ttslanguage,
+            constants::M_PASSAGE_CONTAINER,
+            ''
+        );
+
+        // Render the landr html.
+        $landr = $this->show_landr($moduleinstance);
+        // print_object($landr);
+        // die();
+
+        $currenttime = time();
+
+        $activityisclosed = ($moduleinstance->viewend > 0 && $currenttime > $moduleinstance->viewend);
+        $activitynotopenyet = ($moduleinstance->viewstart > 0 && $currenttime < $moduleinstance->viewstart);
+        $canpreview = has_capability('mod/readaloud:preview', $context);
+        $closedate = $moduleinstance->viewend > 0 ? $moduleinstance->viewend : null;
+        $feedback = !empty($moduleinstance->feedback) ? $moduleinstance->feedback : null;
+        $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
+        $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
+        $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt);
+        $opendate = $moduleinstance->viewstart > 0 ? $moduleinstance->viewstart : null;
+        $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
+
+        return [
+            'canattempt' => $modevisibility['canattempt'],
+            'canshadowattempt' => $modevisibility['canshadowattempt'],
+            'embed' => $embed,
+            'enablepreview' => $modevisibility['enablepreview'],
+            'enablelandr' => $modevisibility['enablelandr'],
+            'enableshadow' => $modevisibility['enableshadow'],
+            'enablenoshadow' => $modevisibility['enablenoshadow'],
+            'enablequiz' => $modevisibility['enablequiz'],
+            'error' => false, // cannot find any code calling show_error.
+            'feedback' => $feedback,
+            'landr' => $landr,
+            'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
+            'instructions' => $instructions,
+            'openclosedates' => [
+                'activityisclosed' => $activityisclosed,
+                'activitynotopenyet' => $activitynotopenyet,
+                'canpreview' => $canpreview,
+                'closedate' => $closedate,
+                'hasopenclosedates' => $hasopenclosedates,
+                'opendate' => $opendate,
+            ],
+            'passagehtml' => $passagehtml,
+            'progress' => true, // TEMP.
+            'returntomenu' => true, // TEMP.
+            'showintro' => $showintro,
+            'stopandplay' => true, // TEMP.
+            'welcomemessage' => $welcomemessage,
+            'wheretonext' => $wheretonext,
+        ];
     }
 }

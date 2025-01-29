@@ -228,6 +228,31 @@ if ($attempts && $reviewattempts) {
 // Show all the main parts. Many will be hidden and displayed by JS
 // so here we just put them on the page in the correct sequence.
 
+// Show activity description.
+if ( $CFG->version < 2022041900) {
+    echo $renderer->show_intro($moduleinstance, $cm);
+}
+
+// Show open close dates.
+$hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
+if ($hasopenclosedates) {
+    echo $renderer->show_open_close_dates($moduleinstance);
+    $current_time = time();
+    $closed = false;
+    if ($current_time > $moduleinstance->viewend && $moduleinstance->viewend > 0) {
+        echo get_string('activityisclosed', constants::M_COMPONENT);
+        $closed = true;
+    } elseif ($current_time < $moduleinstance->viewstart && $moduleinstance->viewstart > 0) {
+        echo get_string('activityisnotopenyet', constants::M_COMPONENT);
+        $closed = true;
+    }
+    // If we are not a teacher and the activity is closed/not-open leave at this point.
+    if (!has_capability('mod/readaloud:preview', $modulecontext) && $closed) {
+        echo $renderer->footer();
+        exit;
+    }
+}
+
 // Show small report.
 if ($attempts) {
     if (!$latestattempt) {
@@ -235,6 +260,13 @@ if ($attempts) {
     }
     echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade, $embed);
 }
+
+// Welcome message.
+$welcomemessage = get_string('welcomemenu', constants::M_COMPONENT);
+if (!$canattempt) {
+    $welcomemessage .= '<br>' . get_string("exceededattempts", constants::M_COMPONENT, $moduleinstance->maxattempts);
+}
+echo $renderer->show_welcome_menu($welcomemessage);
 
 // If we have a problem (usually with auth/token) we display and return.
 if (!empty($problembox)) {
@@ -244,9 +276,24 @@ if (!empty($problembox)) {
     return;
 }
 
+// Activity instructions.
+echo $renderer->show_instructions($moduleinstance->welcome);
+echo $renderer->show_previewinstructions(get_string('previewhelp', constants::M_COMPONENT));
+echo $renderer->show_landrinstructions(get_string('landrhelp', constants::M_COMPONENT));
+
+// Feedback or errors.
+echo $renderer->show_feedback($moduleinstance);
+echo $renderer->show_error($moduleinstance, $cm);
+
+// Show menu buttons.
+echo $renderer->show_menubuttons($moduleinstance, $canattempt);
+
 // Show model audio player.
 $visible = false;
 echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $visible);
+
+// Show stop and play buttons.
+echo $renderer->show_stopandplay($moduleinstance);
 
 // We put some CSS at the top of the passage container to control things like padding word separation etc.
 $extraclasses = 'readmode';
@@ -254,6 +301,10 @@ $extraclasses = 'readmode';
 if ($collapsespaces) {
     $extraclasses .= ' collapsespaces';
 }
+
+// Add class = readingcontainer to id:mod_readaloud_readingcontainer.
+// Add class = mod_readaloud to constants::M_PASSAGE_CONTAINER.
+// Remove them when done.
 
 echo "<div id='mod_readaloud_readingcontainer'>";
 // Hide on load, and we can show from ajax.
@@ -264,8 +315,11 @@ echo $passagerenderer->render_passage($moduleinstance->passagesegments, $modulei
 echo $renderer->show_recorder($moduleinstance, $token, $debug);
 echo "</div";// Close readingcontainer.
 
+echo $renderer->show_progress($moduleinstance, $cm);
+echo $renderer->show_wheretonext($moduleinstance, $embed);
+
 // Show listen and repeat dialog.
-// echo $renderer->show_landr($moduleinstance, $token);
+echo $renderer->show_landr($moduleinstance, $token);
 
 // Show quiz.
 /*
@@ -275,11 +329,9 @@ echo $renderer->show_quiz($moduleinstance,$items);
 */
 echo $renderer->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
 
-
-// Render from template.
-$templatecontext = $renderer->get_view_page_data($moduleinstance, $cm, $modulecontext, $canattempt, $attempts, $config, $embed, $token);
-
-echo $OUTPUT->render_from_template('mod_readaloud/view', $templatecontext);
+// Return to menu button.
+echo "<hr/>";
+echo $renderer->show_returntomenu_button($embed);
 
 // Finish the page.
 echo $renderer->footer();

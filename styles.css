@@ -516,18 +516,15 @@ div.mod_readaloud_attemptsummarytable {
 }
 
 .mode-chooser {
-  height: 200px;
-  border: 1px solid darkgray;
+  height: 100px;
   margin-bottom: 10px;
   position: relative;
   background-repeat: none;
   background-repeat: no-repeat;
   -webkit-background-size: 100px;
   background-size: 100px;
-  background-position: center 5px;
+  background-position: center;
   cursor: pointer;
-  width: 300px;
-  margin: 5px;
 }
 
 .mode-chooser.preview {
