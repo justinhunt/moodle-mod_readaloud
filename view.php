@@ -267,6 +267,12 @@ echo "</div";// Close readingcontainer.
 // Show listen and repeat dialog.
 // echo $renderer->show_landr($moduleinstance, $token);
 
+// Show quiz.
+/*
+$comprehensiontest = new \mod_readaloud\comprehensiontest($cm);
+$items = $comprehensiontest->fetch_items();
+echo $renderer->show_quiz($moduleinstance,$items);
+*/
 echo $renderer->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
 
 
