@@ -1,4 +1,10 @@
+2.1.22x
+- Added fix for speech rec. on Polish numbers 22 - 99
+- added support for native language feedback
+- fixed bug in multichoice question that might mark a correct question incorrect
+
 2.1.22 (Build 20250118XX)
+- Added quiz
 
 2.1.21 (Build 2024122000)
  - Fix for recorded model audio clear button not working properly
