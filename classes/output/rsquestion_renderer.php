@@ -103,7 +103,18 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $this->page->requires->strings_for_js(['bulkdelete', 'bulkdeletequestion'], constants::M_COMPONENT);
     }
 
-
+    public function show_no_items($cm, $showadditemlinks) {
+        $displaytext = $this->output->box_start();
+        $displaytext .= $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
+        if ($showadditemlinks) {
+            $displaytext .= \html_writer::div(get_string('letsadditems', constants::M_COMPONENT), '', []);
+            $displaytext .= $this->output->single_button(new \moodle_url(constants::M_URL . '/rsquestion/rsquestions.php',
+                ['id' => $cm->id]), get_string('additems', constants::M_COMPONENT));
+        }
+        $displaytext .= $this->output->box_end();
+        $ret = \html_writer::div($displaytext, constants::M_NOITEMS_CONT, ['id' => constants::M_NOITEMS_CONT]);
+        return $ret;
+    }
     function show_noitems_message($itemsvisible) {
         $message = $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
         $displayvalue = $itemsvisible ? 'none' : 'block';
@@ -169,7 +180,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
             default:
                 $containerwidth = 'wide';
         }
-        $quizclass = constants::M_QUIZ_CONTAINER . ' ' . $moduleinstance->csskey . ' '. constants::M_COMPONENT . '_' . $containerwidth;
+        $quizclass = constants::M_QUIZ_CONTAINER . ' '. constants::M_COMPONENT . '_' . $containerwidth;
         $quizattributes = ['id' => constants::M_QUIZ_CONTAINER];
         if(!empty($moduleinstance->lessonfont)){
             $quizattributes['style'] = "font-family: '$moduleinstance->lessonfont', serif;";
@@ -274,8 +285,6 @@ class rsquestion_renderer extends \plugin_renderer_base {
 
         // show back to course button if we are not in an iframe
         if ($config->enablesetuptab ||
-            $moduleinstance->pagelayout == 'embedded' ||
-            $moduleinstance->pagelayout == 'popup' ||
             $embed > 0) {
             $recopts['backtocourse'] = '';
         } else {

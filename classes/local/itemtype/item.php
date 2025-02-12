@@ -65,7 +65,7 @@ abstract class item implements templatable, renderable {
     protected $moduleinstance;
 
     // NEEDS SPEECH REC
-    protected $needsspeechrec  = false;
+    protected $needs_speechrec  = false;
 
     /**
      * The class constructor.
@@ -686,8 +686,8 @@ abstract class item implements templatable, renderable {
         $theitem->itemorder = $data->itemorder;
         $theitem->type = $data->type;
         $theitem->name = $data->name;
-        $theitem->phonetic = $data->phonetic;
-        $theitem->passagehash = $data->passagehash;
+       // $theitem->phonetic = $data->phonetic;
+       // $theitem->passagehash = $data->passagehash;
         $theitem->modifiedby = $USER->id;
         $theitem->timemodified = time();
 

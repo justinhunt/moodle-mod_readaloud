@@ -908,3 +908,7 @@ $string["qfinishscreencustom_help"]="The custom screen is an advanced feature, t
 $string['qfinishscreencustom_details'] = "If the quiz finish screen options are set to 'custom' this will be the default mustache template that generates the finish screen. It can be overridden at the quiz level.";
 $string['enablenativelanguage'] = "Enable Native Language";
 $string['enablenativelanguage_details'] = 'If set, the student can choose their native language, this will override the default feedback language that AI returns with the quiz free writing and free speaking results. The language must currently be <a href="https://support.poodll.com/en/support/solutions/articles/19000163890-definitions-in-user-s-native-language">set in Poodll WordCards</a>.';
+$string['letsadditems'] ='Lets add some questions!';
+$string['additems'] ='Add quiz questions';
+$string['numberonly'] = 'Numbers only';
+$string['aigrade_modelanswer'] = 'Model answer';

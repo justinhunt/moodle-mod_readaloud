@@ -63,7 +63,7 @@ class item_shortanswer extends item {
             $sentences = explode(PHP_EOL, $testitem->customtext1);
         }
         //build sentence objects containing display and phonetic text
-        $testitem->phonetic=$this->itemrecord->phonetic;
+        $testitem->phonetic='false';//$this->itemrecord->phonetic;
         if(!empty($testitem->phonetic)) {
             $phonetics = explode(PHP_EOL, $testitem->phonetic);
         }else{

@@ -93,9 +93,9 @@ $PAGE->set_context($modulecontext);
 $config = get_config(constants::M_COMPONENT);
 
 // We want readaloud to embed nicely, or display according to layout settings.
-if ($moduleinstance->foriframe == 1  || $moduleinstance->pagelayout == 'embedded' || $embed == 1) {
+if ($moduleinstance->foriframe == 1  ||  $embed == 1) {
     $PAGE->set_pagelayout('embedded');
-} else if ($config->enablesetuptab || $moduleinstance->pagelayout == 'popup' || $embed == 2) {
+} else if ($config->enablesetuptab || $embed == 2) {
     $PAGE->set_pagelayout('popup');
     $PAGE->add_body_class('poodll-readaloud-embed');
 } else {
@@ -182,7 +182,7 @@ if ($CFG->version < 2022041900) {
     $introcontent = '';
 }
 
-if ($latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) {
+if ($latestattempt && $latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) {
     echo $rsquestionrenderer->show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed);
 } else if ($itemcount > 0) {
     echo $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
