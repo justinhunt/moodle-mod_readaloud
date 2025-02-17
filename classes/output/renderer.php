@@ -1020,6 +1020,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['startreadingbutton'] = constants::M_STARTNOSHADOW;
         $recopts['startreportbutton'] = constants::M_STARTREPORT;
         $recopts['startshadowbutton'] = constants::M_STARTSHADOW;
+        $recopts['startquizbutton'] = constants::M_STARTQUIZ;
         $recopts['stopandplay'] = constants::M_STOPANDPLAY;
         $recopts['stopbutton'] = constants::M_STOP_BTN;
         $recopts['returnmenubutton'] = constants::M_RETURNMENU;
@@ -1440,6 +1441,7 @@ class renderer extends \plugin_renderer_base {
         if ($collapsespaces) {
             $extraclasses .= ' collapsespaces';
         }
+        // If quiz, render_quiz_html, if not render_passage.
         $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
         $passagehtml = $passagerenderer->render_passage(
             $moduleinstance->passagesegments,
@@ -1447,8 +1449,7 @@ class renderer extends \plugin_renderer_base {
             constants::M_PASSAGE_CONTAINER,
             $extraclasses
         );
-        // $quizpassagehtml = $passagerenderer->render_quiz_passage();
-        $passagehtml = $this->render_quiz_html($cm);
+        $quizhtml = $this->render_quiz_html($cm);
 
         // Render the recorder.
         $recorder = $this->show_recorder($moduleinstance, $token, $debug);
@@ -1499,6 +1500,7 @@ class renderer extends \plugin_renderer_base {
             ],
             'passagehtml' => $passagehtml,
             'progress' => true, // TEMP.
+            'quizhtml' => $quizhtml,
             'recorder' => $recorder,
             'returntomenu' => true, // TEMP.
             'showintro' => $showintro,

@@ -102,11 +102,15 @@ $config = get_config(constants::M_COMPONENT);
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
+// This library is licensed with the hippocratic license (https://github.com/EthicalSource/hippocratic-license/)
+// which is not GPL3 compat. so cant be distributed with plugin. Hence we load it from CDN.
+$PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
+
 
 // We want readaloud to embed nicely.
 if ($moduleinstance->foriframe == 1 || $embed == 1) {
     $PAGE->set_pagelayout('embedded');
-} elseif ($config->enablesetuptab || $embed == 2) {
+} else if ($config->enablesetuptab || $embed == 2) {
     $PAGE->set_pagelayout('popup');
     $PAGE->add_body_class('poodll-readaloud-embed');
 } else {

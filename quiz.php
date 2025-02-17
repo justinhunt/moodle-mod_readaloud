@@ -134,7 +134,7 @@ if (!$attempts || ($canattempt && $retake == 1)) {
 // This library is licensed with the hippocratic license (https://github.com/EthicalSource/hippocratic-license/)
 // which is not GPL3 compat. so cant be distributed with plugin. Hence we load it from CDN
 //if($config->animations == constants::M_ANIM_FANCY) {
-$PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
+// $PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
 //}
 
 // If we need a non standard font we can do that from here.
@@ -149,8 +149,8 @@ if (!empty($moduleinstance->lessonfont)) {
 // In mobile no tabs are shown.
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
 
-$quizhelper = new \mod_readaloud\quizhelper($cm);
-$itemcount = $quizhelper->fetch_item_count();
+// $quizhelper = new \mod_readaloud\quizhelper($cm);
+// $itemcount = $quizhelper->fetch_item_count();
 
 // Show open close dates.
 // TODO: Need to understand if this is specific to quiz or if our existing version of this (now in template) is same.
@@ -183,18 +183,18 @@ if ($CFG->version < 2022041900) {
 }
 
 // Capture the quiz output.
-ob_start(); // Start output buffering.
-if ($latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) {
-    echo $rsquestionrenderer->show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed);
-} else if ($itemcount > 0) {
-    echo $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
-    $previewid = 0;
-    echo $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewid, $canattempt, $embed);
-} else {
-    $showadditemlinks = has_capability('mod/readaloud:manage', $modulecontext);
-    echo $rsquestionrenderer->show_no_items($cm, $showadditemlinks);
-}
-$quizhtml = ob_get_clean();
+// ob_start(); // Start output buffering.
+// if ($latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) {
+//     echo $rsquestionrenderer->show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed);
+// } else if ($itemcount > 0) {
+//     echo $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
+//     $previewid = 0;
+//     echo $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewid, $canattempt, $embed);
+// } else {
+//     $showadditemlinks = has_capability('mod/readaloud:manage', $modulecontext);
+//     echo $rsquestionrenderer->show_no_items($cm, $showadditemlinks);
+// }
+// $quizhtml = ob_get_clean();
 
 // Finish the page.
-echo $renderer->footer();
+// echo $renderer->footer();
