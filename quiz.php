@@ -93,9 +93,9 @@ $PAGE->set_context($modulecontext);
 $config = get_config(constants::M_COMPONENT);
 
 // We want readaloud to embed nicely, or display according to layout settings.
-if ($moduleinstance->foriframe == 1  || $moduleinstance->pagelayout == 'embedded' || $embed == 1) {
+if ($moduleinstance->foriframe == 1  ||  $embed == 1) {
     $PAGE->set_pagelayout('embedded');
-} else if ($config->enablesetuptab || $moduleinstance->pagelayout == 'popup' || $embed == 2) {
+} else if ($config->enablesetuptab || $embed == 2) {
     $PAGE->set_pagelayout('popup');
     $PAGE->add_body_class('poodll-readaloud-embed');
 } else {

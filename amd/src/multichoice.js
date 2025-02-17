@@ -111,7 +111,10 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/pollyh
               resultspanel.show();
               anim.do_animate(resultspanelswish,'zoomIn animate__faster','in');
 
-              //reset the handler for a call to move to next question
+              //reset the handler for a call to move to next question, this time with the score
+              //first unset the old button handler
+              nextbutton.off('click');
+              //then set the correct handler
               nextbutton.on('click', function(e) {
                   self.next_question(percent);
               });

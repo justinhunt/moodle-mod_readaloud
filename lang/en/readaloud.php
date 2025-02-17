@@ -854,6 +854,7 @@ $string['totalmarks'] = 'Total Marks';
 $string['aigrade_instructions'] = 'Grading Instructions for AI';
 $string['aigrade_feedback'] = 'Feedback Instructions for AI';
 $string['aigrade_feedback_language'] = 'AI Feedback Language';
+$string["aigrade_feedback_title"]="Feedback";
 $string['itemtype']= 'Item Type';
 $string['action']= 'Action';
 $string['order']= 'Order';
@@ -915,3 +916,9 @@ $string['mode_read'] = 'Read';
 $string['mode_shadow'] = 'Shadow';
 $string['mode_listenandrepeat'] = 'Listen and Repeat';
 
+$string['enablenativelanguage'] = "Enable Native Language";
+$string['enablenativelanguage_details'] = 'If set, the student can choose their native language, this will override the default feedback language that AI returns with the quiz free writing and free speaking results. The language must currently be <a href="https://support.poodll.com/en/support/solutions/articles/19000163890-definitions-in-user-s-native-language">set in Poodll WordCards</a>.';
+$string['letsadditems'] ='Lets add some questions!';
+$string['additems'] ='Add quiz questions';
+$string['numberonly'] = 'Numbers only';
+$string['aigrade_modelanswer'] = 'Model answer';

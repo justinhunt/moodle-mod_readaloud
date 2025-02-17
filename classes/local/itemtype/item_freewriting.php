@@ -91,9 +91,9 @@ class item_freewriting extends item {
     public static function get_keycolumns() {
         // get the basic key columns and customize a little for instances of this item type
         $keycols = parent::get_keycolumns();
-        $keycols['int1'] = ['jsonname' => 'totalmarks', 'type' => 'integer', 'optional' => true, 'default' => 0, 'dbname' => constants::TOTALMARKS];
-        $keycols['int2'] = ['jsonname' => 'relevance', 'type' => 'integer', 'optional' => true, 'default' => 0, 'dbname' => constants::RELEVANCE];
-        $keycols['int3'] = ['jsonname' => 'targetwordcount', 'type' => 'integer', 'optional' => true, 'default' => 0, 'dbname' => constants::TARGETWORDCOUNT];
+        $keycols['int1'] = ['jsonname' => 'totalmarks', 'type' => 'int', 'optional' => true, 'default' => 0, 'dbname' => constants::TOTALMARKS];
+        $keycols['int2'] = ['jsonname' => 'relevance', 'type' => 'int', 'optional' => true, 'default' => 0, 'dbname' => constants::RELEVANCE];
+        $keycols['int3'] = ['jsonname' => 'targetwordcount', 'type' => 'int', 'optional' => true, 'default' => 0, 'dbname' => constants::TARGETWORDCOUNT];
         $keycols['text1'] = ['jsonname' => 'aigradeinstructions', 'type' => 'string', 'optional' => false, 'default' => '', 'dbname' => constants::AIGRADE_INSTRUCTIONS];
         $keycols['text2'] = ['jsonname' => 'aigradefeedback', 'type' => 'string', 'optional' => false, 'default' => '', 'dbname' => constants::AIGRADE_FEEDBACK];
         $keycols['text3'] = ['jsonname' => 'modelanswer', 'type' => 'string', 'optional' => true, 'default' => '', 'dbname' => constants::AIGRADE_MODELANSWER];
