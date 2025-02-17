@@ -139,11 +139,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 startlandrbutton: $('#' + opts['startlandrbutton']),
                 startpreviewbutton: $('#' + opts['startpreviewbutton']),
                 startreadingbutton: $('#' + opts['startreadingbutton']),
+                startreportbutton: $('#' + opts['startreportbutton']),
                 startshadowbutton: $('#' + opts['startshadowbutton']),
                 returnmenubutton: $('#' + opts['returnmenubutton']),
                 stopandplay: $('#' + opts['stopandplay']),
-                smallreportcontainer: $('.' + opts['smallreportcontainer']),
+                smallreportcontainer: $('#' + opts['smallreportcontainer']),
                 readingcontainer: $('#' + def.readingcontainer),
+                modeimagecontainer: $('#' + opts['modeimagecontainer']),
             };
             this.controls = controls;
         },
@@ -300,6 +302,9 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                     dd.domenulayout();
                 }
             });
+            dd.controls.startreportbutton.click(function(e){
+                dd.doreportlayout();
+            });
         },
 
         send_submission: function (filename, rectime) {
@@ -394,6 +399,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
             m.controls.stopandplay.hide();
+            m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
+            m.controls.modeimagecontainer.addClass('readaloud');
 
             modelaudiokaraoke.modeling=true;
         },
@@ -402,8 +409,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             var m = this;
             m.controls.introbox.show();
             m.controls.menuinstructionscontainer.show();
-            m.controls.menubuttonscontainer.show();
-            m.controls.smallreportcontainer.show();
+            // m.controls.menubuttonscontainer.show();
+            m.controls.smallreportcontainer.hide();
             m.controls.activityinstructionscontainer.hide();
             m.controls.returnmenubutton.hide();
             m.controls.previewinstructionscontainer.hide();
@@ -426,6 +433,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
         dopreviewlayout: function () {
             var m = this;
+            console.log("Before:", m.controls.modeimagecontainer.attr('class'));
             m.controls.passagecontainer.removeClass('readmode shadowmode reviewmode nothingmode');
             m.controls.passagecontainer.addClass('previewmode');
             m.controls.passagecontainer.show();
@@ -445,6 +453,9 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
             m.controls.stopandplay.show();
+            m.controls.modeimagecontainer.removeClass('landr readaloud readaloudshadow report');
+            m.controls.modeimagecontainer.addClass('preview');
+            console.log("After:", m.controls.modeimagecontainer.attr('class'));
 
             modelaudiokaraoke.modeling=false;
         },
@@ -470,6 +481,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
             m.controls.stopandplay.show();
+            m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow report');
+            m.controls.modeimagecontainer.addClass('landr');
             landr.activate();
 
             modelaudiokaraoke.modeling=false;
@@ -512,6 +525,17 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.errorcontainer.show();
             m.controls.wheretonextcontainer.show();
+        },
+        doreportlayout: function () {
+            var m = this;
+            m.controls.passagecontainer.hide();
+            m.controls.recordingcontainer.hide();
+            m.controls.activityinstructionscontainer.hide();
+            m.controls.landrinstructionscontainer.hide();
+            m.controls.previewinstructionscontainer.hide();
+            m.controls.smallreportcontainer.show();
+            m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow landr');
+            m.controls.modeimagecontainer.addClass('report');
         },
         isandroid: function() {
                 if (/Android/i.test(navigator.userAgent)) {

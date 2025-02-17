@@ -150,11 +150,11 @@ if (!$canpreview) {
     $debug = false;
 }
 
-// For Japanese (and later other languages we collapse spaces).
-$collapsespaces = false;
-if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
-    $collapsespaces = true;
-}
+// // For Japanese (and later other languages we collapse spaces).
+// $collapsespaces = false;
+// if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+//     $collapsespaces = true;
+// }
 
 // Fetch a token and report a failure to a display item: $problembox.
 $problembox = '';
@@ -179,18 +179,18 @@ if ($attempts) {
     $latestattempt = current($attempts);
 
     if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
-        $latest_aigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
+        $latestaigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
     } else {
-        $latest_aigrade = false;
+        $latestaigrade = false;
     }
 
     $have_humaneval = $latestattempt->sessiontime != null;
-    $have_aieval = $latest_aigrade && $latest_aigrade->has_transcripts();
+    $have_aieval = $latestaigrade && $latestaigrade->has_transcripts();
 } else {
     $latestattempt = false;
     $have_humaneval = false;
     $have_aieval = false;
-    $latest_aigrade = false;
+    $latestaigrade = false;
 }
 
 // If we need a non standard font we can do that from here.
@@ -228,12 +228,14 @@ if ($attempts && $reviewattempts) {
 // Show all the main parts. Many will be hidden and displayed by JS
 // so here we just put them on the page in the correct sequence.
 
+// FIXME: Everything below here should be in the templatecontext data. 
+
 // Show small report.
 if ($attempts) {
     if (!$latestattempt) {
         $latestattempt = current($attempts);
     }
-    echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade, $embed);
+    // echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latestaigrade, $embed);
 }
 
 // If we have a problem (usually with auth/token) we display and return.
@@ -248,38 +250,30 @@ if (!empty($problembox)) {
 $visible = false;
 echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $visible);
 
-// We put some CSS at the top of the passage container to control things like padding word separation etc.
-$extraclasses = 'readmode';
-// For Japanese (and later other languages we collapse spaces).
-if ($collapsespaces) {
-    $extraclasses .= ' collapsespaces';
-}
-
-echo "<div id='mod_readaloud_readingcontainer'>";
-// Hide on load, and we can show from ajax.
-$extraclasses .= ' hide';
-echo $passagerenderer->render_passage($moduleinstance->passagesegments, $moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
-
-// Lets fetch recorder.
-echo $renderer->show_recorder($moduleinstance, $token, $debug);
-echo "</div";// Close readingcontainer.
-
-// Show listen and repeat dialog.
-// echo $renderer->show_landr($moduleinstance, $token);
-
-// Show quiz.
-/*
-$comprehensiontest = new \mod_readaloud\comprehensiontest($cm);
-$items = $comprehensiontest->fetch_items();
-echo $renderer->show_quiz($moduleinstance,$items);
-*/
-echo $renderer->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
-
-
 // Render from template.
-$templatecontext = $renderer->get_view_page_data($moduleinstance, $cm, $modulecontext, $canattempt, $attempts, $config, $embed, $token);
+$templatecontext = $renderer->get_view_page_data(
+    $moduleinstance,
+    $cm,
+    $modulecontext,
+    $canattempt,
+    $attempts,
+    $config,
+    $embed,
+    $token,
+    $latestattempt,
+    $latestaigrade,
+    $debug
+);
 
-echo $OUTPUT->render_from_template('mod_readaloud/view', $templatecontext);
 
+// echo $OUTPUT->render_from_template('mod_readaloud/view', $templatecontext);
+
+echo $OUTPUT->render_from_template('mod_readaloud/viewusingconstants', $templatecontext);
 // Finish the page.
 echo $renderer->footer();
+
+// TODO: Get quiz working.
+// TODO: Get the templates into partials.
+// TODO: move modelaudiorenderer.
+// TODO: move problembox.
+

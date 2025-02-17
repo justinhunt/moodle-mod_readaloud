@@ -200,6 +200,7 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
 }
 
 .mod_readaloud_smallreport_cont {
+  /* display: none; */
   padding: 5px;
   border: 1px grey solid;
   max-width: 920px;
@@ -972,7 +973,7 @@ div.mod_readaloud_attemptsummarytable {
 .mod_readaloud_fillscreen_container {
   display: flex; /* displays flex-items (children) inline */
   flex-direction: column; /* stacks them vertically */
-  height: 90vh;
+  /* height: 90vh;  TODO: remove this.*/
 }
 .mod_readaloud_fillscreen_container .mod_readaloud_passage_cont {
   flex: 1; /* takes the remaining height of the "container" div */

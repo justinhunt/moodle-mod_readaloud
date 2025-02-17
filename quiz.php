@@ -38,8 +38,8 @@ $embed = optional_param('embed', 0, PARAM_INT); // course_module ID, or
 // Allow login through an authentication token.
 $userid = optional_param('user_id', null, PARAM_ALPHANUMEXT);
 $secret  = optional_param('secret', null, PARAM_RAW);
-// formerly had !isloggedin() check, but we want tologin afresh on each embedded access
-if(!empty($userid) && !empty($secret) ) {
+// Formerly had !isloggedin() check, but we want tologin afresh on each embedded access.
+if (!empty($userid) && !empty($secret) ) {
     if (mobile_auth::has_valid_token($userid, $secret)) {
         $user = get_complete_user_data('id', $userid);
         complete_user_login($user);
@@ -74,17 +74,17 @@ $event->add_record_snapshot('readaloud', $moduleinstance);
 $event->trigger();
 
 
-// if we got this far, we can consider the activity "viewed"
+// If we got this far, we can consider the activity "viewed".
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
 // log usage to CloudPoodll
 // utils::stage_remote_process_job($moduleinstance->ttslanguage, $cm->id);
 
-// are we a teacher or a student?
+// Are we a teacher or a student?
 $mode = "view";
 
-/// Set up the page header
+// Set up the page header.
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
@@ -106,16 +106,15 @@ if ($moduleinstance->foriframe == 1  || $moduleinstance->pagelayout == 'embedded
     }
 }
 
-
-// Get our renderers
+// Get our renderers.
 $renderer = $PAGE->get_renderer('mod_readaloud');
 $rsquestionrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'rsquestion');
 
-// get attempts
+// Get attempts.
 $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'timecreated DESC');
 
 
-// can make a new attempt ?
+// Can make a new attempt?
 $canattempt = true;
 $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
 if (!$canpreview && $moduleinstance->maxattempts > 0) {
@@ -124,57 +123,58 @@ if (!$canpreview && $moduleinstance->maxattempts > 0) {
     }
 }
 
-// create a new attempt or just fall through to no-items or finished modes
+// Create a new attempt or just fall through to no-items or finished modes.
 if (!$attempts || ($canattempt && $retake == 1)) {
     $latestattempt = reset($attempts);
-     /// $latestattempt = utils::create_new_attempt($moduleinstance->course, $moduleinstance->id);
+     // $latestattempt = utils::create_new_attempt($moduleinstance->course, $moduleinstance->id);
 } else {
     $latestattempt = reset($attempts);
 }
 
-// this library is licensed with the hippocratic license (https://github.com/EthicalSource/hippocratic-license/)
+// This library is licensed with the hippocratic license (https://github.com/EthicalSource/hippocratic-license/)
 // which is not GPL3 compat. so cant be distributed with plugin. Hence we load it from CDN
 //if($config->animations == constants::M_ANIM_FANCY) {
-    $PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
+$PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
 //}
 
-// if we need a non standard font we can do that from here
-if(!empty($moduleinstance->lessonfont)){
-    if(!in_array($moduleinstance->lessonfont, constants::M_STANDARD_FONTS)){
+// If we need a non standard font we can do that from here.
+if (!empty($moduleinstance->lessonfont)) {
+    if (!in_array($moduleinstance->lessonfont, constants::M_STANDARD_FONTS)) {
         $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css?family=' . $moduleinstance->lessonfont));
     }
 }
 
 // From here we actually display the page.
-// if we are teacher we see tabs. If student we just see the quiz
-// in mobile no tabs are shown
+// If we are teacher we see tabs. If student we just see the quiz.
+// In mobile no tabs are shown.
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
 
 $quizhelper = new \mod_readaloud\quizhelper($cm);
 $itemcount = $quizhelper->fetch_item_count();
 
-// show open close dates
-$hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
-if($hasopenclosedates){
-    echo $renderer->box($renderer->show_open_close_dates($moduleinstance), 'generalbox');
+// Show open close dates.
+// TODO: Need to understand if this is specific to quiz or if our existing version of this (now in template) is same.
+// $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
+// if ($hasopenclosedates) {
+//     echo $renderer->box($renderer->show_open_close_dates($moduleinstance), 'generalbox');
 
-    $currenttime = time();
-    $closed = false;
-    if ( $currenttime > $moduleinstance->viewend && $moduleinstance->viewend > 0) {
-        echo get_string('activityisclosed', constants::M_COMPONENT);
-        $closed = true;
-    } else if ($currenttime < $moduleinstance->viewstart) {
-        echo get_string('activityisnotopenyet', constants::M_COMPONENT);
-        $closed = true;
-    }
-    // if we are not a teacher and the activity is closed/not-open leave at this point
-    if(!has_capability('mod/readaloud:preview', $modulecontext) && $closed){
-        echo $renderer->footer();
-        exit;
-    }
-}
+//     $currenttime = time();
+//     $closed = false;
+//     if ( $currenttime > $moduleinstance->viewend && $moduleinstance->viewend > 0) {
+//         echo get_string('activityisclosed', constants::M_COMPONENT);
+//         $closed = true;
+//     } else if ($currenttime < $moduleinstance->viewstart) {
+//         echo get_string('activityisnotopenyet', constants::M_COMPONENT);
+//         $closed = true;
+//     }
+//     // If we are not a teacher and the activity is closed/not-open leave at this point.
+//     if (!has_capability('mod/readaloud:preview', $modulecontext) && $closed) {
+//         echo $renderer->footer();
+//         exit;
+//     }
+// }
 
-// instructions /intro if less then Moodle 4.0 show
+// Instructions / intro if less then Moodle 4.0 show.
 if ($CFG->version < 2022041900) {
     $introcontent = $renderer->show_intro($moduleinstance, $cm);
     echo $introcontent;
@@ -182,6 +182,8 @@ if ($CFG->version < 2022041900) {
     $introcontent = '';
 }
 
+// Capture the quiz output.
+ob_start(); // Start output buffering.
 if ($latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) {
     echo $rsquestionrenderer->show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed);
 } else if ($itemcount > 0) {
@@ -192,7 +194,7 @@ if ($latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) 
     $showadditemlinks = has_capability('mod/readaloud:manage', $modulecontext);
     echo $rsquestionrenderer->show_no_items($cm, $showadditemlinks);
 }
+$quizhtml = ob_get_clean();
 
-
-// Finish the page
+// Finish the page.
 echo $renderer->footer();

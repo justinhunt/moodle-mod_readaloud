@@ -207,6 +207,7 @@ class constants {
     const M_LANDRINSTRUCTIONS = 'mod_readaloud_landrinstructions';
     const M_SMALLREPORT_CONTAINER = 'mod_readaloud_smallreport_cont';
     const M_INTRO_CONTAINER = 'mod_intro_box';
+    const M_MODE_IMAGE_CONTAINER = 'mod_readaloud_mode_image_cont';
 
 
     const M_PASSAGE_CONTAINER = 'mod_readaloud_passage_cont';
@@ -325,8 +326,10 @@ class constants {
 
     const M_STARTPREVIEW= 'mod_readaloud_button_startpreview';
     const M_STARTLANDR= 'mod_readaloud_button_startlandr';
+    const M_STARTREPORT = 'mod_readaloud_button_startreport';
     const M_STARTSHADOW= 'mod_readaloud_button_startshadow';
     const M_STARTNOSHADOW= 'mod_readaloud_button_startnoshadow';
+    const M_STARTQUIZ= 'mod_readaloud_button_startquiz';
     const M_RETURNMENU= 'mod_readaloud_button_returnmenu';
     const M_STOPANDPLAY= 'mod_readaloud_button_stopandplay';
     const M_BACKTOTOP= 'mod_readaloud_button_backtotop';
