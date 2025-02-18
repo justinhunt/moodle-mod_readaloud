@@ -544,6 +544,14 @@ div.mod_readaloud_attemptsummarytable {
   background-image: url([[pix:mod_readaloud|listenandrepeat]]);
 }
 
+.mode-chooser.quiz {
+  background-image: url([[pix:mod_readaloud|preview]]);
+}
+
+.mode-chooser.report {
+  background-image: url([[pix:mod_readaloud|preview]]);
+}
+
 .mode-chooser.no-show {
   display:none;
 }

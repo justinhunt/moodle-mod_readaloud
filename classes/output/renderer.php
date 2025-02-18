@@ -1441,7 +1441,7 @@ class renderer extends \plugin_renderer_base {
         if ($collapsespaces) {
             $extraclasses .= ' collapsespaces';
         }
-        // If quiz, render_quiz_html, if not render_passage.
+        // TODO: If quiz, render_quiz_html, if not render_passage.
         $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
         $passagehtml = $passagerenderer->render_passage(
             $moduleinstance->passagesegments,
