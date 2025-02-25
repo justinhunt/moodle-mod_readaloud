@@ -1458,6 +1458,8 @@ class renderer extends \plugin_renderer_base {
         $landr = $this->show_landr($moduleinstance, $token);
 
         $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
+        $rsquestionrenderer = $this->page->get_renderer(constants::M_COMPONENT, 'rsquestion');
+        $quizamddata = $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewquestionid = 0, $canreattempt = false, $embed = 0);
 
         $currenttime = time();
 
@@ -1500,6 +1502,7 @@ class renderer extends \plugin_renderer_base {
             ],
             'passagehtml' => $passagehtml,
             'progress' => true, // TEMP.
+            'quizamddata' => $quizamddata,
             'quizhtml' => $quizhtml,
             'recorder' => $recorder,
             'returntomenu' => true, // TEMP.

@@ -34,8 +34,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/quizhelp
 
             polly.init(dd.quizdata.token,dd.quizdata.region,dd.quizdata.owner);
 
-            dd.register_events();
             dd.process_html();
+            dd.register_events();
             // OR to show quiz and no recorder do dd.doquizlayout
             dd.doquizlayout();
         },
@@ -68,24 +68,24 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/quizhelp
         },
 
         doquizlayout: function(){
-            var m = this;
+            var dd = this;
 
-            m.controls.instructionscontainer.hide();
-            m.controls.smallreportcontainer.hide();
-            m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
-            m.controls.modeimagecontainer.addClass('quiz');
+            dd.controls.instructionscontainer.hide();
+            dd.controls.smallreportcontainer.hide();
+            dd.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
+            dd.controls.modeimagecontainer.addClass('quiz');
 
             // Set up the quiz.
            // quizhelper.onSubmit = function(returndata){m.dofinishedreadinglayout(returndata);};
-            quizhelper.init(m.controls.quizcontainer,
+            quizhelper.init(dd.controls.quizcontainer,
                 this.quizdata,
                 this.cmid,
                 this.attemptid,
                 polly);
 
             // Show the quiz.
-            m.controls.placeholder.hide();
-            m.controls.quizcontainer.show();
+            dd.controls.placeholder.hide();
+            dd.controls.quizcontainer.show();
         },
 
         doerrorlayout: function(){
