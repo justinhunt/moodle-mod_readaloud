@@ -50,6 +50,11 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 return;
             }
 
+            // FIXME: Temp hacky fix.
+            if (dd.activitydata.quizcontainer) {
+                dd.activitydata.audioplayerclass = "mod_readaloud_modelaudio_player";
+            }
+
             dd.cmid = props.cmid;
             dd.holderid = props.widgetid + '_holder';
             dd.recorderid = props.widgetid + '_recorder';
@@ -71,7 +76,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
             //set up listen an repeat
             dd.setuplandr();
-
 
             //init recorder and html and events
             dd.setup_recorder();
