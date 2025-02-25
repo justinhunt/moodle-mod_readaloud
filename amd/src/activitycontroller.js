@@ -63,21 +63,21 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 return;
             }
 
-            //set up model audio
+            // Set up model audio.
             dd.enableshadow =dd.activitydata.enableshadow;
             dd.enablepreview =dd.activitydata.enablepreview;
             dd.enablelandr =dd.activitydata.enablelandr;
             dd.setupmodelaudio();
 
-            //set up listen an repeat
+            // Set up listen an repeat.
             dd.setuplandr();
 
-            //init recorder and html and events
+            // Init recorder and html and events.
             dd.setup_recorder();
             dd.process_html(dd.activitydata);
-            if (dd.activitydata.quizcontainer) {
-                dd.activitydata.audioplayerclass = this.controls.quizcontainer;
-            }
+            // if (dd.activitydata.quizcontainer) {
+            //     dd.activitydata.audioplayerclass = this.controls.quizcontainer;
+            // }
             dd.register_events();
             dd.setup_strings();
 
@@ -149,7 +149,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 smallreportcontainer: $('#' + opts['smallreportcontainer']),
                 readingcontainer: $('#' + def.readingcontainer),
                 modeimagecontainer: $('#' + opts['modeimagecontainer']),
-                quizcontainer: $('.' +  opts['quizcontainer']),
+                // quizcontainer: $('.' +  opts['quizcontainer']),
             };
             this.controls = controls;
         },
@@ -542,12 +542,14 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.smallreportcontainer.show();
             m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow landr quiz');
             m.controls.modeimagecontainer.addClass('report');
+            m.controls.returnmenubutton.show();
         },
         doquizlayout: function () {
             var m = this;
             m.controls.smallreportcontainer.hide();
             m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
             m.controls.modeimagecontainer.addClass('quiz');
+            m.controls.returnmenubutton.hide();
         },
         isandroid: function() {
                 if (/Android/i.test(navigator.userAgent)) {

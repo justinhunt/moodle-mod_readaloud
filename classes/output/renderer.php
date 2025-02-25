@@ -1433,24 +1433,29 @@ class renderer extends \plugin_renderer_base {
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
 
         // Render the passage.
-        $extraclasses = 'readmode hide'; // TODO: Can we add these directly to template?
-        // For Japanese (and later other languages) we collapse spaces.
-        $collapsespaces = false;
-        if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
-            $collapsespaces = true;
+        $mode = 'notquiz'; // FIXME: temp until we add modes to the url.
+        if ($mode === 'quiz') {
+            $quizhtml = $this->render_quiz_html($cm);
+            $modequiz = true;
+        } else {
+            $extraclasses = 'readmode hide'; // TODO: Can we add these directly to template?
+            // For Japanese (and later other languages) we collapse spaces.
+            $collapsespaces = false;
+            if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+                $collapsespaces = true;
+            }
+            if ($collapsespaces) {
+                $extraclasses .= ' collapsespaces';
+            }
+            $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
+            $passagehtml = $passagerenderer->render_passage(
+                $moduleinstance->passagesegments,
+                $moduleinstance->ttslanguage,
+                constants::M_PASSAGE_CONTAINER,
+                $extraclasses
+            );
+            $modequiz = false;
         }
-        if ($collapsespaces) {
-            $extraclasses .= ' collapsespaces';
-        }
-        // TODO: If quiz, render_quiz_html, if not render_passage.
-        $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
-        $passagehtml = $passagerenderer->render_passage(
-            $moduleinstance->passagesegments,
-            $moduleinstance->ttslanguage,
-            constants::M_PASSAGE_CONTAINER,
-            $extraclasses
-        );
-        $quizhtml = $this->render_quiz_html($cm);
 
         // Render the recorder.
         $recorder = $this->show_recorder($moduleinstance, $token, $debug);
@@ -1493,6 +1498,7 @@ class renderer extends \plugin_renderer_base {
             'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'instructions' => $instructions,
             'mode' => null,
+            'modequiz' => $modequiz,
             'openclosedates' => [
                 'activityisclosed' => $activityisclosed,
                 'activitynotopenyet' => $activitynotopenyet,
@@ -1501,15 +1507,12 @@ class renderer extends \plugin_renderer_base {
                 'hasopenclosedates' => $hasopenclosedates,
                 'opendate' => $opendate,
             ],
-            'passagehtml' => $passagehtml,
+            'passagehtml' => isset($passagehtml) ? $passagehtml : null,
             'progress' => true, // TEMP.
-            'quizamddata' => $quizamddata,
+            'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => $quizhtml,
             'recorder' => $recorder,
-            'returntomenu' => true, // TEMP.
             'showintro' => $showintro,
-            // 'showlandrinstructions' => true, // TEMP.
-            // 'showpreviewinstructions' => true, // TEMP.
             'smallreport' => $smallreport,
             'stopandplay' => true, // TEMP.
             'welcomemessage' => $welcomemessage,

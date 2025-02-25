@@ -184,13 +184,25 @@
                     </div>
                     {{/stopandplay}}
 
-                    <!-- The passage container -->
-                    <!--<div id='mod_readaloud_readingcontainer' class="mod_readaloud_readingcontainer">
-                        {{{passagehtml}}}
-                    </div>-->
-                    <div id='mod_readaloud_quiz_cont' class="mod_readaloud_quiz_cont" style="background-color:rgb(224, 16, 16);">
+                    {{#modequiz}}
+                    <div id='{{M_QUIZ_CONTAINER}}' class="{{M_QUIZ_CONTAINER}}" style="background-color:rgb(224, 16, 16);">
                         {{{quizhtml}}}
                     </div>
+                    <div id="mod_readaloud_quizamd">
+                        {{{quizamddata}}}
+                    </div>
+                    {{/modequiz}}
+                    {{^modequiz}}
+                    <!-- The passage container -->
+                    <div id='mod_readaloud_readingcontainer' class="mod_readaloud_readingcontainer">
+                        {{{passagehtml}}}
+                    </div>
+                     <!-- Hidden input for update control -->
+                    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
+
+                    <!-- Hidden input storing JSON configuration -->
+                    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
+                    {{/modequiz}}
 
                     {{#recorder}}
                     <div class="{{M_RECORDING_CONTAINER}}">
@@ -254,33 +266,18 @@
                         {{>mod_readaloud/modalcontainer}}
                     {{/landr}}
 
-                    {{#activityamddatahide}}
-                    <!-- Hidden input for update control -->
-                    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
-
-                    <!-- Hidden input storing JSON configuration -->
-                    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
-                    {{/activityamddatahide}}
-
-                    <div id="quizamddata">
-                    {{{quizamddata}}}
-                    </div>
-
-
                     {{#smallreport}}
                     <div id="{{M_SMALLREPORT_CONTAINER}}" class="{{M_SMALLREPORT_CONTAINER}}">
                         {{>mod_readaloud/smallreport}}
                     </div>
                     {{/smallreport}}
 
-                    {{#returntomenu}}
                     <button class="{{M_CLASS_CENTER}} btn btn-block btn-secondary {{M_RETURNMENU}}"
                         type="button"
                         id="{{M_RETURNMENU}}"
                         data-embed="{{embed}}">
                         <i class="fa fa-arrow-left"></i> {{#str}} returnmenu, mod_readaloud {{/str}}
                     </button>
-                    {{/returntomenu}}
                 </div>
             </div>
         </div>
