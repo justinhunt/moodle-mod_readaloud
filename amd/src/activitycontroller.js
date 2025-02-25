@@ -143,13 +143,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 startreadingbutton: $('#' + opts['startreadingbutton']),
                 startreportbutton: $('#' + opts['startreportbutton']),
                 startshadowbutton: $('#' + opts['startshadowbutton']),
-                // startquizbutton: $('#' + opts['startquizbutton']),
+                startquizbutton: $('#' + opts['startquizbutton']),
                 returnmenubutton: $('#' + opts['returnmenubutton']),
                 stopandplay: $('#' + opts['stopandplay']),
                 smallreportcontainer: $('#' + opts['smallreportcontainer']),
                 readingcontainer: $('#' + def.readingcontainer),
                 modeimagecontainer: $('#' + opts['modeimagecontainer']),
-                // quizcontainer: $('.' +  opts['quizcontainer']),
+                quizcontainer: $('.' +  opts['quizcontainer']),
             };
             this.controls = controls;
         },
@@ -308,9 +308,9 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             dd.controls.startreportbutton.click(function(e){
                 dd.doreportlayout();
             });
-            // dd.controls.startquizbutton.click(function(e){
-            //     dd.doquizlayout();
-            // });
+            dd.controls.startquizbutton.click(function(e){
+                dd.doquizlayout();
+            });
         },
 
         send_submission: function (filename, rectime) {

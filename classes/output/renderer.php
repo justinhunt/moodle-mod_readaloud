@@ -1061,8 +1061,10 @@ class renderer extends \plugin_renderer_base {
         // The recorder div.
         // $rethtml = $rethtml . $optshtml;
 
-        $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
-        $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', [$opts]);
+        // $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
+
+        // // $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', [$opts]);
+        // $this->page->requires->js_call_amd("mod_readaloud/quizcontroller", 'init', [$opts]);
         $this->page->requires->strings_for_js(['gotnosound', 'done', 'beginreading'], constants::M_COMPONENT);
 
         // These need to be returned and echo'ed to the page.
@@ -1433,12 +1435,15 @@ class renderer extends \plugin_renderer_base {
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
 
         // Render the passage.
-        $mode = 'notquiz'; // FIXME: temp until we add modes to the url.
+        $mode = 'notquiz'; // FIXME: temp until we add modes to the url. notquiz or quiz.
+        $widgetid = constants::M_RECORDERID . '_opts_9999';
+        $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
         if ($mode === 'quiz') {
             $quizhtml = $this->render_quiz_html($cm);
             $modequiz = true;
+            $this->page->requires->js_call_amd("mod_readaloud/quizcontroller", 'init', [$opts]);
         } else {
-            $extraclasses = 'readmode hide'; // TODO: Can we add these directly to template?
+            $extraclasses = 'readmode hide'; // TODO: Should we add these directly to template?
             // For Japanese (and later other languages) we collapse spaces.
             $collapsespaces = false;
             if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
@@ -1455,6 +1460,7 @@ class renderer extends \plugin_renderer_base {
                 $extraclasses
             );
             $modequiz = false;
+            $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', [$opts]);
         }
 
         // Render the recorder.
