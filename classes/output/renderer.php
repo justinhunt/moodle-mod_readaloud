@@ -1510,7 +1510,7 @@ class renderer extends \plugin_renderer_base {
             'passagehtml' => isset($passagehtml) ? $passagehtml : null,
             'progress' => true, // TEMP.
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
-            'quizhtml' => $quizhtml,
+            'quizhtml' => isset($quizhtml) ? $quizhtml : null,
             'recorder' => $recorder,
             'showintro' => $showintro,
             'smallreport' => $smallreport,
