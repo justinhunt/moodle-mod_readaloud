@@ -1008,6 +1008,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
         $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
+        $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
         $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;

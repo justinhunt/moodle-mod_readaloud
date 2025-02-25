@@ -254,16 +254,18 @@
                         {{>mod_readaloud/modalcontainer}}
                     {{/landr}}
 
-                    {{#activityamddata}}
+                    {{#activityamddatahide}}
                     <!-- Hidden input for update control -->
                     <input id="{{M_UPDATE_CONTROL}}" type="hidden">
 
                     <!-- Hidden input storing JSON configuration -->
                     <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
-                    {{/activityamddata}}
-                    {{#quizamddata}}
-                        {{{quizamddata}}}
-                    {{/quizamddata}}
+                    {{/activityamddatahide}}
+
+                    <div id="quizamddata">
+                    {{{quizamddata}}}
+                    </div>
+
 
                     {{#smallreport}}
                     <div id="{{M_SMALLREPORT_CONTAINER}}" class="{{M_SMALLREPORT_CONTAINER}}">
