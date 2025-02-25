@@ -36,51 +36,61 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/quizhelp
 
             dd.register_events();
             dd.process_html();
-            //OR to show quiz and no recorder do dd.doquizlayout
+            // OR to show quiz and no recorder do dd.doquizlayout
             dd.doquizlayout();
         },
 
         process_html: function(){
             var opts = this.quizdata;
-            //these css classes/ids are all passed in from php in
-            //renderer.php::fetch_activity_amd
-            var controls ={
-                introbox: $('.' + 'mod_intro_box'),
-                quizcontainer: $('.' +  opts['quizcontainer']),
-                feedbackcontainer: $('.' +  opts['feedbackcontainer']),
+            // These css classes/ids are all passed in from php in
+            // renderer.php::fetch_activity_amd
+            var controls = {
                 errorcontainer: $('.' +  opts['errorcontainer']),
+                feedbackcontainer: $('.' +  opts['feedbackcontainer']),
                 instructionscontainer: $('.' +  opts['instructionscontainer']),
+                introbox: $('.' + 'mod_intro_box'),
+                modeimagecontainer: $('#' + opts['modeimagecontainer']),
+                placeholder: $('.mod_readaloud_placeholder'),
+                quizcontainer: $('.' +  opts['quizcontainer']),
+                smallreportcontainer: $('#' + opts['smallreportcontainer']),
+                startquizbutton: $('#' + opts['startquizbutton']),
                 wheretonextcontainer: $('.' +  opts['wheretonextcontainer']),
-                placeholder: $('.mod_readaloud_placeholder')
             };
             this.controls = controls;
         },
 
         register_events: function() {
-           //do something
+            var dd = this;
 
+            dd.controls.startquizbutton.click(function(e){
+                dd.doquizlayout();
+            });
         },
 
         doquizlayout: function(){
-            var dd = this;
-            dd.controls.instructionscontainer.hide();
+            var m = this;
 
-            //set up the quiz
-           // quizhelper.onSubmit = function(returndata){dd.dofinishedreadinglayout(returndata);};
-            quizhelper.init(dd.controls.quizcontainer,
+            m.controls.instructionscontainer.hide();
+            m.controls.smallreportcontainer.hide();
+            m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
+            m.controls.modeimagecontainer.addClass('quiz');
+
+            // Set up the quiz.
+           // quizhelper.onSubmit = function(returndata){m.dofinishedreadinglayout(returndata);};
+            quizhelper.init(m.controls.quizcontainer,
                 this.quizdata,
                 this.cmid,
                 this.attemptid,
                 polly);
 
-            //show the quiz
-            dd.controls.placeholder.hide();
-            dd.controls.quizcontainer.show();
+            // Show the quiz.
+            m.controls.placeholder.hide();
+            m.controls.quizcontainer.show();
         },
 
         doerrorlayout: function(){
             this.controls.errorcontainer.show();
             this.controls.wheretonextcontainer.show();
         }
-    };//end of returned object
-});//total end
+    };// End of returned object.
+});// Total end.

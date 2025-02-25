@@ -212,40 +212,42 @@ class rsquestion_renderer extends \plugin_renderer_base {
 
     function fetch_quiz_amd($cm, $moduleinstance, $previewquestionid=0, $canreattempt=false, $embed=0) {
         global $CFG, $USER;
-        // any html we want to return to be sent to the page
+        // Any html we want to return to be sent to the page.
         $rethtml = '';
 
-        // here we set up any info we need to pass into javascript
+        // Here we set up any info we need to pass into javascript.
 
         $recopts = [];
-        // recorder html ids
+        // Recorder html ids.
         $recopts['recorderid'] = constants::M_RECORDERID;
         $recopts['recordingcontainer'] = constants::M_RECORDING_CONTAINER;
         $recopts['recordercontainer'] = constants::M_RECORDER_CONTAINER;
 
-        // activity html ids
-        $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
+        // Activity html ids.
+        $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
+        $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
+        $recopts['hider'] = constants::M_HIDER;
         $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
+        $recopts['modeimagecontainer'] = constants::M_MODE_IMAGE_CONTAINER;
+        $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
+        $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
+        $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
         $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
         $recopts['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;
-        $recopts['hider'] = constants::M_HIDER;
-        $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
-        $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
+        $recopts['startquizbutton'] = constants::M_STARTQUIZ;
         $recopts['wheretonextcontainer'] = constants::M_WHERETONEXT_CONTAINER;
-        $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
-        $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
 
-        // first confirm we are authorised before we try to get the token
+        // First confirm we are authorised before we try to get the token.
         $config = get_config(constants::M_COMPONENT);
         if (empty($config->apiuser) || empty($config->apisecret)) {
             $errormessage = get_string('nocredentials', constants::M_COMPONENT,
                     $CFG->wwwroot . constants::M_PLUGINSETTINGS);
             return $this->show_problembox($errormessage);
         } else {
-            // fetch token
+            // Fetch token.
             $token = utils::fetch_token($config->apiuser, $config->apisecret);
 
-            // check token authenticated and no errors in it
+            // Check token authenticated and no errors in it.
             $errormessage = utils::fetch_token_error($token);
             if (!empty($errormessage)) {
                 return $this->show_problembox($errormessage);
