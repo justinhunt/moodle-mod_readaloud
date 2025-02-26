@@ -1034,7 +1034,6 @@ div.mod_readaloud_attemptsummarytable {
   max-width: 750px;
 }
 
-
 #mod_readaloud_progress_cont {
   display: none;
   position: absolute;
@@ -2503,11 +2502,17 @@ div#mod_readaloud_quiz_finished {
 }
 
 .readaloud_quiz_result {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
   list-style: none;
-    display: flex;
-    margin-left: 0;
-    padding-left: 0;
-    justify-content: space-between;
+  margin: 0;
+  padding: 0;
+}
+
+.readaloud_quiz_result li {
+  flex: 0 0 16%;
+  box-sizing: border-box;
 }
 
 .ra_qf_itemresults {
