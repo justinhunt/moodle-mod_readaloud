@@ -180,14 +180,14 @@ class renderer extends \plugin_renderer_base {
         return $html;
     }
 
-    public function show_quiz($moduleinstance, $items) {
-        global $CFG;
-        $data = [];
-        $data['items'] = $items;
+    // public function show_quiz($moduleinstance, $items) {
+    //     global $CFG;
+    //     $data = [];
+    //     $data['items'] = $items;
 
-        // Finally render template and return.
-        return $this->render_from_template('mod_readaloud/quiz', $data);
-    }
+    //     // Finally render template and return.
+    //     return $this->render_from_template('mod_readaloud/quiz', $data);
+    // }
 
     /**
      * Show the small report.
@@ -968,6 +968,25 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
+     * Show open and close dates for the activity.
+     *
+     * @param object $moduleinstance The module instance.
+     * @return string The HTML content for the open and close dates.
+     */
+    public function show_open_close_dates($moduleinstance) {
+        $tdata = [];
+        if ($moduleinstance->viewstart > 0) {
+            $tdata['opendate'] = $moduleinstance->viewstart;
+        }
+        if ($moduleinstance->viewend > 0) {
+            $tdata['closedate'] = $moduleinstance->viewend;
+        }
+        $ret = $this->output->render_from_template( constants::M_COMPONENT . '/openclosedates', $tdata);
+
+        return $ret;
+    }
+
+    /**
      * Fetches the activity AMD configuration.
      *
      * @param object $cm The course module object.
@@ -1356,7 +1375,7 @@ class renderer extends \plugin_renderer_base {
      * @param object $cm The course module object.
      * @return string The rendered quiz HTML.
      */
-    public function render_quiz_html($cm) {
+    public function render_quiz_html($cm, $embed) {
         global $DB, $USER;
 
         if (!$moduleinstance = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST)) {
@@ -1435,7 +1454,7 @@ class renderer extends \plugin_renderer_base {
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
 
         // Render the passage.
-        $mode = 'notquiz'; // FIXME: temp until we add modes to the url. notquiz or quiz.
+        $mode = 'quiz'; // FIXME: temp until we add modes to the url. notquiz or quiz.
         $widgetid = constants::M_RECORDERID . '_opts_9999';
         $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
         if ($mode === 'quiz') {

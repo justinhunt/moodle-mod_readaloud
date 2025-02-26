@@ -16,9 +16,6 @@
 
 namespace mod_readaloud\output;
 
-
-defined('MOODLE_INTERNAL') || die();
-
 use mod_readaloud\constants;
 use mod_readaloud\utils;
 use mod_readaloud\quizhelper;
@@ -31,7 +28,6 @@ use mod_readaloud\quizhelper;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class rsquestion_renderer extends \plugin_renderer_base {
-
 
     /**
      * Return HTML to display add first page links
@@ -59,7 +55,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         // If modaleditform is true adding and editing item types is done in a popup modal. Thats good ...
         // but when there is a lot to be edited , a standalone page is better. The modaleditform flag is acted on on additemlink template and rsquestionmanager js
         $modaleditform = false; // $config->modaleditform == "1";
-        foreach($qtypes as $qtype){
+        foreach ($qtypes as $qtype) {
             $data = ['wwwroot' => $CFG->wwwroot, 'type' => $qtype, 'itemid' => $itemid, 'cmid' => $this->page->cm->id,
               'label' => get_string('add' . $qtype . 'item', constants::M_COMPONENT), 'modaleditform' => $modaleditform];
             $links[] = $this->render_from_template('mod_readaloud/additemlink', $data);
@@ -69,11 +65,15 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $this->page->requires->js_call_amd(constants::M_COMPONENT . '/rsquestionmanager', 'init', [$props]);
 
         return $this->output->box($output.implode("", $links), 'generalbox firstpageoptions mod_readaloud_link_box_container');
-
     }
 
 
-    function setup_datatables($tableid) {
+    /**
+     * Setup datatables with the given table ID.
+     *
+     * @param int $tableid The ID of the table to setup.
+     */
+    public function setup_datatables($tableid) {
         global $USER;
 
         $tableprops = [];
@@ -88,12 +88,12 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $tableprops['columns'] = $columns;
         $tableprops['dom'] = 'lBfrtip';
 
-        // default ordering
+        // Default ordering.
         $order = [];
         $order[0] = [1, "asc"];
         $tableprops['order'] = $order;
 
-        // here we set up any info we need to pass into javascript
+        // Here we set up any info we need to pass into javascript.
         $opts = [];
         $opts['tableid'] = $tableid;
         $opts['tableprops'] = $tableprops;
@@ -208,7 +208,6 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $ret = $quizdiv;
         return $ret;
     }
-
 
     function fetch_quiz_amd($cm, $moduleinstance, $previewquestionid=0, $canreattempt=false, $embed=0) {
         global $CFG, $USER;
@@ -328,11 +327,10 @@ class rsquestion_renderer extends \plugin_renderer_base {
         return $rethtml;
     }
 
-
     /**
      *  Finished View
      */
-    public function show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed) {
+    public function show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed, $pagelayout) {
         global $CFG, $DB;
         $ans = [];
         // quiz data
@@ -492,8 +490,8 @@ class rsquestion_renderer extends \plugin_renderer_base {
         }
         // Show back to course button if we are not in a tab or embedded.
         if (!$config->enablesetuptab && $embed == 0 &&
-            $moduleinstance->pagelayout !== 'embedded' &&
-            $moduleinstance->pagelayout !== 'popup') {
+            $pagelayout !== 'embedded' &&
+            $pagelayout !== 'popup') {
             $tdata->backtocourse = true;
         }
 

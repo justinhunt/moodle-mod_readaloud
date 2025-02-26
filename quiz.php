@@ -23,12 +23,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-use mod_readaloud\constants;
-use mod_readaloud\utils;
-use mod_readaloud\mobile_auth;
 
+use mod_readaloud\constants;
+use mod_readaloud\mobile_auth;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $retake = optional_param('retake', 0, PARAM_INT); // course_module ID, or
@@ -73,12 +71,11 @@ $event->add_record_snapshot('course', $course);
 $event->add_record_snapshot('readaloud', $moduleinstance);
 $event->trigger();
 
-
 // If we got this far, we can consider the activity "viewed".
 $completion = new completion_info($course);
 $completion->set_module_viewed($cm);
 
-// log usage to CloudPoodll
+// Log usage to CloudPoodll.
 // utils::stage_remote_process_job($moduleinstance->ttslanguage, $cm->id);
 
 // Are we a teacher or a student?
@@ -94,17 +91,20 @@ $config = get_config(constants::M_COMPONENT);
 
 // We want readaloud to embed nicely, or display according to layout settings.
 if ($moduleinstance->foriframe == 1  ||  $embed == 1) {
-    $PAGE->set_pagelayout('embedded');
+    $pagelayout = 'embedded';
 } else if ($config->enablesetuptab || $embed == 2) {
-    $PAGE->set_pagelayout('popup');
+    $pagelayout = 'popup';
     $PAGE->add_body_class('poodll-readaloud-embed');
 } else {
     if (has_capability('mod/' . constants::M_MODNAME . ':' . 'manage', $modulecontext)) {
-        $PAGE->set_pagelayout('incourse');
+        $pagelayout = 'incourse';
     } else {
-        $PAGE->set_pagelayout($moduleinstance->pagelayout);
+        $pagelayout = $moduleinstance->pagelayout;
     }
 }
+
+// Set the page layout.
+$PAGE->set_pagelayout($pagelayout);
 
 // Get our renderers.
 $renderer = $PAGE->get_renderer('mod_readaloud');
@@ -113,8 +113,7 @@ $rsquestionrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'rsquestion');
 // Get attempts.
 $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'timecreated DESC');
 
-
-// Can make a new attempt?
+// Can make a new attempt ?
 $canattempt = true;
 $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
 if (!$canpreview && $moduleinstance->maxattempts > 0) {
@@ -131,10 +130,10 @@ if (!$attempts || ($canattempt && $retake == 1)) {
     $latestattempt = reset($attempts);
 }
 
-// This library is licensed with the hippocratic license (https://github.com/EthicalSource/hippocratic-license/)
+// This library is licensed with the hippocratic license (https://github.com/EthicalSource/hippocratic-license/).
 // which is not GPL3 compat. so cant be distributed with plugin. Hence we load it from CDN
-//if($config->animations == constants::M_ANIM_FANCY) {
-// $PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
+// if($config->animations == constants::M_ANIM_FANCY) {
+    $PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
 //}
 
 // If we need a non standard font we can do that from here.
@@ -145,36 +144,35 @@ if (!empty($moduleinstance->lessonfont)) {
 }
 
 // From here we actually display the page.
-// If we are teacher we see tabs. If student we just see the quiz.
-// In mobile no tabs are shown.
+// if we are teacher we see tabs. If student we just see the quiz
+// in mobile no tabs are shown.
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('view', constants::M_COMPONENT));
 
-// $quizhelper = new \mod_readaloud\quizhelper($cm);
-// $itemcount = $quizhelper->fetch_item_count();
+$quizhelper = new \mod_readaloud\quizhelper($cm);
+$itemcount = $quizhelper->fetch_item_count();
 
 // Show open close dates.
-// TODO: Need to understand if this is specific to quiz or if our existing version of this (now in template) is same.
-// $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
-// if ($hasopenclosedates) {
-//     echo $renderer->box($renderer->show_open_close_dates($moduleinstance), 'generalbox');
+$hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
+if ($hasopenclosedates) {
+    echo $renderer->box($renderer->show_open_close_dates($moduleinstance), 'generalbox');
 
-//     $currenttime = time();
-//     $closed = false;
-//     if ( $currenttime > $moduleinstance->viewend && $moduleinstance->viewend > 0) {
-//         echo get_string('activityisclosed', constants::M_COMPONENT);
-//         $closed = true;
-//     } else if ($currenttime < $moduleinstance->viewstart) {
-//         echo get_string('activityisnotopenyet', constants::M_COMPONENT);
-//         $closed = true;
-//     }
-//     // If we are not a teacher and the activity is closed/not-open leave at this point.
-//     if (!has_capability('mod/readaloud:preview', $modulecontext) && $closed) {
-//         echo $renderer->footer();
-//         exit;
-//     }
-// }
+    $currenttime = time();
+    $closed = false;
+    if ( $currenttime > $moduleinstance->viewend && $moduleinstance->viewend > 0) {
+        echo get_string('activityisclosed', constants::M_COMPONENT);
+        $closed = true;
+    } else if ($currenttime < $moduleinstance->viewstart) {
+        echo get_string('activityisnotopenyet', constants::M_COMPONENT);
+        $closed = true;
+    }
+    // If we are not a teacher and the activity is closed/not-open leave at this point.
+    if (!has_capability('mod/readaloud:preview', $modulecontext) && $closed) {
+        echo $renderer->footer();
+        exit;
+    }
+}
 
-// Instructions / intro if less then Moodle 4.0 show.
+// Instructions/intro if less then Moodle 4.0 show.
 if ($CFG->version < 2022041900) {
     $introcontent = $renderer->show_intro($moduleinstance, $cm);
     echo $introcontent;
@@ -182,19 +180,16 @@ if ($CFG->version < 2022041900) {
     $introcontent = '';
 }
 
-// Capture the quiz output.
-// ob_start(); // Start output buffering.
-// if ($latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) {
-//     echo $rsquestionrenderer->show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed);
-// } else if ($itemcount > 0) {
-//     echo $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
-//     $previewid = 0;
-//     echo $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewid, $canattempt, $embed);
-// } else {
-//     $showadditemlinks = has_capability('mod/readaloud:manage', $modulecontext);
-//     echo $rsquestionrenderer->show_no_items($cm, $showadditemlinks);
-// }
-// $quizhtml = ob_get_clean();
+if ($latestattempt && $latestattempt->status == constants::M_STATE_QUIZCOMPLETE && !$retake == 1) {
+    echo $rsquestionrenderer->show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed, $pagelayout);
+} else if ($itemcount > 0) {
+    echo $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
+    $previewid = 0;
+    echo $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewid, $canattempt, $embed);
+} else {
+    $showadditemlinks = has_capability('mod/readaloud:manage', $modulecontext);
+    echo $rsquestionrenderer->show_no_items($cm, $showadditemlinks);
+}
 
 // Finish the page.
-// echo $renderer->footer();
+echo $renderer->footer();
