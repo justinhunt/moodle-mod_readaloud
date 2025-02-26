@@ -330,13 +330,13 @@ class rsquestion_renderer extends \plugin_renderer_base {
     /**
      *  Finished View
      */
-    public function show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed, $pagelayout) {
+    public function show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed, $pagelayout = 'incourse') {
         global $CFG, $DB;
         $ans = [];
-        // quiz data
+        // Quiz data.
         $quizdata = $quizhelper->fetch_test_data_for_js();
 
-        // config
+        // Config.
         $config = get_config(constants::M_COMPONENT);
         $course = $DB->get_record('course', ['id' => $latestattempt->courseid]);
         $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
@@ -345,7 +345,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         // Steps data.
         $steps = json_decode($latestattempt->qdetails)->steps;
 
-        // prepare results for display
+        // Prepare results for display.
         if (!is_array($steps)) {
             $steps = utils::remake_quizsteps_as_array($steps);
         }
@@ -357,7 +357,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
             $items = $DB->get_record(constants::M_QTABLE, ['id' => $quizdata[$result->index]->id]);
             $result->title = $items->name;
 
-            // Question Text
+            // Question text.
             $itemtext = file_rewrite_pluginfile_urls($items->{constants::TEXTQUESTION},
                 'pluginfile.php', $context->id, constants::M_COMPONENT,
                 constants::TEXTQUESTION_FILEAREA, $items->id);
@@ -387,7 +387,9 @@ class rsquestion_renderer extends \plugin_renderer_base {
                     $incorrectanswers = [];
                     $correctindex = $quizdata[$result->index]->correctanswer;
                     for ($i = 1; $i < 5; $i++) {
-                        if (!isset($quizdata[$result->index]->{"customtext" . $i})) {continue;}
+                        if (!isset($quizdata[$result->index]->{"customtext" . $i})) {
+                            continue;
+                        }
                         if ($i == $correctindex) {
                             $correctanswers[] = ['sentence' => $quizdata[$result->index]->{"customtext" . $i}];
                         } else {
@@ -404,7 +406,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
                     $result->hasincorrectanswer = false;
                     if (isset($result->resultsdata)) {
                         $result->hasanswerdetails = true;
-                        // the free writing and reading both need to be told to show no reattempt button
+                        // The free writing and reading both need to be told to show no reattempt button.
                         $result->resultsdata->noreattempt = true;
                         $result->resultsdatajson = json_encode($result->resultsdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                     } else {
@@ -442,7 +444,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
             $useresults[] = $result;
         }
 
-        // output results and back to course button
+        // Output results and back to course button.
         $tdata = new \stdClass();
 
         // Course name at top of page.
@@ -469,7 +471,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' .
             $latestattempt->courseid . '#section-'. ($cm->section - 1);
 
-        // depending on finish screen settings
+        // Depending on finish screen settings.
         switch($moduleinstance->qfinishscreen){
             case constants::FINISHSCREEN_FULL:
             case constants::FINISHSCREEN_CUSTOM:
@@ -496,8 +498,8 @@ class rsquestion_renderer extends \plugin_renderer_base {
         }
 
         if ($moduleinstance->finishscreen == constants::FINISHSCREEN_CUSTOM) {
-            // here we fetch the mustache engine, reset the loader to string loader
-            // render the custom finish screen, and restore the original loader
+            // Here we fetch the mustache engine, reset the loader to string loader
+            // render the custom finish screen, and restore the original loader.
             $mustache = $this->get_mustache();
             $oldloader = $mustache->getLoader();
             $mustache->setLoader(new \Mustache_Loader_StringLoader());
@@ -508,11 +510,10 @@ class rsquestion_renderer extends \plugin_renderer_base {
             $finishedcontents = $this->render_from_template(constants::M_COMPONENT . '/quizfinished', $tdata);
         }
 
-        // put it all in a div and return it
+        // Put it all in a div and return it.
         $finisheddiv = \html_writer::div($finishedcontents , constants::M_QUIZ_FINISHED,
                 ['id' => constants::M_QUIZ_FINISHED, 'style' => 'display: block']);
 
         return  $finisheddiv;
     }
-
 }

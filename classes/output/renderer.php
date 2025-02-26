@@ -1375,7 +1375,7 @@ class renderer extends \plugin_renderer_base {
      * @param object $cm The course module object.
      * @return string The rendered quiz HTML.
      */
-    public function render_quiz_html($cm, $embed) {
+    public function render_quiz_html($cm) {
         global $DB, $USER;
 
         if (!$moduleinstance = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST)) {
