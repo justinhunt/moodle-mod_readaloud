@@ -909,11 +909,13 @@ $string['qfinishscreencustom_details'] = "If the quiz finish screen options are 
 
 
 // Modes.
+$string['home'] = 'Home';
 $string['mode_listen'] = 'Listen';
 $string['mode_practice'] = 'Practice';
 $string['mode_quiz'] = 'Quiz';
 $string['mode_read'] = 'Read';
 $string['mode_shadow'] = 'Shadow';
+$string['mode_report'] = 'Report';
 $string['mode_listenandrepeat'] = 'Listen and Repeat';
 
 $string['enablenativelanguage'] = "Enable Native Language";

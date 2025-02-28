@@ -2610,3 +2610,19 @@ text-decoration: line-through;
 .mod_readaloud_quiz_cont .mod_readaloud_overflow_auto {
 overflow: auto;
 }
+
+.mod_readaloud_mode_journey_container .mode {
+    position: relative;
+}
+
+.mod_readaloud_mode_journey_container .mode:after {
+    content: '\f005';
+    color: orange;
+    font-family: 'Font Awesome 6 Free';
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute;
+    right: -8px;
+    top: -16px;
+    transition: all .25s;
+}
