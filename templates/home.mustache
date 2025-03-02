@@ -38,32 +38,107 @@
     </div>
 
 
-    <div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}} d-flex flex-wrap">
-        <div class="mode border rounded p-3 m-3 w-25 d-flex flex-column align-items-center justify-content-center">
-            <i class="fa-solid fa-headphones mb-2"></i>
+    <!--<div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}} d-flex flex-wrap">
+        <div class="d-flex align-items-center w-25">
+            <div class="mode border rounded p-3 m-3 w-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="fa-solid fa-headphones mb-2"></i>
+                {{#str}}mode_listen, mod_readaloud{{/str}}
+            </div>
+            <i class="fa-solid fa-arrow-right mx-3 text-secondary"></i>
+        </div>
+
+        <div class="d-flex align-items-center w-25">
+            <div class="mode border rounded p-3 m-3 w-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="fa-solid fa-comment mb-2"></i>
+                {{#str}}mode_practice, mod_readaloud{{/str}}
+            </div>
+            <i class="fa-solid fa-arrow-right mx-3 text-secondary"></i>
+        </div>
+
+        <div class="d-flex align-items-center w-25">
+            <div class="mode border rounded p-3 m-3 w-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="fa-solid fa-comments"></i>
+                {{#str}}mode_shadow, mod_readaloud{{/str}}
+            </div>
+            <i class="fa-solid fa-arrow-right mx-3 text-secondary"></i>
+        </div>
+
+        <div class="d-flex align-items-center w-25">
+            <div class="mode border rounded p-3 m-3 w-100 d-flex flex-column align-items-center justify-content-center">
+                <span class="mode-read-icon mb-2"></span>
+                {{#str}}mode_read, mod_readaloud{{/str}}
+            </div>
+            <i class="fa-solid fa-arrow-right mx-3 text-secondary"></i>
+        </div>
+
+        <div class="d-flex align-items-center w-25">
+            <div class="mode border rounded p-3 m-3 w-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="fa-solid fa-circle-question mb-2"></i>
+                {{#str}}mode_quiz, mod_readaloud{{/str}}
+            </div>
+            <i class="fa-solid fa-arrow-right mx-3 text-secondary"></i>
+        </div>
+
+        <div class="d-flex align-items-center w-25">
+            <div class="mode border rounded p-3 m-3 w-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="fa-solid fa-chart-simple mb-2"></i>
+                {{#str}}mode_report, mod_readaloud{{/str}}
+            </div>
+            <i class="fa-solid fa-arrow-right mx-3 text-secondary"></i>
+        </div>
+    </div>-->
+
+    <div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}} d-flex flex-wrap align-items-center justify-content-center p-3">
+    <div class="mode-journey d-flex align-items-center">
+        <div class="mode completed">
+            <i class="fa-solid fa-headphones"></i>
             {{#str}}mode_listen, mod_readaloud{{/str}}
         </div>
-        <div class="mode border rounded p-3 m-3 w-25 d-flex flex-column align-items-center justify-content-center">
-            <i class="fa-solid fa-comment mb-2"></i>
+        <i class="fa-solid fa-arrow-right journey-arrow"></i>
+    </div>
+
+    <div class="mode-journey d-flex align-items-center">
+        <div class="mode completed">
+            <i class="fa-solid fa-comment"></i>
             {{#str}}mode_practice, mod_readaloud{{/str}}
         </div>
-        <div class="mode border rounded p-3 m-3 w-25 d-flex flex-column align-items-center justify-content-center">
+        <i class="fa-solid fa-arrow-right journey-arrow"></i>
+    </div>
+
+    <div class="mode-journey d-flex align-items-center">
+        <div class="mode in-progress">
             <i class="fa-solid fa-comments"></i>
             {{#str}}mode_shadow, mod_readaloud{{/str}}
         </div>
-        <div class="mode border rounded p-3 m-3 w-25 d-flex flex-column align-items-center justify-content-center">
-            <span class="mode-read-icon mb-2"></span>
+        <i class="fa-solid fa-arrow-right journey-arrow"></i>
+    </div>
+
+    <div class="mode-journey d-flex align-items-center">
+        <div class="mode upcoming">
+            <span class="mode-read-icon"></span>
             {{#str}}mode_read, mod_readaloud{{/str}}
         </div>
-        <div class="mode border rounded p-3 m-3 w-25 d-flex flex-column align-items-center justify-content-center">
-            <i class="fa-solid fa-circle-question mb-2"></i>
+        <i class="fa-solid fa-arrow-right journey-arrow"></i>
+    </div>
+
+    <div class="mode-journey d-flex align-items-center">
+        <div class="mode upcoming">
+            <i class="fa-solid fa-circle-question"></i>
             {{#str}}mode_quiz, mod_readaloud{{/str}}
         </div>
-        <div class="mode border rounded p-3 m-3 w-25 d-flex flex-column align-items-center justify-content-center">
-            <i class="fa-solid fa-chart-simple mb-2"></i>
+        <i class="fa-solid fa-arrow-right journey-arrow"></i>
+    </div>
+
+    <div class="mode-journey d-flex align-items-center">
+        <div class="mode upcoming">
+            <i class="fa-solid fa-chart-simple"></i>
             {{#str}}mode_report, mod_readaloud{{/str}}
         </div>
+        <i class="fa-solid fa-arrow-right journey-arrow last-mode"></i>
     </div>
+</div>
+
+
     <div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} border rounded p-3 m-3 w-100">
         <h5>Recommended next</h5>
         <a class="btn btn-primary" href="#">Continue with last accessed</a>
