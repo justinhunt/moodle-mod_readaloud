@@ -139,6 +139,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 wheretonextcontainer: $('.' + opts['wheretonextcontainer']),
                 modelaudioplayer: $('#' + opts['modelaudioplayer']),
                 startlandrbutton: $('#' + opts['startlandrbutton']),
+                homebutton: $('#' + opts['homebutton']),
                 startpreviewbutton: $('#' + opts['startpreviewbutton']),
                 startreadingbutton: $('#' + opts['startreadingbutton']),
                 startreportbutton: $('#' + opts['startreportbutton']),
@@ -311,6 +312,9 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             dd.controls.startquizbutton.click(function(e){
                 dd.doquizlayout();
             });
+            dd.controls.homebutton.click(function(e){
+                dd.dohomelayout();
+            });
         },
 
         send_submission: function (filename, rectime) {
@@ -405,8 +409,10 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
             m.controls.stopandplay.hide();
-            m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report quiz');
-            m.controls.modeimagecontainer.addClass('readaloud');
+            // m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report quiz');
+            // m.controls.modeimagecontainer.addClass('readaloud');
+            m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple');
+            m.controls.modeimagecontainer.addClass('fa-book-open-reader');
 
             modelaudiokaraoke.modeling=true;
         },
@@ -458,9 +464,11 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
-            m.controls.stopandplay.show();
-            m.controls.modeimagecontainer.removeClass('landr readaloud readaloudshadow report quiz');
-            m.controls.modeimagecontainer.addClass('preview');
+            m.controls.stopandplay.removeClass('hidden').addClass('visible');
+            // m.controls.modeimagecontainer.removeClass('landr readaloud readaloudshadow report quiz');
+            // m.controls.modeimagecontainer.addClass('preview');
+            m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
+            m.controls.modeimagecontainer.addClass('fa-headphones');
             console.log("After:", m.controls.modeimagecontainer.attr('class'));
 
             modelaudiokaraoke.modeling=false;
@@ -487,8 +495,10 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
             m.controls.stopandplay.show();
-            m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow report quiz');
-            m.controls.modeimagecontainer.addClass('landr');
+            // m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow report quiz');
+            // m.controls.modeimagecontainer.addClass('landr');
+            m.controls.modeimagecontainer.removeClass('fa-headphones fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
+            m.controls.modeimagecontainer.addClass('fa-comment');
             landr.activate();
 
             modelaudiokaraoke.modeling=false;
@@ -540,16 +550,24 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.landrinstructionscontainer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.smallreportcontainer.show();
-            m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow landr quiz');
-            m.controls.modeimagecontainer.addClass('report');
+            // m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow landr quiz');
+            // m.controls.modeimagecontainer.addClass('report');
+            m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-circle-question');
+            m.controls.modeimagecontainer.addClass('fa-chart-simple');
             m.controls.returnmenubutton.show();
         },
         doquizlayout: function () {
             var m = this;
             m.controls.smallreportcontainer.hide();
-            m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
-            m.controls.modeimagecontainer.addClass('quiz');
+            // m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
+            // m.controls.modeimagecontainer.addClass('quiz');
+            m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple');
+            m.controls.modeimagecontainer.addClass('fa-circle-question');
             m.controls.returnmenubutton.hide();
+        },
+        dohomelayout:function () {
+            var m = this;
+            m.controls.modeimagecontainer.hide();
         },
         isandroid: function() {
                 if (/Android/i.test(navigator.userAgent)) {

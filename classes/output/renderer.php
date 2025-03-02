@@ -1035,6 +1035,7 @@ class renderer extends \plugin_renderer_base {
 
         $recopts['audioplayerclass'] = constants::M_MODELAUDIO_PLAYER;
         $recopts['playbutton'] = constants::M_PLAY_BTN;
+        $recopts['homebutton'] = constants::M_HOME;
         $recopts['startlandrbutton'] = constants::M_STARTLANDR;
         $recopts['startpreviewbutton'] = constants::M_STARTPREVIEW;
         $recopts['startreadingbutton'] = constants::M_STARTNOSHADOW;
@@ -1454,7 +1455,7 @@ class renderer extends \plugin_renderer_base {
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
 
         // Render the passage.
-        $mode = 'quiz'; // FIXME: temp until we add modes to the url. notquiz or quiz.
+        $mode = 'notquiz'; // FIXME: temp until we add modes to the url. notquiz or quiz.
         $widgetid = constants::M_RECORDERID . '_opts_9999';
         $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
         if ($mode === 'quiz') {
@@ -1524,6 +1525,7 @@ class renderer extends \plugin_renderer_base {
             'instructions' => $instructions,
             'mode' => null,
             'modequiz' => $modequiz,
+            'moduleinstance' => $moduleinstance,
             'openclosedates' => [
                 'activityisclosed' => $activityisclosed,
                 'activitynotopenyet' => $activitynotopenyet,

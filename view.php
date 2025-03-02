@@ -272,8 +272,8 @@ $templatecontext = $renderer->get_view_page_data(
 
 // echo $OUTPUT->render_from_template('mod_readaloud/view', $templatecontext);
 
-// echo $OUTPUT->render_from_template('mod_readaloud/viewusingconstants', $templatecontext);
-echo $OUTPUT->render_from_template('mod_readaloud/home', $templatecontext);
+echo $OUTPUT->render_from_template('mod_readaloud/viewusingconstants', $templatecontext);
+// echo $OUTPUT->render_from_template('mod_readaloud/home', $templatecontext);
 // Finish the page.
 echo $renderer->footer();
 

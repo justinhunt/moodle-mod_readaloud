@@ -232,6 +232,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
         $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
         $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
+        $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;
         $recopts['startquizbutton'] = constants::M_STARTQUIZ;
         $recopts['wheretonextcontainer'] = constants::M_WHERETONEXT_CONTAINER;
@@ -497,7 +498,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
             $tdata->backtocourse = true;
         }
 
-        if ($moduleinstance->finishscreen == constants::FINISHSCREEN_CUSTOM) {
+        if (isset($moduleinstance->finishscreen) && $moduleinstance->finishscreen == constants::FINISHSCREEN_CUSTOM) {
             // Here we fetch the mustache engine, reset the loader to string loader
             // render the custom finish screen, and restore the original loader.
             $mustache = $this->get_mustache();

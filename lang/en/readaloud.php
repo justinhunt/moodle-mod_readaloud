@@ -907,7 +907,6 @@ $string["qfinishscreencustom"]="Custom finish screen";
 $string["qfinishscreencustom_help"]="The custom screen is an advanced feature, that allows you to build a custom finish screen using mustache notation and variables. Some of the variables are: {total} {courseurl} {coursename} {yellowstars} {graystars} {reattempturl} and an array of {results} each with {title}, {grade}, {yellowstars} and {graystars} variables.";
 $string['qfinishscreencustom_details'] = "If the quiz finish screen options are set to 'custom' this will be the default mustache template that generates the finish screen. It can be overridden at the quiz level.";
 
-
 // Modes.
 $string['home'] = 'Home';
 $string['mode_listen'] = 'Listen';
@@ -917,6 +916,8 @@ $string['mode_read'] = 'Read';
 $string['mode_shadow'] = 'Shadow';
 $string['mode_report'] = 'Report';
 $string['mode_listenandrepeat'] = 'Listen and Repeat';
+$string['mode_tooltip_notcomplete'] = 'Next: {{a}}'; // Adds the next mode name.
+$string['mode_tooltip_end'] = 'End';
 
 $string['enablenativelanguage'] = "Enable Native Language";
 $string['enablenativelanguage_details'] = 'If set, the student can choose their native language, this will override the default feedback language that AI returns with the quiz free writing and free speaking results. The language must currently be <a href="https://support.poodll.com/en/support/solutions/articles/19000163890-definitions-in-user-s-native-language">set in Poodll WordCards</a>.';

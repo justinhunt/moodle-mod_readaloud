@@ -325,6 +325,7 @@ class constants {
     const TRANSCRIBER_NONE = 0; //defunct
     const TRANSCRIBER_AMAZONSTREAMING =4; //defunct
 
+    const M_HOME = 'mod_readaloud_button_home';
     const M_STARTPREVIEW= 'mod_readaloud_button_startpreview';
     const M_STARTLANDR= 'mod_readaloud_button_startlandr';
     const M_STARTREPORT = 'mod_readaloud_button_startreport';

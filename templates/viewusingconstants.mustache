@@ -24,7 +24,7 @@
         showintro: true,
     }
 }}
-<div class="container-fluid">
+<div id="{{M_COMPONENT}}" class="container-fluid">
     <div class="card" style="user-select: none;">
         <div class="card-header bg-transparent">
             <!--<h3>Title</h3>
@@ -79,8 +79,11 @@
                     {{/welcomemessage}}
 
                     <ul class="nav nav-pills flex-column mb-2">
+
                         <li class="nav-item" id="{{M_HOME}}">
-                        <a href="javascript:void(0)"  class="nav-link h6" data-mode="shadow">{{#str}} home, mod_readaloud {{/str}}</a></li>
+                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="home">{{#str}} home, mod_readaloud {{/str}}</a>
+                        </li>
+
                         {{#enablepreview}}
                         <li class="nav-item" id="{{M_STARTPREVIEW}}">
                             <a href="javascript:void(0)"  class="nav-link h6" data-mode="preview">{{#str}} mode_listen, mod_readaloud {{/str}}</a>
@@ -126,7 +129,8 @@
                 </div>
 
                 <div class="col-9">
-                    <div id="{{M_MODE_IMAGE_CONTAINER}}" class="mode-chooser"></div>
+
+                    <div id="{{M_MODE_IMAGE_CONTAINER}}" class="mode-chooser fa-solid text-primary d-block mx-auto"></div>
 
                     <!--{{#previewinstructions}}-->
                     <div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
@@ -175,35 +179,27 @@
                     </div>
                     {{/error}}
 
-                    {{#stopandplay}}
-                    <div id="{{M_STOPANDPLAY}}">
-                        <button id="{{M_PLAY_BTN}}" style="margin:10px;width:40%;float:left;" class="btn btn-secondary">
-                            <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
-                        </button>
-                        <button id="{{M_STOP_BTN}}" style="margin:10px;width:40%;float:right;" class="btn btn-secondary">
-                            <i class="fa fa-stop"></i> {{#str}} stopbutton, mod_readaloud {{/str}}
-                        </button>
+                    <div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active">
+                        {{>mod_readaloud/home}}
                     </div>
-                    {{/stopandplay}}
 
                     {{#modequiz}}
-                    <div id='{{M_QUIZ_CONTAINER}}' class="{{M_QUIZ_CONTAINER}}">
-                        {{{quizhtml}}}
-                    </div>
-                    <div id="mod_readaloud_quizamd">
-                        {{{quizamddata}}}
-                    </div>
+                        <div id='{{M_QUIZ_CONTAINER}}' class="{{M_QUIZ_CONTAINER}}">
+                            {{{quizhtml}}}
+                        </div>
+                        <div id="mod_readaloud_quizamd">
+                            {{{quizamddata}}}
+                        </div>
                     {{/modequiz}}
                     {{^modequiz}}
-                    <!-- The passage container -->
-                    <div id='mod_readaloud_readingcontainer' class="mod_readaloud_readingcontainer">
-                        {{{passagehtml}}}
-                    </div>
-                     <!-- Hidden input for update control -->
-                    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
+                        <div id='mod_readaloud_readingcontainer' class="mod_readaloud_readingcontainer">
+                            {{{passagehtml}}}
+                        </div>
+                        <!-- Hidden input for update control -->
+                        <input id="{{M_UPDATE_CONTROL}}" type="hidden">
 
-                    <!-- Hidden input storing JSON configuration -->
-                    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
+                        <!-- Hidden input storing JSON configuration -->
+                        <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
                     {{/modequiz}}
 
                     {{#recorder}}
@@ -274,20 +270,30 @@
                     </div>
                     {{/smallreport}}
 
-                    <button class="{{M_CLASS_CENTER}} btn btn-block btn-secondary {{M_RETURNMENU}}"
-                        type="button"
-                        id="{{M_RETURNMENU}}"
-                        data-embed="{{embed}}">
-                        <i class="fa fa-arrow-left"></i> {{#str}} returnmenu, mod_readaloud {{/str}}
-                    </button>
+
+                    {{#stopandplay}}
+                    <div id="{{M_STOPANDPLAY}}" class="d-flex justify-content-center hidden p-1">
+                        <button id="{{M_STOP_BTN}}" class="btn btn-outline-primary m-2">
+                            <i class="fa fa-stop"></i> {{#str}} stopbutton, mod_readaloud {{/str}}
+                        </button>
+                        <button id="{{M_PLAY_BTN}}" class="btn btn-primary m-2">
+                            <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
+                        </button>
+                        <button id="{{M_RETURNMENU}}" class="btn btn-outline-primary {{M_RETURNMENU}} m-2"
+                        type="button" data-embed="{{embed}}">
+                            <i class="fa fa-arrow-left"></i> {{#str}} returnmenu, mod_readaloud {{/str}}
+                        </button>
+                    </div>
+                    {{/stopandplay}}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-// TODO: Remove the report from the quiz page.
-// TODO: Add the homescreen.
-// TODO: Get the templates into partials.
-// TODO: Tidy up the code!
+// TODO: Fix the double report container.
+// TODO: Hide show home correctly.
+// TODO: Hide show mode container on home.
+// TODO: Link the homescreen to styles / stars to mode completion.
+
 
