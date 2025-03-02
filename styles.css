@@ -2633,3 +2633,13 @@ overflow: auto;
 .mod_readaloud_mode_journey_container i.fa-solid {
   font-size: 24px;
 }
+
+.mod_readaloud_mode_journey_container .mode-read-icon {
+  background-image: url([[pix:mod_readaloud|readaloud_icon]]);
+  background-size: contain;
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 32px;
+  width: 32px;
+}
+
