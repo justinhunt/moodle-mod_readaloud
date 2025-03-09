@@ -97,5 +97,12 @@ $functions = array(
                 'type'        => 'read',
                 'ajax'        => true,
             ),
-
+'mod_readaloud_fetch_quiz_results' => array(
+                'classname'   => 'mod_readaloud_external',
+                'methodname'  => 'fetch_quiz_results',
+                'description' => 'fetch_quiz_results',
+                'capabilities' => 'mod/readaloud:view',
+                'type'        => 'read',
+                'ajax'        => true,
+            ),
 );

@@ -1034,6 +1034,8 @@ class renderer extends \plugin_renderer_base {
         $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
         $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
+        $recopts['quizitemscontainer'] = constants::M_QUIZ_ITEMS_CONTAINER;
+        $recopts['quizplaceholder'] = constants::M_QUIZ_PLACEHOLDER;
         $recopts['homecontainer'] = constants::M_HOME_CONTAINER;
         $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
@@ -1049,6 +1051,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['startreportbutton'] = constants::M_STARTREPORT;
         $recopts['startshadowbutton'] = constants::M_STARTSHADOW;
         $recopts['startquizbutton'] = constants::M_STARTQUIZ;
+        $recopts['quizresultscontainer'] = constants::M_QUIZ_FINISHED;
         $recopts['stopandplay'] = constants::M_STOPANDPLAY;
         $recopts['stopbutton'] = constants::M_STOP_BTN;
         $recopts['returnmenubutton'] = constants::M_RETURNMENU;
@@ -1467,33 +1470,34 @@ class renderer extends \plugin_renderer_base {
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
 
         // Render the passage.
-        $mode = 'noquiz'; // FIXME: temp until we add modes to the url. notquiz or quiz.
+        $mode = 'noquiz'; 
+        if ($mode === 'quiz') {
+            $modequiz = true;
+        }else{
+            $modequiz = false;
+        }
+           
+        // Render the passage.
         $widgetid = constants::M_RECORDERID . '_opts_9999';
         $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
-        if ($mode === 'quiz') {
-            $quizhtml = $this->render_quiz_html($cm);
-            $modequiz = true;
-            $this->page->requires->js_call_amd("mod_readaloud/quizcontroller", 'init', [$opts]);
-        } else {
-            $extraclasses = 'readmode hide'; // TODO: Should we add these directly to template?
-            // For Japanese (and later other languages) we collapse spaces.
-            $collapsespaces = false;
-            if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
-                $collapsespaces = true;
-            }
-            if ($collapsespaces) {
-                $extraclasses .= ' collapsespaces';
-            }
-            $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
-            $passagehtml = $passagerenderer->render_passage(
-                $moduleinstance->passagesegments,
-                $moduleinstance->ttslanguage,
-                constants::M_PASSAGE_CONTAINER,
-                $extraclasses
-            );
-            $modequiz = false;
-            $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', [$opts]);
+        $extraclasses = 'readmode hide'; // TODO: Should we add these directly to template?
+        // For Japanese (and later other languages) we collapse spaces.
+        $collapsespaces = false;
+        if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+            $collapsespaces = true;
         }
+        if ($collapsespaces) {
+            $extraclasses .= ' collapsespaces';
+        }
+        $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
+        $passagehtml = $passagerenderer->render_passage(
+            $moduleinstance->passagesegments,
+            $moduleinstance->ttslanguage,
+            constants::M_PASSAGE_CONTAINER,
+            $extraclasses
+        );
+        $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', [$opts]);
+        
 
         // Render the recorder.
         $recorder = $this->show_recorder($moduleinstance, $token, $debug);
@@ -1501,9 +1505,17 @@ class renderer extends \plugin_renderer_base {
         // Render the landr html.
         $landr = $this->show_landr($moduleinstance, $token);
 
+        //Fetch data for JS
         $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
+
+        //Fetchquiz data for JS
         $rsquestionrenderer = $this->page->get_renderer(constants::M_COMPONENT, 'rsquestion');
         $quizamddata = $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewquestionid = 0, $canreattempt = false, $embed = 0);
+
+        //quiz html
+        $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
+        $quizhelper = new quizhelper($cm);
+        $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
 
         $currenttime = time();
 
@@ -1519,10 +1531,6 @@ class renderer extends \plugin_renderer_base {
         $smallreport = $this->get_smallreport_data($moduleinstance, $latestattempt, $latestaigrade, $embed);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
 
-        //quiz html
-        $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
-        $quizhelper = new quizhelper($cm);
-        $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
 
 
         return array_merge([

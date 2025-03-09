@@ -125,8 +125,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             //hack TO DO - get the real attempt id
             dd.attemptid = 1;
 
-            quizhelper.init(dd.controls.quizcontainer,
-                dd.activitydata,
+            quizhelper.init(dd.activitydata,
                 dd.cmid,
                 dd.attemptid);
         },
@@ -168,6 +167,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 readingcontainer: $('#' + def.readingcontainer),
                 modeimagecontainer: $('#' + opts['modeimagecontainer']),
                 quizcontainer: $('.' +  opts['quizcontainer']),
+                quizplaceholder: $('.' +  opts['quizplaceholder']),
+                quizresultscontainer: $("." + opts['quizresultscontainer']),
                 homecontainer: $('.' +  opts['homecontainer']),
             };
             this.controls = controls;
@@ -438,6 +439,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             // m.controls.modeimagecontainer.addClass('readaloud');
             m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple');
             m.controls.modeimagecontainer.addClass('fa-book-open-reader');
+            m.controls.quizresultscontainer.hide();
+            m.controls.quizcontainer.hide();
 
             modelaudiokaraoke.modeling=true;
         },
@@ -465,6 +468,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.hider.hide();
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
+            m.controls.quizresultscontainer.hide();
+            m.controls.quizcontainer.hide();
 
             modelaudiokaraoke.modeling=true;
         },
@@ -491,6 +496,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
+            m.controls.quizresultscontainer.hide();
+            m.controls.quizcontainer.hide();
             m.controls.stopandplay.removeClass('hidden').addClass('visible');
             // m.controls.modeimagecontainer.removeClass('landr readaloud readaloudshadow report quiz');
             // m.controls.modeimagecontainer.addClass('preview');
@@ -521,6 +528,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
+            m.controls.quizresultscontainer.hide();
+            m.controls.quizcontainer.hide();
             m.controls.stopandplay.removeClass('hidden').addClass('visible');
             // m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow report quiz');
             // m.controls.modeimagecontainer.addClass('landr');
@@ -553,6 +562,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
+            m.controls.quizresultscontainer.hide();
+            m.controls.quizcontainer.hide();
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
             m.controls.feedbackcontainer.show();
             m.controls.wheretonextcontainer.show();
@@ -566,6 +577,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
+            m.controls.quizresultscontainer.hide();
+            m.controls.quizcontainer.hide();
             m.controls.errorcontainer.show();
             m.controls.wheretonextcontainer.show();
         },
@@ -576,6 +589,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.landrinstructionscontainer.hide();
             m.controls.previewinstructionscontainer.hide();
+            m.controls.quizresultscontainer.hide();
+            m.controls.quizcontainer.hide();
             m.controls.smallreportcontainer.show();
             // m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow landr quiz');
             // m.controls.modeimagecontainer.addClass('report');
@@ -588,13 +603,23 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
            // m.controls.instructionscontainer.hide();
             m.controls.smallreportcontainer.hide();
+            m.controls.passagecontainer.hide();
+            m.controls.recordingcontainer.hide();
+            m.controls.activityinstructionscontainer.hide();
+            m.controls.landrinstructionscontainer.hide();
+            m.controls.previewinstructionscontainer.hide();
+            m.controls.stopandplay.removeClass('visible').addClass('hidden');
             // m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
             // m.controls.modeimagecontainer.addClass('quiz');
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple');
             m.controls.modeimagecontainer.addClass('fa-circle-question');
+            m.controls.menubuttonscontainer.hide();
+            m.controls.homecontainer.hide();
             // Show the quiz.
-           // m.controls.placeholder.hide();
+            m.controls.quizplaceholder.hide();
+            //To do fix this up so the results show if we have them
             m.controls.quizcontainer.show();
+            m.controls.quizresultscontainer.hide();
         },
 
         dohomelayout:function () {

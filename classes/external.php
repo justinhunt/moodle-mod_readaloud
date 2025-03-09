@@ -528,5 +528,25 @@ class mod_readaloud_external extends external_api {
         return new external_value(PARAM_RAW);
     }
 
+    public static function fetch_quiz_results_parameters() {
+        return new external_function_parameters(
+                ['cmid' => new external_value(PARAM_INT, 'The cmid', VALUE_REQUIRED)]
+        );
+    }
+
+    public static function fetch_quiz_results($cmid) {
+        global $DB, $USER;
+        $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+        $quizhelper = new \mod_readaloud\quizhelper($cm);
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'timecreated DESC');
+        $latestattempt = reset($attempts);
+        $ret = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
+        return json_encode($ret);
+    }
+
+    public static function fetch_quiz_results_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
 
 }

@@ -1,3 +1,6 @@
+2.1.23 (Build 2025011806)
+added a fetch_quiz_results ajax callable web service
+
 2.1.22x
 - Added fix for speech rec. on Polish numbers 22 - 99
 - added support for native language feedback
