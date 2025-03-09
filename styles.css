@@ -2717,11 +2717,14 @@ overflow: auto;
   display: block;
 }
 
+/* why do we need this Justin 2025-03-09 */
+
 .hidden {
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
+
 
 .visible {
   visibility: visible;

@@ -298,9 +298,14 @@ class renderer extends \plugin_renderer_base {
      * @param object|false $attempt
      * @param object|false $aigrade
      * @param int $embed
-     * @return array
+     * @return mixed
      */
     protected function get_smallreport_data($moduleinstance, $attempt = false, $aigrade = false, $embed = 0) {
+        // If we have no attempt we won't show the small report.
+        if (!$attempt) {
+            return false;
+        }
+
         // Template data for small report.
         $tdata = [];
 
@@ -1028,6 +1033,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
         $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
+        $recopts['homecontainer'] = constants::M_HOME_CONTAINER;
         $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;

@@ -154,11 +154,11 @@ if (!$canpreview) {
     $debug = false;
 }
 
-// // For Japanese (and later other languages we collapse spaces).
-// $collapsespaces = false;
-// if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
-//     $collapsespaces = true;
-// }
+ // For Japanese (and later other languages we collapse spaces).
+ $collapsespaces = false;
+ if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+     $collapsespaces = true;
+ }
 
 // Fetch a token and report a failure to a display item: $problembox.
 $problembox = '';

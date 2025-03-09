@@ -151,6 +151,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 readingcontainer: $('#' + def.readingcontainer),
                 modeimagecontainer: $('#' + opts['modeimagecontainer']),
                 quizcontainer: $('.' +  opts['quizcontainer']),
+                homecontainer: $('.' +  opts['homecontainer']),
             };
             this.controls = controls;
         },
@@ -400,6 +401,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.introbox.hide();
             m.controls.menuinstructionscontainer.hide();
             m.controls.menubuttonscontainer.hide();
+            m.controls.homecontainer.hide();
             m.controls.smallreportcontainer.hide();
             m.controls.returnmenubutton.show();
             m.controls.progresscontainer.hide();
@@ -408,7 +410,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.passagecontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
-            m.controls.stopandplay.hide();
+            m.controls.stopandplay.removeClass('visible').addClass('hidden');
             // m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report quiz');
             // m.controls.modeimagecontainer.addClass('readaloud');
             m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple');
@@ -422,7 +424,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.introbox.show();
             m.controls.menuinstructionscontainer.show();
             // m.controls.menubuttonscontainer.show();
-            m.controls.smallreportcontainer.hide();
+            m.controls.homecontainer.show();
+            m.controls.smallreportcontainer.show();
             m.controls.activityinstructionscontainer.hide();
             m.controls.returnmenubutton.hide();
             m.controls.previewinstructionscontainer.hide();
@@ -437,7 +440,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.wheretonextcontainer.hide();
             m.controls.modelaudioplayer.hide();
             m.controls.hider.hide();
-            m.controls.stopandplay.hide();
+            m.controls.stopandplay.removeClass('visible').addClass('hidden');
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
 
             modelaudiokaraoke.modeling=true;
@@ -457,6 +460,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.smallreportcontainer.hide();
             m.controls.stopandplay.show();
             m.controls.menubuttonscontainer.hide();
+            m.controls.homecontainer.hide();
             m.controls.hider.hide();
             m.controls.progresscontainer.hide();
             m.controls.menuinstructionscontainer.hide();
@@ -485,8 +489,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.returnmenubutton.show();
             m.controls.modelaudioplayer.hide();
             m.controls.smallreportcontainer.hide();
-            m.controls.stopandplay.show();
             m.controls.menubuttonscontainer.hide();
+            m.controls.homecontainer.hide();
             m.controls.hider.hide();
             m.controls.progresscontainer.hide();
             m.controls.menuinstructionscontainer.hide();
@@ -494,7 +498,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
-            m.controls.stopandplay.show();
+            m.controls.stopandplay.removeClass('hidden').addClass('visible');
             // m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow report quiz');
             // m.controls.modeimagecontainer.addClass('landr');
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
@@ -566,8 +570,10 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.returnmenubutton.hide();
         },
         dohomelayout:function () {
+
             var m = this;
-            m.controls.modeimagecontainer.hide();
+            m.controls.returnmenubutton.click();
+            //m.controls.modeimagecontainer.hide();
         },
         isandroid: function() {
                 if (/Android/i.test(navigator.userAgent)) {

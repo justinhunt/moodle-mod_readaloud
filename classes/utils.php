@@ -2330,9 +2330,8 @@ class utils {
                 $textutils);
         if($m35){
             $englishes=self::get_english_langcodes();
-            //this doesn't work because statics are not hidden in Moodle
-            //i dont know if 'notin' is a real condition either
-            $mform->hideIf('textutils','ttslanguage','notin', $englishes);
+            //this doesn't always seem to work correctly
+           // $mform->hideIf('textutils','ttslanguage','notin', $englishes);
         }
 
 

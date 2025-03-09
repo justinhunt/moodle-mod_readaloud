@@ -452,6 +452,7 @@ const RELEVANCETYPE_NONE = 0;
 const RELEVANCETYPE_QUESTION = 1;
 const RELEVANCETYPE_MODELANSWER = 2;
 
+const M_HOME_CONTAINER='mod_readaloud_home_cont';
 const M_QUIZ_CONTAINER='mod_readaloud_quiz_cont';
 const M_QUIZ_PLACEHOLDER='mod_readaloud_placeholder';
 const M_QUIZ_SKELETONBOX='mod_readaloud_skeleton_box';
