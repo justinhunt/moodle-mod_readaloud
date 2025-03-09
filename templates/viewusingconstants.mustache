@@ -183,24 +183,19 @@
                         {{>mod_readaloud/home}}
                     </div>
 
-                    {{#modequiz}}
-                        <div id='{{M_QUIZ_CONTAINER}}' class="{{M_QUIZ_CONTAINER}}">
-                            {{{quizhtml}}}
-                        </div>
-                        <div id="mod_readaloud_quizamd">
-                            {{{quizamddata}}}
-                        </div>
-                    {{/modequiz}}
-                    {{^modequiz}}
-                        <div id='mod_readaloud_readingcontainer' class="mod_readaloud_readingcontainer">
-                            {{{passagehtml}}}
-                        </div>
-                        <!-- Hidden input for update control -->
-                        <input id="{{M_UPDATE_CONTROL}}" type="hidden">
+                    <div id='{{M_QUIZ_CONTAINER}}' class="{{M_QUIZ_CONTAINER}}">
+                        {{{quizhtml}}}
+                    </div>
 
-                        <!-- Hidden input storing JSON configuration -->
-                        <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
-                    {{/modequiz}}
+                    <div id='mod_readaloud_readingcontainer' class="mod_readaloud_readingcontainer">
+                        {{{passagehtml}}}
+                    </div>
+                    <!-- Hidden input for update control -->
+                    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
+
+                    <!-- Hidden input storing JSON configuration -->
+                    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
+
 
                     {{#recorder}}
                     <div class="{{M_RECORDING_CONTAINER}}">

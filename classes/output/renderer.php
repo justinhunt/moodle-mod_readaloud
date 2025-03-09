@@ -11,6 +11,7 @@ namespace mod_readaloud\output;
 use context_module;
 use mod_readaloud\constants;
 use mod_readaloud\utils;
+use mod_readaloud\quizhelper;
 use ReflectionClass;
 
 class renderer extends \plugin_renderer_base {
@@ -1073,6 +1074,11 @@ class renderer extends \plugin_renderer_base {
         $recopts['region'] = $moduleinstance->region;
         $recopts['token'] = $token;
 
+        // quiz data
+        $quizhelper = new quizhelper($cm);
+        $recopts['quizdata'] = $quizhelper->fetch_test_data_for_js($this);
+
+
         // We need an update control to hold the recorded filename, and one for draft item id.
         // $rethtml = $rethtml . \html_writer::tag('input', '', ['id' => constants::M_UPDATE_CONTROL, 'type' => 'hidden']);
 
@@ -1389,7 +1395,7 @@ class renderer extends \plugin_renderer_base {
             return 'Error: ReadAloud instance not found.';
         }
 
-        $quizhelper = new \mod_readaloud\quizhelper($cm);
+        $quizhelper = new quizhelper($cm);
         $itemcount = $quizhelper->fetch_item_count();
         $attempts = $DB->get_records(\mod_readaloud\constants::M_USERTABLE, [
             'readaloudid' => $moduleinstance->id,
@@ -1461,7 +1467,7 @@ class renderer extends \plugin_renderer_base {
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
 
         // Render the passage.
-        $mode = 'notquiz'; // FIXME: temp until we add modes to the url. notquiz or quiz.
+        $mode = 'noquiz'; // FIXME: temp until we add modes to the url. notquiz or quiz.
         $widgetid = constants::M_RECORDERID . '_opts_9999';
         $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
         if ($mode === 'quiz') {
@@ -1513,12 +1519,19 @@ class renderer extends \plugin_renderer_base {
         $smallreport = $this->get_smallreport_data($moduleinstance, $latestattempt, $latestaigrade, $embed);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
 
+        //quiz html
+        $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
+        $quizhelper = new quizhelper($cm);
+        $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
+
+
         return array_merge([
             'activityamddata' => $activityamddata,
             'attempts' => $attempts,
             'canattempt' => $modevisibility['canattempt'],
             'canshadowattempt' => $modevisibility['canshadowattempt'],
             'embed' => $embed,
+            'quizhtml' => $quizhtml,
             'enablepreview' => $modevisibility['enablepreview'],
             'enablelandr' => $modevisibility['enablelandr'],
             'enableshadow' => $modevisibility['enableshadow'],

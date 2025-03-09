@@ -32,8 +32,6 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/quizhelp
             dd.attemptid = 1;
             dd.sorryboxid = props.widgetid + '_sorrybox';
 
-            polly.init(dd.quizdata.token,dd.quizdata.region,dd.quizdata.owner);
-
             dd.process_html();
             dd.register_events();
             // OR to show quiz and no recorder do dd.doquizlayout

@@ -1,12 +1,10 @@
-define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'core/ajax',
+define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'core/ajax','mod_readaloud/pollyhelper',
     'mod_readaloud/multichoice', 'mod_readaloud/multiaudio',
         'mod_readaloud/page', 'mod_readaloud/shortanswer',
         'mod_readaloud/listeninggapfill', 'mod_readaloud/typinggapfill', 'mod_readaloud/speakinggapfill',
         'mod_readaloud/freespeaking', 'mod_readaloud/freewriting'],
-  function($, log, def, templates, Ajax, multichoice, multiaudio,
-           page, shortanswer,
-           listeninggapfill, typinggapfill, speakinggapfill,
-           freespeaking, freewriting) {
+  function($, log, def, templates, Ajax, polly, multichoice, multiaudio,
+           page, shortanswer, listeninggapfill, typinggapfill, speakinggapfill, freespeaking, freewriting) {
     "use strict"; // jshint ;_;
 
     /*
@@ -30,7 +28,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
       submitbuttonclass: 'mod_readaloud_quizsubmitbutton',
       stepresults: [],
 
-      init: function(quizcontainer, activitydata, cmid, attemptid,polly) {
+      init: function(quizcontainer, activitydata, cmid, attemptid) {
         this.quizdata = activitydata.quizdata;
         this.region = activitydata.region;
         this.ttslanguage = activitydata.ttslanguage;
@@ -46,8 +44,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         this.useanimatecss  = activitydata.useanimatecss;
         this.showqreview  = activitydata.showqreview;
 
+        polly.init(this.quizdata.token,this.quizdata.region,this.quizdata.owner);
         this.prepare_html();
-        this.init_questions(this.quizdata,polly);
+        this.init_questions(this.quizdata);
         this.register_events();
         this.start_quiz();
       },
@@ -59,7 +58,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
 
       },
 
-      init_questions: function(quizdata, polly) {
+      init_questions: function(quizdata) {
         var dd = this;
         $.each(quizdata, function(index, item) {
           switch (item.type) {
