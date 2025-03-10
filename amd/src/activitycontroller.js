@@ -434,14 +434,12 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.passagecontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
+            m.controls.quizcontainer.hide();
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
             // m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report quiz');
             // m.controls.modeimagecontainer.addClass('readaloud');
             m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple');
             m.controls.modeimagecontainer.addClass('fa-book-open-reader');
-            m.controls.quizresultscontainer.hide();
-            m.controls.quizcontainer.hide();
-
             modelaudiokaraoke.modeling=true;
         },
 
@@ -468,7 +466,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.hider.hide();
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
-            m.controls.quizresultscontainer.hide();
             m.controls.quizcontainer.hide();
 
             modelaudiokaraoke.modeling=true;
@@ -496,7 +493,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
-            m.controls.quizresultscontainer.hide();
             m.controls.quizcontainer.hide();
             m.controls.stopandplay.removeClass('hidden').addClass('visible');
             // m.controls.modeimagecontainer.removeClass('landr readaloud readaloudshadow report quiz');
@@ -528,7 +524,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.wheretonextcontainer.hide();
-            m.controls.quizresultscontainer.hide();
             m.controls.quizcontainer.hide();
             m.controls.stopandplay.removeClass('hidden').addClass('visible');
             // m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow report quiz');
@@ -562,7 +557,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
-            m.controls.quizresultscontainer.hide();
             m.controls.quizcontainer.hide();
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
             m.controls.feedbackcontainer.show();
@@ -577,7 +571,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
             m.controls.passagecontainer.hide();
             m.controls.recordingcontainer.hide();
-            m.controls.quizresultscontainer.hide();
             m.controls.quizcontainer.hide();
             m.controls.errorcontainer.show();
             m.controls.wheretonextcontainer.show();
@@ -589,7 +582,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.landrinstructionscontainer.hide();
             m.controls.previewinstructionscontainer.hide();
-            m.controls.quizresultscontainer.hide();
             m.controls.quizcontainer.hide();
             m.controls.smallreportcontainer.show();
             // m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow landr quiz');
@@ -617,9 +609,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.homecontainer.hide();
             // Show the quiz.
             m.controls.quizplaceholder.hide();
-            //To do fix this up so the results show if we have them
             m.controls.quizcontainer.show();
-            m.controls.quizresultscontainer.hide();
         },
 
         dohomelayout:function () {

@@ -156,20 +156,35 @@ class rsquestion_renderer extends \plugin_renderer_base {
         /**
          *  Show quiz container
          */
-    public function show_quiz($quizhelper, $moduleinstance) {
+    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm) {
 
-        // quiz data
+        //Finished Quiz Results Div
+        if($latestattempt && $cm && $latestattempt->status == constants::M_STATE_QUIZCOMPLETE) {
+            $finisheddata = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
+            $finisheddata->canreattemptquiz = true;
+            // TO DO implement this  .. this field not exist
+            //$moduleinstance->canreattemptquiz ? true : false;
+            $finishedcontents = $this->render_from_template(constants::M_COMPONENT . '/quizfinished', $finisheddata);
+        } else {
+            $finishedcontents = '';
+        }
+        $finishedattributes = ['id' => constants::M_QUIZ_FINISHED];
+        if(empty($finishedcontents)){
+            $finishedattributes['style'] = 'display: none;';
+        }
+        $finisheddiv = \html_writer::div($finishedcontents , constants::M_QUIZ_FINISHED,
+            $finishedattributes);
+
+        // Placeholder Div
+        $placeholderdiv = \html_writer::div('', constants::M_QUIZ_PLACEHOLDER . ' ' . constants::M_QUIZ_SKELETONBOX,
+            ['id' => constants::M_QUIZ_PLACEHOLDER]);
+
+        // Quiz Items Data Div
         $quizdata = $quizhelper->fetch_test_data_for_js();
         $itemshtml = [];
         foreach($quizdata as $item){
             $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/' . $item->type, $item);
         }
-
-        $finisheddiv = \html_writer::div("" , constants::M_QUIZ_FINISHED,
-            ['id' => constants::M_QUIZ_FINISHED]);
-
-        $placeholderdiv = \html_writer::div('', constants::M_QUIZ_PLACEHOLDER . ' ' . constants::M_QUIZ_SKELETONBOX,
-            ['id' => constants::M_QUIZ_PLACEHOLDER]);
 
         // Determine container width based on passage presence or not.
         switch($moduleinstance->showquiz){
@@ -180,14 +195,25 @@ class rsquestion_renderer extends \plugin_renderer_base {
             default:
                 $containerwidth = 'wide';
         }
-        $quizclass = constants::M_QUIZ_CONTAINER . ' ' . constants::M_QUIZ_ITEMS_CONTAINER . ' '. constants::M_COMPONENT . '_' . $containerwidth;
-        $quizattributes = ['id' => constants::M_QUIZ_CONTAINER];
+        $quizattributes = ['id' => constants::M_QUIZ_ITEMS_CONTAINER];
+        //Div Style if we have a custom font use it. If quiz has results, items are by default hidden.
+        $style = '';
         if(!empty($moduleinstance->lessonfont)){
-            $quizattributes['style'] = "font-family: '$moduleinstance->lessonfont', serif;";
+            $style .= "font-family: '$moduleinstance->lessonfont', serif;";
         }
-        $quizdiv = \html_writer::div(implode('', $itemshtml) , $quizclass, $quizattributes);
+        if(!empty($finishedcontents)){
+            $style .= "display: none;";
+        }
+        if(!empty($style)){
+            $quizattributes['style'] = $style;
+        };
 
-        $ret = $placeholderdiv  . $quizdiv . $finisheddiv;
+        //Quiz Items Div
+        $quizitemsclass = constants::M_QUIZ_ITEMS_CONTAINER . ' '. constants::M_COMPONENT . '_' . $containerwidth;
+        $quizitemsdiv = \html_writer::div(implode('', $itemshtml) , $quizitemsclass, $quizattributes);
+
+
+        $ret = $placeholderdiv  . $quizitemsdiv . $finisheddiv;
         return $ret;
     }
 

@@ -7,6 +7,13 @@
         <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/gray_star.png"/></span>
     {{/graystars}}
 </div>
+{{#canreattemptquiz}}
+<p>
+<a class="btn btn-secondary mod_readaloud_reattemptquiz_button" href="#" role="button">
+    {{#str}}reattemptquiz, mod_readaloud{{/str}}
+</a>
+</p>
+{{/canreattemptquiz}}
 {{#showfullresults}}
 <p>
     <a class="btn btn-primary itemscoresbutton" data-toggle="collapse" href="#itemscores" role="button" aria-expanded="false" aria-controls="itemscores">

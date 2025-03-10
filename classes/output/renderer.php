@@ -1515,7 +1515,7 @@ class renderer extends \plugin_renderer_base {
         //quiz html
         $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
         $quizhelper = new quizhelper($cm);
-        $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
+        $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt,$cm);
 
         $currenttime = time();
 
