@@ -77,7 +77,7 @@ class quizhelper {
     }
 
     /* return the test items suitable for js to use */
-    public function fetch_test_data_for_js($renderer=false) {
+    public function fetch_quiz_items_for_js($renderer=false) {
         global $CFG, $USER, $OUTPUT;
 
         $items = $this->fetch_items();

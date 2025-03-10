@@ -3356,7 +3356,7 @@ class utils {
         // Quiz data.
         require_login($cm->course, true, $cm);
         $renderer = $PAGE->get_renderer('mod_readaloud');
-        $quizdata = $quizhelper->fetch_test_data_for_js($renderer);
+        $quizdata = $quizhelper->fetch_quiz_items_for_js($renderer);
 
         // Course , context and module instance.
         $course = $DB->get_record('course', ['id' => $theattempt->courseid]);

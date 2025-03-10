@@ -180,7 +180,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
             ['id' => constants::M_QUIZ_PLACEHOLDER]);
 
         // Quiz Items Data Div
-        $quizdata = $quizhelper->fetch_test_data_for_js();
+        $quizdata = $quizhelper->fetch_quiz_items_for_js();
         $itemshtml = [];
         foreach($quizdata as $item){
             $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/' . $item->type, $item);
@@ -220,7 +220,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
     public function show_quiz_preview($quizhelper, $qid) {
 
         // quiz data
-        $quizdata = $quizhelper->fetch_test_data_for_js();
+        $quizdata = $quizhelper->fetch_quiz_items_for_js();
         $itemshtml = [];
         foreach($quizdata as $item) {
             if ($item->id == $qid) {
@@ -323,7 +323,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
 
         // quiz data
         $quizhelper = new quizhelper($cm);
-        $quizdata = $quizhelper->fetch_test_data_for_js($this);
+        $quizdata = $quizhelper->fetch_quiz_items_for_js($this);
         if ($previewquestionid) {
             foreach ($quizdata as $item) {
                 if ($item->id == $previewquestionid) {
@@ -349,56 +349,8 @@ class rsquestion_renderer extends \plugin_renderer_base {
         // the recorder div
         $rethtml = $rethtml . $optshtml;
 
-        $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
-        $this->page->requires->js_call_amd("mod_readaloud/quizcontroller", 'init', [$opts]);
 
         // these need to be returned and echo'ed to the page
         return $rethtml;
-    }
-
-    /**
-     *  Finished View *no longer used*
-     */
-    public function show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed, $pagelayout = 'incourse') {
-       global $CFG, $DB;
-
-        // Get the data for the template.
-        $tdata = $this->fetch_quiz_results($quizhelper, $latestattempt, $cm);
-
-        // Config.
-        $config = get_config(constants::M_COMPONENT);
-        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
-
-        // Output reattempt button.
-        if ($canattempt) {
-            $reattempturl = new \moodle_url( constants::M_URL . '/quiz.php',
-                    ['n' => $latestattempt->readaloudid, 'retake' => 1, 'embed' => $embed]);
-            $tdata->reattempturl = $reattempturl->out();
-        }
-        // Show back to course button if we are not in a tab or embedded.
-        if (!$config->enablesetuptab && $embed == 0 &&
-            $pagelayout !== 'embedded' &&
-            $pagelayout !== 'popup') {
-            $tdata->backtocourse = true;
-        }
-
-        if (isset($moduleinstance->finishscreen) && $moduleinstance->finishscreen == constants::FINISHSCREEN_CUSTOM) {
-            // Here we fetch the mustache engine, reset the loader to string loader
-            // render the custom finish screen, and restore the original loader.
-            $mustache = $this->get_mustache();
-            $oldloader = $mustache->getLoader();
-            $mustache->setLoader(new \Mustache_Loader_StringLoader());
-            $tpl = $mustache->loadTemplate($moduleinstance->finishscreencustom);
-            $finishedcontents = $tpl->render($tdata);
-            $mustache->setLoader($oldloader);
-        } else {
-            $finishedcontents = $this->render_from_template(constants::M_COMPONENT . '/quizfinished', $tdata);
-        }
-
-        // Put it all in a div and return it.
-        $finisheddiv = \html_writer::div($finishedcontents , constants::M_QUIZ_FINISHED,
-                ['id' => constants::M_QUIZ_FINISHED, 'style' => 'display: block']);
-
-        return  $finisheddiv;
     }
 }

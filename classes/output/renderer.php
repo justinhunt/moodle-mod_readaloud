@@ -1079,7 +1079,7 @@ class renderer extends \plugin_renderer_base {
 
         // quiz data
         $quizhelper = new quizhelper($cm);
-        $recopts['quizdata'] = $quizhelper->fetch_test_data_for_js($this);
+        $recopts['quizdata'] = $quizhelper->fetch_quiz_items_for_js($this);
 
 
         // We need an update control to hold the recorded filename, and one for draft item id.
@@ -1383,50 +1383,6 @@ class renderer extends \plugin_renderer_base {
             // Other conditions.
             'hasaudiobreaks' => (bool)$hasaudiobreaks,
         ];
-    }
-
-    /**
-     * Render the quiz HTML.
-     *
-     * @param object $cm The course module object.
-     * @return string The rendered quiz HTML.
-     */
-    public function render_quiz_html($cm) {
-        global $DB, $USER;
-
-        if (!$moduleinstance = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST)) {
-            return 'Error: ReadAloud instance not found.';
-        }
-
-        $quizhelper = new quizhelper($cm);
-        $itemcount = $quizhelper->fetch_item_count();
-        $attempts = $DB->get_records(\mod_readaloud\constants::M_USERTABLE, [
-            'readaloudid' => $moduleinstance->id,
-            'userid' => $USER->id,
-        ], 'timecreated DESC');
-
-        $canattempt = true;
-        $canpreview = has_capability('mod/readaloud:preview', context_module::instance($cm->id));
-        if (!$canpreview && $moduleinstance->maxattempts > 0) {
-            if ($attempts && count($attempts) >= $moduleinstance->maxattempts) {
-                $canattempt = false;
-            }
-        }
-
-        $latestattempt = $attempts ? reset($attempts) : null;
-        $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
-
-        // Capture the quiz HTML.
-        ob_start();
-        if ($latestattempt && $latestattempt->status == \mod_readaloud\constants::M_STATE_QUIZCOMPLETE) {
-            echo $rsquestionrenderer->show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, 0);
-        } else if ($itemcount > 0) {
-            echo $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance);
-            echo $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, 0, $canattempt, 0);
-        } else {
-            echo $rsquestionrenderer->show_no_items($cm, has_capability('mod/readaloud:manage', context_module::instance($cm->id)));
-        }
-        return ob_get_clean();
     }
 
 
