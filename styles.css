@@ -2725,7 +2725,6 @@ overflow: auto;
   transition: opacity 0.3s ease-in-out;
 }
 
-
 .visible {
   visibility: visible;
   opacity: 1;
