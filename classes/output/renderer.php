@@ -332,7 +332,7 @@ class renderer extends \plugin_renderer_base {
             $ready = $rating > -1;
             $stars = [];
             for ($star = 0; $star < 5; $star++) {
-                $stars[] = $rating > $star ? 'fa-star' : 'fa-star-o';
+                $stars[] = $rating > $star ? 'fa-solid fa-star' : 'fa-regular fa-star';
             }
             $tdata['stars'] = $stars;
 

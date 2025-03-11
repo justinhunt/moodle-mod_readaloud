@@ -598,33 +598,38 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         doquizlayout: function(){
             var m = this;
 
-           // m.controls.instructionscontainer.hide();
-            m.controls.smallreportcontainer.hide();
-            m.controls.passagecontainer.hide();
-            m.controls.recordingcontainer.hide();
+            // Hide.
             m.controls.activityinstructionscontainer.hide();
+            m.controls.homecontainer.hide();
             m.controls.landrinstructionscontainer.hide();
+            m.controls.menubuttonscontainer.hide();
+            m.controls.passagecontainer.hide();
             m.controls.previewinstructionscontainer.hide();
+            m.controls.quizplaceholder.hide();
+            m.controls.recordingcontainer.hide();
+            m.controls.smallreportcontainer.hide();
+
+            // Show.
+            m.controls.quizcontainer.show();
+
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
-            // m.controls.modeimagecontainer.removeClass('preview landr readaloud readaloudshadow report');
-            // m.controls.modeimagecontainer.addClass('quiz');
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple fa-house');
             m.controls.modeimagecontainer.addClass('fa-circle-question');
-            m.controls.menubuttonscontainer.hide();
-            m.controls.homecontainer.hide();
-            // Show the quiz.
-            m.controls.quizplaceholder.hide();
-            m.controls.quizcontainer.show();
         },
-
         dohomelayout:function () {
-
             var m = this;
-            m.controls.returnmenubutton.click();
+
+            // Hide.
+            m.controls.passagecontainer.hide();
+            m.controls.quizcontainer.hide();
             m.controls.smallreportcontainer.hide();
+
+            // Show.
+            m.controls.homecontainer.show();
+            m.controls.returnmenubutton.click();
+
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple fa-circle-question');
             m.controls.modeimagecontainer.addClass('fa-house');
-            //m.controls.modeimagecontainer.hide();
         },
         isandroid: function() {
                 if (/Android/i.test(navigator.userAgent)) {
