@@ -335,7 +335,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 }
             });
             dd.controls.homebutton.click(function(e){
-                dd.dohomelayout();
+                dd.domenulayout();
             });
         },
 
@@ -417,11 +417,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         domenulayout: function () {
             var m = this;
 
-            // Show.
-            m.controls.homecontainer.show();
-            m.controls.introbox.show();
-            m.controls.menuinstructionscontainer.show();
-
             // Hide.
             m.controls.activityinstructionscontainer.hide();
             m.controls.feedbackcontainer.hide();
@@ -438,9 +433,15 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.smallreportcontainer.hide();
             m.controls.wheretonextcontainer.hide();
 
+            // Show.
+            m.controls.homecontainer.show();
+            m.controls.introbox.show();
+            m.controls.menuinstructionscontainer.show();
+
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
-            m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple fa-book-open-reader');
+            m.controls.modeimagecontainer.removeClass('d-block');
+            m.controls.modeimagecontainer.addClass('d-none');
 
             modelaudiokaraoke.modeling=true;
         },
@@ -470,15 +471,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.passagecontainer.addClass('readmode');
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
             m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple');
-            m.controls.modeimagecontainer.addClass('fa-book-open-reader');
+            m.controls.modeimagecontainer.addClass('fa-book-open-reader d-block');
 
             modelaudiokaraoke.modeling=true;
         },
 
         dopreviewlayout: function () {
             var m = this;
-
-            console.log("Before:", m.controls.modeimagecontainer.attr('class'));
 
             // Hide.
             m.controls.activityinstructionscontainer.hide();
@@ -505,8 +504,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.passagecontainer.addClass('previewmode');
             m.controls.stopandplay.removeClass('hidden').addClass('visible');
             m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
-            m.controls.modeimagecontainer.addClass('fa-headphones');
-            console.log("After:", m.controls.modeimagecontainer.attr('class'));
+            m.controls.modeimagecontainer.addClass('fa-headphones d-block');
 
             modelaudiokaraoke.modeling=false;
         },
@@ -537,7 +535,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.passagecontainer.addClass('previewmode');
             m.controls.stopandplay.removeClass('hidden').addClass('visible');
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
-            m.controls.modeimagecontainer.addClass('fa-comment');
+            m.controls.modeimagecontainer.addClass('fa-comment d-block');
 
             landr.activate();
 
@@ -616,7 +614,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.smallreportcontainer.show();
 
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-circle-question');
-            m.controls.modeimagecontainer.addClass('fa-chart-simple');
+            m.controls.modeimagecontainer.addClass('fa-chart-simple d-block');
         },
         doquizlayout: function(){
             var m = this;
@@ -637,21 +635,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple');
-            m.controls.modeimagecontainer.addClass('fa-circle-question');
-        },
-        dohomelayout:function () {
-            var m = this;
-
-            // Hide.
-            m.controls.passagecontainer.hide();
-            m.controls.quizcontainer.hide();
-            m.controls.smallreportcontainer.hide();
-
-            // Show.
-            m.controls.homecontainer.show();
-            m.controls.returnmenubutton.click();
-
-            m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple fa-circle-question');
+            m.controls.modeimagecontainer.addClass('fa-circle-question d-block');
         },
         isandroid: function() {
                 if (/Android/i.test(navigator.userAgent)) {

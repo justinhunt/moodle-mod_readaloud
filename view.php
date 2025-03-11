@@ -274,7 +274,3 @@ echo $OUTPUT->render_from_template('mod_readaloud/view', $templatecontext);
 
 // Finish the page.
 echo $renderer->footer();
-
-// TODO: Get the templates into partials.
-// TODO: move modelaudiorenderer.
-// TODO: move problembox.
