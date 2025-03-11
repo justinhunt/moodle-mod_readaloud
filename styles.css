@@ -198,9 +198,7 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
 }
 
 .mod_readaloud_smallreport_cont {
-  /* display: none; */
   padding: 5px;
-  border: 1px solid #dee2e6;
   max-width: 920px;
   margin: 1rem auto;
 }

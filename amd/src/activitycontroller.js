@@ -417,10 +417,12 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         domenulayout: function () {
             var m = this;
 
+            // Show.
             m.controls.homecontainer.show();
             m.controls.introbox.show();
             m.controls.menuinstructionscontainer.show();
 
+            // Hide.
             m.controls.activityinstructionscontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.hider.hide();
@@ -576,18 +578,22 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         },
         doreportlayout: function () {
             var m = this;
-            m.controls.passagecontainer.hide();
-            m.controls.recordingcontainer.hide();
+
+            // Show.
+            m.controls.returnmenubutton.show();
+            m.controls.smallreportcontainer.show();
+
+            // Hide.
             m.controls.activityinstructionscontainer.hide();
+            m.controls.homecontainer.hide();
             m.controls.landrinstructionscontainer.hide();
+            m.controls.passagecontainer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.quizcontainer.hide();
-            m.controls.smallreportcontainer.show();
-            // m.controls.modeimagecontainer.removeClass('preview readaloud readaloudshadow landr quiz');
-            // m.controls.modeimagecontainer.addClass('report');
+            m.controls.recordingcontainer.hide();
+
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-circle-question fa-house');
             m.controls.modeimagecontainer.addClass('fa-chart-simple');
-            m.controls.returnmenubutton.show();
         },
         doquizlayout: function(){
             var m = this;
