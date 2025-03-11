@@ -2330,9 +2330,8 @@ class utils {
                 $textutils);
         if($m35){
             $englishes=self::get_english_langcodes();
-            //this doesn't work because statics are not hidden in Moodle
-            //i dont know if 'notin' is a real condition either
-            $mform->hideIf('textutils','ttslanguage','notin', $englishes);
+            //this doesn't always seem to work correctly
+           // $mform->hideIf('textutils','ttslanguage','notin', $englishes);
         }
 
 
@@ -3228,6 +3227,22 @@ class utils {
         ];
         return $ret;
     }
+    // This is for the case when a quiz item result comes in, but we have had no reading attempt, so no attempt record
+    // We need to create a new attempt record and update it with the quiz result
+    public static function create_new_attempt($courseid, $readaloudid) {
+        global $DB, $USER;
+
+        $attempt = new \stdClass();
+        $attempt->courseid = $courseid;
+        $attempt->readaloudid = $readaloudid;
+        $attempt->userid = $USER->id;
+        $attempt->timecreated = time();
+        $attempt->status = constants::M_STATE_QUIZINPROGRESS;
+        $attempt->qscore = 0;
+        $attempt->qdetails = '';
+        $attempt->id = $DB->insert_record(constants::M_USERTABLE, $attempt);
+        return $attempt;
+    }
 
     public static function update_quizstep_grade($cmid, $stepdata) {
 
@@ -3242,11 +3257,11 @@ class utils {
         $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'id DESC');
 
         // Get or create attempt.
-       // if (!$attempts) {
-      ///      $latestattempt = self::create_new_attempt($moduleinstance->course, $moduleinstance->id);
-     //   } else {
+        if (!$attempts) {
+            $latestattempt = self::create_new_attempt($moduleinstance->course, $moduleinstance->id);
+        } else {
             $latestattempt = reset($attempts);
-     //   }
+        }
 
         // Get or create sessiondata.
         if (empty($latestattempt->qdetails)) {
@@ -3332,6 +3347,164 @@ class utils {
             ksort($steps);
             return $steps;
         }
+    }
+
+    //Return finished quiz results in a format that can be passed to a mustache template
+    public static function fetch_quiz_results($quizhelper, $theattempt, $cm) {
+        global $CFG, $DB, $PAGE;
+
+        // Quiz data.
+        require_login($cm->course, true, $cm);
+        $renderer = $PAGE->get_renderer('mod_readaloud');
+        $quizdata = $quizhelper->fetch_quiz_items_for_js($renderer);
+
+        // Course , context and module instance.
+        $course = $DB->get_record('course', ['id' => $theattempt->courseid]);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        $context = \context_module::instance($cm->id);
+
+        // Steps data.
+        $steps = json_decode($theattempt->qdetails)->steps;
+
+        // Prepare results for display.
+        if (!is_array($steps)) {
+            $steps = utils::remake_quizsteps_as_array($steps);
+        }
+        $results = array_filter($steps, function($step){return $step->hasgrade;
+        });
+        $useresults = [];
+        foreach ($results as $result) {
+
+            $items = $DB->get_record(constants::M_QTABLE, ['id' => $quizdata[$result->index]->id]);
+            $result->title = $items->name;
+
+            // Question text.
+            $itemtext = file_rewrite_pluginfile_urls($items->{constants::TEXTQUESTION},
+                'pluginfile.php', $context->id, constants::M_COMPONENT,
+                constants::TEXTQUESTION_FILEAREA, $items->id);
+            $itemtext = format_text($itemtext, FORMAT_MOODLE, ['context' => $context]);
+            $result->questext = $itemtext;
+            $result->itemtype = $quizdata[$result->index]->type;
+            $result->resultstemplate = $result->itemtype .'results';
+
+            // Correct answer.
+            switch($result->itemtype){
+
+                case constants::TYPE_SHORTANSWER:
+                case constants::TYPE_LGAPFILL:
+                case constants::TYPE_TGAPFILL:
+                case constants::TYPE_SGAPFILL:
+                    $result->hascorrectanswer = true;
+                    $result->correctans = $quizdata[$result->index]->sentences;
+                    $result->hasanswerdetails = false;
+                    break;
+
+                case constants::TYPE_MULTIAUDIO:
+                case constants::TYPE_MULTICHOICE:
+                    $result->hascorrectanswer = true;
+                    $result->hasincorrectanswer = true;
+                    $result->hasanswerdetails = false;
+                    $correctanswers = [];
+                    $incorrectanswers = [];
+                    $correctindex = $quizdata[$result->index]->correctanswer;
+                    for ($i = 1; $i < 5; $i++) {
+                        if (!isset($quizdata[$result->index]->{"customtext" . $i})) {
+                            continue;
+                        }
+                        if ($i == $correctindex) {
+                            $correctanswers[] = ['sentence' => $quizdata[$result->index]->{"customtext" . $i}];
+                        } else {
+                            $incorrectanswers[] = ['sentence' => $quizdata[$result->index]->{"customtext" . $i}];
+                        }
+                    }
+                    $result->correctans = $correctanswers;
+                    $result->incorrectans = $incorrectanswers;
+                    break;
+
+                case constants::TYPE_FREEWRITING:
+                case constants::TYPE_FREESPEAKING:
+                    $result->hascorrectanswer = false;
+                    $result->hasincorrectanswer = false;
+                    if (isset($result->resultsdata)) {
+                        $result->hasanswerdetails = true;
+                        // The free writing and reading both need to be told to show no reattempt button.
+                        $result->resultsdata->noreattempt = true;
+                        $result->resultsdatajson = json_encode($result->resultsdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                    } else {
+                        $result->hasanswerdetails = false;
+                    }
+                    break;
+
+                default:
+                    $result->hascorrectanswer = false;
+                    $result->hasincorrectanswer = false;
+                    $result->hasanswerdetails = false;
+                    $result->correctans = [];
+                    $result->incorrectans = [];
+            }
+
+            $result->index++;
+            // Every item stars.
+            if ($result->grade == 0) {
+                $ystarcnt = 0;
+            } else if ($result->grade < 19) {
+                $ystarcnt = 1;
+            } else if ($result->grade < 39) {
+                $ystarcnt = 2;
+            } else if ($result->grade < 59) {
+                $ystarcnt = 3;
+            } else if ($result->grade < 79) {
+                $ystarcnt = 4;
+            } else {
+                $ystarcnt = 5;
+            }
+            $result->yellowstars = array_fill(0, $ystarcnt, true);
+            $gstarcnt = 5 - $ystarcnt;
+            $result->graystars = array_fill(0, $gstarcnt, true);
+
+            $useresults[] = $result;
+        }
+
+        // Output results and back to course button.
+        $tdata = new \stdClass();
+
+        // Course name at top of page.
+        $tdata->coursename = $course->fullname;
+        // Item stars.
+        if ($theattempt->qscore == 0) {
+            $ystarcnt = 0;
+        } else if ($theattempt->qscore < 19) {
+            $ystarcnt = 1;
+        } else if ($theattempt->qscore < 39) {
+            $ystarcnt = 2;
+        } else if ($theattempt->qscore < 59) {
+            $ystarcnt = 3;
+        } else if ($theattempt->qscore < 79) {
+            $ystarcnt = 4;
+        } else {
+            $ystarcnt = 5;
+        }
+        $tdata->yellowstars = array_fill(0, $ystarcnt, true);
+        $gstarcnt = 5 - $ystarcnt;
+        $tdata->graystars = array_fill(0, $gstarcnt, true);
+
+        $tdata->total = $theattempt->qscore;
+        $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' .
+            $theattempt->courseid . '#section-'. ($cm->section - 1);
+
+        // Depending on finish screen settings.
+        switch($moduleinstance->qfinishscreen){
+            case constants::FINISHSCREEN_FULL:
+            case constants::FINISHSCREEN_CUSTOM:
+                $tdata->results = $useresults;
+                $tdata->showfullresults = true;
+                break;
+
+            case constants::FINISHSCREEN_SIMPLE:
+            default:
+                $tdata->results = [];
+        }
+        return $tdata;
     }
 
     public static function do_mb_str_split($string, $splitlength = 1, $encoding = null) {

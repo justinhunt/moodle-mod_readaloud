@@ -23,6 +23,7 @@ class constants {
     const M_URL = '/mod/readaloud';
     const M_PATH = '/mod/readaloud';
     const M_STATE_QUIZCOMPLETE = 2;
+    const M_STATE_QUIZINPROGRESS = 4;
 
     const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
 
@@ -452,7 +453,9 @@ const RELEVANCETYPE_NONE = 0;
 const RELEVANCETYPE_QUESTION = 1;
 const RELEVANCETYPE_MODELANSWER = 2;
 
+const M_HOME_CONTAINER='mod_readaloud_home_cont';
 const M_QUIZ_CONTAINER='mod_readaloud_quiz_cont';
+const M_QUIZ_ITEMS_CONTAINER='mod_readaloud_quiz_items_cont';
 const M_QUIZ_PLACEHOLDER='mod_readaloud_placeholder';
 const M_QUIZ_SKELETONBOX='mod_readaloud_skeleton_box';
 const M_QUIZ_FINISHED = "mod_readaloud_quiz_finished";

@@ -12,6 +12,7 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
   return {
 
     strings: {},
+    controls: {},
 
     //for making multiple instances
       clone: function () {
@@ -20,22 +21,21 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
 
     init: function() {
         this.init_strings();
+        this.register_controls();
         this.register_events();
 
     },
 
+    register_controls: function(){
+        this.controls.quizfinishedcontainer = $('.mod_readaloud_quiz_finished');
+        this.controls.quizitemscontainer = $('.mod_readaloud_quiz_items_cont');
+    },
+
     register_events: function(){
         var that = this;
-        $('body').on('click','.btn_finished_attempt',function(e) {
+        $('body').on('click','.mod_readaloud_reattemptquiz_button',function(e) {
 
             e.preventDefault();
-            var buttonhref= $(this).data('href');
-
-            //if its not a reattempt ... proceed
-            if($(this).data('action')!=='reattempt') {
-                window.location.href = buttonhref;
-                return;
-            }
 
             //if its a reattempt, confirm and proceed
             ModalFactory.create({
@@ -47,11 +47,13 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
                 modal.setSaveButtonText(that.strings.reattempt);
                 var root = modal.getRoot();
                 root.on(ModalEvents.save, function() {
-                    window.location.href = buttonhref;
+                    that.controls.quizfinishedcontainer.hide();
+                    that.controls.quizitemscontainer.show();
                 });
                 modal.show();
             });
       });
+
 
       $('body').on('click','.mod_readaloud_finishedanswerdetailslink',function(e) {
           e.preventDefault();

@@ -156,20 +156,35 @@ class rsquestion_renderer extends \plugin_renderer_base {
         /**
          *  Show quiz container
          */
-    public function show_quiz($quizhelper, $moduleinstance) {
+    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm) {
 
-        // quiz data
-        $quizdata = $quizhelper->fetch_test_data_for_js();
+        //Finished Quiz Results Div
+        if($latestattempt && $cm && $latestattempt->status == constants::M_STATE_QUIZCOMPLETE) {
+            $finisheddata = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
+            $finisheddata->canreattemptquiz = true;
+            // TO DO implement this  .. this field not exist
+            //$moduleinstance->canreattemptquiz ? true : false;
+            $finishedcontents = $this->render_from_template(constants::M_COMPONENT . '/quizfinished', $finisheddata);
+        } else {
+            $finishedcontents = '';
+        }
+        $finishedattributes = ['id' => constants::M_QUIZ_FINISHED];
+        if(empty($finishedcontents)){
+            $finishedattributes['style'] = 'display: none;';
+        }
+        $finisheddiv = \html_writer::div($finishedcontents , constants::M_QUIZ_FINISHED,
+            $finishedattributes);
+
+        // Placeholder Div
+        $placeholderdiv = \html_writer::div('', constants::M_QUIZ_PLACEHOLDER . ' ' . constants::M_QUIZ_SKELETONBOX,
+            ['id' => constants::M_QUIZ_PLACEHOLDER]);
+
+        // Quiz Items Data Div
+        $quizdata = $quizhelper->fetch_quiz_items_for_js();
         $itemshtml = [];
         foreach($quizdata as $item){
             $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/' . $item->type, $item);
         }
-
-        $finisheddiv = \html_writer::div("" , constants::M_QUIZ_FINISHED,
-            ['id' => constants::M_QUIZ_FINISHED]);
-
-        $placeholderdiv = \html_writer::div('', constants::M_QUIZ_PLACEHOLDER . ' ' . constants::M_QUIZ_SKELETONBOX,
-            ['id' => constants::M_QUIZ_PLACEHOLDER]);
 
         // Determine container width based on passage presence or not.
         switch($moduleinstance->showquiz){
@@ -180,21 +195,32 @@ class rsquestion_renderer extends \plugin_renderer_base {
             default:
                 $containerwidth = 'wide';
         }
-        $quizclass = constants::M_QUIZ_CONTAINER . ' '. constants::M_COMPONENT . '_' . $containerwidth;
-        $quizattributes = ['id' => constants::M_QUIZ_CONTAINER];
+        $quizattributes = ['id' => constants::M_QUIZ_ITEMS_CONTAINER];
+        //Div Style if we have a custom font use it. If quiz has results, items are by default hidden.
+        $style = '';
         if(!empty($moduleinstance->lessonfont)){
-            $quizattributes['style'] = "font-family: '$moduleinstance->lessonfont', serif;";
+            $style .= "font-family: '$moduleinstance->lessonfont', serif;";
         }
-        $quizdiv = \html_writer::div($finisheddiv.implode('', $itemshtml) , $quizclass, $quizattributes);
+        if(!empty($finishedcontents)){
+            $style .= "display: none;";
+        }
+        if(!empty($style)){
+            $quizattributes['style'] = $style;
+        };
 
-        $ret = $placeholderdiv  . $quizdiv;
+        //Quiz Items Div
+        $quizitemsclass = constants::M_QUIZ_ITEMS_CONTAINER . ' '. constants::M_COMPONENT . '_' . $containerwidth;
+        $quizitemsdiv = \html_writer::div(implode('', $itemshtml) , $quizitemsclass, $quizattributes);
+
+
+        $ret = $placeholderdiv  . $quizitemsdiv . $finisheddiv;
         return $ret;
     }
 
     public function show_quiz_preview($quizhelper, $qid) {
 
         // quiz data
-        $quizdata = $quizhelper->fetch_test_data_for_js();
+        $quizdata = $quizhelper->fetch_quiz_items_for_js();
         $itemshtml = [];
         foreach($quizdata as $item) {
             if ($item->id == $qid) {
@@ -231,6 +257,8 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
         $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
+        $recopts['quizplaceholder'] = constants::M_QUIZ_PLACEHOLDER;
+        $recopts['quizitemscontainer'] = constants::M_QUIZ_ITEMS_CONTAINER;
         $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;
@@ -295,7 +323,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
 
         // quiz data
         $quizhelper = new quizhelper($cm);
-        $quizdata = $quizhelper->fetch_test_data_for_js($this);
+        $quizdata = $quizhelper->fetch_quiz_items_for_js($this);
         if ($previewquestionid) {
             foreach ($quizdata as $item) {
                 if ($item->id == $previewquestionid) {
@@ -321,200 +349,8 @@ class rsquestion_renderer extends \plugin_renderer_base {
         // the recorder div
         $rethtml = $rethtml . $optshtml;
 
-        $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
-        $this->page->requires->js_call_amd("mod_readaloud/quizcontroller", 'init', [$opts]);
 
         // these need to be returned and echo'ed to the page
         return $rethtml;
-    }
-
-    /**
-     *  Finished View
-     */
-    public function show_finished_results($quizhelper, $latestattempt, $cm, $canattempt, $embed, $pagelayout = 'incourse') {
-        global $CFG, $DB;
-        $ans = [];
-        // Quiz data.
-        $quizdata = $quizhelper->fetch_test_data_for_js();
-
-        // Config.
-        $config = get_config(constants::M_COMPONENT);
-        $course = $DB->get_record('course', ['id' => $latestattempt->courseid]);
-        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
-        $context = \context_module::instance($cm->id);
-
-        // Steps data.
-        $steps = json_decode($latestattempt->qdetails)->steps;
-
-        // Prepare results for display.
-        if (!is_array($steps)) {
-            $steps = utils::remake_quizsteps_as_array($steps);
-        }
-        $results = array_filter($steps, function($step){return $step->hasgrade;
-        });
-        $useresults = [];
-        foreach ($results as $result) {
-
-            $items = $DB->get_record(constants::M_QTABLE, ['id' => $quizdata[$result->index]->id]);
-            $result->title = $items->name;
-
-            // Question text.
-            $itemtext = file_rewrite_pluginfile_urls($items->{constants::TEXTQUESTION},
-                'pluginfile.php', $context->id, constants::M_COMPONENT,
-                constants::TEXTQUESTION_FILEAREA, $items->id);
-            $itemtext = format_text($itemtext, FORMAT_MOODLE, ['context' => $context]);
-            $result->questext = $itemtext;
-            $result->itemtype = $quizdata[$result->index]->type;
-            $result->resultstemplate = $result->itemtype .'results';
-
-            // Correct answer.
-            switch($result->itemtype){
-
-                case constants::TYPE_SHORTANSWER:
-                case constants::TYPE_LGAPFILL:
-                case constants::TYPE_TGAPFILL:
-                case constants::TYPE_SGAPFILL:
-                    $result->hascorrectanswer = true;
-                    $result->correctans = $quizdata[$result->index]->sentences;
-                    $result->hasanswerdetails = false;
-                    break;
-
-                case constants::TYPE_MULTIAUDIO:
-                case constants::TYPE_MULTICHOICE:
-                    $result->hascorrectanswer = true;
-                    $result->hasincorrectanswer = true;
-                    $result->hasanswerdetails = false;
-                    $correctanswers = [];
-                    $incorrectanswers = [];
-                    $correctindex = $quizdata[$result->index]->correctanswer;
-                    for ($i = 1; $i < 5; $i++) {
-                        if (!isset($quizdata[$result->index]->{"customtext" . $i})) {
-                            continue;
-                        }
-                        if ($i == $correctindex) {
-                            $correctanswers[] = ['sentence' => $quizdata[$result->index]->{"customtext" . $i}];
-                        } else {
-                            $incorrectanswers[] = ['sentence' => $quizdata[$result->index]->{"customtext" . $i}];
-                        }
-                    }
-                    $result->correctans = $correctanswers;
-                    $result->incorrectans = $incorrectanswers;
-                    break;
-
-                case constants::TYPE_FREEWRITING:
-                case constants::TYPE_FREESPEAKING:
-                    $result->hascorrectanswer = false;
-                    $result->hasincorrectanswer = false;
-                    if (isset($result->resultsdata)) {
-                        $result->hasanswerdetails = true;
-                        // The free writing and reading both need to be told to show no reattempt button.
-                        $result->resultsdata->noreattempt = true;
-                        $result->resultsdatajson = json_encode($result->resultsdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-                    } else {
-                        $result->hasanswerdetails = false;
-                    }
-                    break;
-
-                default:
-                    $result->hascorrectanswer = false;
-                    $result->hasincorrectanswer = false;
-                    $result->hasanswerdetails = false;
-                    $result->correctans = [];
-                    $result->incorrectans = [];
-            }
-
-            $result->index++;
-            // Every item stars.
-            if ($result->grade == 0) {
-                $ystarcnt = 0;
-            } else if ($result->grade < 19) {
-                $ystarcnt = 1;
-            } else if ($result->grade < 39) {
-                $ystarcnt = 2;
-            } else if ($result->grade < 59) {
-                $ystarcnt = 3;
-            } else if ($result->grade < 79) {
-                $ystarcnt = 4;
-            } else {
-                $ystarcnt = 5;
-            }
-            $result->yellowstars = array_fill(0, $ystarcnt, true);
-            $gstarcnt = 5 - $ystarcnt;
-            $result->graystars = array_fill(0, $gstarcnt, true);
-
-            $useresults[] = $result;
-        }
-
-        // Output results and back to course button.
-        $tdata = new \stdClass();
-
-        // Course name at top of page.
-        $tdata->coursename = $course->fullname;
-        // Item stars.
-        if ($latestattempt->qscore == 0) {
-            $ystarcnt = 0;
-        } else if ($latestattempt->qscore < 19) {
-            $ystarcnt = 1;
-        } else if ($latestattempt->qscore < 39) {
-            $ystarcnt = 2;
-        } else if ($latestattempt->qscore < 59) {
-            $ystarcnt = 3;
-        } else if ($latestattempt->qscore < 79) {
-            $ystarcnt = 4;
-        } else {
-            $ystarcnt = 5;
-        }
-        $tdata->yellowstars = array_fill(0, $ystarcnt, true);
-        $gstarcnt = 5 - $ystarcnt;
-        $tdata->graystars = array_fill(0, $gstarcnt, true);
-
-        $tdata->total = $latestattempt->qscore;
-        $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' .
-            $latestattempt->courseid . '#section-'. ($cm->section - 1);
-
-        // Depending on finish screen settings.
-        switch($moduleinstance->qfinishscreen){
-            case constants::FINISHSCREEN_FULL:
-            case constants::FINISHSCREEN_CUSTOM:
-                $tdata->results = $useresults;
-                $tdata->showfullresults = true;
-                break;
-
-            case constants::FINISHSCREEN_SIMPLE:
-            default:
-                $tdata->results = [];
-        }
-
-        // Output reattempt button.
-        if ($canattempt) {
-            $reattempturl = new \moodle_url( constants::M_URL . '/quiz.php',
-                    ['n' => $latestattempt->readaloudid, 'retake' => 1, 'embed' => $embed]);
-            $tdata->reattempturl = $reattempturl->out();
-        }
-        // Show back to course button if we are not in a tab or embedded.
-        if (!$config->enablesetuptab && $embed == 0 &&
-            $pagelayout !== 'embedded' &&
-            $pagelayout !== 'popup') {
-            $tdata->backtocourse = true;
-        }
-
-        if (isset($moduleinstance->finishscreen) && $moduleinstance->finishscreen == constants::FINISHSCREEN_CUSTOM) {
-            // Here we fetch the mustache engine, reset the loader to string loader
-            // render the custom finish screen, and restore the original loader.
-            $mustache = $this->get_mustache();
-            $oldloader = $mustache->getLoader();
-            $mustache->setLoader(new \Mustache_Loader_StringLoader());
-            $tpl = $mustache->loadTemplate($moduleinstance->finishscreencustom);
-            $finishedcontents = $tpl->render($tdata);
-            $mustache->setLoader($oldloader);
-        } else {
-            $finishedcontents = $this->render_from_template(constants::M_COMPONENT . '/quizfinished', $tdata);
-        }
-
-        // Put it all in a div and return it.
-        $finisheddiv = \html_writer::div($finishedcontents , constants::M_QUIZ_FINISHED,
-                ['id' => constants::M_QUIZ_FINISHED, 'style' => 'display: block']);
-
-        return  $finisheddiv;
     }
 }

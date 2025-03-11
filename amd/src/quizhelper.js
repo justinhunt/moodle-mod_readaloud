@@ -1,12 +1,10 @@
-define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'core/ajax',
+define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'core/ajax','mod_readaloud/pollyhelper',
     'mod_readaloud/multichoice', 'mod_readaloud/multiaudio',
         'mod_readaloud/page', 'mod_readaloud/shortanswer',
         'mod_readaloud/listeninggapfill', 'mod_readaloud/typinggapfill', 'mod_readaloud/speakinggapfill',
         'mod_readaloud/freespeaking', 'mod_readaloud/freewriting'],
-  function($, log, def, templates, Ajax, multichoice, multiaudio,
-           page, shortanswer,
-           listeninggapfill, typinggapfill, speakinggapfill,
-           freespeaking, freewriting) {
+  function($, log, def, templates, Ajax, polly, multichoice, multiaudio,
+           page, shortanswer, listeninggapfill, typinggapfill, speakinggapfill, freespeaking, freewriting) {
     "use strict"; // jshint ;_;
 
     /*
@@ -30,11 +28,14 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
       submitbuttonclass: 'mod_readaloud_quizsubmitbutton',
       stepresults: [],
 
-      init: function(quizcontainer, activitydata, cmid, attemptid,polly) {
+      init: function( activitydata, cmid, attemptid) {
+        log.debug(activitydata);
         this.quizdata = activitydata.quizdata;
         this.region = activitydata.region;
         this.ttslanguage = activitydata.ttslanguage;
-        this.controls.quizcontainer = quizcontainer;
+        this.controls.quizcontainer = $("." + activitydata.quizcontainer);
+        this.controls.quizitemscontainer = $("." + activitydata.quizitemscontainer);
+        this.controls.quizresultscontainer = $("." + activitydata.quizresultscontainer);
         this.attemptid = attemptid;
         this.courseurl = activitydata.courseurl;
         this.cmid = cmid;
@@ -45,9 +46,12 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         this.wwwroot = activitydata.wwwroot;
         this.useanimatecss  = activitydata.useanimatecss;
         this.showqreview  = activitydata.showqreview;
+        
+  
 
+        polly.init(this.quizdata.token,this.quizdata.region,this.quizdata.owner);
         this.prepare_html();
-        this.init_questions(this.quizdata,polly);
+        this.init_questions(this.quizdata);
         this.register_events();
         this.start_quiz();
       },
@@ -59,7 +63,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
 
       },
 
-      init_questions: function(quizdata, polly) {
+      init_questions: function(quizdata) {
         var dd = this;
         $.each(quizdata, function(index, item) {
           switch (item.type) {
@@ -212,21 +216,35 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
             }
 
         } else {
-          //just reload and re-fetch all the data to display
-            $(".readaloud_nextbutton").prop("disabled", true);
-            setTimeout(function () {
-               // log.debug("forwarding to finished page");
-                window.location.href=dd.activityurl;
-            }, 500);
-
-          return;
-
+            //just reload and re-fetch all the data to display
+              $(".readaloud_nextbutton").prop("disabled", true);
+              //fetch the results and display them
+              var resultpromise = Ajax.call([{
+                methodname: 'mod_readaloud_fetch_quiz_results',
+                args: {
+                  cmid: dd.cmid
+                },
+                async: false
+              }])[0];
+            //load the results into the quiz finished container
+            resultpromise.then(function(jsonresults){
+                var results = JSON.parse(jsonresults);
+                log.debug(results);
+                templates.render('mod_readaloud/quizfinished', results).then(
+                  function(html,js){
+                      dd.controls.quizresultscontainer.html(html);
+                      dd.controls.quizresultscontainer.show();
+                      dd.controls.quizitemscontainer.hide();
+                      templates.runTemplateJS(js);
+                });
+            });
+            return;
+        
         }//end of if has more questions
 
-        this.render_quiz_progress(stepdata.index+1,this.quizdata.length);
-
-          //we want to destroy the old question in the DOM also because iframe/media content might be playing
-          theoldquestion.remove();
+        dd.render_quiz_progress(stepdata.index+1,this.quizdata.length);
+        //we want to destroy the old question in the DOM also because iframe/media content might be playing
+        theoldquestion.remove();
         
       },
 
