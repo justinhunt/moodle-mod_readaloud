@@ -1,46 +1,59 @@
-<div class="mod_readaloud_menubuttons_cont">
-    <div>
-        <div id='mod_readaloud_button_startpreview' class='mode-chooser preview {{#nopreview}}no-show{{/nopreview}}' {{^nopreview}}tabindex='0'{{/nopreview}}>
-            <div class='mode-chooser-label'>
-            <b>{{#str}}previewreading , mod_readaloud{{/str}}</b>:
-                {{#str}}previewhelp , mod_readaloud{{/str}}
-            </div>
+<div id="M_MENUBUTTONS_CONTAINER" class="col-3 border-right">
+
+    {{#welcomemessage}}
+    <div id="{{M_MENUINSTRUCTIONS_CONTAINER}}" class="{{M_MENUINSTRUCTIONS_CONTAINER}}">
+        <div class="{{M_CLASS_CENTER}} {{M_INSTRUCTIONS}} pl-3">
+            {{{welcomemessage}}}
         </div>
     </div>
-    <div>
-        <div id='mod_readaloud_button_startlandr' class='mode-chooser landr {{#noaudiobreaks}}no-click{{/noaudiobreaks}} {{#nolandr}}no-show{{/nolandr}}' {{^nolandr}}tabindex='0'{{/nolandr}}>
-            <div class='mode-chooser-label'>
-                <b>{{#str}}landrreading , mod_readaloud{{/str}}</b>:
-                {{#str}}landrhelp , mod_readaloud{{/str}}
-                {{#noaudiobreaks}}<span class="mod_readaloud_menubutton_warning">{{#str}}modelaudiowarning , mod_readaloud{{/str}}</span>{{/noaudiobreaks}}
-            </div>
-        </div>
-    </div>
-    <div>
-        <div id='mod_readaloud_button_startshadow' class='mode-chooser readaloudshadow {{#cantshadowattempt}}no-click{{/cantshadowattempt}} {{#noshadow}}no-show{{/noshadow}}' {{^noshadow}}{{^cantattempt}}tabindex='0'{{/cantattempt}}{{/noshadow}}>
-            <div class='mode-chooser-label'>
-                <b>{{#str}}startshadowreading , mod_readaloud{{/str}}</b>:
-                {{#str}}shadowhelp , mod_readaloud{{/str}}
-                {{#cantshadowattempt}}<span class="mod_readaloud_menubutton_warning">{{#str}}exceededallattempts , mod_readaloud{{/str}}</span>{{/cantshadowattempt}}
-            </div>
-        </div>
-    </div>
-    <div>
-        <div id='mod_readaloud_button_startnoshadow' class='mode-chooser readaloud {{#cantattempt}}no-click{{/cantattempt}}' {{^cantattempt}}tabindex='0'{{/cantattempt}}>
-            <div class='mode-chooser-label'>
-                <b>{{#str}}startreading , mod_readaloud{{/str}}</b>:
-                {{#str}}normalhelp , mod_readaloud{{/str}}
-                {{#cantattempt}}<span class="mod_readaloud_menubutton_warning">{{#str}}exceededallattempts , mod_readaloud{{/str}}</span>{{/cantattempt}}
-            </div>
-        </div>
-    </div>
-    <div>
-        <div id='mod_readaloud_button_startquiz' class='mode-chooser quiz {{#noquiz}}no-show{{/noquiz}}' {{^noquiz}}tabindex='0'{{/noquiz}}>
-            <div class='mode-chooser-label'>
-                <b>{{#str}}quiz , mod_readaloud{{/str}}</b>:
-                {{#str}}quizhelp , mod_readaloud{{/str}}
-                {{#quizcompleted}}<span class="mod_readaloud_menubutton_warning">{{#str}}quizcompletedwarning , mod_readaloud{{/str}}</span>{{/quizcompleted}}
-            </div>
-        </div>
-    </div>
+    {{/welcomemessage}}
+
+    <ul class="nav nav-pills flex-column mb-2">
+
+        <li class="nav-item" id="{{M_HOME}}">
+            <a href="javascript:void(0)"  class="nav-link h6" data-mode="home">{{#str}} home, mod_readaloud {{/str}}</a>
+        </li>
+
+        {{#enablepreview}}
+        <li class="nav-item" id="{{M_STARTPREVIEW}}">
+            <a href="javascript:void(0)"  class="nav-link h6" data-mode="preview">{{#str}} mode_listen, mod_readaloud {{/str}}</a>
+        </li>
+        {{/enablepreview}}
+        {{#enablelandr}}
+        <li class="nav-item {{^hasaudiobreaks}}no-click{{/hasaudiobreaks}}" id="{{M_STARTLANDR}}">
+            <a href="javascript:void(0)"  class="nav-link h6" data-mode="landr">{{#str}} mode_practice, mod_readaloud {{/str}}</a>
+            {{^hasaudiobreaks}}
+            <span class="mod_readaloud_menubutton_warning">{{#str}} modelaudiowarning, mod_readaloud {{/str}}</span>
+            {{/hasaudiobreaks}}
+        </li>
+        {{/enablelandr}}
+        {{#enableshadow}}
+        <li class="nav-item {{^canshadowattempt}}no-click{{/canshadowattempt}}" id="{{M_STARTSHADOW}}">
+            <a href="javascript:void(0)"  class="nav-link h6" data-mode="shadow">{{#str}} mode_shadow, mod_readaloud {{/str}}</a>
+            {{^canshadowattempt}}
+            <!--<span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>-->
+            {{/canshadowattempt}}
+        </li>
+        {{/enableshadow}}
+        {{#enablenoshadow}}
+        <li class="nav-item {{^canattempt}}no-click{{/canattempt}}" id="{{M_STARTNOSHADOW}}">
+            <a href="javascript:void(0)"  class="nav-link h6" data-mode="startnoshadow">{{#str}} mode_read, mod_readaloud {{/str}}</a>
+            {{^canattempt}}
+            <span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>
+            {{/canattempt}}
+        </li>
+        {{/enablenoshadow}}
+        {{#enablequiz}}
+        <li class="nav-item {{#noquiz}}no-click{{/noquiz}}" id="{{M_STARTQUIZ}}">
+            <a href="javascript:void(0)"  class="nav-link h6" data-mode="quiz">{{#str}} mode_quiz, mod_readaloud {{/str}}</a>
+            {{#quizcompleted}}
+            <span class="mod_readaloud_menubutton_warning">{{#str}} quizcompletedwarning, mod_readaloud {{/str}}</span>
+            {{/quizcompleted}}
+        </li>
+        {{/enablequiz}}
+
+        <li class="nav-item" id="{{M_STARTREPORT}}">
+            <a href="javascript:void(0)"  class="nav-link h6" data-mode="fullreport">Report</a>
+        </li>
+    </ul>
 </div>

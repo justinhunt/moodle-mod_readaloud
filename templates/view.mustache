@@ -65,73 +65,14 @@
         {{/showintro}}
 
         <div class="card-body">
-
             <div class="row">
-                <div id="M_MENUBUTTONS_CONTAINER" class="col-3 border-right">
 
-                    {{#welcomemessage}}
-                    <div id="{{M_MENUINSTRUCTIONS_CONTAINER}}" class="{{M_MENUINSTRUCTIONS_CONTAINER}}">
-                        <div class="{{M_CLASS_CENTER}} {{M_INSTRUCTIONS}} pl-3">
-                            {{{welcomemessage}}}
-                        </div>
-                    </div>
-                    {{/welcomemessage}}
-
-                    <ul class="nav nav-pills flex-column mb-2">
-
-                        <li class="nav-item" id="{{M_HOME}}">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="home">{{#str}} home, mod_readaloud {{/str}}</a>
-                        </li>
-
-                        {{#enablepreview}}
-                        <li class="nav-item" id="{{M_STARTPREVIEW}}">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="preview">{{#str}} mode_listen, mod_readaloud {{/str}}</a>
-                        </li>
-                        {{/enablepreview}}
-                        {{#enablelandr}}
-                        <li class="nav-item {{^hasaudiobreaks}}no-click{{/hasaudiobreaks}}" id="{{M_STARTLANDR}}">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="landr">{{#str}} mode_practice, mod_readaloud {{/str}}</a>
-                            {{^hasaudiobreaks}}
-                            <span class="mod_readaloud_menubutton_warning">{{#str}} modelaudiowarning, mod_readaloud {{/str}}</span>
-                            {{/hasaudiobreaks}}
-                        </li>
-                        {{/enablelandr}}
-                        {{#enableshadow}}
-                        <li class="nav-item {{^canshadowattempt}}no-click{{/canshadowattempt}}" id="{{M_STARTSHADOW}}">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="shadow">{{#str}} mode_shadow, mod_readaloud {{/str}}</a>
-                            {{^canshadowattempt}}
-                            <!--<span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>-->
-                            {{/canshadowattempt}}
-                        </li>
-                        {{/enableshadow}}
-                        {{#enablenoshadow}}
-                        <li class="nav-item {{^canattempt}}no-click{{/canattempt}}" id="{{M_STARTNOSHADOW}}">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="startnoshadow">{{#str}} mode_read, mod_readaloud {{/str}}</a>
-                            {{^canattempt}}
-                            <span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>
-                            {{/canattempt}}
-                        </li>
-                        {{/enablenoshadow}}
-                        {{#enablequiz}}
-                        <li class="nav-item {{#noquiz}}no-click{{/noquiz}}" id="{{M_STARTQUIZ}}">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="quiz">{{#str}} mode_quiz, mod_readaloud {{/str}}</a>
-                            {{#quizcompleted}}
-                            <span class="mod_readaloud_menubutton_warning">{{#str}} quizcompletedwarning, mod_readaloud {{/str}}</span>
-                            {{/quizcompleted}}
-                        </li>
-                        {{/enablequiz}}
-
-                        <li class="nav-item" id="{{M_STARTREPORT}}">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="fullreport">Report</a>
-                        </li>
-                    </ul>
-                </div>
+                {{>mod_readaloud/bigbuttonmenu}}
 
                 <div class="col-9">
 
                     <div id="{{M_MODE_IMAGE_CONTAINER}}" class="mode-chooser fa-solid text-primary d-block mx-auto mb-4"></div>
 
-                    <!--{{#previewinstructions}}-->
                     <div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
                         <div class="box">
                             <div class="{{M_CLASS}}_center {{M_PREVIEWINSTRUCTIONS}}">
@@ -139,8 +80,7 @@
                             </div>
                         </div>
                     </div>
-                    <!--{{/previewinstructions}}-->
-                    <!--{{#landrinstructions}}-->
+
                     <div id="{{M_LANDRINSTRUCTIONS_CONTAINER}}" class="{{M_LANDRINSTRUCTIONS_CONTAINER}}">
                         <div class="box">
                             <div class="{{M_CLASS}}_center {{M_LANDRINSTRUCTIONS}}">
@@ -148,7 +88,7 @@
                             </div>
                         </div>
                     </div>
-                    <!--{{/landrinstructions}}-->
+
                     {{#instructions}}
                     <div id="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}" class="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}">
                         <div class="box py-3 generalbox">
@@ -271,7 +211,6 @@
                         <button id="{{M_PLAY_BTN}}" class="btn btn-primary m-2">
                             <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
                         </button>
-                        
                     </div>
                     {{/stopandplay}}
                 </div>
