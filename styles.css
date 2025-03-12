@@ -499,18 +499,6 @@ div.mod_readaloud_attemptsummarytable {
   margin-top: 20px;
 }
 
-/* .mode-chooser {
-  height: 100px;
-  margin-bottom: 10px;
-  position: relative;
-  background-repeat: none;
-  background-repeat: no-repeat;
-  -webkit-background-size: 100px;
-  background-size: 100px;
-  background-position: center;
-  cursor: pointer;
-} */
-
 .mode-chooser {
   display: flex;
   align-items: center;
@@ -521,37 +509,20 @@ div.mod_readaloud_attemptsummarytable {
   transition: transform 0.2s ease-in-out;
 }
 
-.mode-chooser.mode-read-icon {
-  height: 3rem;
-  width: 3rem;
-}
-
 .mode-chooser:hover {
   transform: scale(1.1);
 }
 
-.mode-chooser.preview {
-  background-image: url([[pix:mod_readaloud|preview]]);
+.nav-link {
+  display: inline-block !important;
+  transition: transform 0.3s ease;
+  transform-origin: center;
 }
 
-.mode-chooser.readaloudshadow {
-  background-image: url([[pix:mod_readaloud|readaloudshadow]]);
-}
-
-.mode-chooser.readaloud {
-  background-image: url([[pix:mod_readaloud|readaloud_icon]]);
-}
-
-.mode-chooser.landr {
-  background-image: url([[pix:mod_readaloud|listenandrepeat]]);
-}
-
-.mode-chooser.quiz {
-  background-image: url([[pix:mod_readaloud|preview]]);
-}
-
-.mode-chooser.report {
-  background-image: url([[pix:mod_readaloud|preview]]);
+.nav-link:hover,
+.nav-link:focus,
+.nav-link:active {
+  transform: scale(1.1);
 }
 
 .mode-chooser.no-show {
