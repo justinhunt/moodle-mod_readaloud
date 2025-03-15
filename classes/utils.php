@@ -2421,6 +2421,24 @@ class utils {
                 get_string('allowearlyexit_details', constants::M_COMPONENT));
         $mform->setDefault('allowearlyexit', $config->allowearlyexit);
 
+        // Define the steps as an array of checkboxes
+        $steps = [
+            $mform->createElement('advcheckbox', 'STEP_LISTEN', '', get_string('enablepreview', constants::M_COMPONENT)),
+            $mform->createElement('advcheckbox', 'STEP_PRACTICE', '', get_string('enablelandr', constants::M_COMPONENT)),
+            $mform->createElement('advcheckbox', 'STEP_SHADOW', '', get_string('enableshadow', constants::M_COMPONENT)),
+            $mform->createElement('advcheckbox', 'STEP_READ', '', get_string('enableread', constants::M_COMPONENT)),
+            $mform->createElement('advcheckbox', 'STEP_QUIZ', '', get_string('enablequiz', constants::M_COMPONENT))
+        ];
+
+        // Add the checkbox group to the form
+        $mform->addGroup($steps, 'steps', get_string('steps', constants::M_COMPONENT), array(' '), false);
+
+        // Set default values for the checkboxes
+        $stepdefaults =[];
+        foreach(constants::STEP_FORM_NAMES as $stepname => $value){
+            $mform->setDefault($stepname, array_key_exists($value, $stepdefaults));
+        }
+
         $mform->addElement('advcheckbox', 'enablepreview', get_string('enablepreview', constants::M_COMPONENT),
                 get_string('enablepreview_details', constants::M_COMPONENT));
         $mform->setDefault('enablepreview', $config->enablepreview);
@@ -2741,9 +2759,29 @@ class utils {
             $ppoptions);
         $moduleinstance->passagepicture=$draftitemid;
 
+        //steps
+        $moduleinstance = self::unpack_steps($moduleinstance);
+
         return $moduleinstance;
 
     }//end of prepare_file_and_json_stuff
+
+    public static function pack_steps($moduleinstance){
+        $steps = 0;
+        foreach(constants::STEP_FORM_NAMES as $stepname => $value){
+            if(isset($moduleinstance->{$stepname}) && $moduleinstance->{$stepname}){
+                $steps += $value;
+            }
+        }
+        return $steps;
+    }
+
+    public static function unpack_steps($moduleinstance){
+        foreach(constants::STEP_FORM_NAMES as $stepname => $value){
+            $moduleinstance->{$stepname} = self::is_step_enabled($moduleinstance, $value);
+        }
+        return $moduleinstance;
+    }
 
     // reset the item order for questions in a ReadAloud
     public static function reset_item_order($moduleid) {
@@ -3505,6 +3543,30 @@ class utils {
                 $tdata->results = [];
         }
         return $tdata;
+    }
+
+    public static function is_step_enabled($step, $moduleinstance) {
+        return ($moduleinstance->steps & $step) !== 0;
+    }
+
+    public static function is_step_complete($step, $attempt) {
+        return ($attempt->status & $step) !== 0;
+    }
+
+    public static function is_step_open($step, $moduleinstance, $attempt) {
+        $prevstep_complete = true;
+        foreach (constants::STEPS as $onestep) {
+            // If it's the current step, then we are done and the value of prev step is what we want.
+            if ($onestep == $step) {
+                break;
+            }
+            // If the step is enabled, then it is the current prev_step candidate, check its completion.
+            if (self::is_step_enabled($onestep, $moduleinstance)) {
+                $prevstep_complete = self::is_step_complete($onestep, $attempt);
+            }
+        }
+        // The item is open, if it is the first step, or the immediate previous step  is complete;
+        return $prevstep_complete;
     }
 
     public static function do_mb_str_split($string, $splitlength = 1, $encoding = null) {

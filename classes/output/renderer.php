@@ -1026,10 +1026,13 @@ class renderer extends \plugin_renderer_base {
         $recopts['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
         $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
         $recopts['breaks'] = $moduleinstance->modelaudiobreaks;
-        $recopts['enablelandr'] = $moduleinstance->enablelandr ? true : false;
-        $recopts['enablepreview'] = $moduleinstance->enablepreview ? true : false;
-        $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;
-        $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
+        $recopts['enablelandr'] = utils::is_step_enabled(constants::STEP_PRACTICE, $moduleinstance);
+        $recopts['enablepreview'] = utils::is_step_enabled(constants::STEP_LISTEN, $moduleinstance);
+        $recopts['enableshadow'] = utils::is_step_enabled(constants::STEP_SHADOW, $moduleinstance);
+        $recopts['enableread'] = utils::is_step_enabled(constants::STEP_READ, $moduleinstance);
+        $recopts['enablequiz'] = utils::is_step_enabled(constants::STEP_QUIZ, $moduleinstance);
+        $recopts['enablereport'] = utils::is_step_enabled(constants::STEP_READ, $moduleinstance);
+            $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
         $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
         $recopts['hider'] = constants::M_HIDER;
         $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
@@ -1378,11 +1381,13 @@ class renderer extends \plugin_renderer_base {
 
         return [
             // Feature availability.
-            'enablepreview' => (bool)$moduleinstance->enablepreview,
-            'enablelandr' => (bool)$moduleinstance->enablelandr,
-            'enableshadow' => (bool)$moduleinstance->enableshadow,
+            'enablepreview' => utils::is_step_enabled(constants::STEP_LISTEN,$moduleinstance),
+            'enablelandr' => utils::is_step_enabled(constants::STEP_PRACTICE,$moduleinstance),
+            'enableshadow' => utils::is_step_enabled(constants::STEP_SHADOW,$moduleinstance),
             'enablenoshadow' => (bool)$canattempt,
-            'enablequiz' => true, // TODO: Adjust later when quiz use configurable.
+            'enableread' => utils::is_step_enabled(constants::STEP_READ,$moduleinstance),
+            'enablequiz' => utils::is_step_enabled(constants::STEP_QUIZ,$moduleinstance),
+            'enablereport' => utils::is_step_enabled(constants::STEP_READ,$moduleinstance),
 
             // Permission-based availability.
             'canattempt' => (bool)$canattempt,
@@ -1508,7 +1513,9 @@ class renderer extends \plugin_renderer_base {
             'enablelandr' => $modevisibility['enablelandr'],
             'enableshadow' => $modevisibility['enableshadow'],
             'enablenoshadow' => $modevisibility['enablenoshadow'],
+            'enableread' => $modevisibility['enableread'],
             'enablequiz' => $modevisibility['enablequiz'],
+            'enablereport' => $modevisibility['enableread'],
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
             'landr' => $landr,

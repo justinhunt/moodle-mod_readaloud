@@ -134,6 +134,21 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
         $label, $details, $default, $options));
 
+    // Activity Step settings
+    $stepoptions = array(constants::STEP_LISTEN => new lang_string('enablepreview', constants::M_COMPONENT),
+        constants::STEP_PRACTICE => new lang_string('enablelandr', constants::M_COMPONENT),
+        constants::STEP_SHADOW => new lang_string('enableshadow', constants::M_COMPONENT),
+        constants::STEP_READ => new lang_string('enableread', constants::M_COMPONENT),
+        constants::STEP_QUIZ => new lang_string('enablequiz', constants::M_COMPONENT));
+
+    $stepdefaults =
+        array(constants::STEP_LISTEN => 1, constants::STEP_PRACTICE => 1, constants::STEP_SHADOW => 0, constants::STEP_READ => 1, constants::STEP_QUIZ => 1);
+    //create a binary string of the defaults, eg 1101
+    //$stepdefaults = decbin(constants::STEP_LISTEN + constants::STEP_PRACTICE + constants::STEP_READ);
+    $settings->add(new admin_setting_configmulticheckbox(constants::M_COMPONENT . '/activitysteps',
+        get_string('activitysteps', 'atto_poodll'),
+        get_string('activitystepsdetails', 'atto_poodll'), $stepdefaults, $stepoptions));
+
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enablepreview',
             get_string('enablepreview', constants::M_COMPONENT),
             get_string('enablepreview_details', constants::M_COMPONENT), 1));

@@ -71,6 +71,7 @@
                 <FIELD NAME="showqreview" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
                 <FIELD NAME="qfinishscreen" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="qfinishscreencustom" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="custom finish screen mustache"/>
+                <FIELD NAME="steps" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="steps in activity"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
 				<FIELD NAME="viewstart" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true"  DEFAULT="0" SEQUENCE="false"/>

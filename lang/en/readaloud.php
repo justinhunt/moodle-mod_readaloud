@@ -926,3 +926,5 @@ $string['additems'] ='Add quiz questions';
 $string['numberonly'] = 'Numbers only';
 $string['aigrade_modelanswer'] = 'Model answer';
 $string['reattemptquiz'] = 'Reattempt Quiz';
+$string['enableread'] = 'Enable Read';
+$string['enablequiz'] = 'Enable Quiz';

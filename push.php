@@ -111,10 +111,7 @@ switch($action){
         break;
 
     case constants::M_PUSH_MODES:
-        $updatefields = ['enablepreview','enablelandr','enableshadow'];
-        foreach($updatefields as $thefield) {
-            $DB->set_field(constants::M_TABLE, $thefield, $moduleinstance->{$thefield}, array('name' => $moduleinstance->name, 'masterinstance' => 0));
-        }
+        $DB->set_field(constants::M_TABLE, 'steps', $moduleinstance->steps, array('name' => $moduleinstance->name, 'masterinstance' => 0));
         redirect($PAGE->url,get_string('pushmodes_done',constants::M_COMPONENT),10);
         break;
 

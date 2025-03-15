@@ -453,6 +453,18 @@ const RELEVANCETYPE_NONE = 0;
 const RELEVANCETYPE_QUESTION = 1;
 const RELEVANCETYPE_MODELANSWER = 2;
 
+const STEP_LISTEN = 1;
+const STEP_PRACTICE = 2;
+const STEP_SHADOW = 4;
+const STEP_READ = 8;
+const STEP_QUIZ = 16;
+const STEPS = [constants::STEP_LISTEN, constants::STEP_PRACTICE, constants::STEP_SHADOW, constants::STEP_READ, constants::STEP_QUIZ];
+const STEP_FORM_NAMES = ["STEP_LISTEN" => constants::STEP_LISTEN,
+    "STEP_PRACTICE" => constants::STEP_PRACTICE,
+    "STEP_SHADOW" => constants::STEP_SHADOW,
+    "STEP_READ" => constants::STEP_READ,
+    "STEP_QUIZ" => constants::STEP_QUIZ];
+
 const M_HOME_CONTAINER='mod_readaloud_home_cont';
 const M_QUIZ_CONTAINER='mod_readaloud_quiz_cont';
 const M_QUIZ_ITEMS_CONTAINER='mod_readaloud_quiz_items_cont';

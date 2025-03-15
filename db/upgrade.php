@@ -855,6 +855,52 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025011805, 'readaloud');
     }
 
+    // Add steps field to table. Update steps and status of existing attempts
+    if ($oldversion < 2025031500) {
+        $table = new xmldb_table(constants::M_TABLE);
+
+        // Define fields to be added to readaloud .. just steps
+        $fields=[];
+        $fields[] = new xmldb_field('steps', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null,0);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        //update steps and status of existing ReadAloud activities
+        //Steps
+        // we had checkboxes for preview / shadow / landr. But we need to convert these to steps
+        $readalouds = $DB->get_records(constants::M_TABLE);
+        $steps_by_ra = [];
+        if($readalouds){
+            foreach($readalouds as $ra){
+                $steps = 0;
+                $steps += $ra->enablepreview ? constants::STEP_LISTEN : 0;
+                $steps += $ra->enablelandr ? constants::STEP_PRACTICE : 0;
+                $steps += $ra->enableshadow ? constants::STEP_SHADOW : 0;
+                $steps += constants::STEP_READ; // reading can not be omitted
+                $steps += $ra->showquiz ? constants::STEP_QUIZ : 0;
+                $DB->set_field(constants::M_TABLE,'steps',$steps,['id'=>$ra->id]);
+                $steps_by_ra[$ra->id] = $steps;
+            }
+        }
+
+        //Status
+        //If there is an attempt (user submitted a reading), all steps are considered complete
+        $attempts = $DB->get_records(constants::M_USERTABLE);
+        if($attempts){
+            foreach($attempts as $attempt){
+                $steps = $steps_by_ra[$readaloud->id];
+                $status = $steps;
+                $DB->set_field(constants::M_USERTABLE,'status',$status,['id'=>$attempt->id]);
+            }
+        }
+        upgrade_mod_savepoint(true, 2025031500, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }
