@@ -18,9 +18,12 @@ class constants {
     const M_USERTABLE = 'readaloud_attempt';
     const M_AITABLE = 'readaloud_ai_result';
     const M_QTABLE = 'readaloud_rsquestions';
-    const M_AUTHTABLE='readaloud_auth';
+    const M_AUTHTABLE = 'readaloud_auth';
     const M_MODNAME = 'readaloud';
     const M_URL = '/mod/readaloud';
+    const M_PATH = '/mod/readaloud';
+    const M_STATE_QUIZCOMPLETE = 2;
+    const M_STATE_QUIZINPROGRESS = 4;
 
     const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
 
@@ -205,6 +208,8 @@ class constants {
     const M_LANDRINSTRUCTIONS = 'mod_readaloud_landrinstructions';
     const M_SMALLREPORT_CONTAINER = 'mod_readaloud_smallreport_cont';
     const M_INTRO_CONTAINER = 'mod_intro_box';
+    const M_MODE_IMAGE_CONTAINER = 'mod_readaloud_mode_image_cont';
+    const M_MODE_JOURNEY_CONTAINER = 'mod_readaloud_mode_journey_container';
 
 
     const M_PASSAGE_CONTAINER = 'mod_readaloud_passage_cont';
@@ -321,10 +326,13 @@ class constants {
     const TRANSCRIBER_NONE = 0; //defunct
     const TRANSCRIBER_AMAZONSTREAMING =4; //defunct
 
+    const M_HOME = 'mod_readaloud_button_home';
     const M_STARTPREVIEW= 'mod_readaloud_button_startpreview';
     const M_STARTLANDR= 'mod_readaloud_button_startlandr';
+    const M_STARTREPORT = 'mod_readaloud_button_startreport';
     const M_STARTSHADOW= 'mod_readaloud_button_startshadow';
     const M_STARTNOSHADOW= 'mod_readaloud_button_startnoshadow';
+    const M_STARTQUIZ= 'mod_readaloud_button_startquiz';
     const M_RETURNMENU= 'mod_readaloud_button_returnmenu';
     const M_STOPANDPLAY= 'mod_readaloud_button_stopandplay';
     const M_BACKTOTOP= 'mod_readaloud_button_backtotop';
@@ -349,5 +357,117 @@ class constants {
         "Lucida Console", "Monaco", "Bradley Hand", "Brush Script MT", "Luminari", "Comic Sans MS"];
 
     const M_GOOGLE_FONTS = ["Andika"];
+
+    const M_QUIZ_NONE = 0;
+    const M_QUIZ_STANDARD = 1;
+
+    
+const TYPE_MULTIAUDIO = 'multiaudio';
+const TYPE_MULTICHOICE = 'multichoice';
+const TYPE_PAGE = 'page';
+const TYPE_DICTATIONCHAT = 'dictationchat';
+const TYPE_LGAPFILL = 'listeninggapfill';
+const TYPE_TGAPFILL = 'typinggapfill';
+const TYPE_SGAPFILL = 'speakinggapfill';
+const TYPE_COMPQUIZ = 'comprehensionquiz';
+const TYPE_BUTTONQUIZ = 'buttonquiz';
+const TYPE_DICTATION = 'dictation';
+const TYPE_SPEECHCARDS = 'speechcards';
+const TYPE_LISTENREPEAT = 'listenrepeat';
+const TYPE_SMARTFRAME = 'smartframe';
+const TYPE_SHORTANSWER = 'shortanswer';
+const TYPE_SPACEGAME = 'spacegame';
+const TYPE_FREEWRITING = 'freewriting';
+const TYPE_FREESPEAKING = 'freespeaking';
+const TYPE_FLUENCY = 'fluency';
+const TYPE_PASSAGEREADING = 'passagereading';
+const TYPE_CONVERSATION = 'conversation';
+
+const AUDIOFNAME = 'itemaudiofname';
+const AUDIOPROMPT = 'audioitem';
+const AUDIOANSWER = 'audioanswer';
+const AUDIOMODEL = 'audiomodel';
+const AUDIOPROMPT_FILEAREA = 'audioitem';
+const TEXTINSTRUCTIONS = 'iteminstructions';
+const TEXTQUESTION_FORMAT = 'itemtextformat';
+const TTSQUESTION = 'itemtts';
+const TTSQUESTIONVOICE = 'itemttsvoice';
+const TTSQUESTIONOPTION = 'itemttsoption';
+const TTSAUTOPLAY = 'itemttsautoplay';
+
+
+const MEDIAQUESTION = 'itemmedia';
+const QUESTIONTEXTAREA = 'itemtextarea';
+const YTVIDEOID = 'itemytid';
+const YTVIDEOSTART = 'itemytstart';
+const YTVIDEOEND = 'itemytend';
+const MEDIAIFRAME = 'customdata5';
+const CUSTOMDATA = 'customdata';
+const CUSTOMINT = 'customint';
+const POLLYVOICE = 'customtext5';
+const POLLYOPTION = 'customint4';
+const CONFIRMCHOICE = 'customint3';
+const AIGRADE_INSTRUCTIONS = 'customtext1';
+const AIGRADE_FEEDBACK = 'customtext2';
+const AIGRADE_FEEDBACK_LANGUAGE = 'customtext4';
+const AIGRADE_MODELANSWER = 'customtext3';
+const ALTERNATES = 'customtext2';
+const TARGETWORDCOUNT = 'customint3';
+const TOTALMARKS = 'customint1';
+const TIMELIMIT = 'timelimit';
+const GAPFILLALLOWRETRY = 'customint3';
+const GAPFILLHIDESTARTPAGE = 'customint5';
+const MAXCUSTOMTEXT=5;
+const MAXCUSTOMDATA=5;
+const MAXCUSTOMINT=5;
+
+const ITEMTEXTAREA_EDOPTIONS =array('trusttext' => 0,'noclean'=>1, 'maxfiles' => 0);
+const READSENTENCE = 'customint2';
+const IGNOREPUNCTUATION = 'customint2';
+const SHOWTEXTPROMPT = 'customint1';
+const TEXTPROMPT_WORDS = 1;
+const TEXTPROMPT_DOTS = 0;
+
+const LISTENORREAD = 'customint2';
+const LISTENORREAD_READ = 0;
+const LISTENORREAD_LISTEN = 1;
+const LISTENORREAD_LISTENANDREAD = 2;
+
+const LAYOUT = 'layout';
+const LAYOUT_AUTO = 0;
+const LAYOUT_HORIZONTAL = 1;
+const LAYOUT_VERTICAL = 2;
+const LAYOUT_MAGAZINE = 3;
+
+const TTS_NORMAL = 0;
+const TTS_SLOW = 1;
+const TTS_VERYSLOW = 2;
+const TTS_SSML = 3;
+
+const M_NOITEMS_CONT= 'mod_readaloud_noitems_cont';
+const M_ITEMS_CONT= 'mod_readaloud_items_cont';
+const M_ITEMS_TABLE= 'mod_readaloud_qpanel';
+
+const RELEVANCE = "customint2";
+const RELEVANCETYPE_NONE = 0;
+const RELEVANCETYPE_QUESTION = 1;
+const RELEVANCETYPE_MODELANSWER = 2;
+
+const M_HOME_CONTAINER='mod_readaloud_home_cont';
+const M_QUIZ_CONTAINER='mod_readaloud_quiz_cont';
+const M_QUIZ_ITEMS_CONTAINER='mod_readaloud_quiz_items_cont';
+const M_QUIZ_PLACEHOLDER='mod_readaloud_placeholder';
+const M_QUIZ_SKELETONBOX='mod_readaloud_skeleton_box';
+const M_QUIZ_FINISHED = "mod_readaloud_quiz_finished";
+const M_QUIZ_REATTEMPT = "mod_readaloud_quiz_reattempt";
+
+// Finish screen options.
+const FINISHSCREEN_SIMPLE=1;
+const FINISHSCREEN_FULL=0;
+const FINISHSCREEN_CUSTOM=2;
+
+const M_SHOWQUIZ_NONE = 0;
+const M_SHOWQUIZ_PASSAGE = 1;
+const M_SHOWQUIZ_NOPASSAGE = 2;
   
 }

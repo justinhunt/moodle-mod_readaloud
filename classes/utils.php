@@ -554,6 +554,11 @@ class utils {
     public static function fetch_polly_url($token,$region,$speaktext,$texttype, $voice) {
         global $USER;
 
+        // Do a little sanity checking.
+        if( empty($speaktext) || empty($voice) || $voice==constants::TTS_NONE){
+         return false;
+        }
+
         //The REST API we are calling
         $functionname = 'local_cpapi_fetch_polly_url';
 
@@ -1866,8 +1871,7 @@ class utils {
     }//end of function
 
     //This is a semi duplicate of passage_renderer::render_passage
-    // but it
-    //7s for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
+    // but it's for the purpose of marking up a passage automatically so we need an array of words not with any html markup on it.
     public static function fetch_passage_as_words($passage,$language){
 
             // load the HTML document
@@ -2041,6 +2045,22 @@ class utils {
         return $rec_options;
     }
 
+    public static function fetch_options_qfinishscreen() {
+        $options = [constants::FINISHSCREEN_SIMPLE => get_string("qfinishscreen_simple", constants::M_COMPONENT),
+            constants::FINISHSCREEN_FULL => get_string("qfinishscreen_full", constants::M_COMPONENT),
+            constants::FINISHSCREEN_CUSTOM => get_string("qfinishscreen_custom", constants::M_COMPONENT),
+           ];
+        return $options;
+    }
+
+    public static function fetch_options_showquiz() {
+        $options = [constants::M_SHOWQUIZ_NONE => get_string("showquiz_none", constants::M_COMPONENT),
+                constants::M_SHOWQUIZ_PASSAGE => get_string("showquiz_passage", constants::M_COMPONENT),
+                constants::M_SHOWQUIZ_NOPASSAGE => get_string("showquiz_nopassage", constants::M_COMPONENT)
+           ];
+        return $options;
+    }
+
     public static function fetch_options_guidedtranscription(){
         $options = array( constants::GUIDEDTRANS_PASSAGE => get_string("guidedtrans_passage", constants::M_COMPONENT),
             constants::GUIDEDTRANS_CORPUS => get_string("guidedtrans_corpus", constants::M_COMPONENT));
@@ -2117,8 +2137,38 @@ class utils {
                         constants::TRANSCRIBER_GUIDED => get_string("transcriber_guided", constants::M_COMPONENT));
         return $options;
     }
+
+    public static function get_tts_voices_bylang($langcode, $showall) {
+        $alllang = constants::ALL_VOICES;
+
+        if(array_key_exists($langcode, $alllang) && !$showall) {
+            return $alllang[$langcode];
+        }else if($showall) {
+            $usearray = [];
+
+            // add current language first (in some cases there is no TTS for the lang)
+            if(isset($alllang[$langcode])) {
+                foreach ($alllang[$langcode] as $v => $thevoice) {
+                    $neuraltag = in_array($v, constants::M_NEURALVOICES) ? ' (+)' : '';
+                    $usearray[$v] = get_string(strtolower($langcode), constants::M_COMPONENT) . ': ' . $thevoice . $neuraltag;
+                }
+            }
+            // then all the rest
+            foreach($alllang as $lang => $voices){
+                if($lang == $langcode){continue;
+                }
+                foreach($voices as $v => $thevoice){
+                    $neuraltag = in_array($v, constants::M_NEURALVOICES) ? ' (+)' : '';
+                    $usearray[$v] = get_string(strtolower($lang), constants::M_COMPONENT) . ': ' . $thevoice . $neuraltag;
+                }
+            }
+            return $usearray;
+        }else{
+                return $alllang[constants::M_LANG_ENUS];
+        }
+    }
     
-    public static function fetch_ttsvoice_options($langcode=''){
+    public static function fetch_ttsvoice_options(){
         $alllang= constants::ALL_VOICES;
 
 
@@ -2280,9 +2330,8 @@ class utils {
                 $textutils);
         if($m35){
             $englishes=self::get_english_langcodes();
-            //this doesn't work because statics are not hidden in Moodle
-            //i dont know if 'notin' is a real condition either
-            $mform->hideIf('textutils','ttslanguage','notin', $englishes);
+            //this doesn't always seem to work correctly
+           // $mform->hideIf('textutils','ttslanguage','notin', $englishes);
         }
 
 
@@ -2392,6 +2441,39 @@ class utils {
                 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5');
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', constants::M_COMPONENT), $attemptoptions);
 
+        // Quiz Options
+        $mform->addElement('header', 'quizsettingsheader', get_string('quizsettingsheader', constants::M_COMPONENT));
+
+
+       // show quiz options
+       $showquizoptions = self::fetch_options_showquiz();
+       $mform->addElement('select', 'showquiz', get_string('showquiz', constants::M_COMPONENT), $showquizoptions);
+       $mform->addHelpButton('showquiz', 'showquiz', constants::M_COMPONENT);
+       $mform->setDefault('showquiz', constants::M_SHOWQUIZ_NONE);
+
+        // show question titles
+        $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
+        $mform->addElement('select', 'showqtitles', get_string('showqtitles', constants::M_COMPONENT), $yesnooptions);
+        $mform->setDefault('showqtitles', 0);
+        $mform->addHelpButton('showqtitles', 'showqtitles', constants::M_COMPONENT);
+
+        //show question review
+        $mform->addElement('select', 'showqreview', get_string('showqreview', constants::M_COMPONENT),
+        $yesnooptions);
+        $mform->setDefault('showqreview', 1);
+        $mform->addHelpButton('showqreview', 'showqreview', constants::M_COMPONENT);
+
+       // quiz finish screen
+       $screenoptions = self::fetch_options_qfinishscreen();
+       $mform->addElement('select', 'qfinishscreen', get_string('qfinishscreen', constants::M_COMPONENT), $screenoptions);
+       $mform->addHelpButton('qfinishscreen', 'qfinishscreen', constants::M_COMPONENT);
+       $mform->setDefault('qfinishscreen', constants::FINISHSCREEN_FULL);
+
+       // custom finish screen
+       $mform->addElement('textarea', 'qfinishscreencustom', get_string('qfinishscreencustom', constants::M_COMPONENT), ['wrap' => 'virtual', 'style' => 'width: 100%;']);
+       $mform->addHelpButton('qfinishscreencustom', 'qfinishscreencustom', constants::M_COMPONENT);
+       $mform->setType('qfinishscreencustom', PARAM_RAW);
+       $mform->HideIf('qfinishscreencustom', 'qfinishscreen', 'neq', constants::FINISHSCREEN_CUSTOM);
 
         // Advanced.
         $mform->addElement('header', 'advancedheader', get_string('advancedheader', constants::M_COMPONENT));
@@ -2663,6 +2745,91 @@ class utils {
 
     }//end of prepare_file_and_json_stuff
 
+    // reset the item order for questions in a ReadAloud
+    public static function reset_item_order($moduleid) {
+        global $DB;
+
+        $allitems = $DB->get_records(constants::M_QTABLE, ['readaloud' => $moduleid], 'itemorder ASC');
+        if($allitems &&count($allitems) > 0 ){
+            $i = 0;
+            foreach($allitems as $theitem){
+                $i++;
+                $theitem->itemorder = $i + 1;
+                $DB->update_record(constants::M_QTABLE, $theitem);
+            }
+        }
+    }
+
+    public static function fetch_item_from_itemrecord($itemrecord, $moduleinstance, $context=false) {
+        // Set up the item type specific parts of the form data
+        switch($itemrecord->type){
+            case constants::TYPE_MULTICHOICE:
+                return new local\itemtype\item_multichoice($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_MULTIAUDIO:
+                return new local\itemtype\item_multiaudio($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_PAGE:
+                return new local\itemtype\item_page($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_SHORTANSWER:
+                return new local\itemtype\item_shortanswer($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_SGAPFILL:
+                return new local\itemtype\item_speakinggapfill($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_LGAPFILL:
+                return new local\itemtype\item_listeninggapfill($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_TGAPFILL:
+                return new local\itemtype\item_typinggapfill($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_FREEWRITING:
+                return new local\itemtype\item_freewriting($itemrecord, $moduleinstance, $context);
+            case constants::TYPE_FREESPEAKING:
+                return new local\itemtype\item_freespeaking($itemrecord, $moduleinstance, $context);
+            default:
+        }
+    }
+
+
+    public static function fetch_itemform_classname($itemtype) {
+        // Fetch the correct form
+        switch($itemtype){
+            case constants::TYPE_MULTICHOICE:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\multichoiceform';
+            case constants::TYPE_MULTIAUDIO:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\multiaudioform';
+            case constants::TYPE_PAGE:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\pageform';
+            case constants::TYPE_SHORTANSWER:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\shortanswerform';
+            case constants::TYPE_SGAPFILL:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\speakinggapfillform';
+            case constants::TYPE_LGAPFILL:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\listeninggapfillform';
+            case constants::TYPE_TGAPFILL:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\typinggapfillform';
+            case constants::TYPE_FREEWRITING:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\freewritingform';
+            case constants::TYPE_FREESPEAKING:
+                return '\\'. constants::M_COMPONENT . '\local\itemform\freespeakingform';
+            default:
+                return false;
+        }
+    }
+
+    public static function fetch_options_textprompt() {
+        $options = [constants::TEXTPROMPT_DOTS => get_string("textprompt_dots", constants::M_COMPONENT),
+                constants::TEXTPROMPT_WORDS => get_string("textprompt_words", constants::M_COMPONENT)];
+        return $options;
+    }
+
+    public static function fetch_options_yesno() {
+        $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
+        return $yesnooptions;
+    }
+
+    public static function fetch_options_listenorread() {
+        $options = [constants::LISTENORREAD_READ => get_string("listenorread_read", constants::M_COMPONENT),
+                constants::LISTENORREAD_LISTEN => get_string("listenorread_listen", constants::M_COMPONENT),
+                    constants::LISTENORREAD_LISTENANDREAD => get_string("listenorread_listenandread", constants::M_COMPONENT)];
+        return $options;
+    }
+
 
     //fetch user attempts
     /*
@@ -2707,6 +2874,691 @@ class utils {
 
         return $attempts;
 
+    }
+
+    public static function evaluate_transcript($transcript, $itemid, $cmid) {
+        global $CFG, $USER, $DB, $OUTPUT, $PAGE;
+
+        $token = false;
+        $conf = get_config(constants::M_COMPONENT);
+        if (!empty($conf->apiuser) && !empty($conf->apisecret)) {
+            $token = self::fetch_token($conf->apiuser, $conf->apisecret);
+        }
+        if(!$token || empty($token)){
+            return false;
+        }
+        $cm         = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        $moduleinstance  = $DB->get_record(constants::M_MODNAME, ['id' => $cm->instance], '*', MUST_EXIST);
+        $item = $DB->get_record(constants::M_QTABLE, ['id' => $itemid, 'readaloudid' => $moduleinstance->id], '*', MUST_EXIST);
+
+        // AI Grade
+        //Feedback language for AI instructions
+        $feedbacklanguage = self::fetch_feedback_language($item);
+        $maxmarks = $item->{constants::TOTALMARKS};
+        $instructions = new \stdClass();
+        $instructions->feedbackscheme = $feedbacklanguage;
+        $instructions->feedbacklanguage = $item->{constants::AIGRADE_FEEDBACK_LANGUAGE};
+        $instructions->markscheme = $item->{constants::AIGRADE_INSTRUCTIONS};
+        $instructions->maxmarks = $maxmarks;
+        $instructions->questiontext = strip_tags($item->itemtext);
+        $instructions->modeltext = $item->{constants::AIGRADE_MODELANSWER};
+        $aigraderesults = self::fetch_ai_grade($token, $moduleinstance->region,
+         $moduleinstance->ttslanguage, $transcript, $instructions);
+
+         // Mark up AI Grade corrections
+        if ($aigraderesults && isset($aigraderesults->correctedtext)) {
+            // if we have corrections mark those up and return them
+            $direction = "r2l";// "l2r";
+            list($grammarerrors, $grammarmatches, $insertioncount) = self::fetch_grammar_correction_diff($transcript, $aigraderesults->correctedtext, $direction);
+            $aigraderesults->markedupcorrections = quizhelper::render_passage($aigraderesults->correctedtext,  'corrections');
+            $aigraderesults->markeduppassage = quizhelper::render_passage($transcript,'passage');
+            $aigraderesults->grammarerrors = $grammarerrors;
+            $aigraderesults->grammarmatches  = $grammarmatches;
+            $aigraderesults->insertioncount  = $insertioncount;
+            // For right to left languages we want to add the RTL direction and right justify.
+            if(self::is_rtl($feedbacklanguage)){
+                $aigraderesults->rtl = constants::M_CLASS . '_rtl';
+            }
+        }
+
+         // STATS
+        $userlanguage = false;
+        $targetembedding = false;
+        $targetwords = [];
+        if($item->{constants::RELEVANCE} == constants::RELEVANCETYPE_QUESTION){
+            $targettopic = strip_tags($item->itemtext);
+        }
+        $textanalyser = new textanalyser($token, $transcript, $moduleinstance->region,
+        $moduleinstance->ttslanguage, $targetembedding, $userlanguage, $targettopic);
+        $aigraderesults->stats = $textanalyser->process_some_stats($targetwords);
+
+        return $aigraderesults;
+
+    }
+
+    //get the correct feedback language from instance settings or user prefs
+    public static function fetch_feedback_language($item, $userid = false) {
+        global $USER;
+
+        if(!$userid){
+            $userid = $USER->id;
+        }
+        $siteconfig = get_config(constants::M_COMPONENT);
+        //its awful but we hijack the wordcard's student native language setting
+        $feedbacklanguage = $item->feedbacklanguage;
+        if (isset($siteconfig->setnativelanguage) && $siteconfig->setnativelanguage) {
+            $userprefdeflanguage = get_user_preferences('wordcards_deflang', null, $userid);
+            if (!empty($userprefdeflanguage)) {
+                //the WC language is 2 char (eg 'en') but Poodll AI expects a locale code (eg 'en-US')
+                $wclanguage = self::lang_to_locale($userprefdeflanguage);
+                //if we did get a locale code back lets use that.
+                if ($wclanguage !== $userprefdeflanguage && $wclanguage !== $feedbacklanguage) {
+                    $feedbacklanguage = $wclanguage;
+                }
+            }
+        }
+        return $feedbacklanguage;
+    }
+
+    //This function takes the 2-character language code ($lang) as input and returns the corresponding locale code.
+    public static function lang_to_locale($lang)
+    {
+        switch ($lang) {
+            case 'ar':
+                return 'ar-AE'; // Assuming Arabic (Modern Standard) is the default
+            case 'en':
+                return 'en-US'; // Assuming US English is the default
+            case 'es':
+                return 'es-ES'; // Assuming Spanish (Spain) is the default
+            case 'fr':
+                return 'fr-FR'; // Assuming French (France) is the default
+            case 'id':
+                return 'id-ID'; // Assuming Indonesian (Indonesia) is the default
+            case 'ja':
+                return 'ja-JP'; // Assuming Japanese (Japan) is the default
+            case 'ko':
+                return 'ko-KR'; // Assuming Korean (South Korea) is the default
+            case 'pt':
+                return 'pt-BR'; // Assuming Brazilian Portuguese is the default
+            case 'ru':
+            case 'rus':
+                return 'ru-RU'; // Assuming Russian (Russia) is the default
+            case 'zh':
+                return 'zh-CN'; // Assuming Chinese (Simplified, China) is the default
+            case 'zh_tw':
+                return 'zh-TW'; // Assuming Chinese (Traditional, Taiwan) is the default
+            case 'af':
+                return 'af-ZA'; // Assuming Afrikaans (South Africa) is the default
+            case 'bn':
+                return 'bn-BD'; // Assuming Bengali (Bangladesh) is the default
+            case 'bs':
+                return 'bs-Latn-BA'; // Assuming Bosnian (Latin, Bosnia and Herzegovina) is the default
+            case 'bg':
+                return 'bg-BG'; // Assuming Bulgarian (Bulgaria) is the default
+            case 'ca':
+                return 'ca-ES'; // Assuming Catalan (Spain) is the default
+            case 'hr':
+                return 'hr-HR'; // Assuming Croatian (Croatia) is the default
+            case 'cs':
+                return 'cs-CZ'; // Assuming Czech (Czech Republic) is the default
+            case 'da':
+                return 'da-DK'; // Assuming Danish (Denmark) is the default
+            case 'nl':
+                return 'nl-NL'; // Assuming Dutch (Netherlands) is the default
+            case 'fi':
+                return 'fi-FI'; // Assuming Finnish (Finland) is the default
+            case 'de':
+                return 'de-DE'; // Assuming German (Germany) is the default
+            case 'el':
+                return 'el-GR'; // Assuming Greek (Greece) is the default
+            case 'ht':
+                return 'ht-HT'; // Assuming Haitian Creole (Haiti) is the default
+            case 'he':
+                return 'he-IL'; // Assuming Hebrew (Israel) is the default
+            case 'hi':
+                return 'hi-IN'; // Assuming Hindi (India) is the default
+            case 'hu':
+                return 'hu-HU'; // Assuming Hungarian (Hungary) is the default
+            case 'is':
+                return 'is-IS'; // Assuming Icelandic (Iceland) is the default
+            case 'it':
+                return 'it-IT'; // Assuming Italian (Italy) is the default
+            case 'lv':
+                return 'lv-LV'; // Assuming Latvian (Latvia) is the default
+            case 'lt':
+                return 'lt-LT'; // Assuming Lithuanian (Lithuania) is the default
+            case 'ms':
+                return 'ms-MY'; // Assuming Malay (Malaysia) is the default
+            case 'mt':
+                return 'mt-MT'; // Assuming Maltese (Malta) is the default
+            case 'nb':
+                return 'nb-NO'; // Assuming Norwegian Bokmål (Norway) is the default
+            case 'fa':
+                return 'fa-IR'; // Assuming Persian (Iran) is the default
+            case 'pl':
+                return 'pl-PL'; // Assuming Polish (Poland) is the default
+            case 'ro':
+                return 'ro-RO'; // Assuming Romanian (Romania) is the default
+            case 'sr':
+                return 'sr-Latn-RS'; // Assuming Serbian (Latin, Serbia) is the default
+            case 'sk':
+                return 'sk-SK'; // Assuming Slovak (Slovakia) is the default
+            case 'sl':
+                return 'sl-SI'; // Assuming Slovenian (Slovenia) is the default
+            case 'sw':
+                return 'sw-KE'; // Assuming Swahili (Kenya) is the default
+            case 'sv':
+                return 'sv-SE'; // Assuming Swedish (Sweden) is the default
+            case 'ta':
+                return 'ta-IN'; // Assuming Tamil (India) is the default
+            case 'tr':
+                return 'tr-TR'; // Assuming Turkish (Turkey) is the default
+            case 'uk':
+                return 'uk-UA'; // Assuming Ukrainian (Ukraine) is the default
+            case 'ur':
+                return 'ur-PK'; // Assuming Urdu (Pakistan) is the default
+            case 'cy':
+                return 'cy-GB'; // Assuming Welsh (United Kingdom) is the default
+            case 'vi':
+                return 'vi-VN'; // Assuming Vietnamese (Vietnam) is the default
+            default:
+                return $lang; // If no match, return the original lang code
+        }
+    }
+
+    public static function is_rtl($language){
+        switch($language){
+            case constants::M_LANG_ARAE:
+            case constants::M_LANG_ARSA:
+            case constants::M_LANG_FAIR:
+            case constants::M_LANG_HEIL:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public static function fetch_grammar_correction_diff($selftranscript, $correction, $direction='l2r') {
+
+        // turn the passage and transcript into an array of words
+        $alternatives = diff::fetchAlternativesArray('');
+        $wildcards = diff::fetchWildcardsArray($alternatives);
+
+        // the direction of diff depends on which text we want to mark up. Because we only highlight
+        // this is because if we show the pre-text (eg student typed text) we can not highlight corrections .. they are not there
+        // if we show post-text (eg corrections) we can not highlight mistakes .. they are not there
+        // the diffs tell us where the diffs are with relation to text A
+        if($direction == 'l2r') {
+            $passagebits = diff::fetchWordArray($selftranscript);
+            $transcriptbits = diff::fetchWordArray($correction);
+        }else {
+            $passagebits = diff::fetchWordArray($correction);
+            $transcriptbits = diff::fetchWordArray($selftranscript);
+        }
+
+        // fetch sequences of transcript/passage matched words
+        // then prepare an array of "differences"
+        $passagecount = count($passagebits);
+        $transcriptcount = count($transcriptbits);
+        // rough estimate of insertions
+        $insertioncount = $transcriptcount - $passagecount;
+        if($insertioncount < 0){$insertioncount = 0;
+        }
+
+        $language = constants::M_LANG_ENUS;
+        $sequences = diff::fetchSequences($passagebits, $transcriptbits, $alternatives, $language);
+
+        // fetch diffs
+        $diffs = diff::fetchDiffs($sequences, $passagecount, $transcriptcount);
+        $diffs = diff::applyWildcards($diffs, $passagebits, $wildcards);
+
+        // from the array of differences build error data, match data, markers, scores and metrics
+        $errors = new \stdClass();
+        $matches = new \stdClass();
+        $currentword = 0;
+        $lastunmodified = 0;
+        // loop through diffs
+        foreach($diffs as $diff){
+            $currentword++;
+            switch($diff[0]){
+                case Diff::UNMATCHED:
+                    // we collect error info so we can count and display them on passage
+                    $error = new \stdClass();
+                    $error->word = $passagebits[$currentword - 1];
+                    $error->wordnumber = $currentword;
+                    $errors->{$currentword} = $error;
+                    break;
+
+                case Diff::MATCHED:
+                    // we collect match info so we can play audio from selected word
+                    $match = new \stdClass();
+                    $match->word = $passagebits[$currentword - 1];
+                    $match->pposition = $currentword;
+                    $match->tposition = $diff[1];
+                    $match->audiostart = 0;// not meaningful when processing corrections
+                    $match->audioend = 0;// not meaningful when processing corrections
+                    $match->altmatch = $diff[2];// not meaningful when processing corrections
+                    $matches->{$currentword} = $match;
+                    $lastunmodified = $currentword;
+                    break;
+
+                default:
+                    // do nothing
+                    // should never get here
+
+            }
+        }
+        $sessionendword = $lastunmodified;
+
+        // discard errors that happen after session end word.
+        $errorcount = 0;
+        $finalerrors = new \stdClass();
+        foreach($errors as $key => $error) {
+            if ($key < $sessionendword) {
+                $finalerrors->{$key} = $error;
+                $errorcount++;
+            }
+        }
+        // finalise and serialise session errors
+        $sessionerrors = json_encode($finalerrors);
+        $sessionmatches = json_encode($matches);
+
+        return [$sessionerrors, $sessionmatches, $insertioncount];
+    }
+
+    // fetch the AI Grade
+    public static function fetch_ai_grade($token, $region, $ttslanguage, $studentresponse, $instructions) {
+        global $USER;
+        $instructionsjson = json_encode($instructions);
+        // The REST API we are calling
+        $functionname = 'local_cpapi_call_ai';
+
+        $params = [];
+        $params['wstoken'] = $token;
+        $params['wsfunction'] = $functionname;
+        $params['moodlewsrestformat'] = 'json';
+        $params['action'] = 'autograde_text';
+        $params['appid'] = 'mod_readaloud';
+        $params['prompt'] = $instructionsjson;
+        $params['language'] = $ttslanguage;
+        $params['subject'] = $studentresponse;
+        $params['region'] = $region;
+        $params['owner'] = hash('md5', $USER->username);
+
+        // log.debug(params);
+
+        $serverurl = self::CLOUDPOODLL . '/webservice/rest/server.php';
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        }
+        $payloadobject = json_decode($response);
+
+        // returnCode > 0  indicates an error
+        if (!isset($payloadobject->returnCode) || $payloadobject->returnCode > 0) {
+            return false;
+            // if all good, then lets return
+        } else if ($payloadobject->returnCode === 0) {
+            $autograderesponse = $payloadobject->returnMessage;
+            // clean up the correction a little
+            if(\core_text::strlen($autograderesponse) > 0 && self::is_json($autograderesponse)){
+                $autogradeobj = json_decode($autograderesponse);
+                if(isset($autogradeobj->feedback) && $autogradeobj->feedback == null){
+                    unset($autogradeobj->feedback);
+                }
+                if(isset($autogradeobj->marks) && $autogradeobj->marks == null){
+                    unset($autogradeobj->marks);
+                }
+                return $autogradeobj;
+            }else{
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+
+    public static function get_relevance_options() {
+        $ret = [
+            constants::RELEVANCETYPE_NONE => get_string('relevancetype_none', constants::M_COMPONENT),
+            constants::RELEVANCETYPE_QUESTION => get_string('relevancetype_question', constants::M_COMPONENT),
+            constants::RELEVANCETYPE_MODELANSWER => get_string('relevancetype_modelanswer', constants::M_COMPONENT),
+        ];
+        return $ret;
+    }
+    // This is for the case when a quiz item result comes in, but we have had no reading attempt, so no attempt record
+    // We need to create a new attempt record and update it with the quiz result
+    public static function create_new_attempt($courseid, $readaloudid) {
+        global $DB, $USER;
+
+        $attempt = new \stdClass();
+        $attempt->courseid = $courseid;
+        $attempt->readaloudid = $readaloudid;
+        $attempt->userid = $USER->id;
+        $attempt->timecreated = time();
+        $attempt->status = constants::M_STATE_QUIZINPROGRESS;
+        $attempt->qscore = 0;
+        $attempt->qdetails = '';
+        $attempt->id = $DB->insert_record(constants::M_USERTABLE, $attempt);
+        return $attempt;
+    }
+
+    public static function update_quizstep_grade($cmid, $stepdata) {
+
+        global $CFG, $USER, $DB;
+
+        $message = '';
+        $returndata = false;
+
+        $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        $modulecontext = \context_module::instance($cm->id);
+        $moduleinstance  = $DB->get_record(constants::M_MODNAME, ['id' => $cm->instance], '*', MUST_EXIST);
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'id DESC');
+
+        // Get or create attempt.
+        if (!$attempts) {
+            $latestattempt = self::create_new_attempt($moduleinstance->course, $moduleinstance->id);
+        } else {
+            $latestattempt = reset($attempts);
+        }
+
+        // Get or create sessiondata.
+        if (empty($latestattempt->qdetails)) {
+            $qdetails = new \stdClass();
+            $qdetails->steps = [];
+        } else {
+            $qdetails = json_decode($latestattempt->qdetails);
+        }
+
+        // if qdetails is not an array, reconstruct it as an array
+        if (!is_array($qdetails->steps)) {
+            $qdetails->steps = self::remake_quizsteps_as_array($qdetails->steps);
+        }
+        // add our latest step to session
+        $qdetails->steps[$stepdata->index] = $stepdata;
+
+        // grade quiz results
+        $quizhelper = new quizhelper($cm);
+        $totalitems = $quizhelper->fetch_item_count();
+
+        // raise step submitted event
+        $latestattempt->qdetails = json_encode($qdetails);
+       // \mod_readaloud\event\step_submitted::create_from_attempt($latestattempt, $modulecontext, $stepdata->index)->trigger();
+
+        // close out the attempt and update the grade
+        // there should never be more steps than items
+        // [hack] but there seem to be times when there are fewer( when an update_step_grade failed or didnt arrive),
+        // so we also allow the final item. Though it's not ideal because we will have missed one or more
+        if($totalitems <= count($qdetails->steps) || $stepdata->index == $totalitems - 1) {
+            $newgrade = true;
+            $latestattempt->qscore = self::calculate_quiz_score($qdetails->steps);
+            $latestattempt->status = constants::M_STATE_QUIZCOMPLETE;
+           // \mod_readaloud\event\attempt_submitted::create_from_attempt($latestattempt, $modulecontext)->trigger();
+        }else{
+            $newgrade = false;
+        }
+
+        // update the record
+        $result = $DB->update_record(constants::M_USERTABLE, $latestattempt);
+        if($result) {
+            $returndata = '';
+            if($newgrade) {
+                require_once($CFG->dirroot . constants::M_PATH . '/lib.php');
+                readaloud_update_grades($moduleinstance, $USER->id, false);
+            }
+        }else{
+            $message = 'unable to update attempt record';
+        }
+
+        // return_to_page($result,$message,$returndata);
+        return [$result, $message, $returndata];
+    }
+
+    public static function calculate_quiz_score($steps) {
+        $results = array_filter($steps, function($step){return $step->hasgrade;});
+        $correctitems = 0;
+        $totalitems = 0;
+        foreach($results as $result){
+            $correctitems += $result->correctitems;
+            $totalitems += $result->totalitems;
+        }
+        $totalpercent = round(($correctitems / $totalitems) * 100, 0);
+        return $totalpercent;
+    }
+
+     // JSON stringify functions will make objects(not arrays) if keys are not sequential
+    // sometimes we seem to miss a step. Remedying that with this function prevents an all out disaster.
+    // But we should not miss steps
+    public static function remake_quizsteps_as_array($stepsobject) {
+        if(is_array($stepsobject)) {
+            return $stepsobject;
+        }else{
+            $steps = [];
+            foreach ($stepsobject as $key => $value)
+            {
+                if(is_numeric($key)){
+                    $key = intval($key);
+                    $steps[$key] = $value;
+                }
+
+            }
+            //sort asc according to the key (itemorder)
+            ksort($steps);
+            return $steps;
+        }
+    }
+
+    //Return finished quiz results in a format that can be passed to a mustache template
+    public static function fetch_quiz_results($quizhelper, $theattempt, $cm) {
+        global $CFG, $DB, $PAGE;
+
+        // Quiz data.
+        require_login($cm->course, true, $cm);
+        $renderer = $PAGE->get_renderer('mod_readaloud');
+        $quizdata = $quizhelper->fetch_quiz_items_for_js($renderer);
+
+        // Course , context and module instance.
+        $course = $DB->get_record('course', ['id' => $theattempt->courseid]);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        $context = \context_module::instance($cm->id);
+
+        // Steps data.
+        $steps = json_decode($theattempt->qdetails)->steps;
+
+        // Prepare results for display.
+        if (!is_array($steps)) {
+            $steps = utils::remake_quizsteps_as_array($steps);
+        }
+        $results = array_filter($steps, function($step){return $step->hasgrade;
+        });
+        $useresults = [];
+        foreach ($results as $result) {
+
+            $items = $DB->get_record(constants::M_QTABLE, ['id' => $quizdata[$result->index]->id]);
+            $result->title = $items->name;
+
+            // Question text.
+            $itemtext = file_rewrite_pluginfile_urls($items->{constants::TEXTQUESTION},
+                'pluginfile.php', $context->id, constants::M_COMPONENT,
+                constants::TEXTQUESTION_FILEAREA, $items->id);
+            $itemtext = format_text($itemtext, FORMAT_MOODLE, ['context' => $context]);
+            $result->questext = $itemtext;
+            $result->itemtype = $quizdata[$result->index]->type;
+            $result->resultstemplate = $result->itemtype .'results';
+
+            // Correct answer.
+            switch($result->itemtype){
+
+                case constants::TYPE_SHORTANSWER:
+                case constants::TYPE_LGAPFILL:
+                case constants::TYPE_TGAPFILL:
+                case constants::TYPE_SGAPFILL:
+                    $result->hascorrectanswer = true;
+                    $result->correctans = $quizdata[$result->index]->sentences;
+                    $result->hasanswerdetails = false;
+                    break;
+
+                case constants::TYPE_MULTIAUDIO:
+                case constants::TYPE_MULTICHOICE:
+                    $result->hascorrectanswer = true;
+                    $result->hasincorrectanswer = true;
+                    $result->hasanswerdetails = false;
+                    $correctanswers = [];
+                    $incorrectanswers = [];
+                    $correctindex = $quizdata[$result->index]->correctanswer;
+                    for ($i = 1; $i < 5; $i++) {
+                        if (!isset($quizdata[$result->index]->{"customtext" . $i})) {
+                            continue;
+                        }
+                        if ($i == $correctindex) {
+                            $correctanswers[] = ['sentence' => $quizdata[$result->index]->{"customtext" . $i}];
+                        } else {
+                            $incorrectanswers[] = ['sentence' => $quizdata[$result->index]->{"customtext" . $i}];
+                        }
+                    }
+                    $result->correctans = $correctanswers;
+                    $result->incorrectans = $incorrectanswers;
+                    break;
+
+                case constants::TYPE_FREEWRITING:
+                case constants::TYPE_FREESPEAKING:
+                    $result->hascorrectanswer = false;
+                    $result->hasincorrectanswer = false;
+                    if (isset($result->resultsdata)) {
+                        $result->hasanswerdetails = true;
+                        // The free writing and reading both need to be told to show no reattempt button.
+                        $result->resultsdata->noreattempt = true;
+                        $result->resultsdatajson = json_encode($result->resultsdata, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                    } else {
+                        $result->hasanswerdetails = false;
+                    }
+                    break;
+
+                default:
+                    $result->hascorrectanswer = false;
+                    $result->hasincorrectanswer = false;
+                    $result->hasanswerdetails = false;
+                    $result->correctans = [];
+                    $result->incorrectans = [];
+            }
+
+            $result->index++;
+            // Every item stars.
+            if ($result->grade == 0) {
+                $ystarcnt = 0;
+            } else if ($result->grade < 19) {
+                $ystarcnt = 1;
+            } else if ($result->grade < 39) {
+                $ystarcnt = 2;
+            } else if ($result->grade < 59) {
+                $ystarcnt = 3;
+            } else if ($result->grade < 79) {
+                $ystarcnt = 4;
+            } else {
+                $ystarcnt = 5;
+            }
+            $result->yellowstars = array_fill(0, $ystarcnt, true);
+            $gstarcnt = 5 - $ystarcnt;
+            $result->graystars = array_fill(0, $gstarcnt, true);
+
+            $useresults[] = $result;
+        }
+
+        // Output results and back to course button.
+        $tdata = new \stdClass();
+
+        // Course name at top of page.
+        $tdata->coursename = $course->fullname;
+        // Item stars.
+        if ($theattempt->qscore == 0) {
+            $ystarcnt = 0;
+        } else if ($theattempt->qscore < 19) {
+            $ystarcnt = 1;
+        } else if ($theattempt->qscore < 39) {
+            $ystarcnt = 2;
+        } else if ($theattempt->qscore < 59) {
+            $ystarcnt = 3;
+        } else if ($theattempt->qscore < 79) {
+            $ystarcnt = 4;
+        } else {
+            $ystarcnt = 5;
+        }
+        $tdata->yellowstars = array_fill(0, $ystarcnt, true);
+        $gstarcnt = 5 - $ystarcnt;
+        $tdata->graystars = array_fill(0, $gstarcnt, true);
+
+        $tdata->total = $theattempt->qscore;
+        $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' .
+            $theattempt->courseid . '#section-'. ($cm->section - 1);
+
+        // Depending on finish screen settings.
+        switch($moduleinstance->qfinishscreen){
+            case constants::FINISHSCREEN_FULL:
+            case constants::FINISHSCREEN_CUSTOM:
+                $tdata->results = $useresults;
+                $tdata->showfullresults = true;
+                break;
+
+            case constants::FINISHSCREEN_SIMPLE:
+            default:
+                $tdata->results = [];
+        }
+        return $tdata;
+    }
+
+    public static function do_mb_str_split($string, $splitlength = 1, $encoding = null) {
+        // for greater than PHP 7.4
+        if (version_compare(PHP_VERSION, '7.4.0', '>=')) {
+            // Code for PHP 7.4 and above
+            return mb_str_split($string, $splitlength, $encoding);
+        }
+
+        // for less than PHP 7.4
+        if (null !== $string && !\is_scalar($string) && !(\is_object($string) && \method_exists($string, '__toString'))) {
+            trigger_error('mb_str_split(): expects parameter 1 to be string, '.\gettype($string).' given', E_USER_WARNING);
+            return null;
+        }
+        if (null !== $splitlength && !\is_bool($splitlength) && !\is_numeric($splitlength)) {
+            trigger_error('mb_str_split(): expects parameter 2 to be int, '.\gettype($splitlength).' given', E_USER_WARNING);
+            return null;
+        }
+        $splitlength = (int) $splitlength;
+        if (1 > $splitlength) {
+            trigger_error('mb_str_split(): The length of each segment must be greater than zero', E_USER_WARNING);
+            return false;
+        }
+        if (null === $encoding) {
+            $encoding = mb_internal_encoding();
+        } else {
+            $encoding = (string) $encoding;
+        }
+
+        if (! in_array($encoding, mb_list_encodings(), true)) {
+            static $aliases;
+            if ($aliases === null) {
+                $aliases = [];
+                foreach (mb_list_encodings() as $encoding) {
+                    $encodingaliases = mb_encoding_aliases($encoding);
+                    if ($encodingaliases) {
+                        foreach ($encodingaliases as $alias) {
+                            $aliases[] = $alias;
+                        }
+                    }
+                }
+            }
+            if (! in_array($encoding, $aliases, true)) {
+                trigger_error('mb_str_split(): Unknown encoding "'.$encoding.'"', E_USER_WARNING);
+                return null;
+            }
+        }
+
+        $result = [];
+        $length = mb_strlen($string, $encoding);
+        for ($i = 0; $i < $length; $i += $splitlength) {
+            $result[] = mb_substr($string, $i, $splitlength, $encoding);
+        }
+        return $result;
     }
 
     public static function super_trim($str){

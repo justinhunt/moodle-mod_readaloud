@@ -161,8 +161,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                                 //if we are not showing grades, everyone gets 5 stars
                                 if(!that.showgrades){payloadobject.rating=5;}
 
-                                var emptystar='fa-star-o';
-                                var solidstar='fa-star';
+                                var emptystar='fa-regular fa-star';
+                                var solidstar='fa-solid fa-star';
                                 var stars=[];
                                 for(var star=0;star<5;star++){
                                     stars[star] = payloadobject.rating > star ? solidstar : emptystar;

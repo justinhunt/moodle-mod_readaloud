@@ -983,3 +983,19 @@ function readaloud_get_coursemodule_info($coursemodule) {
     $result->customdata['allowsubmissionsfromdate'] = $moduleinstance->viewstart;
     return $result;
 }
+
+function readaloud_output_fragment_preview($args) {
+    global $DB, $PAGE;
+    $args = (object) $args;
+    $context = $args->context;
+
+    $cm         = get_coursemodule_from_id('readaloud', $context->instanceid, 0, false, MUST_EXIST);
+    $course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $moduleinstance  = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST);
+
+    $rsquestionrenderer = $PAGE->get_renderer('mod_readaloud', 'rsquestion');
+    $quizhelper = new \mod_readaloud\quizhelper($cm);
+    $ret = $rsquestionrenderer->show_quiz_preview($quizhelper, $args->itemid);
+    $ret .= $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $args->itemid);
+    return $ret;
+}

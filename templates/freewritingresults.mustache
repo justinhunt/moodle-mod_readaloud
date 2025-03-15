@@ -1,0 +1,78 @@
+<div class="ml_freespeaking_results">
+<div class="ml_freespeaking_results_summaries">
+  <div class="ml_fs_results_summary">
+    <span class="ml_fs_sumcell_title">sentences</span>
+    <span class="ml_fs_sumcell_content">{{stats.sentences}}</span>
+  </div>
+  <div class="ml_fs_results_summary">
+    <span class="ml_fs_sumcell_title">words</span>
+    <span class="ml_fs_sumcell_content">{{stats.words}}</span>
+  </div>
+  <div class="ml_fs_results_summary">
+    <span class="ml_fs_sumcell_title">unique words</span>
+    <span class="ml_fs_sumcell_content">{{stats.wordsunique}}</span>
+  </div>
+  <div class="ml_fs_results_summary">
+    <span class="ml_fs_sumcell_title">idea count</span>
+    <span class="ml_fs_sumcell_content">{{stats.ideacount}}</span>
+  </div>
+  <div class="ml_fs_results_summary">
+    <span class="ml_fs_sumcell_title">relevance</span>
+    <span class="ml_fs_sumcell_content">{{stats.relevance}}%</span>
+  </div>
+</div>
+<div class="mlfsr_originaltext_container"><b>Original:</b><br/><span class="mlfsr_originaltext">{{{markeduppassage}}}</span></div>
+<div class="mlfsr_correctedtext_container"><b>Corrected:</b><br/>
+  <span class="mlfsr_correctedtext">{{{markedupcorrections}}}</span>
+  {{>mod_readaloud/summary_togglecorrections}}
+</div>
+<div class="ml_freespeaking_results_summaries">
+  <!-- not needed currently
+  <div class="ml_fs_results_summary">
+    <span class="ml_fs_sumcell_title">{{#str}}score , mod_readaloud{{/str}}</span>
+    <span class="ml_fs_sumcell_content">{{rawscore}}/{{maxscore}}</span>
+  </div>
+  <div class="ml_fs_results_summary">
+    <span class="ml_fs_sumcell_title">Words</span>
+    <span class="ml_fs_sumcell_content">{{stats.words}}</span>
+  </div>
+  -->
+  <div class="ml_fs_results_summary" style="margin: auto">
+    <span class="ml_fs_sumcell_title">{{#str}}score , mod_readaloud{{/str}}</span>
+    <span class="ml_fs_sumcell_content">{{percentscore}}%</span>
+  </div>
+</div>
+</div>
+<br/><b>{{#str}}aigrade_feedback_title , mod_readaloud{{/str}}:</b>
+<ul class="{{rtl}}">
+{{#feedback}}
+<li>{{.}}</li>
+{{/feedback}}
+</ul>
+</div>
+{{^noreattempt}}
+<div class="readaloud_actionbutton">
+<a class="btn btn-secondary center" href="#" id = "{{uniqid}}_reattempt">
+    {{#str}}reattempt, mod_readaloud{{/str}}</a>
+</div>
+{{/noreattempt}}
+{{^element.frozen}}
+{{#js}}
+    require(['jquery', 'core/notification', 'core/log'], function($, notification, log) {
+      var reattemptbutton = $('#{{uniqid}}_reattempt');
+      reattemptbutton.on('click',function(e){
+        e.preventDefault();
+        notification.confirm('{{#str}}reattempt, mod_readaloud{{/str}}', 
+                            '{{#str}}reallyreattempt, mod_readaloud{{/str}}',
+                            '{{#str}}reattempt, mod_readaloud{{/str}}','',
+                            function(){
+                                reattemptbutton .closest('.ml_freewriting_resultsbox').hide();
+                                reattemptbutton .closest('.ml_freewriting_pendingbox').hide();
+                                reattemptbutton .closest('.ml_freewriting_resultsbox').siblings('.ml_freewriting_actionbox').show();
+                            });
+            
+            
+      });
+    });
+{{/js}}
+{{/element.frozen}}
