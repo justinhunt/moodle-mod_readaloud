@@ -188,13 +188,7 @@ class alphabetconverter {
             return "tysiąc";
         } else if ($number < 21) {
             return $words[$number];
-        } else if ($number < 100) {
-            if ($number % 10 === 0) {
-                return $words[$number];
-            } else {
-                return $words[(int) ($number / 10) * 10] . ' ' . $words[$number % 10];
-            }
-        } else if(array_key_exists($number,$words)){
+        }else if(array_key_exists($number,$words)){
             return $words[$number];
         } else {
             return self::numberToWords_pl(intval($number / 100)) . " " .  $words['hundred'] . " " . self::numberToWords_pl($number % 100);

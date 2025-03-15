@@ -10,17 +10,3 @@ Read Aloud requires a Cloud Poodll API username and secret from https://poodll.c
 
 Justin Hunt
 poodllsupport@gmail.com
-
-
-// TODO: Remove notes.
-For mode journey:
-const modes = [
-  { name: "Listen", completed: true },
-  { name: "Practice", completed: true },
-  { name: "Shadow", completed: false },
-  { name: "Read", completed: false },
-  { name: "Quiz", completed: false },
-  { name: "Reported", completed: false }
-];
-
-Tooltip content: {mode.completed ? "Completed" : `Next: ${modes[index + 1]?.name || "End"}`}

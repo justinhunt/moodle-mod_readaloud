@@ -1,6 +1,5 @@
-define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification',
-    'mod_readaloud/ttbrowserrec','core/str','mod_readaloud/timer' ],
-    function ($, log, audioHelper, notification, browserRec, str, timer) {
+define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification','mod_readaloud/ttbrowserrec'],
+    function ($, log, audioHelper, notification, browserRec) {
         "use strict"; // jshint ;_;
         /*
         *  The TT recorder
@@ -35,7 +34,6 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             currentTime: 0,
             stt_guided: false,
             currentPrompt: false,
-            strings: {},
 
             //for making multiple instances
             clone: function () {
@@ -45,48 +43,48 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             init: function(opts){
 
                 var that = this;
+
                 this.uniqueid=opts['uniqueid'];
                 this.callback=opts['callback'];
                 this.stt_guided = opts['stt_guided'] ? opts['stt_guided'] : false;
                 this.shadow = opts['shadow'];
-                this.init_strings();
                 this.prepare_html();
                 this.controls.recordercontainer.show();
                 this.register_events();
 
                 //set up events
                 var on_gotstream=  function(stream) {
+
+                    //clear any existing interval
+                    if(that.interval!==undefined){
+                        clearInterval(that.interval);
+                    }
+
                     var newaudio={stream: stream, isRecording: true};
                     that.update_audio(newaudio);
+                    that.currentTime = 0;
+
+                    that.interval = setInterval(function() {
+                        if (that.currentTime < that.maxTime) {
+                            that.currentTime += 10;
+                        } else {
+                            that.update_audio('isRecognizing',true);
+                            // vm.isRecognizing = true;
+                            that.audiohelper.stop();
+                        }
+                    }, 10);
 
                 };
 
-                  // Callback: Timer updates.
-            var handle_timer_update = function(){
-                var displaytime = that.timer.fetch_display_time();
-                that.controls.timerstatus.html(displaytime);
-                log.debug('timer_seconds: ' + that.timer.seconds);
-                log.debug('displaytime: ' + displaytime);
-                if (that.timer.seconds == 0 && that.timer.initseconds > 0) {
-                    that.update_audio('isRecognizing', true);
-                    if(that.usebrowserrec){
-                        that.browserrec.stop();
-                    }else{
-                        that.audiohelper.stop();
-                    }
-                }
-            };
-
-            // Callback: Recorder device errors.
                 var on_error = function(error) {
                     switch (error.name) {
                         case 'PermissionDeniedError':
                         case 'NotAllowedError':
-                        notification.alert("Error",that.strings.allowmicaccess, "OK");
+                            notification.alert("Error",'Please allow access to your microphone!', "OK");
                             break;
                         case 'DevicesNotFoundError':
                         case 'NotFoundError':
-                        notification.alert("Error",that.strings.nomicdetected, "OK");
+                            notification.alert("Error",'No microphone detected!', "OK");
                             break;
                         default:
                             //other errors, like from Edge can fire repeatedly so a notification is not a good idea
@@ -95,9 +93,8 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                     }
                 };
 
-            // Callback: Recording stopped.
                 var on_stopped = function(blob) {
-                    that.timer.stop()
+                    clearInterval(that.interval);
 
                     //if the blob is undefined then the user is super clicking or something
                     if(blob===undefined){
@@ -116,15 +113,18 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
 
                     that.deepSpeech2(that.audio.blob, function(response){
                         log.debug(response);
+                        that.update_audio('isRecognizing',false);
                         if(response.data.result==="success" && response.data.transcript){
                             that.gotRecognition(response.data.transcript.trim());
                         } else {
-                        notification.alert("Information",that.strings.speechnotrecognized, "OK");
+                            notification.alert("Information","We could not recognize your speech.", "OK");
                         }
-                        that.update_audio('isRecognizing',false);
                     });
 
                 };
+
+
+
 
                 //If browser rec (Chrome Speech Rec) (and ds is optiona)
                 if(browserRec.will_work_ok() && ! this.stt_guided){
@@ -148,10 +148,6 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                         that.update_audio('isRecognizing',false);
                     };
 
-                    that.browserrec.oninterimspeechcapture=function(speechtext){
-                        that.gotInterimRecognition(speechtext);
-                    };
-
                     //If DS rec
                 }else {
                     //set up wav for ds rec
@@ -165,32 +161,11 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
 
                 }//end of setting up recorders
 
-            // Setting up timer.
-            this.timer = timer.clone();
-            this.timer.init(this.maxTime, handle_timer_update);
-            // Init the timer readout
-            handle_timer_update();
-        },
-
-        init_strings: function(){
-            var that=this;
-            str.get_strings([
-                { "key": "allowmicaccess", "component": 'mod_readaloud'},
-                { "key": "nomicdetected", "component": 'mod_readaloud'},
-                { "key": "speechnotrecognized", "component": 'mod_readaloud'},
-
-            ]).done(function (s) {
-                var i = 0;
-                that.strings.allowmicaccess = s[i++];
-                that.strings.nomicdetected = s[i++];
-                that.strings.speechnotrecognized = s[i++];
-            });
-        },
+            },
 
             prepare_html: function(){
                 this.controls.recordercontainer =$('#ttrec_container_' + this.uniqueid);
                 this.controls.recorderbutton = $('#ttrec_' + this.uniqueid + '_recorderdiv');
-                this.controls.timerstatus = $('.timerstatus_' + this.uniqueid);
                 this.passagehash =this.controls.recorderbutton.data('passagehash');
                 this.region=this.controls.recorderbutton.data('region');
                 this.asrurl=this.controls.recorderbutton.data('asrurl');
@@ -206,7 +181,6 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
             },
 
             update_audio: function(newprops,val){
-                
                 if (typeof newprops === 'string') {
                     log.debug('update_audio:' + newprops + ':' + val);
                     if (this.audio[newprops] !== val) {
@@ -272,14 +246,6 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                 this.callback(message);
             },
 
-            gotInterimRecognition:function(transcript){
-                var message={};
-                message.type='interimspeech';
-                message.capturedspeech = transcript;
-            //POINT
-                this.callback(message);
-            },
-
             cleanWord: function(word) {
                 return word.replace(/['!"#$%&\\'()\*+,\-\.\/:;<=>?@\[\\\]\^_`{|}~']/g,"").toLowerCase();
             },
@@ -308,10 +274,9 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
 
                 //If we are current recording
                 if (this.audio.isRecording) {
-                    that.timer.stop();
-
                     //If using Browser Rec (chrome speech)
                     if(this.usebrowserrec){
+                        clearInterval(that.interval);
                         that.update_audio('isRecording',false);
                         that.update_audio('isRecognizing',true);
                         this.browserrec.stop();
@@ -322,19 +287,30 @@ define(['jquery', 'core/log', 'mod_readaloud/ttaudiohelper', 'core/notification'
                         this.audiohelper.stop();
                     }
 
+                    //lets notify the caller we stopped recording
+                    log.debug('recording stopped:');
+                    var message={};
+                    message.type='recordingstopped';
+                    that.callback(message);
+
                     //If we are NOT currently recording
                 } else {
-                    // Run the timer
-                    that.currentTime = 0;
-                    that.timer.reset();
-                    that.timer.start();
-                
 
                     //If using Browser Rec (chrome speech)
                     if(this.usebrowserrec){
                         this.update_audio('isRecording',true);
                         this.browserrec.start();
-
+                        that.currentTime = 0;
+                        this.interval = setInterval(function() {
+                            if (that.currentTime < that.maxTime) {
+                                that.currentTime += 10;
+                            } else {
+                                that.update_audio('isRecording',false);
+                                that.update_audio('isRecognizing',true);
+                                clearInterval(that.interval);
+                                that.browserrec.stop();
+                            }
+                        }, 10);
 
                         //If using DS Rec
                     }else {

@@ -152,18 +152,7 @@ $capabilities = array(
                 'manager' => CAP_ALLOW
             ),
             'clonepermissionsfrom' => 'moodle/site:approvecourse'
-        ),
-
-        'mod/readaloud:managequestions' => array(
-            'riskbitmask' => RISK_SPAM | RISK_XSS,
-            'captype' => 'write',
-            'contextlevel' => CONTEXT_MODULE,
-            'archetypes' => array(
-                    'editingteacher' => CAP_ALLOW,
-                    'manager' => CAP_ALLOW
-            ),
-            'clonepermissionsfrom' => 'moodle/course:manageactivities'
-    ),
+        )
 
 
 

@@ -8,8 +8,8 @@
 
 namespace mod_readaloud\output;
 
-use mod_readaloud\constants;
-use mod_readaloud\utils;
+use \mod_readaloud\constants;
+use \mod_readaloud\utils;
 
 class passage_renderer extends \plugin_renderer_base {
 
