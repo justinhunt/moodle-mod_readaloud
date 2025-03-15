@@ -5,8 +5,7 @@
 .mod_readaloud_center>div,
 .mod_readaloud_center>table
 /* insert any other block-level elements here */
-
-  {
+{
   margin-left: auto;
   margin-right: auto;
 }
@@ -112,10 +111,6 @@ span.mod_readaloud_debugsequence {
   z-index: 8;
 }
 
-.mod_readaloud_grading_passagecont {
-  /* */
-}
-
 .mod_readaloud_passage_cont {
   font-size: 1.5em;
   border: 1px solid #dee2e6;
@@ -127,10 +122,8 @@ span.mod_readaloud_debugsequence {
 }
 
 .mod_readaloud_grading_action_cont {
-  border-style: double;
   padding: 3px;
-  border-color: gold;
-  margin-top: 15px;
+  margin-top: 1rem;
   align-items: center;
 }
 
@@ -195,14 +188,6 @@ div.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
 
 .mod_readaloud_recording_cont {
   display: none;
-}
-
-.mod_readaloud_smallreport_cont {
-  /* display: none; */
-  padding: 5px;
-  border: 1px solid #dee2e6;
-  max-width: 920px;
-  margin: 1rem auto;
 }
 
 .mod_readaloud_feedback_cont {
@@ -316,7 +301,7 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
 .mod_readaloud_grading_sessionscore_cont {
   color: blue;
   display: flex;
-  margin-left: 15px;
+  margin-left: 1rem;
 }
 
 .mod_readaloud_grading_wpm_img {
@@ -514,18 +499,6 @@ div.mod_readaloud_attemptsummarytable {
   margin-top: 20px;
 }
 
-/* .mode-chooser {
-  height: 100px;
-  margin-bottom: 10px;
-  position: relative;
-  background-repeat: none;
-  background-repeat: no-repeat;
-  -webkit-background-size: 100px;
-  background-size: 100px;
-  background-position: center;
-  cursor: pointer;
-} */
-
 .mode-chooser {
   display: flex;
   align-items: center;
@@ -536,37 +509,20 @@ div.mod_readaloud_attemptsummarytable {
   transition: transform 0.2s ease-in-out;
 }
 
-.mode-chooser.mode-read-icon {
-  height: 3rem;
-  width: 3rem;
-}
-
 .mode-chooser:hover {
   transform: scale(1.1);
 }
 
-.mode-chooser.preview {
-  background-image: url([[pix:mod_readaloud|preview]]);
+.nav-link {
+  display: inline-block !important;
+  transition: transform 0.3s ease;
+  transform-origin: center;
 }
 
-.mode-chooser.readaloudshadow {
-  background-image: url([[pix:mod_readaloud|readaloudshadow]]);
-}
-
-.mode-chooser.readaloud {
-  background-image: url([[pix:mod_readaloud|readaloud_icon]]);
-}
-
-.mode-chooser.landr {
-  background-image: url([[pix:mod_readaloud|listenandrepeat]]);
-}
-
-.mode-chooser.quiz {
-  background-image: url([[pix:mod_readaloud|preview]]);
-}
-
-.mode-chooser.report {
-  background-image: url([[pix:mod_readaloud|preview]]);
+.nav-link:hover,
+.nav-link:focus,
+.nav-link:active {
+  transform: scale(1.1);
 }
 
 .mode-chooser.no-show {
@@ -744,57 +700,48 @@ div.mod_readaloud_attemptsummarytable {
   text-align: right;
 }
 
-/* New Small Report */
-.mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars  {
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 15px;
-  margin-top: 15px;
-  color: #FBB040;
-  text-shadow: 0 0 1px #000000;
-}
-.mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars .fa-star-o {
-  color: lightgrey;
-  text-shadow: none;
+/* Small report */
+.mod_readaloud_smallreport_cont {
+  /* padding: 5px; */
+  /* max-width: 920px; */
+  margin: 1rem auto;
 }
 
+.mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars {
+  color: orange;
+  font-size: 1.25rem;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  width: 100%;
+}
+.mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars .fa-regular.fa-star {
+  color: lightgray;
+}
 
 .mod_readaloud_smallreport_cont  .mod_readaloud_smallreport_cards {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
   width: 100%;
-  margin-bottom: 15px;
-  margin-top: 15px;
 }
 
 @media screen and (min-width: 768px) {
   .mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars,
   .mod_readaloud_smallreport_cont  .mod_readaloud_smallreport_cards {
     width: 60%;
-    max-width: 420px;
+    max-width: 500px;
   }
 }
 
 .mod_readaloud_smallreport_cards .mod_readaloud_smallreport_card_content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 12px;
-  margin-bottom: -4px;
+  padding: 0.35rem;
 }
-
-.mod_readaloud_smallreport_cards .mod_readaloud_smallreport_card_content span {
-  font-weight: 700;
-  font-size: 30px;
-  /* color: #A49AD0; */
-  margin-bottom: -4px;
-}
-
 
 .mod_readaloud_smallreport_card_tag {
-  /* background: #E0E3FF; */
-  background: #FBB040;
+  background: orange;
   border-radius: 5px;
   font-weight: 700;
   font-size: 9px;
@@ -808,7 +755,6 @@ div.mod_readaloud_attemptsummarytable {
   top: -12px;
   bottom: auto;
 }
-
 
 .mod_readaloud_smallreport_card {
   background: #FAFBFD;
@@ -840,9 +786,9 @@ div.mod_readaloud_attemptsummarytable {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 15px;
-  margin-bottom: 15px;
-  margin-top: 15px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
   position: relative;
 }
 
@@ -1441,7 +1387,7 @@ div.mod_readaloud_attemptsummarytable {
   border: 1px solid darkgray;
   position: relative;
   margin: auto;
-  padding-bottom: 15px;
+  padding-bottom: 1rem;
 }
 
 .readaloud_lgapfill_player_box .lgapfill_prompt {
@@ -1605,7 +1551,7 @@ div.mod_readaloud_attemptsummarytable {
   border: 1px solid darkgray;
   position: relative;
   margin: auto;
-  padding-bottom: 15px;
+  padding-bottom: 1rem;
 }
 
 .readaloud_tgapfill_player_box .tgapfill_prompt {
@@ -1769,7 +1715,7 @@ div.mod_readaloud_attemptsummarytable {
   border: 1px solid darkgray;
   position: relative;
   margin: auto;
-  padding-bottom: 15px
+  padding-bottom: 1rem;
 }
 
 .readaloud_sgapfill_player_box .sgapfill_prompt {
@@ -2012,7 +1958,7 @@ body.poodll-readaloud-embed #page {
   border: 1px solid darkgray;
   position: relative;
   margin: auto;
-  padding-bottom: 15px;
+  padding-bottom: 1rem;
 }
 
 .readaloud_lgapfill_player_box .lgapfill_prompt {
@@ -2174,7 +2120,7 @@ body.poodll-readaloud-embed #page {
   border: 1px solid darkgray;
   position: relative;
   margin: auto;
-  padding-bottom: 15px;
+  padding-bottom: 1rem;
 }
 
 .readaloud_tgapfill_player_box .tgapfill_prompt {
@@ -2337,7 +2283,7 @@ body.poodll-readaloud-embed #page {
   border: 1px solid darkgray;
   position: relative;
   margin: auto;
-  padding-bottom: 15px
+  padding-bottom: 1rem;
 }
 
 .readaloud_sgapfill_player_box .sgapfill_prompt {
@@ -2702,7 +2648,7 @@ overflow: auto;
 .journey-arrow {
   font-size: 24px;
   color: #6c757d;
-  margin: 0 15px;
+  margin: 0 1rem;
 }
 
 /* Prevent last mode from shifting */
@@ -2724,7 +2670,6 @@ overflow: auto;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
-
 
 .visible {
   visibility: visible;

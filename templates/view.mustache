@@ -1,61 +1,37 @@
-{{!
-    This file is part of Moodle - http://moodle.org/
-
-    Moodle is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Moodle is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-}}
-{{!
-    @template mod_readaloud/view2
-
-    The view page for the readaloud module.
-
-    Example context (json):
-    {
-        showintro: true,
-    }
-}}
-<div class="container-fluid">
-    <div class="card" style="user-select: none;">
+<div id="{{M_COMPONENT}}" class="container-fluid mx-n3">
+    <div class="card">
         <div class="card-header bg-transparent">
-            <!--<h3>Title</h3>
-            <h4 class="text-muted">Anything here?</h4>
-            <p>Anything here?</p>
-            <span class="badge badge-pill badge-primary">Tag 1</span>
-            <span class="badge badge-pill badge-primary">Tag 2</span>
-            <span class="badge badge-pill badge-primary">Tag 3</span>
-            <span class="badge badge-pill badge-primary">Tag 4</span>
-            <span class="badge badge-pill badge-primary">Tag 5</span>-->
             {{#openclosedates.hasopenclosedates}}
-            <div class='mod_readaloud_openclosedates'>
+            <div class="mod_readaloud_openclosedates">
                 <div class="activity-dates mb-1">
-                {{#openclosedates.opendate}}
-                    <div><strong>{{#str}} open, mod_readaloud {{/str}}</strong>
-                    {{#userdate}}{{openclosedates.opendate}}, {{#str}}strftimedatetime, core_langconfig {{/str}}{{/userdate}}</div>
-                {{/openclosedates.opendate}}
+                    {{#openclosedates.opendate}}
+                    <div>
+                        <strong>{{#str}} open, mod_readaloud {{/str}}</strong>
+                        {{#userdate}}{{openclosedates.opendate}}, {{#str}}strftimedatetime, core_langconfig {{/str}}{{/userdate}}
+                    </div>
+                    {{/openclosedates.opendate}}
 
-                {{#openclosedates.closedate}}
-                    <div><strong>{{#str}} until, mod_readaloud {{/str}}</strong>
-                    {{#userdate}}{{openclosedates.closedate}}, {{#str}}strftimedatetime, core_langconfig {{/str}}{{/userdate}}</div>
-                {{/openclosedates.closedate}}
+                    {{#openclosedates.closedate}}
+                    <div>
+                        <strong>{{#str}} until, mod_readaloud {{/str}}</strong>
+                        {{#userdate}}{{openclosedates.closedate}}, {{#str}}strftimedatetime, core_langconfig {{/str}}{{/userdate}}
+                    </div>
+                    {{/openclosedates.closedate}}
                 </div>
                 <div class="activity-status">
-                {{#openclosedates.activitynotopenyet}}
-                <div class="alert alert-warning">{{#str}} activityisnotopenyet, mod_readaloud {{/str}}</div>
-                {{/openclosedates.activitynotopenyet}}
+                    {{#openclosedates.activitynotopenyet}}
+                    <div class="alert alert-warning">{{#str}} activityisnotopenyet, mod_readaloud {{/str}}</div>
+                    {{/openclosedates.activitynotopenyet}}
 
-                {{#openclosedates.activityisclosed}}
-                <div class="alert alert-danger">{{#str}} activityisclosed, mod_readaloud {{/str}}</div>
-                {{/openclosedates.activityisclosed}}
+                    {{#openclosedates.activityisclosed}}
+                    <div class="alert alert-danger alert-dismissible fade in" role="alert" data-aria-autofocus="true">
+                        {{#str}} activityisclosed, mod_readaloud {{/str}}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Dismiss this notification</span>
+                        </button>
+                    </div>
+                    {{/openclosedates.activityisclosed}}
                 </div>
             </div>
             {{/openclosedates.hasopenclosedates}}
@@ -65,101 +41,75 @@
             {{{showintro}}}
         {{/showintro}}
 
-        <div class="card-body">
-            <div class="mod_readaloud_activityinstructions_const" id="mod_readaloud_activityinstructions_const">
-                <div class="box py-3 generalbox">
-                    <div class="mod_readaloud_center mod_readaloud_instructions">{{{instructions}}}</div>
-                </div>
-            </div>
-
+        <div class="card-body p-3">
             <div class="row">
-                <div id="mod_readaloud_menubuttons_cont" class="col-3">
-                    <div class="mod_readaloud_menuinstructions_const" id="mod_readaloud_menuinstructions_const">
-                        <div class="box py-3 generalbox">
-                            <div class="mod_readaloud_instructions pl-3">{{{welcomemessage}}}</div>
+                <div class="col-12 col-md-3 border-right my-n3 py-3">
+                    {{>mod_readaloud/bigbuttonmenu}}
+                </div>
+                <div class="col-12 col-md-9">
+                    <div id="{{M_MODE_IMAGE_CONTAINER}}" class="mode-chooser fa-solid text-primary d-block mx-auto mb-4"></div>
+
+                    <div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
+                        <div class="box">
+                            <div class="{{M_CLASS}}_center {{M_PREVIEWINSTRUCTIONS}}">
+                                {{#str}} previewhelp, mod_readaloud {{/str}}
+                            </div>
                         </div>
                     </div>
-                    <ul class="nav nav-pills flex-column mb-2">
-                        {{#enablepreview}}
-                        <li class="nav-item" id="mod_readaloud_button_startpreview">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="preview">{{#str}} mode_listen, mod_readaloud {{/str}}</a>
-                        </li>
-                        {{/enablepreview}}
-                        {{#enablelandr}}
-                        <li class="nav-item {{^hasaudiobreaks}}no-click{{/hasaudiobreaks}}" id="mod_readaloud_button_startlandr">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="landr">{{#str}} mode_practice, mod_readaloud {{/str}}</a>
-                            {{^hasaudiobreaks}}
-                            <span class="mod_readaloud_menubutton_warning">{{#str}} modelaudiowarning, mod_readaloud {{/str}}</span>
-                            {{/hasaudiobreaks}}
-                        </li>
-                        {{/enablelandr}}
-                        {{#enableshadow}}
-                        <li class="nav-item {{^canshadowattempt}}no-click{{/canshadowattempt}}" id="mod_readaloud_button_startshadow">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="shadow">{{#str}} mode_shadow, mod_readaloud {{/str}}</a>
-                            {{^canshadowattempt}}
-                            <!--<span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>-->
-                            {{/canshadowattempt}}
-                        </li>
-                        {{/enableshadow}}
-                        {{#enablenoshadow}}
-                        <li class="nav-item {{^canattempt}}no-click{{/canattempt}}" id="mod_readaloud_button_startnoshadow">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="startnoshadow">{{#str}} mode_read, mod_readaloud {{/str}}</a>
-                            {{^canattempt}}
-                            <span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>
-                            {{/canattempt}}
-                        </li>
-                        {{/enablenoshadow}}
-                        {{#enablequiz}}
-                        <li class="nav-item {{#noquiz}}no-click{{/noquiz}}" id="mod_readaloud_button_startquiz">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="quiz">{{#str}} mode_quiz, mod_readaloud {{/str}}</a>
-                            {{#quizcompleted}}
-                            <span class="mod_readaloud_menubutton_warning">{{#str}} quizcompletedwarning, mod_readaloud {{/str}}</span>
-                            {{/quizcompleted}}
-                        </li>
-                        {{/enablequiz}}
-                        <!--<li class="nav-item" id="mod_readaloud_smallreport_fullreport"> Change this to mod_readaloud_button_startreport-->
-                        <li class="nav-item" id="mod_readaloud_button_startreport">
-                            <a href="javascript:void(0)"  class="nav-link h6" data-mode="fullreport">Report</a>
-                        </li>
-                    </ul>
-                </div>
 
-                <div class="col-9">
-                    <div id="mod_readaloud_mode_image_cont" class="mode-chooser"></div>
-                    <div class="text-center mod_readaloud_previewinstructions">
-                    {{#showpreviewinstructions}}
-                        {{#str}} previewhelp, mod_readaloud {{/str}}
-                    {{/showpreviewinstructions}}
+                    <div id="{{M_LANDRINSTRUCTIONS_CONTAINER}}" class="{{M_LANDRINSTRUCTIONS_CONTAINER}}">
+                        <div class="box">
+                            <div class="{{M_CLASS}}_center {{M_LANDRINSTRUCTIONS}}">
+                                {{#str}} landrhelp, mod_readaloud {{/str}}
+                            </div>
+                        </div>
                     </div>
-                    <div class="text-center mod_readaloud_instructions">
-                    {{#showlandrinstructions}}
-                        {{#str}} landrhelp, mod_readaloud {{/str}}
-                    {{/showlandrinstructions}}
+
+                    {{#instructions}}
+                    <div id="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}" class="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}">
+                        <div class="box py-3 generalbox">
+                            <div class="{{M_CLASS}}_center {{M_INSTRUCTIONS}}">
+                                {{{instructions}}}
+                            </div>
+                        </div>
                     </div>
+                    {{/instructions}}
 
                     {{#feedback}}
-                    <div class="mod_readaloud_feedback_cont" id="mod_readaloud_feedback_cont">
-                        <div class="box py-3 generalbox">
-                            <div class="mod_readaloud_center">{{feedback}}</div>
+                    <div id="{{M_FEEDBACK_CONTAINER}}" class="{{M_FEEDBACK_CONTAINER}}">
+                        <div class="box">
+                            <div class="{{M_CLASS}}_center">
+                                {{{feedback}}}
+                            </div>
                         </div>
                     </div>
                     {{/feedback}}
 
-                    <!--{{#error}}
-                    <div class="mod_readaloud_error_cont" id="mod_readaloud_error_cont">
-                        <div class="box py-3 generalbox">
+                    {{#error}}
+                    <div id="{{M_ERROR_CONTAINER}}" class="{{M_ERROR_CONTAINER}}">
+                        <div class="box">
                             <h3 class="main">{{#str}} errorheader, mod_readaloud {{/str}}</h3>
                             <div>{{#str}} uploadconverterror, mod_readaloud {{/str}}</div>
                         </div>
                     </div>
-                    {{/error}}-->
+                    {{/error}}
 
-                    {{#stopandplay}}
-                    <div id='mod_readaloud_button_stopandplay'>
-                        <button id='mod_readaloud_button_play' style='margin:10px; width:40%; float:left;' class='btn btn-secondary'><i class='fa fa-play'></i> {{#str}} playbutton, mod_readaloud {{/str}}</button>
-                        <button id='mod_readaloud_button_stop' style='margin:10px; width:40%; float:right;' class='btn btn-secondary'><i class='fa fa-stop'></i> {{#str}} stopbutton, mod_readaloud {{/str}}</button>
+                    <div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active">
+                        {{>mod_readaloud/home}}
                     </div>
-                    {{/stopandplay}}
+
+                    <div id="{{M_QUIZ_CONTAINER}}" class="{{M_QUIZ_CONTAINER}}">
+                        {{{quizhtml}}}
+                    </div>
+
+                    <div id="mod_readaloud_readingcontainer" class="mod_readaloud_readingcontainer">
+                        {{{passagehtml}}}
+                    </div>
+                    <!-- Hidden input for update control -->
+                    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
+
+                    <!-- Hidden input storing JSON configuration -->
+                    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
 
                     {{#recorder}}
                     <div class="{{M_RECORDING_CONTAINER}}">
@@ -192,40 +142,28 @@
                     </div>
                     {{/recorder}}
 
-                    <div id='mod_readaloud_readingcontainer' class="mod_readaloud_readingcontainer">
-                        {{{passagehtml}}}
-                    </div>
-
-                    {{#activityamddata}}
-                    <!-- Hidden input for update control -->
-                    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
-
-                    <!-- Hidden input storing JSON configuration -->
-                    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
-                    {{/activityamddata}}
-
                     {{#progress}}
-                    <div class="mod_readaloud_hider" id="mod_readaloud_hider"></div>
-                    <div class="mod_readaloud_progress_cont" id="mod_readaloud_progress_cont">
+                    <div id="{{M_HIDER}}" class="{{M_HIDER}}"></div>
+                    <div id="{{M_PROGRESS_CONTAINER}}" class="{{M_PROGRESS_CONTAINER}}">
                         <h4>{{#str}} processing, mod_readaloud {{/str}}</h4>
                         <i class="fa fa-spinner fa-5x fa-spin"></i>
                     </div>
                     {{/progress}}
 
                     {{#wheretonext}}
-                    <div class="mod_readaloud_wheretonext_cont text-center">
+                    <div class="{{M_WHERETONEXT_CONTAINER}} text-center">
                         {{#backtotop}}
-                        <a class="mod_readaloud_center btn btn-secondary mod_readaloud_button_backtotop"
-                        id="mod_readaloud_button_backtotop"
-                        href="{{url}}">
-                            {{label}}
+                        <a class="{{M_CLASS}}_center btn btn-secondary {{M_BACKTOTOP}}"
+                           id="{{M_BACKTOTOP}}"
+                           href="{{backtotop_url}}">
+                            {{#str}} backtotop, mod_readaloud {{/str}}
                         </a>
                         {{/backtotop}}
 
                         {{#nextactivity}}
-                        <a class="mod_readaloud_center btn btn-primary mod_readaloud_button_nextactivity"
-                        href="{{url}}">
-                            {{label}}
+                        <a class="{{M_CLASS}}_center btn btn-primary {{M_NEXTACTIVITY}}"
+                           href="{{nextactivity_url}}">
+                            {{nextactivity_label}}
                         </a>
                         {{/nextactivity}}
                     </div>
@@ -235,19 +173,22 @@
                         {{>mod_readaloud/modalcontainer}}
                     {{/landr}}
 
-                    {{#returntomenu}}<!--currently not sent via $templatedata-->
-                    <button class="mod_readaloud_center btn-block btn btn-secondary mod_readaloud_button_returnmenu" type="button" id="mod_readaloud_button_returnmenu" embed={{embed}}>
-                    <i class="fa fa-arrow-left"></i> {{#str}} returnmenu, mod_readaloud {{/str}}</button>
-                    {{/returntomenu}}
+                    {{#smallreport}}
+                        {{>mod_readaloud/smallreport}}
+                    {{/smallreport}}
 
-
-                       <!-- {{>mod_readaloud/smallreport}}-->
-
-
+                    {{#stopandplay}}
+                    <div id="{{M_STOPANDPLAY}}" class="d-flex justify-content-center hidden p-1">
+                        <button id="{{M_STOP_BTN}}" class="btn btn-outline-primary m-2">
+                            <i class="fa fa-stop"></i> {{#str}} stopbutton, mod_readaloud {{/str}}
+                        </button>
+                        <button id="{{M_PLAY_BTN}}" class="btn btn-primary m-2">
+                            <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
+                        </button>
+                    </div>
+                    {{/stopandplay}}
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-

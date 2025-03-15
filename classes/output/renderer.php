@@ -332,7 +332,7 @@ class renderer extends \plugin_renderer_base {
             $ready = $rating > -1;
             $stars = [];
             for ($star = 0; $star < 5; $star++) {
-                $stars[] = $rating > $star ? 'fa-star' : 'fa-star-o';
+                $stars[] = $rating > $star ? 'fa-solid fa-star' : 'fa-regular fa-star';
             }
             $tdata['stars'] = $stars;
 
@@ -369,7 +369,15 @@ class renderer extends \plugin_renderer_base {
             'reviewattempts' => 1,
             'embed'          => $embed,
         ]);
-        $fullreportbutton = $this->output->single_button($url, $fullreportcaption);
+        $button = new \single_button(
+            $url,
+            $fullreportcaption,
+            'get',
+            \single_button::BUTTON_PRIMARY,
+            []
+        );
+        $fullreportbutton = $this->output->render($button);
+
         $tdata['fullreportbutton'] = $fullreportbutton;
         $tdata['showgrades'] = $showgrades;
         $tdata['showstats']  = $showstats;
@@ -1426,13 +1434,13 @@ class renderer extends \plugin_renderer_base {
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
 
         // Render the passage.
-        $mode = 'noquiz'; 
+        $mode = 'noquiz';
         if ($mode === 'quiz') {
             $modequiz = true;
         }else{
             $modequiz = false;
         }
-           
+
         // Render the passage.
         $widgetid = constants::M_RECORDERID . '_opts_9999';
         $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
@@ -1453,7 +1461,7 @@ class renderer extends \plugin_renderer_base {
             $extraclasses
         );
         $this->page->requires->js_call_amd("mod_readaloud/activitycontroller", 'init', [$opts]);
-        
+
 
         // Render the recorder.
         $recorder = $this->show_recorder($moduleinstance, $token, $debug);

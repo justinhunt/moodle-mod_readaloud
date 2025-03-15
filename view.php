@@ -270,15 +270,7 @@ $templatecontext = $renderer->get_view_page_data(
 );
 
 
-// echo $OUTPUT->render_from_template('mod_readaloud/view', $templatecontext);
+echo $OUTPUT->render_from_template('mod_readaloud/view', $templatecontext);
 
-echo $OUTPUT->render_from_template('mod_readaloud/viewusingconstants', $templatecontext);
-// echo $OUTPUT->render_from_template('mod_readaloud/home', $templatecontext);
 // Finish the page.
 echo $renderer->footer();
-
-// TODO: Get quiz working.
-// TODO: Get the templates into partials.
-// TODO: move modelaudiorenderer.
-// TODO: move problembox.
-
