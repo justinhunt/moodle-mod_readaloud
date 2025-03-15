@@ -50,15 +50,14 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
         // root element describing readaloud instance
         $oneactivity = new backup_nested_element(constants::M_MODNAME, array('id'), array(
-                'course', 'name', 'intro', 'introformat', 'timelimit', 'passage', 'passagehash', 'passageformat', 'alternatives', 'welcome',
-                'welcomeformat', 'phonetic', 'passagesegments',
+                'course', 'name', 'intro', 'introformat', 'timelimit', 'passage','passagehash', 'passageformat', 'alternatives', 'welcome',
+                'welcomeformat','phonetic','passagesegments',
                 'feedback', 'feedbackformat', 'targetwpm', 'accadjustmethod', 'accadjust', 'humanpostattempt', 'machinepostattempt',
-                'grade', 'gradeoptions', 'machgrademethod', 'sessionscoremethod', 'maxattempts', 'mingrade',
-                'ttslanguage', 'ttsvoice', 'ttsspeed', 'enablepreview', 'enableshadow', 'enablelandr' ,'transcriber', 'modelaudiourl', 'modelaudiobreaks',
-                'modelaudiotrans', 'modelaudiofulltrans', 'modelaudiomatches',
-                'enableai', 'allowearlyexit', 'expiredays' ,'region', 'activitylink', 'submitrawaudio', 'stricttranscribe', 'recorder', 'foriframe',
-                'usecorpus', 'corpushash', 'passagepicture', 'passagekey', 'corpusrange', 'customfont', "stdashboardid", 'timecreated',  'timemodified', 'viewstart', 'viewend',
-                'showquiz', 'showqtitles', 'showqreview', 'qfinishscreen', 'qcustomscreen',
+                'grade', 'gradeoptions', 'machgrademethod','sessionscoremethod', 'maxattempts', 'mingrade',
+                'ttslanguage','ttsvoice','ttsspeed','enablepreview','enableshadow','enablelandr' ,'transcriber', 'modelaudiourl','modelaudiobreaks',
+                'modelaudiotrans','modelaudiofulltrans','modelaudiomatches',
+                'enableai', 'allowearlyexit','expiredays' ,'region', 'activitylink','submitrawaudio','stricttranscribe','recorder','foriframe',
+                'usecorpus','corpushash','passagepicture','passagekey','corpusrange','customfont',"stdashboardid",'timecreated', 'timemodified','viewstart','viewend'
         ));
 
         //attempts
@@ -78,14 +77,11 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
         // rsquestion
         $rsquestions = new backup_nested_element('rsquestions');
-        $rsquestion = new backup_nested_element('rsquestion', array('id'), array(
-                constants::M_MODNAME .'id', 'name', 'itemorder', 'type', 'visible', 'itemtext', 'itemformat', 'itemaudiofname',
-                'customtext1', 'customtext1format', 'customtext2', 'customtext2format', 'customtext3',
-                'customtext3format', 'customtext4', 'customtext4format', 'correctanswer',
-                'iteminstructions', 'timelimit', 'itemttsautoplay', 'layout', 'itemtts', 'itemttsvoice', 'itemttsoption', 'itemtextarea',
-                'customdata1', 'customdata2', 'customdata3', 'customdata4', 'customdata5',
-                'customint1', 'customint2', 'customint3', 'customint4', 'customint5', 'customtext5', 'customtext5format',
-                'timemodified', 'rsquestionkey', 'createdby', 'modifiedby'));
+        $rsquestion = new backup_nested_element('rsquestion', array('id'),array(
+                constants::M_MODNAME .'id', 'name','itemorder', 'type','visible','itemtext', 'itemformat','itemaudiofname',
+                'customtext1', 'customtext1format','customtext2', 'customtext2format','customtext3',
+                'customtext3format','customtext4', 'customtext4format','correctanswer',
+                'timemodified','rsquestionkey','createdby','modifiedby'));
 
         // Build the tree.
         $oneactivity->add_child($attempts);

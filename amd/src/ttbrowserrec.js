@@ -10,11 +10,9 @@ define(['jquery', 'core/log'], function ($, log) {
         recognition: null,
         recognizing: false,
         final_transcript: '',
-        interim_transcript: '',
         start_timestamp: 0,
         lang: 'en-US',
         interval: 0,
-        browsertype: '',
 
 
         //for making multiple instances
@@ -23,46 +21,27 @@ define(['jquery', 'core/log'], function ($, log) {
         },
 
         will_work_ok: function(opts){
-            //Brave looks like it does speech rec, but it doesnt
+            //Edge and Safari both have browser recognition, but it's not good enough and we need to test it better (2021-11-21)
             var brave = typeof navigator.brave !== 'undefined';
-            if(brave){
-                this.browsertype = 'brave';
-               // return false;
-            }
+            if(brave){return false;}
 
-            //Edge may or may not work, but its hard to tell from the browser agent
             var edge = navigator.userAgent.toLowerCase().indexOf("edg/") > -1;
-           if(edge && this.browsertype === ''){
-               this.browsertype = 'edge';
-               //return false;
-           }
+            if(edge){return false;}
 
-            //Safari may or may not work, but its hard to tell from the browser agent
             var has_chrome = navigator.userAgent.indexOf('Chrome') > -1;
             var has_safari = navigator.userAgent.indexOf("Safari") > -1;
             var safari = has_safari && !has_chrome;
-            if(safari && this.browsertype === ''){
-                this.browsertype = 'safari';
-                //return false;
-            }
+            if(safari){return false;}
 
-            //This is feature detection, and for chrome it can be trusted.
-            var hasspeechrec = ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
-            if(hasspeechrec && this.browsertype === '' && has_chrome){
-                this.browsertype = 'chrome';
-            }
-
-            //This is feature detection, and for chrome it can be trusted.
-            // The others might say they do speech rec, but that does not mean it works
-            return hasspeechrec;
-
+            //This is feature detection, and for chrome its ok. the others might say they do speech rec, but its hard to be sure
+            return ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
         },
 
         init: function (lang,waveheight,uniqueid) {
             var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
             this.recognition = new SpeechRecognition();
             this.recognition.continuous = true;
-            this.recognition.interimResults = true;
+            this.recognition.interimResults = false;
             this.lang = lang;
             this.waveHeight = waveheight;
             this.uniqueid = uniqueid;
@@ -93,7 +72,6 @@ define(['jquery', 'core/log'], function ($, log) {
             }
             this.recognizing = true;
             this.final_transcript = '';
-            this.interim_transcript = '';
             this.recognition.lang = this.lang;//select_dialect.value;
             this.recognition.start();
             this.start_timestamp = Date.now();//event.timeStamp;
@@ -149,19 +127,13 @@ define(['jquery', 'core/log'], function ($, log) {
             };
 
             recognition.onresult = function (event) {
+                var interim_transcript = '';
                 for (var i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         that.final_transcript += event.results[i][0].transcript;
                     } else {
-                        var provisional_transcript = that.final_transcript + event.results[i][0].transcript;
-                        //the interim and final events do not arrive in sequence, we dont want the length going down, its weird
-                        //so just dont respond when the sequence is wonky
-                        if(provisional_transcript.length < that.interim_transcript.length){
-                            return;
-                        }else{
-                            that.interim_transcript = provisional_transcript;
-                        }
-                        that.oninterimspeechcapture(that.interim_transcript);
+                        interim_transcript += event.results[i][0].transcript;
+                        that.oninterimspeechcapture(interim_transcript);
                     }
                 }
 

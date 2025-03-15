@@ -102,15 +102,11 @@ $config = get_config(constants::M_COMPONENT);
 $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
-// This library is licensed with the hippocratic license (https://github.com/EthicalSource/hippocratic-license/)
-// which is not GPL3 compat. so cant be distributed with plugin. Hence we load it from CDN.
-$PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
-
 
 // We want readaloud to embed nicely.
 if ($moduleinstance->foriframe == 1 || $embed == 1) {
     $PAGE->set_pagelayout('embedded');
-} else if ($config->enablesetuptab || $embed == 2) {
+} elseif ($config->enablesetuptab || $embed == 2) {
     $PAGE->set_pagelayout('popup');
     $PAGE->add_body_class('poodll-readaloud-embed');
 } else {
@@ -154,11 +150,11 @@ if (!$canpreview) {
     $debug = false;
 }
 
- // For Japanese (and later other languages we collapse spaces).
- $collapsespaces = false;
- if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
-     $collapsespaces = true;
- }
+// For Japanese (and later other languages we collapse spaces).
+$collapsespaces = false;
+if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+    $collapsespaces = true;
+}
 
 // Fetch a token and report a failure to a display item: $problembox.
 $problembox = '';
@@ -183,18 +179,18 @@ if ($attempts) {
     $latestattempt = current($attempts);
 
     if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
-        $latestaigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
+        $latest_aigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
     } else {
-        $latestaigrade = false;
+        $latest_aigrade = false;
     }
 
     $have_humaneval = $latestattempt->sessiontime != null;
-    $have_aieval = $latestaigrade && $latestaigrade->has_transcripts();
+    $have_aieval = $latest_aigrade && $latest_aigrade->has_transcripts();
 } else {
     $latestattempt = false;
     $have_humaneval = false;
     $have_aieval = false;
-    $latestaigrade = false;
+    $latest_aigrade = false;
 }
 
 // If we need a non standard font we can do that from here.
@@ -232,15 +228,45 @@ if ($attempts && $reviewattempts) {
 // Show all the main parts. Many will be hidden and displayed by JS
 // so here we just put them on the page in the correct sequence.
 
-// FIXME: Everything below here should be in the templatecontext data. 
+// Show activity description.
+if ( $CFG->version < 2022041900) {
+    echo $renderer->show_intro($moduleinstance, $cm);
+}
+
+// Show open close dates.
+$hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
+if ($hasopenclosedates) {
+    echo $renderer->show_open_close_dates($moduleinstance);
+    $current_time = time();
+    $closed = false;
+    if ($current_time > $moduleinstance->viewend && $moduleinstance->viewend > 0) {
+        echo get_string('activityisclosed', constants::M_COMPONENT);
+        $closed = true;
+    } elseif ($current_time < $moduleinstance->viewstart && $moduleinstance->viewstart > 0) {
+        echo get_string('activityisnotopenyet', constants::M_COMPONENT);
+        $closed = true;
+    }
+    // If we are not a teacher and the activity is closed/not-open leave at this point.
+    if (!has_capability('mod/readaloud:preview', $modulecontext) && $closed) {
+        echo $renderer->footer();
+        exit;
+    }
+}
 
 // Show small report.
 if ($attempts) {
     if (!$latestattempt) {
         $latestattempt = current($attempts);
     }
-    // echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latestaigrade, $embed);
+    echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latest_aigrade, $embed);
 }
+
+// Welcome message.
+$welcomemessage = get_string('welcomemenu', constants::M_COMPONENT);
+if (!$canattempt) {
+    $welcomemessage .= '<br>' . get_string("exceededattempts", constants::M_COMPONENT, $moduleinstance->maxattempts);
+}
+echo $renderer->show_welcome_menu($welcomemessage);
 
 // If we have a problem (usually with auth/token) we display and return.
 if (!empty($problembox)) {
@@ -250,27 +276,63 @@ if (!empty($problembox)) {
     return;
 }
 
+// Activity instructions.
+echo $renderer->show_instructions($moduleinstance->welcome);
+echo $renderer->show_previewinstructions(get_string('previewhelp', constants::M_COMPONENT));
+echo $renderer->show_landrinstructions(get_string('landrhelp', constants::M_COMPONENT));
+
+// Feedback or errors.
+echo $renderer->show_feedback($moduleinstance);
+echo $renderer->show_error($moduleinstance, $cm);
+
+// Show menu buttons.
+echo $renderer->show_menubuttons($moduleinstance, $canattempt);
+
 // Show model audio player.
 $visible = false;
 echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $visible);
 
-// Render from template.
-$templatecontext = $renderer->get_view_page_data(
-    $moduleinstance,
-    $cm,
-    $modulecontext,
-    $canattempt,
-    $attempts,
-    $config,
-    $embed,
-    $token,
-    $latestattempt,
-    $latestaigrade,
-    $debug
-);
+// Show stop and play buttons.
+echo $renderer->show_stopandplay($moduleinstance);
 
+// We put some CSS at the top of the passage container to control things like padding word separation etc.
+$extraclasses = 'readmode';
+// For Japanese (and later other languages we collapse spaces).
+if ($collapsespaces) {
+    $extraclasses .= ' collapsespaces';
+}
 
-echo $OUTPUT->render_from_template('mod_readaloud/view', $templatecontext);
+// Add class = readingcontainer to id:mod_readaloud_readingcontainer.
+// Add class = mod_readaloud to constants::M_PASSAGE_CONTAINER.
+// Remove them when done.
+
+echo "<div id='mod_readaloud_readingcontainer'>";
+// Hide on load, and we can show from ajax.
+$extraclasses .= ' hide';
+echo $passagerenderer->render_passage($moduleinstance->passagesegments, $moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
+
+// Lets fetch recorder.
+echo $renderer->show_recorder($moduleinstance, $token, $debug);
+echo "</div";// Close readingcontainer.
+
+echo $renderer->show_progress($moduleinstance, $cm);
+echo $renderer->show_wheretonext($moduleinstance, $embed);
+
+// Show listen and repeat dialog.
+echo $renderer->show_landr($moduleinstance, $token);
+
+// Show quiz.
+/*
+$comprehensiontest = new \mod_readaloud\comprehensiontest($cm);
+$items = $comprehensiontest->fetch_items();
+echo $renderer->show_quiz($moduleinstance,$items);
+*/
+echo $renderer->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
+
+// Return to menu button.
+echo "<hr/>";
+echo $renderer->show_returntomenu_button($embed);
 
 // Finish the page.
 echo $renderer->footer();
+

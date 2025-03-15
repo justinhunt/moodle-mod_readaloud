@@ -227,12 +227,6 @@ define(['jquery', 'core/log','core/ajax'], function ($, log,ajax) {
                 //set up our ajax request
                 var xhr = new XMLHttpRequest();
 
-                //in the case we get a bad voice we just reject without calling the web service
-                if(voice == 'ttsnone'){
-                    reject('textutils fetch_polly_url: ttsnone is not a valid voice');
-                    log.debug('textutils fetch_polly_url: ttsnone is not a valid voice');
-                }
-
                 //set up our handler for the response
                 xhr.onreadystatechange = function (e) {
                     if (this.readyState === 4) {

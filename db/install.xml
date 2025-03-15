@@ -66,11 +66,6 @@
                 <FIELD NAME="corpusrange" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="customfont" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="lesson font" />
                 <FIELD NAME="stdashboardid" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="showquiz" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="showqtitles" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-                <FIELD NAME="showqreview" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-                <FIELD NAME="qfinishscreen" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="qfinishscreencustom" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="custom finish screen mustache"/>
                 <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false"/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false"/>
 				<FIELD NAME="viewstart" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true"  DEFAULT="0" SEQUENCE="false"/>
@@ -144,13 +139,8 @@
                 <FIELD NAME="itemorder" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="visible" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="1" SEQUENCE="false"/>
-                <FIELD NAME="iteminstructions" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="itemtext" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="itemtextformat" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="itemtts" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="itemttsvoice" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="itemttsoption" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="itemtextarea" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="itemaudiofname" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="customtext1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="customtext1format" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
@@ -160,23 +150,9 @@
                 <FIELD NAME="customtext3format" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="customtext4" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="customtext4format" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="customtext5" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="customtext5format" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="customdata1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="customdata2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="customdata3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="customdata4" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="customdata5" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-                <FIELD NAME="customint1" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="customint2" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="customint3" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="customint4" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="customint5" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
-                <FIELD NAME="layout" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="correctanswer" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
                 <FIELD NAME="rsquestionkey" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="" />
-                <FIELD NAME="timelimit" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0"  SEQUENCE="false" />
                 <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="modifiedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
             </FIELDS>
