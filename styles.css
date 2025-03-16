@@ -499,7 +499,8 @@ div.mod_readaloud_attemptsummarytable {
   margin-top: 20px;
 }
 
-.mode-chooser-icon {
+/* Content window icon */
+.mode-content-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -508,20 +509,24 @@ div.mod_readaloud_attemptsummarytable {
   font-size: 48px;
   transition: transform 0.2s ease-in-out;
 }
-
-.mode-chooser-icon:hover {
+.mode-content-icon:hover {
   transform: scale(1.1);
 }
 
+/* Bigbutton menu */
 .nav-link {
-  display: inline-block !important;
+  display: inline-flex !important;
+  align-items: center;
+  transition: none;
+}
+.nav-label {
+  display: inline-block;
   transition: transform 0.3s ease;
   transform-origin: center;
 }
-
-.nav-link:hover,
-.nav-link:focus,
-.nav-link:active {
+.nav-link:hover .nav-label,
+.nav-link:focus .nav-label,
+.nav-link:active .nav-label {
   transform: scale(1.1);
 }
 
@@ -535,7 +540,7 @@ div.mod_readaloud_attemptsummarytable {
   pointer-events: none;
 }
 
-.mode-chooser-label {
+/* .mode-chooser-label {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -545,7 +550,7 @@ div.mod_readaloud_attemptsummarytable {
   text-align: center;
   padding: 5px;
   font-size: 14px;
-}
+} */
 
 /* #mod_readaloud_button_stopandplay {
   height: 40px;

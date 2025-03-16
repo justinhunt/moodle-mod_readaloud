@@ -1463,14 +1463,14 @@ class renderer extends \plugin_renderer_base {
         // Render the landr html.
         $landr = $this->show_landr($moduleinstance, $token);
 
-        //Fetch data for JS
+        // Fetch data for JS.
         $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
 
-        //Fetchquiz data for JS
+        // Fetchquiz data for JS.
         $rsquestionrenderer = $this->page->get_renderer(constants::M_COMPONENT, 'rsquestion');
         $quizamddata = $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewquestionid = 0, $canreattempt = false, $embed = 0);
 
-        //quiz html
+        // Quiz html.
         $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
         $quizhelper = new quizhelper($cm);
         $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt,$cm);
@@ -1502,6 +1502,7 @@ class renderer extends \plugin_renderer_base {
             'steps' => constants::STEPS,
             'stepsenabled' => utils::get_steps_enabled_state($moduleinstance),
             'stepsopen' => utils::get_steps_open_state($moduleinstance, $latestattempt),
+            'complete'  => utils::get_steps_complete_state($moduleinstance, $latestattempt),
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
             'landr' => $landr,

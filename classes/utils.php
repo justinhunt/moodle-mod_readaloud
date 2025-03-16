@@ -3620,6 +3620,19 @@ class utils {
         $opensteps['step_report'] = self::is_step_complete(constants::STEP_READ,$attempt);
         return $opensteps;
     }
+    
+    public static function get_steps_complete_state($moduleinstance, $attempt) {
+        $complete = [];
+        foreach (constants::STEPS as $stepname => $step) {
+            // Only consider steps that are enabled in the module.
+            if (self::is_step_enabled($step, $moduleinstance)) {
+                $complete[$stepname] = self::is_step_complete($step, $attempt);
+            }
+        }
+        // If you have any special cases (like step_report being tied to STEP_READ), handle them here:
+        $complete['step_report'] = self::is_step_complete(constants::STEP_READ, $attempt);
+        return $complete;
+    }
 
     // Is a specific activity step enabled?
     public static function is_step_enabled($step, $moduleinstance) {

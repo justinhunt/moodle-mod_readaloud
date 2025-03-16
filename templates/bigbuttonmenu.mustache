@@ -11,49 +11,170 @@
     <ul class="nav nav-pills flex-column mb-2">
 
         <li class="nav-item" id="{{M_HOME}}">
-            <a href="javascript:void(0)"  class="nav-link h6" data-mode="home">{{#str}} home, mod_readaloud {{/str}}</a>
+            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="home">
+                {{#str}} home, mod_readaloud {{/str}}
+            </a>
         </li>
 
         {{#stepsenabled.step_listen}}
         <li class="nav-item mode-chooser {{^stepsopen.step_listen}}no-click{{/stepsopen.step_listen}}" data-step="{{steps.step_listen}}">
-            <a href="javascript:void(0)"  class="nav-link h6" data-mode="preview">{{#str}} mode_listen, mod_readaloud {{/str}}</a>
+            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="preview">
+                <span class="nav-label">{{#str}} mode_listen, mod_readaloud {{/str}}</span>
+                {{#stepsopen.step_listen}}
+                    {{#complete.step_listen}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
+                        </span>
+                    {{/complete.step_listen}}
+                    {{^complete.step_listen}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-regular fa-circle text-warning" title="In progress"></i>
+                        </span>
+                    {{/complete.step_listen}}
+                {{/stepsopen.step_listen}}
+                {{^stepsopen.step_listen}}
+                    <span class="nav-icon ml-auto">
+                        <i class="fa-solid fa-lock text-secondary" title="Locked"></i>
+                    </span>
+                {{/stepsopen.step_listen}}
+            </a>
         </li>
         {{/stepsenabled.step_listen}}
+
         {{#stepsenabled.step_practice}}
         <li class="nav-item mode-chooser {{^stepsopen.step_practice}}no-click{{/stepsopen.step_practice}} {{^hasaudiobreaks}}no-click{{/hasaudiobreaks}}" data-step="{{steps.step_practice}}">
-            <a href="javascript:void(0)"  class="nav-link h6" data-mode="landr">{{#str}} mode_practice, mod_readaloud {{/str}}</a>
+            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="landr">
+                <span class="nav-label">{{#str}} mode_practice, mod_readaloud {{/str}}</span>
+                {{#stepsopen.step_practice}}
+                    {{#complete.step_practice}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
+                        </span>
+                    {{/complete.step_practice}}
+                    {{^complete.step_practice}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-regular fa-circle text-warning" title="In progress"></i>
+                        </span>
+                    {{/complete.step_practice}}
+                {{/stepsopen.step_practice}}
+                {{^stepsopen.step_practice}}
+                    <span class="nav-icon ml-auto">
+                        <i class="fa-solid fa-lock text-secondary" title="Locked"></i>
+                    </span>
+                {{/stepsopen.step_practice}}
+            </a>
             {{^hasaudiobreaks}}
             <span class="mod_readaloud_menubutton_warning">{{#str}} modelaudiowarning, mod_readaloud {{/str}}</span>
             {{/hasaudiobreaks}}
         </li>
         {{/stepsenabled.step_practice}}
+
         {{#stepsenabled.step_shadow}}
         <li class="nav-item mode-chooser {{^stepsopen.step_shadow}}no-click{{/stepsopen.step_shadow}} {{^canshadowattempt}}no-click{{/canshadowattempt}}" data-step="{{steps.step_shadow}}">
-            <a href="javascript:void(0)"  class="nav-link h6" data-mode="shadow">{{#str}} mode_shadow, mod_readaloud {{/str}}</a>
+            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="shadow">
+                <span class="nav-label">{{#str}} mode_shadow, mod_readaloud {{/str}}</span>
+                {{#stepsopen.step_shadow}}
+                    {{#complete.step_shadow}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
+                        </span>
+                    {{/complete.step_shadow}}
+                    {{^complete.step_shadow}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-regular fa-circle text-warning" title="In progress"></i>
+                        </span>
+                    {{/complete.step_shadow}}
+                {{/stepsopen.step_shadow}}
+                {{^stepsopen.step_shadow}}
+                    <span class="nav-icon ml-auto">
+                        <i class="fa-solid fa-lock text-secondary" title="Locked"></i>
+                    </span>
+                {{/stepsopen.step_shadow}}
+            </a>
             {{^canshadowattempt}}
             <!--<span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>-->
             {{/canshadowattempt}}
         </li>
         {{/stepsenabled.step_shadow}}
+
         {{#stepsenabled.step_read}}
         <li class="nav-item mode-chooser {{^stepsopen.step_read}}no-click{{/stepsopen.step_read}} {{^canattempt}}no-click{{/canattempt}}" data-step="{{steps.step_read}}">
-            <a href="javascript:void(0)"  class="nav-link h6" data-mode="startnoshadow">{{#str}} mode_read, mod_readaloud {{/str}}</a>
+            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="startnoshadow">
+                <span class="nav-label">{{#str}} mode_read, mod_readaloud {{/str}}</span>
+                {{#stepsopen.step_read}}
+                    {{#complete.step_read}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
+                        </span>
+                    {{/complete.step_read}}
+                    {{^complete.step_read}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-regular fa-circle text-warning" title="In progress"></i>
+                        </span>
+                    {{/complete.step_read}}
+                {{/stepsopen.step_read}}
+                {{^stepsopen.step_read}}
+                    <span class="nav-icon ml-auto">
+                        <i class="fa-solid fa-lock text-secondary" title="Locked"></i>
+                    </span>
+                {{/stepsopen.step_read}}
+            </a>
             {{^canattempt}}
             <span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>
             {{/canattempt}}
         </li>
         {{/stepsenabled.step_read}}
-         {{#stepsenabled.step_report}}
+
+        {{#stepsenabled.step_report}}
         <li class="nav-item mode-chooser {{^stepsopen.step_report}}no-click{{/stepsopen.step_report}}" id="{{M_STARTREPORT}}">
-            <a href="javascript:void(0)"  class="nav-link h6" data-mode="fullreport">Report</a>
+            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="fullreport">
+                <span class="nav-label">Report</span>
+                {{#stepsopen.step_report}}
+                    {{#complete.step_read}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
+                        </span>
+                    {{/complete.step_read}}
+                    {{^complete.step_read}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-regular fa-circle text-warning" title="In progress"></i>
+                        </span>
+                    {{/complete.step_read}}
+                {{/stepsopen.step_report}}
+                {{^stepsopen.step_report}}
+                    <span class="nav-icon ml-auto">
+                        <i class="fa-solid fa-lock text-secondary" title="Locked"></i>
+                    </span>
+                {{/stepsopen.step_report}}
+            </a>
         </li>
-         {{/stepsenabled.step_report}}
+        {{/stepsenabled.step_report}}
+
         {{#stepsenabled.step_quiz}}
         <li class="nav-item mode-chooser {{^stepsopen.step_quiz}}no-click{{/stepsopen.step_quiz}} {{#noquiz}}no-click{{/noquiz}}" data-step="{{steps.step_quiz}}">
-            <a href="javascript:void(0)"  class="nav-link h6" data-mode="quiz">{{#str}} mode_quiz, mod_readaloud {{/str}}</a>
-            {{#quizcompleted}}
+            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="quiz">
+                <span class="nav-label">{{#str}} mode_quiz, mod_readaloud {{/str}}</span>
+                {{#stepsopen.step_quiz}}
+                    {{#complete.step_quiz}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
+                        </span>
+                    {{/complete.step_quiz}}
+                    {{^complete.step_quiz}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-regular fa-circle text-warning" title="In progress"></i>
+                        </span>
+                    {{/complete.step_quiz}}
+                {{/stepsopen.step_quiz}}
+                {{^stepsopen.step_quiz}}
+                    <span class="nav-icon ml-auto">
+                        <i class="fa-solid fa-lock text-secondary" title="Locked"></i>
+                    </span>
+                {{/stepsopen.step_quiz}}
+            </a>
+            {{#complete.step_quiz}}
             <span class="mod_readaloud_menubutton_warning">{{#str}} quizcompletedwarning, mod_readaloud {{/str}}</span>
-            {{/quizcompleted}}
+            {{/complete.step_quiz}}
         </li>
         {{/stepsenabled.step_quiz}}
     </ul>
