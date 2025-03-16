@@ -22,8 +22,6 @@ class constants {
     const M_MODNAME = 'readaloud';
     const M_URL = '/mod/readaloud';
     const M_PATH = '/mod/readaloud';
-    const M_STATE_QUIZCOMPLETE = 2;
-    const M_STATE_QUIZINPROGRESS = 4;
 
     const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
 
@@ -452,6 +450,17 @@ const RELEVANCE = "customint2";
 const RELEVANCETYPE_NONE = 0;
 const RELEVANCETYPE_QUESTION = 1;
 const RELEVANCETYPE_MODELANSWER = 2;
+
+const STEP_LISTEN = 1;
+const STEP_PRACTICE = 2;
+const STEP_SHADOW = 4;
+const STEP_READ = 8;
+const STEP_QUIZ = 16;
+const STEPS = ["step_listen" => constants::STEP_LISTEN,
+    "step_practice" => constants::STEP_PRACTICE,
+    "step_shadow" => constants::STEP_SHADOW,
+    "step_read" => constants::STEP_READ,
+    "step_quiz" => constants::STEP_QUIZ];
 
 const M_HOME_CONTAINER='mod_readaloud_home_cont';
 const M_QUIZ_CONTAINER='mod_readaloud_quiz_cont';

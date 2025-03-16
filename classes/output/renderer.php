@@ -1026,9 +1026,8 @@ class renderer extends \plugin_renderer_base {
         $recopts['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
         $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
         $recopts['breaks'] = $moduleinstance->modelaudiobreaks;
-        $recopts['enablelandr'] = $moduleinstance->enablelandr ? true : false;
-        $recopts['enablepreview'] = $moduleinstance->enablepreview ? true : false;
-        $recopts['enableshadow'] = $moduleinstance->enableshadow ? true : false;
+        $recopts['steps'] = constants::STEPS;
+        $recopts['stepsenabled'] = utils::get_steps_enabled_state($moduleinstance);
         $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
         $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
         $recopts['hider'] = constants::M_HIDER;
@@ -1372,18 +1371,13 @@ class renderer extends \plugin_renderer_base {
      * @param mixed $canattempt Whether the user can attempt the activity.
      * @return array The mode visibility data.
      */
-    private function get_mode_visibility($moduleinstance, $canattempt) {
+    private function get_mode_visibility($moduleinstance, $canattempt, $latestattempt) {
         $hasaudiobreaks = !empty($moduleinstance->modelaudiobreaks);
         $disableshadowgrading = get_config(constants::M_COMPONENT, 'disableshadowgrading');
 
         return [
             // Feature availability.
-            'enablepreview' => (bool)$moduleinstance->enablepreview,
-            'enablelandr' => (bool)$moduleinstance->enablelandr,
-            'enableshadow' => (bool)$moduleinstance->enableshadow,
             'enablenoshadow' => (bool)$canattempt,
-            'enablequiz' => true, // TODO: Adjust later when quiz use configurable.
-
             // Permission-based availability.
             'canattempt' => (bool)$canattempt,
             'canshadowattempt' => $canattempt && $disableshadowgrading,
@@ -1490,7 +1484,7 @@ class renderer extends \plugin_renderer_base {
         $feedback = !empty($moduleinstance->feedback) ? $moduleinstance->feedback : null;
         $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
         $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
-        $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt);
+        $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
         $opendate = $moduleinstance->viewstart > 0 ? $moduleinstance->viewstart : null;
         $smallreport = $this->get_smallreport_data($moduleinstance, $latestattempt, $latestaigrade, $embed);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
@@ -1502,17 +1496,15 @@ class renderer extends \plugin_renderer_base {
             'attempts' => $attempts,
             'canattempt' => $modevisibility['canattempt'],
             'canshadowattempt' => $modevisibility['canshadowattempt'],
-            'embed' => $embed,
-            'quizhtml' => $quizhtml,
-            'enablepreview' => $modevisibility['enablepreview'],
-            'enablelandr' => $modevisibility['enablelandr'],
-            'enableshadow' => $modevisibility['enableshadow'],
             'enablenoshadow' => $modevisibility['enablenoshadow'],
-            'enablequiz' => $modevisibility['enablequiz'],
+            'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
+            'embed' => $embed,
+            'steps' => constants::STEPS,
+            'stepsenabled' => utils::get_steps_enabled_state($moduleinstance),
+            'stepsopen' => utils::get_steps_open_state($moduleinstance, $latestattempt),
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
             'landr' => $landr,
-            'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'instructions' => $instructions,
             'mode' => null,
             'modequiz' => $modequiz,

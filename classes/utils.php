@@ -1710,34 +1710,31 @@ class utils {
     }
 
     //save the data to Moodle.
-    public static function create_attempt($filename, $rectime, $readaloud,$gradeable) {
+    public static function create_update_attempt($filename, $rectime, $readaloud,$gradeable) {
         global $USER, $DB;
+
+        $currentattempt = false;
+        $attempts = utils::fetch_user_attempts($readaloud);
+        if($attempts){
+            $latestattempt = current($attempts);
+            if($latestattempt->status < $readaloud->steps){
+                //most recent attempt is incomplete, so we use it
+                $currentattempt = $latestattempt; 
+            }
+        }
+        if(!$currentattempt){
+           $currentattempt = utils::create_new_attempt($readaloud->course, $readaloud->id, $gradeable);
+        }
 
         //correct filename which has probably been massaged to get through mod_security
         $filename = str_replace('https___', 'https://', $filename);
-
-        //Add a blank attempt with just the filename  and essential details
-        $newattempt = new \stdClass();
-        $newattempt->courseid = $readaloud->course;
-        $newattempt->readaloudid = $readaloud->id;
-        $newattempt->userid = $USER->id;
-        $newattempt->status = 0;
-        $newattempt->filename = $filename;
-        $newattempt->sessionscore = 0;
-        //$newattempt->sessiontime=$rectime;  //.. this would work. But sessiontime is used as flag of human has graded ...so needs more thought
-        $newattempt->sessionerrors = '';
-        $newattempt->errorcount = 0;
-        $newattempt->wpm = 0;
-        $newattempt->dontgrade = $gradeable ? 0 : 1 ;
-        $newattempt->timecreated = time();
-        $newattempt->timemodified = time();
+        $currentattempt->filename = $filename;
 
 
-        $attemptid = $DB->insert_record(constants::M_USERTABLE, $newattempt);
-        if (!$attemptid) {
+        $success = $DB->update_record(constants::M_USERTABLE, $currentattempt);
+        if (!$success) {
             return false;
         }
-        $newattempt->id = $attemptid;
 
         //if we are machine grading we need an entry to AI table too
         //But ... there is the chance a user will CHANGE the machgrademethod value after submissions have begun,
@@ -1746,7 +1743,7 @@ class utils {
         if (true ||
                 $readaloud->machgrademethod == constants::MACHINEGRADE_HYBRID ||
                 $readaloud->machgrademethod == constants::MACHINEGRADE_MACHINEONLY) {
-            aigrade::create_record($newattempt, $readaloud->timelimit);
+            aigrade::create_record($currentattempt, $readaloud->timelimit);
         }
 
         //If we are the guest user we need to store the attempt id in the session cache
@@ -1759,16 +1756,16 @@ class utils {
 
             //if we have attempts then lets get the attempt ids of those
             if($myattempts && is_array($myattempts)){
-                $myattempts[] = $attemptid;
+                $myattempts[] = $currentattempt->id;
             }else{
                 //at this point we have no attempts, so just return false
-                $myattempts=[$attemptid];
+                $myattempts=[$currentattempt->id];
             }
             $cache->set('myattempts', $myattempts);
         }
 
-        //return the attempt id
-        return $newattempt;
+        //return the attempt
+        return $currentattempt;
     }
 
     //streaming results are not the same format as non streaming, we massage the streaming to look like a non streaming
@@ -2421,20 +2418,26 @@ class utils {
                 get_string('allowearlyexit_details', constants::M_COMPONENT));
         $mform->setDefault('allowearlyexit', $config->allowearlyexit);
 
-        $mform->addElement('advcheckbox', 'enablepreview', get_string('enablepreview', constants::M_COMPONENT),
-                get_string('enablepreview_details', constants::M_COMPONENT));
-        $mform->setDefault('enablepreview', $config->enablepreview);
+        // Define the steps as an array of checkboxes
+        $steps = [
+            $mform->createElement('advcheckbox', 'step_listen', '', get_string('enablepreview', constants::M_COMPONENT)),
+            $mform->createElement('advcheckbox', 'step_practice', '', get_string('enablelandr', constants::M_COMPONENT)),
+            $mform->createElement('advcheckbox', 'step_shadow', '', get_string('enableshadow', constants::M_COMPONENT)),
+            $mform->createElement('advcheckbox', 'step_read', '', get_string('enableread', constants::M_COMPONENT)),
+            $mform->createElement('advcheckbox', 'step_quiz', '', get_string('enablequiz', constants::M_COMPONENT))
+        ];
 
+        // Add the checkbox group to the form
+        $mform->addGroup($steps, 'steps', get_string('activitysteps', constants::M_COMPONENT), array(' '), false);
 
-        $mform->addElement('advcheckbox', 'enablelandr', get_string('enablelandr', constants::M_COMPONENT),
-                get_string('enablelandr_details', constants::M_COMPONENT));
-        $mform->setDefault('enablelandr', $config->enablelandr);
-
-
-        $mform->addElement('advcheckbox', 'enableshadow', get_string('enableshadow', constants::M_COMPONENT),
-                get_string('enableshadow_details', constants::M_COMPONENT));
-        $mform->setDefault('enableshadow', $config->enableshadow);
-
+        // Set default values for the checkboxes
+        $stepdefaults =[];
+        if(!empty($config->activitysteps)){
+            $stepdefaults = explode(',', $config->activitysteps);
+        }
+        foreach(constants::STEPS as $stepname => $value){
+            $mform->setDefault($stepname, in_array($value, $stepdefaults));
+        }
 
         //Attempts
         $attemptoptions = array(0 => get_string('unlimited', constants::M_COMPONENT),
@@ -2741,9 +2744,29 @@ class utils {
             $ppoptions);
         $moduleinstance->passagepicture=$draftitemid;
 
+        //steps
+        $moduleinstance = self::unpack_steps($moduleinstance);
+
         return $moduleinstance;
 
     }//end of prepare_file_and_json_stuff
+
+    public static function pack_steps($moduleinstance){
+        $steps = 0;
+        foreach(constants::STEPS as $stepname => $value){
+            if(isset($moduleinstance->{$stepname}) && $moduleinstance->{$stepname}){
+                $steps += $value;
+            }
+        }
+        return $steps;
+    }
+
+    public static function unpack_steps($moduleinstance){
+        foreach(constants::STEPS as $stepname => $value){
+            $moduleinstance->{$stepname} = self::is_step_enabled($value, $moduleinstance);
+        }
+        return $moduleinstance;
+    }
 
     // reset the item order for questions in a ReadAloud
     public static function reset_item_order($moduleid) {
@@ -3227,9 +3250,9 @@ class utils {
         ];
         return $ret;
     }
-    // This is for the case when a quiz item result comes in, but we have had no reading attempt, so no attempt record
-    // We need to create a new attempt record and update it with the quiz result
-    public static function create_new_attempt($courseid, $readaloudid) {
+
+    // We need to create a new attempt recordt
+    public static function create_new_attempt($courseid, $readaloudid,$gradeable=1) {
         global $DB, $USER;
 
         $attempt = new \stdClass();
@@ -3237,9 +3260,16 @@ class utils {
         $attempt->readaloudid = $readaloudid;
         $attempt->userid = $USER->id;
         $attempt->timecreated = time();
-        $attempt->status = constants::M_STATE_QUIZINPROGRESS;
+        $attempt->status = 0;
         $attempt->qscore = 0;
         $attempt->qdetails = '';
+        $attempt->sessionscore = 0;
+        $attempt->sessionerrors = '';
+        $attempt->errorcount = 0;
+        $attempt->wpm = 0;
+        $attempt->dontgrade = $gradeable ? 0 : 1 ;
+        $attempt->timecreated = time();
+        $attempt->timemodified = time();
         $attempt->id = $DB->insert_record(constants::M_USERTABLE, $attempt);
         return $attempt;
     }
@@ -3254,9 +3284,15 @@ class utils {
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
         $modulecontext = \context_module::instance($cm->id);
         $moduleinstance  = $DB->get_record(constants::M_MODNAME, ['id' => $cm->instance], '*', MUST_EXIST);
-        $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'id DESC');
+        
+        // Check user can be here.
+        $modulecontext = \context_module::instance($cm->id);
+        if(!has_capability('mod/readaloud:view',$modulecontext)){
+            return false;
+        }
 
         // Get or create attempt.
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'id DESC');
         if (!$attempts) {
             $latestattempt = self::create_new_attempt($moduleinstance->course, $moduleinstance->id);
         } else {
@@ -3293,7 +3329,8 @@ class utils {
         if($totalitems <= count($qdetails->steps) || $stepdata->index == $totalitems - 1) {
             $newgrade = true;
             $latestattempt->qscore = self::calculate_quiz_score($qdetails->steps);
-            $latestattempt->status = constants::M_STATE_QUIZCOMPLETE;
+            //also done from ajax
+            utils::complete_step(constants::STEP_QUIZ, $latestattempt);
            // \mod_readaloud\event\attempt_submitted::create_from_attempt($latestattempt, $modulecontext)->trigger();
         }else{
             $newgrade = false;
@@ -3313,6 +3350,42 @@ class utils {
 
         // return_to_page($result,$message,$returndata);
         return [$result, $message, $returndata];
+    }
+
+    public static function update_activitystep_completion($cmid, $step){
+        global $DB, $USER;
+        $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        $moduleinstance  = $DB->get_record(constants::M_MODNAME, ['id' => $cm->instance], '*', MUST_EXIST);
+        
+        // Check user can be here.
+        $modulecontext = \context_module::instance($cm->id);
+        if(!has_capability('mod/readaloud:view',$modulecontext)){
+            return false;
+        }
+        
+        // Get or create attempt.
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'id DESC');
+        if (!$attempts) {
+            $latestattempt = self::create_new_attempt($moduleinstance->course, $moduleinstance->id);
+        } else {
+            $latestattempt = reset($attempts);
+        }
+
+        // Do a sanity check on the value of $step.
+        if(!in_array($step,constants::STEPS)){
+            return false;
+        }
+        // Is step enabled?
+        if(!self::is_step_enabled($step,$moduleinstance)){
+            return false;
+        }
+        // Is step already complete?
+        if(self::is_step_complete($step,$latestattempt)){
+            return true;
+        }
+
+        // Complete the step.
+        return self::complete_step($step, $latestattempt);
     }
 
     public static function calculate_quiz_score($steps) {
@@ -3505,6 +3578,79 @@ class utils {
                 $tdata->results = [];
         }
         return $tdata;
+    }
+
+    // Set an attempt step as complete in DB status field
+    public static function complete_step($step, $attempt) {
+        global $DB;
+
+        if (!$attempt) {
+            return false;
+        } else {
+            if (($attempt->status & $step) === 0){
+               return $DB->set_field(constants::M_USERTABLE,'status',$attempt->status + $step,['id' => $attempt->id]);
+            }else{
+                // It was already complete. So ok?
+                return true;
+            }
+        }
+        
+    }
+    // Get the enabled state of all the steps (for mustache/js)
+    public static function get_steps_enabled_state($moduleinstance) {
+        $enabledsteps = [];
+        foreach (constants::STEPS as $stepname => $step) {
+            if (self::is_step_enabled($step, $moduleinstance)) {
+                $enabledsteps[$stepname] = $step;
+            }
+        }
+        //Step report is a bit hacky. It is enabled if the read step is enabled
+        $enabledsteps['step_report'] = utils::is_step_enabled(constants::STEP_READ,$moduleinstance);
+        return $enabledsteps;
+    }
+    // Get the open state of all the steps (for mustache/js)
+    public static function get_steps_open_state($moduleinstance, $attempt) {
+        $opensteps = [];
+        foreach (constants::STEPS as $stepname => $step) {
+            if (self::is_step_open($step, $moduleinstance, $attempt)) {
+                $opensteps[$stepname] = $step;
+            }
+        }
+        //Step report is a bit hacky. It is open if the read step is complete
+        $opensteps['step_report'] = self::is_step_complete(constants::STEP_READ,$attempt);
+        return $opensteps;
+    }
+
+    // Is a specific activity step enabled?
+    public static function is_step_enabled($step, $moduleinstance) {
+        return ($moduleinstance->steps & $step) !== 0;
+    }
+
+     // Is a specific attempt step complete?
+    public static function is_step_complete($step, $attempt) {
+        if (!$attempt) {
+            return false;
+        } else {
+            return ($attempt->status & $step) !== 0;
+        }
+        
+    }
+
+    // Is a specific attempt step open (or not opened yet)
+    public static function is_step_open($step, $moduleinstance, $attempt) {
+        $prevstep_complete = true;
+        foreach (constants::STEPS as $stepname => $onestep) {
+            // If it's the current step, then we are done and the value of prev step is what we want.
+            if ($onestep == $step) {
+                break;
+            }
+            // If the step is enabled, then it is the current prev_step candidate, check its completion.
+            if (self::is_step_enabled($onestep, $moduleinstance)) {
+                $prevstep_complete = $attempt && self::is_step_complete($onestep, $attempt);
+            }
+        }
+        // The item is open, if it is the first step, or the immediate previous step  is complete;
+        return $prevstep_complete;
     }
 
     public static function do_mb_str_split($string, $splitlength = 1, $encoding = null) {

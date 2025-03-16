@@ -7,7 +7,7 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
   This file is to manage the quiz stage
    */
 
-  log.debug('Poodll Readaloud Finished page: initialising');
+  log.debug('Poodll Readaloud Quiz Finished page: initialising');
 
   return {
 

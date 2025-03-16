@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -145,7 +144,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         // Adding keys to table tool_dataprivacy_contextlist.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for tool_dataprivacy_contextlist.
         if (!$dbman->table_exists($table)) {
@@ -188,7 +187,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018071300) {
         $table = new xmldb_table('readaloud');
 
-        //This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
+        // This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
         $field = new xmldb_field('accadjust', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to readaloud table
@@ -203,7 +202,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018073101) {
         $table = new xmldb_table('readaloud_ai_result');
 
-        //records the matched words in the passage and their transcript location. For debugging, passage tweaking, and audio location
+        // records the matched words in the passage and their transcript location. For debugging, passage tweaking, and audio location
         $field = new xmldb_field('sessionmatches', XMLDB_TYPE_TEXT, null, null, null, null);
 
         // add field to readaloud table
@@ -218,7 +217,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018082400) {
         $table = new xmldb_table('readaloud');
 
-        //This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
+        // This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
         $field = new xmldb_field('accadjustmethod', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
 
         // add field to readaloud table
@@ -233,14 +232,14 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018082402) {
         $table = new xmldb_table('readaloud_ai_result');
 
-        //This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
+        // This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
         $field = new xmldb_field('errorcount', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to AI table
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        //add field to attempts table
+        // add field to attempts table
         $table = new xmldb_table('readaloud_attempt');
         // add field to readaloud table
         if (!$dbman->field_exists($table, $field)) {
@@ -253,7 +252,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018082403) {
         $table = new xmldb_table('readaloud');
 
-        //This adds the post attempt display options for each of the evaluation methods (machine and human)
+        // This adds the post attempt display options for each of the evaluation methods (machine and human)
         $field1 = new xmldb_field('humanpostattempt', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '2');
         $field2 = new xmldb_field('machinepostattempt', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
 
@@ -271,7 +270,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018082404) {
         $table = new xmldb_table('readaloud');
 
-        //This adds the post attempt display options for each of the evaluation methods (machine and human)
+        // This adds the post attempt display options for each of the evaluation methods (machine and human)
         $field = new xmldb_field('alternatives', XMLDB_TYPE_TEXT, null, null, null, null);
 
         // add fields to readaloud table
@@ -286,7 +285,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018090700) {
         $table = new xmldb_table('readaloud');
 
-        //This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
+        // This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
         $field = new xmldb_field('machgrademethod', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to readaloud table
@@ -301,7 +300,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2018101200) {
         $table = new xmldb_table('readaloud');
 
-        //This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
+        // This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
         $field = new xmldb_field('activitylink', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to readaloud table
@@ -316,7 +315,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2019052000) {
         $table = new xmldb_table('readaloud');
 
-        //This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
+        // This allows the activity admin to compensate for a certain no. of errors to compensate for machine transcription errors
         $field = new xmldb_field('transcriber', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
 
         // add field to readaloud table
@@ -330,7 +329,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2019101400) {
         $table = new xmldb_table('readaloud');
 
-        //This allows the activity admin to submit raw audio (as opposed to recording). Usually for some sort of disaster recovery
+        // This allows the activity admin to submit raw audio (as opposed to recording). Usually for some sort of disaster recovery
         $field = new xmldb_field('submitrawaudio', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to readaloud table
@@ -344,8 +343,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2020021800) {
         $table = new xmldb_table('readaloud');
 
-        //
-        $field = new xmldb_field('sessionscoremethod', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+                $field = new xmldb_field('sessionscoremethod', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to readaloud table
         if (!$dbman->field_exists($table, $field)) {
@@ -358,16 +356,16 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2020022000) {
         $table = new xmldb_table('readaloud');
 
-        $fields=array();
-        //Model Audio URL
+        $fields = [];
+        // Model Audio URL
         $fields[] = new xmldb_field('modelaudiourl', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, null, null, null);
-        //Model audio breaks (JSON)
+        // Model audio breaks (JSON)
         $fields[] = new xmldb_field('modelaudiobreaks', XMLDB_TYPE_TEXT, null, null, null, null);
-        //TTS Voice
+        // TTS Voice
         $fields[] = new xmldb_field('ttsvoice', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 'Amy');
-        //Enable preview mode
+        // Enable preview mode
         $fields[] = new xmldb_field('enablepreview', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
-        //Enable shadow mode
+        // Enable shadow mode
         $fields[] = new xmldb_field('enableshadow', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add fields to readaloud table
@@ -384,8 +382,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2020022900) {
         $table = new xmldb_table('readaloud');
 
-        //
-        $field = new xmldb_field('ttsspeed', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
+                $field = new xmldb_field('ttsspeed', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1');
 
         // add field to readaloud table
         if (!$dbman->field_exists($table, $field)) {
@@ -435,9 +432,9 @@ function xmldb_readaloud_upgrade($oldversion) {
 
     // Make sure language models are saved on langservices server.
     if ($oldversion < 2020111700) {
-        $mods = $DB->get_records('readaloud',array());
+        $mods = $DB->get_records('readaloud', []);
         foreach ($mods as $themod) {
-            utils::fetch_lang_model($themod->passage,$themod->ttslanguage,$themod->region);
+            utils::fetch_lang_model($themod->passage, $themod->ttslanguage, $themod->region);
         }
         upgrade_mod_savepoint(true, 2020111700, 'readaloud');
     }
@@ -446,7 +443,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2020121400) {
         $table = new xmldb_table('readaloud');
 
-        //This forces the activity to use AWS transcription (not Poodll transcription). It results in slower but stricter transcription, ie more errors
+        // This forces the activity to use AWS transcription (not Poodll transcription). It results in slower but stricter transcription, ie more errors
         $field = new xmldb_field('stricttranscribe', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add field to readaloud table
@@ -456,12 +453,12 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020121400, 'readaloud');
     }
 
-    if($oldversion<2021032600){
+    if($oldversion < 2021032600){
 
         $table = new xmldb_table('readaloud');
 
         // Adding fields to table tool_dataprivacy_contextlist.
-        $fields=array();
+        $fields = [];
         $fields[] = new xmldb_field('modelaudiotrans', XMLDB_TYPE_TEXT, null, null, null, null);
         $fields[] = new xmldb_field('modelaudiofulltrans', XMLDB_TYPE_TEXT, null, null, null, null);
         $fields[] = new xmldb_field('modelaudiomatches', XMLDB_TYPE_TEXT, null, null, null, null);
@@ -476,42 +473,43 @@ function xmldb_readaloud_upgrade($oldversion) {
 
     }
 
-    if($oldversion<2021032902){
-        //loop through records looking for newly available neural voices and generate speechmarks and breaks
-        //neural voices will be available right away, but the timing of words in the speech will change. So we need to do this
-        //so we regenerate when required to do so
+    if($oldversion < 2021032902){
+        // loop through records looking for newly available neural voices and generate speechmarks and breaks
+        // neural voices will be available right away, but the timing of words in the speech will change. So we need to do this
+        // so we regenerate when required to do so
         $config = get_config(constants::M_COMPONENT);
-        $token = utils::fetch_token($config->apiuser,$config->apisecret);
-        $readalouds=$DB->get_records(constants::M_TABLE);
+        $token = utils::fetch_token($config->apiuser, $config->apisecret);
+        $readalouds = $DB->get_records(constants::M_TABLE);
 
         foreach($readalouds as $readaloud){
             if($token && !empty($readaloud->passage)
                     && !empty($readaloud->modelaudiobreaks)
                     && empty($readaloud->modelaudiourl)
             ){
-                //if it is not a neural voice, there is no need to resync
-                if(!in_array($readaloud->ttsvoice,constants::M_NEURALVOICES)){continue;}
+                // if it is not a neural voice, there is no need to resync
+                if(!in_array($readaloud->ttsvoice, constants::M_NEURALVOICES)){continue;
+                }
 
-                //fetch SSML , speechmarks
+                // fetch SSML , speechmarks
                 $slowpassage = utils::fetch_speech_ssml($readaloud->passage, $readaloud->ttsspeed);
                 $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
                         $slowpassage, 'ssml', $readaloud->ttsvoice);
 
-                //if successful create a set of 'matches' (internal doc matching audio/passage/transcript positions)
+                // if successful create a set of 'matches' (internal doc matching audio/passage/transcript positions)
                 if($speechmarks) {
-                    $matches = utils::speechmarks_to_matches($readaloud->passage,$speechmarks,$readaloud->ttslanguage);
-                    //from matches create or sync an existing phrase breaks array with audio/word locations
+                    $matches = utils::speechmarks_to_matches($readaloud->passage, $speechmarks, $readaloud->ttslanguage);
+                    // from matches create or sync an existing phrase breaks array with audio/word locations
                     if(!empty($readaloud->modelaudiobreaks)){
-                        $breaks = utils::sync_modelaudio_breaks(json_decode($readaloud->modelaudiobreaks,true),$matches);
+                        $breaks = utils::sync_modelaudio_breaks(json_decode($readaloud->modelaudiobreaks, true), $matches);
                     }else {
-                        $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches,$readaloud->ttslanguage);
+                        $breaks = utils::guess_modelaudio_breaks($readaloud->passage, $matches, $readaloud->ttslanguage);
                     }
-                    //save it
+                    // save it
                     $updatereadaloud = new stdClass();
                     $updatereadaloud->id = $readaloud->id;
                     $updatereadaloud->modelaudiomatches = json_encode($matches);
                     $updatereadaloud->modelaudiobreaks = json_encode($breaks);
-                    $DB->update_record(constants::M_TABLE,$updatereadaloud);
+                    $DB->update_record(constants::M_TABLE, $updatereadaloud);
                 } //end of if speechmarks
             } //end of if should regenerate speechmarks/breaks
         } //end of for each
@@ -519,16 +517,16 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021032902, 'readaloud');
     }
 
-    //a bug means that some attempts might not have been graded
-    if($oldversion <2021033000){
-        if($oldversion>=2021032900){
+    // a bug means that some attempts might not have been graded
+    if($oldversion < 2021033000){
+        if($oldversion >= 2021032900){
             $sql = "SELECT * from {" . constants::M_AITABLE . "} WHERE timecreated < 1617092420 AND timecreated > 1616943600 ";
-            $ai_evals = $DB->get_records_sql($sql);
-            if ($ai_evals) {
-                foreach ($ai_evals as $eval) {
+            $aievals = $DB->get_records_sql($sql);
+            if ($aievals) {
+                foreach ($aievals as $eval) {
                     $thecm = get_coursemodule_from_instance(constants::M_TABLE, $eval->readaloudid, $eval->courseid, false);
                     if($thecm) {
-                        $modulecontext =context_module::instance($thecm->id);
+                        $modulecontext = context_module::instance($thecm->id);
                         $aigrade = new \mod_readaloud\aigrade($eval->attemptid, $modulecontext->id);
                         if ($aigrade->has_transcripts()) {
                             $aigrade->do_diff();
@@ -544,15 +542,13 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2021053100) {
         $table = new xmldb_table(constants::M_TABLE);
 
-
         // Define field forframe to be added to readaloud
-        $field= new xmldb_field('foriframe', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $field = new xmldb_field('foriframe', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
         upgrade_mod_savepoint(true, 2021053100, 'readaloud');
     }
-
 
     if ($oldversion < 2021061100) {
         $table = new xmldb_table('readaloud_rsquestions');
@@ -582,7 +578,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table->add_field('modifiedby', XMLDB_TYPE_INTEGER, '10', null, null, null);
 
         // Adding keys to table rsquestions
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         // Conditionally launch create table for tool_dataprivacy_contextlist.
         if (!$dbman->table_exists($table)) {
@@ -595,7 +591,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2021090100) {
         $table = new xmldb_table(constants::M_TABLE);
 
-        $fields=[];
+        $fields = [];
         $fields[] = new xmldb_field('phonetic', XMLDB_TYPE_TEXT, null, null, null, null);
 
         // Add fields
@@ -613,7 +609,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table = new xmldb_table(constants::M_TABLE);
 
         // Define field to be added to readaloud
-        $fields=[];
+        $fields = [];
         $fields[] = new xmldb_field('passagesegments', XMLDB_TYPE_TEXT, null, null, null, null);
 
         // Add fields
@@ -623,13 +619,13 @@ function xmldb_readaloud_upgrade($oldversion) {
             }
         }
 
-        //create a phonetic for each readaloud instance
-        //this would blow up a site with lots of readalouds because of the time taken. So we added a place to do this on activity load in view.php
-        //utils::update_all_phonetic_segments();
+        // create a phonetic for each readaloud instance
+        // this would blow up a site with lots of readalouds because of the time taken. So we added a place to do this on activity load in view.php
+        // utils::update_all_phonetic_segments();
 
         $table = new xmldb_table(constants::M_TABLE);
 
-        $field= new xmldb_field('masterinstance', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $field = new xmldb_field('masterinstance', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -638,10 +634,9 @@ function xmldb_readaloud_upgrade($oldversion) {
 
     if($oldversion < 2021112100){
 
-
         $table = new xmldb_table(constants::M_USERTABLE);
 
-        $field= new xmldb_field('dontgrade', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $field = new xmldb_field('dontgrade', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -652,9 +647,9 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2022020100) {
         $table = new xmldb_table(constants::M_TABLE);
 
-        $fields=[];
-        $fields[] = new xmldb_field('viewstart', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED,XMLDB_NOTNULL, null, 0);
-        $fields[] = new xmldb_field('viewend', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED,XMLDB_NOTNULL, null, 0);
+        $fields = [];
+        $fields[] = new xmldb_field('viewstart', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('viewend', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
 
         // Add fields
         foreach ($fields as $field) {
@@ -670,9 +665,9 @@ function xmldb_readaloud_upgrade($oldversion) {
     if ($oldversion < 2022040200) {
         $table = new xmldb_table(constants::M_TABLE);
 
-        $fields=[];
-        $fields[] = new xmldb_field('viewstart', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED,null, null, 0);
-        $fields[] = new xmldb_field('viewend', XMLDB_TYPE_INTEGER, 10,XMLDB_UNSIGNED, null, null, 0);
+        $fields = [];
+        $fields[] = new xmldb_field('viewstart', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, null, null, 0);
+        $fields[] = new xmldb_field('viewend', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, null, null, 0);
 
         // Add fields
         foreach ($fields as $field) {
@@ -687,7 +682,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table = new xmldb_table(constants::M_AITABLE);
 
         // Adding fields to ai results table.
-        $fields= array();
+        $fields = [];
         $fields[] = new xmldb_field('selfcorrections', XMLDB_TYPE_TEXT, null, null, null, null);
         $fields[] = new xmldb_field('sccount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
 
@@ -701,10 +696,10 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table = new xmldb_table(constants::M_USERTABLE);
 
         // Adding fields to attempt table.
-        $fields= array();
+        $fields = [];
         $fields[] = new xmldb_field('selfcorrections', XMLDB_TYPE_TEXT, null, null, null, null);
         $fields[] = new xmldb_field('sccount', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
-        $fields[]=  new xmldb_field('qscore', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('qscore', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, 0);
         $fields[] = new xmldb_field('qdetails', XMLDB_TYPE_TEXT, 8192, null, null, null);
         // Add fields
         foreach($fields as $field) {
@@ -714,11 +709,11 @@ function xmldb_readaloud_upgrade($oldversion) {
         }
 
         $table = new xmldb_table(constants::M_TABLE);
-        $fields=[];
-        $fields[] = new xmldb_field('usecorpus', XMLDB_TYPE_INTEGER, 2, null,XMLDB_NOTNULL, null, constants::GUIDEDTRANS_PASSAGE);
-        $fields[] =new xmldb_field('corpushash', XMLDB_TYPE_CHAR, '255', null, null, null );
-        $fields[] =new xmldb_field('passagekey', XMLDB_TYPE_CHAR, '255', null, null, null );
-        $fields[]=  new xmldb_field('corpusrange', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, constants::CORPUSRANGE_SITE);
+        $fields = [];
+        $fields[] = new xmldb_field('usecorpus', XMLDB_TYPE_INTEGER, 2, null, XMLDB_NOTNULL, null, constants::GUIDEDTRANS_PASSAGE);
+        $fields[] = new xmldb_field('corpushash', XMLDB_TYPE_CHAR, '255', null, null, null );
+        $fields[] = new xmldb_field('passagekey', XMLDB_TYPE_CHAR, '255', null, null, null );
+        $fields[] = new xmldb_field('corpusrange', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, constants::CORPUSRANGE_SITE);
 
         // Add fields
         foreach ($fields as $field) {
@@ -727,9 +722,9 @@ function xmldb_readaloud_upgrade($oldversion) {
             }
         }
 
-        //set all transcriber to "guided" (before was 1) chrome:strict stt:guided or 2) stt:guided - ie all mixed up
-        $DB->set_field(constants::M_TABLE,'transcriber',constants::TRANSCRIBER_GUIDED);
-        set_config('transcriber', constants::TRANSCRIBER_GUIDED,constants::M_COMPONENT).
+        // set all transcriber to "guided" (before was 1) chrome:strict stt:guided or 2) stt:guided - ie all mixed up
+        $DB->set_field(constants::M_TABLE, 'transcriber', constants::TRANSCRIBER_GUIDED);
+        set_config('transcriber', constants::TRANSCRIBER_GUIDED, constants::M_COMPONENT).
 
         upgrade_mod_savepoint(true, 2022041605, 'readaloud');
     }
@@ -739,8 +734,8 @@ function xmldb_readaloud_upgrade($oldversion) {
         $table = new xmldb_table(constants::M_TABLE);
 
         // Define fields customfont,to be added to readaloud
-        $fields=[];
-        $fields[] = new xmldb_field('customfont', XMLDB_TYPE_CHAR, '255', null, null, null,null);
+        $fields = [];
+        $fields[] = new xmldb_field('customfont', XMLDB_TYPE_CHAR, '255', null, null, null, null);
 
         // Add fields
         foreach ($fields as $field) {
@@ -752,8 +747,8 @@ function xmldb_readaloud_upgrade($oldversion) {
     }
 
     if($oldversion < 2023092600){
-        //The norwegian language-locale code nb-no is not supported by all STT engines in Poodll, and no-no is. So updating
-        $DB->set_field(constants::M_TABLE,'ttslanguage',constants::M_LANG_NONO,['ttslanguage'=>constants::M_LANG_NBNO]);
+        // The norwegian language-locale code nb-no is not supported by all STT engines in Poodll, and no-no is. So updating
+        $DB->set_field(constants::M_TABLE, 'ttslanguage', constants::M_LANG_NONO, ['ttslanguage' => constants::M_LANG_NBNO]);
         upgrade_mod_savepoint(true, 2023092600, 'readaloud');
     }
 
@@ -763,21 +758,21 @@ function xmldb_readaloud_upgrade($oldversion) {
         $attempttable = new xmldb_table(constants::M_USERTABLE);
 
         // Define field expiredays to be added to readseed
-        $field_picture = new xmldb_field('passagepicture', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null);
-        $field_flower= new xmldb_field('flowerid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
-        $field_stdashboardid= new xmldb_field('stdashboardid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $fieldpicture = new xmldb_field('passagepicture', XMLDB_TYPE_CHAR, '255', XMLDB_UNSIGNED, XMLDB_NOTNULL, null);
+        $fieldflower = new xmldb_field('flowerid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $fieldstdashboardid = new xmldb_field('stdashboardid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
 
         // add picture field to readaloud table
-        if (!$dbman->field_exists($activitytable, $field_picture)) {
-            $dbman->add_field($activitytable, $field_picture);
+        if (!$dbman->field_exists($activitytable, $fieldpicture)) {
+            $dbman->add_field($activitytable, $fieldpicture);
         }
         // add stdashboard id field to readaloud table
-        if (!$dbman->field_exists($activitytable, $field_stdashboardid)) {
-            $dbman->add_field($activitytable,  $field_stdashboardid);
+        if (!$dbman->field_exists($activitytable, $fieldstdashboardid)) {
+            $dbman->add_field($activitytable,  $fieldstdashboardid);
         }
         // add flower id field to attempts table
-        if (!$dbman->field_exists($attempttable, $field_flower)) {
-            $dbman->add_field($attempttable, $field_flower);
+        if (!$dbman->field_exists($attempttable, $fieldflower)) {
+            $dbman->add_field($attempttable, $fieldflower);
         }
 
         upgrade_mod_savepoint(true, 2024082901, 'readaloud');
@@ -853,6 +848,53 @@ function xmldb_readaloud_upgrade($oldversion) {
             }
         }
         upgrade_mod_savepoint(true, 2025011805, 'readaloud');
+    }
+
+    // Add steps field to table. Update steps and status of existing attempts
+    if ($oldversion < 2025031500) {
+        $table = new xmldb_table(constants::M_TABLE);
+
+        // Define fields to be added to readaloud .. just steps
+        $fields = [];
+        $fields[] = new xmldb_field('steps', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        // update steps and status of existing ReadAloud activities
+        // Steps
+        // we had checkboxes for preview / shadow / landr. But we need to convert these to steps
+        $readalouds = $DB->get_records(constants::M_TABLE);
+        $stepsbyreadaloud = [];
+        if ($readalouds) {
+            foreach ($readalouds as $ra) {
+                $steps = 0;
+                $steps += $ra->enablepreview ? constants::STEP_LISTEN : 0;
+                $steps += $ra->enablelandr ? constants::STEP_PRACTICE : 0;
+                $steps += $ra->enableshadow ? constants::STEP_SHADOW : 0;
+                // Reading could not be omitted. So we add it by default
+                $steps += constants::STEP_READ;
+                $steps += $ra->showquiz ? constants::STEP_QUIZ : 0;
+                $DB->set_field(constants::M_TABLE, 'steps', $steps, ['id' => $ra->id]);
+                $stepsbyreadaloud[$ra->id] = $steps;
+            }
+        }
+
+        // Status
+        // If there is an attempt (user submitted a reading), all steps are considered complete
+        $attempts = $DB->get_records(constants::M_USERTABLE);
+        if ($attempts ) {
+            foreach ($attempts as $attempt) {
+                $steps = $stepsbyreadaloud[$attempt->readaloudid];
+                $status = $steps;
+                $DB->set_field(constants::M_USERTABLE, 'status', $status, ['id' => $attempt->id]);
+            }
+        }
+        upgrade_mod_savepoint(true, 2025031500, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

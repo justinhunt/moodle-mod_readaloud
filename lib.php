@@ -561,6 +561,8 @@ function readaloud_add_instance(stdClass $readaloud, mod_readaloud_mod_form $mfo
         }//end of if token
     }
 
+    //handle the steps from form submission
+    $readaloud->steps = utils::pack_steps($readaloud);
 
     $readaloud->id = $DB->insert_record(constants::M_TABLE, $readaloud);
 
@@ -656,6 +658,10 @@ function readaloud_update_instance(stdClass $readaloud, mod_readaloud_mod_form $
         } //end of if token
     }
 
+    //handle the steps from form submission
+    $readaloud->steps = utils::pack_steps($readaloud);
+
+    //update the record
     $success = $DB->update_record(constants::M_TABLE, $readaloud);
 
     //if the region has changed we might need a new corpushash

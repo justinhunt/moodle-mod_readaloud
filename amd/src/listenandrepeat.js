@@ -171,6 +171,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
             self.controls.finishedbutton.show();
             self.controls.skipbutton.hide();
             self.oldBreak.isfinalbreak=true;
+            // Alert server and activity controller that the listen and practice is complete
+            self.on_complete();
           } else {
             self.controls.finishedbutton.hide();
             self.controls.skipbutton.show();
@@ -186,6 +188,10 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
     },
 
+    // Callback for when the listen and repeat activity is complete, overridden by activity controller.
+    on_complete: function() {},
+
+    // Register events for the listen and repeat activity.
     register_events: function() {
 
       var self = this;
