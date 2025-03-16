@@ -159,7 +159,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
     public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm) {
 
         //Finished Quiz Results Div
-        if($latestattempt && $cm && $latestattempt->status == constants::M_STATE_QUIZCOMPLETE) {
+        if ($latestattempt && $cm && $latestattempt->status == utils::is_step_complete(constants::STEP_QUIZ, $latestattempt)) {
             $finisheddata = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
             $finisheddata->canreattemptquiz = true;
             // TO DO implement this  .. this field not exist

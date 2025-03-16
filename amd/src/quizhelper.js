@@ -56,6 +56,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         this.start_quiz();
       },
 
+      // Callback for when the quiz is complete, overridden by activity controller.
+      on_complete: function() {},
+
       prepare_html: function() {
 
         // this.controls.quizcontainer.append(submitbutton);
@@ -216,6 +219,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
             }
 
         } else {
+            // Alert server and activity controller that the quiz is complete
+            dd.on_complete();
+
             //just reload and re-fetch all the data to display
               $(".readaloud_nextbutton").prop("disabled", true);
               //fetch the results and display them
@@ -270,6 +276,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
 
 
       start_quiz: function() {
+        if (this.quizdata == null || this.quizdata.length == 0) { return; }
         $("#" + this.quizdata[0].uniqueid + "_container").show();
           //autoplay audio if we need to
           var ttsquestionplayer = $("#" + this.quizdata[0].uniqueid + "_container audio.mod_readaloud_itemttsaudio");

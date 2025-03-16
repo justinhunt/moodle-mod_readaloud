@@ -928,3 +928,5 @@ $string['aigrade_modelanswer'] = 'Model answer';
 $string['reattemptquiz'] = 'Reattempt Quiz';
 $string['enableread'] = 'Enable Read';
 $string['enablequiz'] = 'Enable Quiz';
+$string['activitysteps'] = 'Activity Steps';
+$string['activitystepsdetails'] = 'Set the learning steps in this ReadAloud activity.';

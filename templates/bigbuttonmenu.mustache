@@ -1,4 +1,4 @@
-<div id="M_MENUBUTTONS_CONTAINER">
+<div id="{{M_MENUBUTTONS_CONTAINER}}">
 
     <!--{{#welcomemessage}}
     <div id="{{M_MENUINSTRUCTIONS_CONTAINER}}" class="{{M_MENUINSTRUCTIONS_CONTAINER}}">
@@ -14,46 +14,47 @@
             <a href="javascript:void(0)"  class="nav-link h6" data-mode="home">{{#str}} home, mod_readaloud {{/str}}</a>
         </li>
 
-        {{#enablepreview}}
-        <li class="nav-item" id="{{M_STARTPREVIEW}}">
+        {{#stepsenabled.step_listen}}
+        <li class="nav-item mode-chooser {{^stepsopen.step_listen}}no-click{{/stepsopen.step_listen}}" data-step="{{steps.step_listen}}">
             <a href="javascript:void(0)"  class="nav-link h6" data-mode="preview">{{#str}} mode_listen, mod_readaloud {{/str}}</a>
         </li>
-        {{/enablepreview}}
-        {{#enablelandr}}
-        <li class="nav-item {{^hasaudiobreaks}}no-click{{/hasaudiobreaks}}" id="{{M_STARTLANDR}}">
+        {{/stepsenabled.step_listen}}
+        {{#stepsenabled.step_practice}}
+        <li class="nav-item mode-chooser {{^stepsopen.step_practice}}no-click{{/stepsopen.step_practice}} {{^hasaudiobreaks}}no-click{{/hasaudiobreaks}}" data-step="{{steps.step_practice}}">
             <a href="javascript:void(0)"  class="nav-link h6" data-mode="landr">{{#str}} mode_practice, mod_readaloud {{/str}}</a>
             {{^hasaudiobreaks}}
             <span class="mod_readaloud_menubutton_warning">{{#str}} modelaudiowarning, mod_readaloud {{/str}}</span>
             {{/hasaudiobreaks}}
         </li>
-        {{/enablelandr}}
-        {{#enableshadow}}
-        <li class="nav-item {{^canshadowattempt}}no-click{{/canshadowattempt}}" id="{{M_STARTSHADOW}}">
+        {{/stepsenabled.step_practice}}
+        {{#stepsenabled.step_shadow}}
+        <li class="nav-item mode-chooser {{^stepsopen.step_shadow}}no-click{{/stepsopen.step_shadow}} {{^canshadowattempt}}no-click{{/canshadowattempt}}" data-step="{{steps.step_shadow}}">
             <a href="javascript:void(0)"  class="nav-link h6" data-mode="shadow">{{#str}} mode_shadow, mod_readaloud {{/str}}</a>
             {{^canshadowattempt}}
             <!--<span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>-->
             {{/canshadowattempt}}
         </li>
-        {{/enableshadow}}
-        {{#enablenoshadow}}
-        <li class="nav-item {{^canattempt}}no-click{{/canattempt}}" id="{{M_STARTNOSHADOW}}">
+        {{/stepsenabled.step_shadow}}
+        {{#stepsenabled.step_read}}
+        <li class="nav-item mode-chooser {{^stepsopen.step_read}}no-click{{/stepsopen.step_read}} {{^canattempt}}no-click{{/canattempt}}" data-step="{{steps.step_read}}">
             <a href="javascript:void(0)"  class="nav-link h6" data-mode="startnoshadow">{{#str}} mode_read, mod_readaloud {{/str}}</a>
             {{^canattempt}}
             <span class="mod_readaloud_menubutton_warning">{{#str}} exceededallattempts, mod_readaloud {{/str}}</span>
             {{/canattempt}}
         </li>
-        {{/enablenoshadow}}
-        {{#enablequiz}}
-        <li class="nav-item {{#noquiz}}no-click{{/noquiz}}" id="{{M_STARTQUIZ}}">
+        {{/stepsenabled.step_read}}
+         {{#stepsenabled.step_report}}
+        <li class="nav-item mode-chooser {{^stepsopen.step_report}}no-click{{/stepsopen.step_report}}" id="{{M_STARTREPORT}}">
+            <a href="javascript:void(0)"  class="nav-link h6" data-mode="fullreport">Report</a>
+        </li>
+         {{/stepsenabled.step_report}}
+        {{#stepsenabled.step_quiz}}
+        <li class="nav-item mode-chooser {{^stepsopen.step_quiz}}no-click{{/stepsopen.step_quiz}} {{#noquiz}}no-click{{/noquiz}}" data-step="{{steps.step_quiz}}">
             <a href="javascript:void(0)"  class="nav-link h6" data-mode="quiz">{{#str}} mode_quiz, mod_readaloud {{/str}}</a>
             {{#quizcompleted}}
             <span class="mod_readaloud_menubutton_warning">{{#str}} quizcompletedwarning, mod_readaloud {{/str}}</span>
             {{/quizcompleted}}
         </li>
-        {{/enablequiz}}
-
-        <li class="nav-item" id="{{M_STARTREPORT}}">
-            <a href="javascript:void(0)"  class="nav-link h6" data-mode="fullreport">Report</a>
-        </li>
+        {{/stepsenabled.step_quiz}}
     </ul>
 </div>

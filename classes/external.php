@@ -128,7 +128,7 @@ class mod_readaloud_external extends external_api {
                 $gradeable = false;
             }
         }
-        $newattempt = utils::create_attempt($filename, $rectime, $readaloud, $gradeable);
+        $newattempt = utils::create_update_attempt($filename, $rectime, $readaloud, $gradeable);
         if ($newattempt && $newattempt->id) {
             // trigger attempt submitted event
             \mod_readaloud\event\attempt_submitted::create_from_attempt($newattempt, $modulecontext)->trigger();
@@ -308,7 +308,7 @@ class mod_readaloud_external extends external_api {
         $success = false;
         $message = '';
         $gradeable = true;
-        $newattempt = utils::create_attempt($filename, $rectime, $readaloud, $gradeable);
+        $newattempt = utils::create_update_attempt($filename, $rectime, $readaloud, $gradeable);
         if (!$newattempt || !$newattempt->id) {
             $message = "Unable to add update database with submission";
         } else {
@@ -546,6 +546,21 @@ class mod_readaloud_external extends external_api {
 
     public static function fetch_quiz_results_returns() {
         return new external_value(PARAM_RAW);
+    }
+
+    public static function report_activitystep_completion_parameters() {
+        return new external_function_parameters([
+                'cmid' => new external_value(PARAM_INT),
+                'step' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function report_activitystep_completion($cmid, $step) {
+        $success = utils::update_activitystep_completion($cmid, $step);
+        return $success;
+    }
+    public static function report_activitystep_completion_returns() {
+        return new external_value(PARAM_BOOL);
     }
 
 

@@ -530,7 +530,11 @@ div.mod_readaloud_attemptsummarytable {
 }
 .mode-chooser.no-click {
   pointer-events: none;
+  color: gray;
+  cursor: not-allowed;
+  background-color: lightgray; 
 }
+
 
 .mode-chooser-label {
   position: absolute;

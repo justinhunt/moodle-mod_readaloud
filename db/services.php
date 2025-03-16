@@ -105,4 +105,12 @@ $functions = array(
                 'type'        => 'read',
                 'ajax'        => true,
             ),
+ 'mod_readaloud_report_activitystep_completion' => array(
+                'classname'   => 'mod_readaloud_external',
+                'methodname'  => 'report_activitystep_completion',
+                'description' => 'Reports the completion of an activity step',
+                'capabilities' => 'mod/readaloud:view',
+                'type'        => 'write',
+                'ajax'        => true,
+        ),           
 );

@@ -21,9 +21,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         controls: null,
         ra_recorder: null,
         rec_time_start: 0,
-        enableshadow: false,
-        enablepreview: false,
-        enablelandr: false,
+        steps_enabled: {},
+        steps_open: {},
         letsshadow: false,
         strings: {},
 
@@ -65,10 +64,12 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 return;
             }
 
+            // Set up steps - enabled and open
+            //TO DO make these usable in JS (here) and not just in mustache
+            dd.steps_enabled = dd.activitydata.stepsenabled; // this is not passed through to JS (only mustache)
+            dd.steps_open = dd.activitydata.stepsopen;// this is not passed through to JS (only mustache)
+
             // Set up model audio.
-            dd.enableshadow =dd.activitydata.enableshadow;
-            dd.enablepreview =dd.activitydata.enablepreview;
-            dd.enablelandr =dd.activitydata.enablelandr;
             dd.setupmodelaudio();
 
             // Set up listen and repeat.
@@ -86,7 +87,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
             // Set initial mode.
             // We used to check the settings but now we just show the non-options greyed out
-            if(dd.enableshadow || dd.enablepreview || true){
+            if(dd.stepshadow_enabled || dd.steplisten_enabled || true){
                 dd.domenulayout();
             } else {
                 dd.doreadinglayout();
@@ -112,9 +113,15 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         },
 
         setuplandr: function(){
+            var dd = this;
             var landr_opts={modelaudiokaraoke: modelaudiokaraoke, cmid: this.cmid, language: this.activitydata.language,
                 region: this.activitydata.region, phonetics: this.activitydata.phonetics, stt_guided: this.activitydata.stt_guided};
             landr.init(landr_opts);
+            //set the callback function to complete the activity
+            landr.on_complete = function(){
+                // Complete the current step (update server and ui)
+                dd.update_activity_step(dd.activitydata.steps.step_practice);
+            }
         },
 
         setupquiz: function(){
@@ -125,10 +132,15 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             quizhelper.init(dd.activitydata,
                 dd.cmid,
                 dd.attemptid);
+
+            //set the callback function to complete the quiz
+            quizhelper.on_complete = function(){
+                // Complete the current step (update server and ui)
+                dd.update_activity_step(dd.activitydata.steps.step_quiz);
+            }    
         },
 
         process_html: function (opts) {
-
             //these css classes/ids are all passed in from php in
             //renderer.php::fetch_activity_amd should maybe just simplify and declare them in definitions.js
             var controls = {
@@ -151,13 +163,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 allowearlyexit: $('.' + opts['allowearlyexit']),
                 wheretonextcontainer: $('.' + opts['wheretonextcontainer']),
                 modelaudioplayer: $('#' + opts['modelaudioplayer']),
-                startlandrbutton: $('#' + opts['startlandrbutton']),
                 homebutton: $('#' + opts['homebutton']),
-                startpreviewbutton: $('#' + opts['startpreviewbutton']),
-                startreadingbutton: $('#' + opts['startreadingbutton']),
+                startlistenbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_listen + '"]'),
+                startpracticebutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_practice + '"]'),
+                startreadbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_read + '"]'),
+                startshadowbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_shadow + '"]'),
+                startquizbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_quiz + '"]'),
                 startreportbutton: $('#' + opts['startreportbutton']),
-                startshadowbutton: $('#' + opts['startshadowbutton']),
-                startquizbutton: $('#' + opts['startquizbutton']),
                 returnmenubutton: $('#' + opts['returnmenubutton']),
                 stopandplay: $('#' + opts['stopandplay']),
                 smallreportcontainer: $('#' + opts['smallreportcontainer']),
@@ -182,7 +194,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             //after the recorder reports that it has (really) started this functuon is called.
             var beginall= function(){
                 dd.passagerecorded = true;
-                if(dd.enableshadow && dd.letsshadow){
+                if(dd.stepshadow_enabled && dd.letsshadow){
                     dd.controls.modelaudioplayer[0].play();
                 }
             };
@@ -223,7 +235,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 }
                 dd.douploadlayout();
                 //if we are shadowing we should stop the audio player.
-                if(dd.enableshadow && dd.letsshadow){
+                if(dd.stepshadow_enabled && dd.letsshadow){
                     dd.controls.modelaudioplayer[0].currentTime=0;
                     dd.controls.modelaudioplayer[0].pause();
                 }
@@ -241,6 +253,10 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 }
 
                 dd.send_submission(eventdata.mediaurl, rectime);
+
+                // Complete the current step (update server and ui)
+                dd.update_activity_step(dd.activitydata.steps.step_read);
+
                 //and let the user know that they are all done
                 dd.dofinishedlayout();
             };
@@ -256,29 +272,35 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         register_events: function () {
             var dd = this;
 
-            dd.controls.startpreviewbutton.click(function(e){
+            dd.controls.startlistenbutton.click(function(e){
                 dd.dopreviewlayout();
+                  // TO DO: where to set this properly?
+                  // Complete the current step (update server and ui).
+                  dd.update_activity_step(dd.activitydata.steps.step_listen);
             });
-            dd.controls.startpreviewbutton.keypress(function(e){
+            dd.controls.startlistenbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13 ) {
                     dd.dopreviewlayout();
                     e.preventDefault();
+                   // TO DO: where to set this properly?
+                  // Complete the current step (update server and ui).
+                  dd.update_activity_step(dd.activitydata.steps.step_listen);
                 }
             });
-            dd.controls.startlandrbutton.click(function(e){
+            dd.controls.startpracticebutton.click(function(e){
                 dd.dolandrlayout();
             });
-            dd.controls.startlandrbutton.keypress(function(e){
+            dd.controls.startpracticebutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13 ) {
                     dd.dolandrlayout();
                     e.preventDefault();
                 }
             });
-            dd.controls.startreadingbutton.click(function(e){
+            dd.controls.startreadbutton.click(function(e){
                 dd.letsshadow=false;
                 dd.doreadinglayout();
             });
-            dd.controls.startreadingbutton.keypress(function(e){
+            dd.controls.startreadbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13) {
                     dd.letsshadow=false;
                     dd.doreadinglayout();
@@ -339,9 +361,65 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             });
         },
 
+        // when a step is completed, we update the activity completion on the server
+        // and open the next step
+        update_activity_step: function (step) {
+            var that = this;
+            Ajax.call([{
+                methodname: 'mod_readaloud_report_activitystep_completion',
+                args: {
+                    cmid: that.cmid,
+                    step:  step
+                },
+                done: function(ajaxresult){
+                    var success = JSON.parse(ajaxresult);
+                    switch (success) {
+                        case true:
+                            that.open_next_step(step);
+                            break;
+                        case false:
+                        default:
+                            log.debug('step ' + step + ' update failed');
+                    }
+                    
+                },
+                fail: notification.exception
+            }]);
+        },
+
+        open_next_step: function(oldstep){
+            var that = this;
+            var adata = this.activitydata;
+            //loop through adata.steps array
+            //this looks like['step_listen': 1, 'step_practice': 2, 'step_shadow': 4, 'step_read': 8, 'step_quiz': 16]
+            for (var key in adata.steps) {
+                var thestep = adata.steps[key];
+                //if the looped step is less than or equal to the old step, skip
+                if (thestep <= oldstep) {
+                    continue;
+                } else {
+                    //if the looped step is enabled (present on page), open it
+                    var step_chooser = $('#' + adata['menubuttonscontainer'] + ' .mode-chooser[data-step="' + thestep + '"]');
+                    log.debug(step_chooser);
+                    if(step_chooser.length){
+                        step_chooser.removeClass('no-click');
+                        // (Hacky) show report if read step was done
+                        if (oldstep == adata.steps.step_read) {
+                            that.controls.startreportbutton.removeClass('no-click');    
+                        }
+
+                        // Record the newly opened step as 'open' for client side use
+                        //TO DO-  get this working
+                       // that.steps_open[key] = true;
+                        break;
+                    }
+                }
+            }
+        },
+
         send_submission: function (filename, rectime) {
             var that = this;
-            var shadowing = (that.enableshadow && that.letsshadow) ? 1 : 0;
+            var shadowing = (that.stepshadow_enabled && that.letsshadow) ? 1 : 0;
             Ajax.call([{
                 methodname: 'mod_readaloud_submit_regular_attempt',
                 args: {
