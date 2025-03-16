@@ -10,6 +10,12 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
     log.debug('Activity controller: initialising');
 
+     // Disable click event.
+     function disableClick(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    }
+
     return {
 
         cmid: null,
@@ -272,6 +278,10 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         register_events: function () {
             var dd = this;
 
+            $('.mode-chooser.no-click').each(function() {
+                this.addEventListener('click', disableClick, true);
+            });
+
             dd.controls.startlistenbutton.click(function(e){
                 dd.dopreviewlayout();
                   // TO DO: where to set this properly?
@@ -403,9 +413,11 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                     log.debug(step_chooser);
                     if(step_chooser.length){
                         step_chooser.removeClass('no-click');
+                        step_chooser[0].removeEventListener('click', disableClick, true);
+
                         // (Hacky) show report if read step was done
                         if (oldstep == adata.steps.step_read) {
-                            that.controls.startreportbutton.removeClass('no-click');    
+                            that.controls.startreportbutton.removeClass('no-click');
                         }
 
                         // Record the newly opened step as 'open' for client side use

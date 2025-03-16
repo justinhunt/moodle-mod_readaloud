@@ -499,7 +499,7 @@ div.mod_readaloud_attemptsummarytable {
   margin-top: 20px;
 }
 
-.mode-chooser {
+.mode-chooser-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -509,7 +509,7 @@ div.mod_readaloud_attemptsummarytable {
   transition: transform 0.2s ease-in-out;
 }
 
-.mode-chooser:hover {
+.mode-chooser-icon:hover {
   transform: scale(1.1);
 }
 
@@ -528,13 +528,12 @@ div.mod_readaloud_attemptsummarytable {
 .mode-chooser.no-show {
   display:none;
 }
-.mode-chooser.no-click {
-  pointer-events: none;
+.mode-chooser.no-click a {
   color: gray;
   cursor: not-allowed;
-  background-color: lightgray; 
+  font-weight: normal;
+  pointer-events: none;
 }
-
 
 .mode-chooser-label {
   position: absolute;
