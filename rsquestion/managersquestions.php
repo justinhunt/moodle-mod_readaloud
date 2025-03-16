@@ -200,6 +200,16 @@ if ($edit) {
     $visibility = ['addmedia' => $data->addmedia,
     'addttsaudio' => $data->addttsaudio,
     'addtextarea' => $data->addtextarea];
+
+    // Init file upload areas for item answers
+    for ($i = 1; $i <= constants::MAXANSWERS; $i++) {
+        $draftitemid = file_get_submitted_draft_itemid(constants::FILEANSWER . $i);
+        file_prepare_draft_area($draftitemid, $context->id, constants::M_COMPONENT,
+                constants::FILEANSWER . $i, $data->itemid,
+                $filemanageroptions);
+        $data->{constants::FILEANSWER . $i} = $draftitemid;
+    }
+
     $PAGE->requires->js_call_amd(constants::M_COMPONENT . '/mediaprompts', 'init', [$visibility]);
 
 
@@ -214,6 +224,7 @@ if ($edit) {
     $visibility = ['addmedia' => 0,
     'addttsaudio' => 0,
     'addtextarea' => 0, ];
+
     $PAGE->requires->js_call_amd(constants::M_COMPONENT . '/mediaprompts', 'init', [$visibility]);
 }
 

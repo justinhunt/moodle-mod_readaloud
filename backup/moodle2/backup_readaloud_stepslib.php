@@ -126,6 +126,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
 
         for($anumber=1;$anumber<=constants::MAXANSWERS;$anumber++) {
             $oneactivity->annotate_files(constants::M_COMPONENT, constants::TEXTANSWER_FILEAREA . $anumber, 'id');
+            $oneactivity->annotate_files(constants::M_COMPONENT, constants::FILEANSWER . $anumber, 'id');
         }
 
         //file annotation if including user info

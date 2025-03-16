@@ -819,6 +819,7 @@ $string['listenorread'] = "Display options as";
 $string['listenorread_read'] = 'plain text';
 $string['listenorread_listen']= 'audio players + dots';
 $string['listenorread_listenandread']= 'audio players + plain text';
+$string['listenorread_image']= 'images + plain text';
 $string['confirmchoice_formlabel']="Must attempt (no skip)";
 $string['continue']="Continue <i class='fa fa-arrow-right'></i>";
 $string['confirmchoice']="Check";

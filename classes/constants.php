@@ -127,6 +127,7 @@ class constants {
     const MAXANSWERS=4;
     const TEXTQUESTION = 'itemtext';
     const TEXTANSWER = 'customtext';
+    const FILEANSWER = 'customfile';
     const TEXTQUESTION_FILEAREA = 'itemarea';
     const TEXTANSWER_FILEAREA ='answerarea';
     const TEXTPROMPT_FILEAREA = 'textitem';
@@ -430,6 +431,7 @@ const LISTENORREAD = 'customint2';
 const LISTENORREAD_READ = 0;
 const LISTENORREAD_LISTEN = 1;
 const LISTENORREAD_LISTENANDREAD = 2;
+const LISTENORREAD_IMAGE = 3;
 
 const LAYOUT = 'layout';
 const LAYOUT_AUTO = 0;
