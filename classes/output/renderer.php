@@ -1009,7 +1009,7 @@ class renderer extends \plugin_renderer_base {
      * @param int $embed The embed parameter, default is 0.
      * @return string The HTML content for the activity AMD configuration.
      */
-    public function fetch_activity_amd($cm, $moduleinstance, $token, $embed=0) {
+    public function fetch_activity_amd($cm, $moduleinstance, $token, $embed=0, $latestattempt=null) {
         global $CFG, $USER;
         // Any html we want to return to be sent to the page.
         $rethtml = '';
@@ -1028,6 +1028,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['breaks'] = $moduleinstance->modelaudiobreaks;
         $recopts['steps'] = constants::STEPS;
         $recopts['stepsenabled'] = utils::get_steps_enabled_state($moduleinstance);
+        $recopts['stepscomplete'] = utils::get_steps_complete_state($moduleinstance, $latestattempt);
         $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
         $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
         $recopts['hider'] = constants::M_HIDER;
@@ -1037,6 +1038,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
         $recopts['modeimagecontainer'] = constants::M_MODE_IMAGE_CONTAINER;
+        $recopts['modejourneycontainer'] = constants::M_MODE_JOURNEY_CONTAINER;
         $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
         $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
@@ -1434,10 +1436,19 @@ class renderer extends \plugin_renderer_base {
         }else{
             $modequiz = false;
         }
+        $stepsenabled = utils::get_steps_enabled_state($moduleinstance);
+        $stepsopen = utils::get_steps_open_state($moduleinstance, $latestattempt);
+        $stepscomplete = utils::get_steps_complete_state($moduleinstance, $latestattempt);
 
         // Render the passage.
         $widgetid = constants::M_RECORDERID . '_opts_9999';
-        $opts = ['cmid' => $cm->id, 'widgetid' => $widgetid];
+        $opts = [
+            'cmid'        => $cm->id,
+            'widgetid'    => $widgetid,
+            'stepsenabled' => $stepsenabled,
+            'stepsopen'    => $stepsopen,
+            'stepscomplete' => $stepscomplete,
+        ];
         $extraclasses = 'readmode hide'; // TODO: Should we add these directly to template?
         // For Japanese (and later other languages) we collapse spaces.
         $collapsespaces = false;
@@ -1464,7 +1475,7 @@ class renderer extends \plugin_renderer_base {
         $landr = $this->show_landr($moduleinstance, $token);
 
         // Fetch data for JS.
-        $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed);
+        $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed, $latestattempt);
 
         // Fetchquiz data for JS.
         $rsquestionrenderer = $this->page->get_renderer(constants::M_COMPONENT, 'rsquestion');
@@ -1489,8 +1500,6 @@ class renderer extends \plugin_renderer_base {
         $smallreport = $this->get_smallreport_data($moduleinstance, $latestattempt, $latestaigrade, $embed);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
 
-
-
         return array_merge([
             'activityamddata' => $activityamddata,
             'attempts' => $attempts,
@@ -1500,9 +1509,9 @@ class renderer extends \plugin_renderer_base {
             'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'embed' => $embed,
             'steps' => constants::STEPS,
-            'stepsenabled' => utils::get_steps_enabled_state($moduleinstance),
-            'stepsopen' => utils::get_steps_open_state($moduleinstance, $latestattempt),
-            'complete'  => utils::get_steps_complete_state($moduleinstance, $latestattempt),
+            'stepsenabled' => $stepsenabled,
+            'stepsopen' => $stepsopen,
+            'stepscomplete'  => $stepscomplete,
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
             'landr' => $landr,

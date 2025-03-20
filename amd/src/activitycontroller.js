@@ -29,6 +29,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         rec_time_start: 0,
         steps_enabled: {},
         steps_open: {},
+        steps_complete: {},
         letsshadow: false,
         strings: {},
 
@@ -44,6 +45,12 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         //pass in config, the jquery video/audio object, and a function to be called when conversion has finshed
         init: function (props) {
             var dd = this.clone();
+
+            log.debug('Steps enabled:', props.stepsenabled);
+            log.debug('Steps open:', props.stepsopen);
+            log.debug('Complete:', props.stepscomplete);
+            log.debug('Steps enabled:', props.stepsenabled);
+
 
             //pick up opts from html
             var theid = '#amdopts_' + props.widgetid;
@@ -143,7 +150,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             quizhelper.on_complete = function(){
                 // Complete the current step (update server and ui)
                 dd.update_activity_step(dd.activitydata.steps.step_quiz);
-            }    
+            }
         },
 
         process_html: function (opts) {
@@ -181,6 +188,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 smallreportcontainer: $('#' + opts['smallreportcontainer']),
                 readingcontainer: $('#' + def.readingcontainer),
                 modeimagecontainer: $('#' + opts['modeimagecontainer']),
+                modejourneycontainer: $('#' + opts['modejourneycontainer']),
                 quizcontainer: $('.' +  opts['quizcontainer']),
                 quizplaceholder: $('.' +  opts['quizplaceholder']),
                 quizresultscontainer: $("." + opts['quizresultscontainer']),
@@ -391,7 +399,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                         default:
                             log.debug('step ' + step + ' update failed');
                     }
-                    
+
                 },
                 fail: notification.exception
             }]);
@@ -534,6 +542,9 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.modeimagecontainer.addClass('d-none');
 
             modelaudiokaraoke.modeling=true;
+
+            // Update the mode statuses (completed, in-progress, upcoming).
+            m.updateModeStatuses();
         },
 
         doreadinglayout: function () {
@@ -727,6 +738,54 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple');
             m.controls.modeimagecontainer.addClass('fa-circle-question d-block');
         },
+
+        updateModeStatuses: function() {
+            var dd = this;
+
+            var stepsOrder = [
+                'step_listen',
+                'step_practice',
+                'step_shadow',
+                'step_read',
+                'step_quiz',
+                'step_report'
+            ];
+
+            var stepsComplete = dd.activitydata.stepscomplete || {};
+
+            var $container = dd.controls.modejourneycontainer;
+            if (!$container || !$container.length) {
+                console.error('Mode journey container not found.');
+                return;
+            }
+
+            // Flag to ensure only the first incomplete step is marked in-progress.
+            var foundIncomplete = false;
+
+            $container.find('.mode').each(function(index, modeElem) {
+                var $mode = $(modeElem);
+                var stepName = stepsOrder[index];
+
+                $mode.removeClass('completed in-progress upcoming');
+
+                var isComplete = (stepsComplete[stepName] === true || stepsComplete[stepName] === 'true');
+
+                // If the step is complete, mark it complete.
+                if (isComplete) {
+                    $mode.addClass('completed');
+                }
+                // If it's not complete and no incomplete step has been marked yet, mark it as in-progress.
+                else if (!foundIncomplete) {
+                    $mode.addClass('in-progress');
+                    foundIncomplete = true;
+                }
+                // Otherwise, mark it as upcoming.
+                else {
+                    $mode.addClass('upcoming');
+                }
+            });
+        },
+
         isandroid: function() {
                 if (/Android/i.test(navigator.userAgent)) {
                     return true;

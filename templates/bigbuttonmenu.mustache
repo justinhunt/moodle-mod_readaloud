@@ -21,16 +21,16 @@
             <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="preview">
                 <span class="nav-label">{{#str}} mode_listen, mod_readaloud {{/str}}</span>
                 {{#stepsopen.step_listen}}
-                    {{#complete.step_listen}}
+                    {{#stepscomplete.step_listen}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
                         </span>
-                    {{/complete.step_listen}}
-                    {{^complete.step_listen}}
+                    {{/stepscomplete.step_listen}}
+                    {{^stepscomplete.step_listen}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-regular fa-circle text-warning" title="In progress"></i>
                         </span>
-                    {{/complete.step_listen}}
+                    {{/stepscomplete.step_listen}}
                 {{/stepsopen.step_listen}}
                 {{^stepsopen.step_listen}}
                     <span class="nav-icon ml-auto">
@@ -46,16 +46,16 @@
             <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="landr">
                 <span class="nav-label">{{#str}} mode_practice, mod_readaloud {{/str}}</span>
                 {{#stepsopen.step_practice}}
-                    {{#complete.step_practice}}
+                    {{#stepscomplete.step_practice}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
                         </span>
-                    {{/complete.step_practice}}
-                    {{^complete.step_practice}}
+                    {{/stepscomplete.step_practice}}
+                    {{^stepscomplete.step_practice}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-regular fa-circle text-warning" title="In progress"></i>
                         </span>
-                    {{/complete.step_practice}}
+                    {{/stepscomplete.step_practice}}
                 {{/stepsopen.step_practice}}
                 {{^stepsopen.step_practice}}
                     <span class="nav-icon ml-auto">
@@ -74,16 +74,16 @@
             <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="shadow">
                 <span class="nav-label">{{#str}} mode_shadow, mod_readaloud {{/str}}</span>
                 {{#stepsopen.step_shadow}}
-                    {{#complete.step_shadow}}
+                    {{#stepscomplete.step_shadow}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
                         </span>
-                    {{/complete.step_shadow}}
-                    {{^complete.step_shadow}}
+                    {{/stepscomplete.step_shadow}}
+                    {{^stepscomplete.step_shadow}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-regular fa-circle text-warning" title="In progress"></i>
                         </span>
-                    {{/complete.step_shadow}}
+                    {{/stepscomplete.step_shadow}}
                 {{/stepsopen.step_shadow}}
                 {{^stepsopen.step_shadow}}
                     <span class="nav-icon ml-auto">
@@ -102,16 +102,16 @@
             <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="startnoshadow">
                 <span class="nav-label">{{#str}} mode_read, mod_readaloud {{/str}}</span>
                 {{#stepsopen.step_read}}
-                    {{#complete.step_read}}
+                    {{#stepscomplete.step_read}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
                         </span>
-                    {{/complete.step_read}}
-                    {{^complete.step_read}}
+                    {{/stepscomplete.step_read}}
+                    {{^stepscomplete.step_read}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-regular fa-circle text-warning" title="In progress"></i>
                         </span>
-                    {{/complete.step_read}}
+                    {{/stepscomplete.step_read}}
                 {{/stepsopen.step_read}}
                 {{^stepsopen.step_read}}
                     <span class="nav-icon ml-auto">
@@ -130,16 +130,16 @@
             <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="fullreport">
                 <span class="nav-label">Report</span>
                 {{#stepsopen.step_report}}
-                    {{#complete.step_read}}
+                    {{#stepscomplete.step_read}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
                         </span>
-                    {{/complete.step_read}}
-                    {{^complete.step_read}}
+                    {{/stepscomplete.step_read}}
+                    {{^stepscomplete.step_read}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-regular fa-circle text-warning" title="In progress"></i>
                         </span>
-                    {{/complete.step_read}}
+                    {{/stepscomplete.step_read}}
                 {{/stepsopen.step_report}}
                 {{^stepsopen.step_report}}
                     <span class="nav-icon ml-auto">
@@ -155,16 +155,16 @@
             <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="quiz">
                 <span class="nav-label">{{#str}} mode_quiz, mod_readaloud {{/str}}</span>
                 {{#stepsopen.step_quiz}}
-                    {{#complete.step_quiz}}
+                    {{#stepscomplete.step_quiz}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
                         </span>
-                    {{/complete.step_quiz}}
-                    {{^complete.step_quiz}}
+                    {{/stepscomplete.step_quiz}}
+                    {{^stepscomplete.step_quiz}}
                         <span class="nav-icon ml-auto">
                             <i class="fa-regular fa-circle text-warning" title="In progress"></i>
                         </span>
-                    {{/complete.step_quiz}}
+                    {{/stepscomplete.step_quiz}}
                 {{/stepsopen.step_quiz}}
                 {{^stepsopen.step_quiz}}
                     <span class="nav-icon ml-auto">
@@ -172,9 +172,9 @@
                     </span>
                 {{/stepsopen.step_quiz}}
             </a>
-            {{#complete.step_quiz}}
+            {{#stepscomplete.step_quiz}}
             <span class="mod_readaloud_menubutton_warning">{{#str}} quizcompletedwarning, mod_readaloud {{/str}}</span>
-            {{/complete.step_quiz}}
+            {{/stepscomplete.step_quiz}}
         </li>
         {{/stepsenabled.step_quiz}}
     </ul>
