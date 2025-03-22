@@ -404,6 +404,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                                 }
                             }
                             that.updateModeStatuses();
+                            that.updateBigButtonMenuModeStatus();
                             that.open_next_step(step);
 
                             break;
@@ -794,6 +795,57 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 // Otherwise, mark it as upcoming.
                 else {
                     $mode.addClass('upcoming');
+                }
+            });
+        },
+
+        updateBigButtonMenuModeStatus: function() {
+            var dd = this;
+            var stepsOrder = [
+                'step_listen',
+                'step_practice',
+                'step_shadow',
+                'step_read',
+                'step_quiz',
+                'step_report'
+            ];
+
+            var stepsComplete = dd.activitydata.stepscomplete || {};
+
+            var $container = dd.controls.menubuttonscontainer;
+            if (!$container || !$container.length) {
+                console.error('Menu buttons container not found.');
+                return;
+            }
+
+            // Flag to ensure only the first incomplete step is marked "in-progress".
+            var foundIncomplete = false;
+
+            $menu.find('li.mode-chooser').each(function(index, liElem) {
+                var $li = $(liElem);
+                var stepName = stepsOrder[index];
+
+                var isComplete = (stepsComplete[stepName] === true || stepsComplete[stepName] === 'true');
+                var status;
+                if (isComplete) {
+                    status = 'completed';
+                } else if (!foundIncomplete) {
+                    status = 'in-progress';
+                    foundIncomplete = true;
+                } else {
+                    status = 'upcoming';
+                }
+
+                // Update the Font Awesome icon.
+                var $iconSpan = $li.find('.nav-icon');
+                if ($iconSpan.length) {
+                    if (status === 'completed') {
+                        $iconSpan.html('<i class="fa-solid fa-circle-check text-success" title="Complete"></i>');
+                    } else if (status === 'in-progress') {
+                        $iconSpan.html('<i class="fa-regular fa-circle text-warning" title="In progress"></i>');
+                    } else { // upcoming.
+                        $iconSpan.html('<i class="fa-solid fa-lock text-secondary" title="Locked"></i>');
+                    }
                 }
             });
         },

@@ -252,23 +252,8 @@ div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
   font-size: 1.2em;
 }
 
-
 .mod_readaloud_hidden_player {
   display: none;
-}
-
-/* .mod_readaloud_button_returnmenu {
-  display: none;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-} */
-
-.mod_readaloud_menubuttons_cont {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
 }
 
 .mod_readaloud_hidden_player_button {

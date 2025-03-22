@@ -1,4 +1,4 @@
-<div id="{{M_MENUBUTTONS_CONTAINER}}">
+<div id="{{M_MENUBUTTONS_CONTAINER}}" class="{{M_MENUBUTTONS_CONTAINER}}">
 
     <!--{{#welcomemessage}}
     <div id="{{M_MENUINSTRUCTIONS_CONTAINER}}" class="{{M_MENUINSTRUCTIONS_CONTAINER}}">
@@ -125,31 +125,6 @@
         </li>
         {{/stepsenabled.step_read}}
 
-        {{#stepsenabled.step_report}}
-        <li class="nav-item mode-chooser {{^stepsopen.step_report}}no-click{{/stepsopen.step_report}}" id="{{M_STARTREPORT}}">
-            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="fullreport">
-                <span class="nav-label">Report</span>
-                {{#stepsopen.step_report}}
-                    {{#stepscomplete.step_read}}
-                        <span class="nav-icon ml-auto">
-                            <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
-                        </span>
-                    {{/stepscomplete.step_read}}
-                    {{^stepscomplete.step_read}}
-                        <span class="nav-icon ml-auto">
-                            <i class="fa-regular fa-circle text-warning" title="In progress"></i>
-                        </span>
-                    {{/stepscomplete.step_read}}
-                {{/stepsopen.step_report}}
-                {{^stepsopen.step_report}}
-                    <span class="nav-icon ml-auto">
-                        <i class="fa-solid fa-lock text-secondary" title="Locked"></i>
-                    </span>
-                {{/stepsopen.step_report}}
-            </a>
-        </li>
-        {{/stepsenabled.step_report}}
-
         {{#stepsenabled.step_quiz}}
         <li class="nav-item mode-chooser {{^stepsopen.step_quiz}}no-click{{/stepsopen.step_quiz}} {{#noquiz}}no-click{{/noquiz}}" data-step="{{steps.step_quiz}}">
             <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="quiz">
@@ -177,5 +152,30 @@
             {{/stepscomplete.step_quiz}}
         </li>
         {{/stepsenabled.step_quiz}}
+
+        {{#stepsenabled.step_report}}
+        <li class="nav-item mode-chooser {{^stepsopen.step_report}}no-click{{/stepsopen.step_report}}" id="{{M_STARTREPORT}}">
+            <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="fullreport">
+                <span class="nav-label">Report</span>
+                {{#stepsopen.step_report}}
+                    {{#stepscomplete.step_read}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-solid fa-circle-check text-success" title="Complete"></i>
+                        </span>
+                    {{/stepscomplete.step_read}}
+                    {{^stepscomplete.step_read}}
+                        <span class="nav-icon ml-auto">
+                            <i class="fa-regular fa-circle text-warning" title="In progress"></i>
+                        </span>
+                    {{/stepscomplete.step_read}}
+                {{/stepsopen.step_report}}
+                {{^stepsopen.step_report}}
+                    <span class="nav-icon ml-auto">
+                        <i class="fa-solid fa-lock text-secondary" title="Locked"></i>
+                    </span>
+                {{/stepsopen.step_report}}
+            </a>
+        </li>
+        {{/stepsenabled.step_report}}
     </ul>
 </div>
