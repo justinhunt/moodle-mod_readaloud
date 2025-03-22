@@ -288,6 +288,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
             $('.mode-chooser.no-click').each(function() {
                 this.addEventListener('click', disableClick, true);
+                this.addEventListener('keypress', disableClick, true);
             });
 
             dd.controls.startlistenbutton.click(function(e){
@@ -393,7 +394,18 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                     var success = JSON.parse(ajaxresult);
                     switch (success) {
                         case true:
+                            var adata = that.activitydata;
+                            for (var key in adata.steps) {
+                                var thestep = adata.steps[key];
+                                if (thestep === step) {
+                                    that.activitydata.stepscomplete[key] = true;
+                                } else {
+                                    continue;
+                                }
+                            }
+                            that.updateModeStatuses();
                             that.open_next_step(step);
+
                             break;
                         case false:
                         default:
