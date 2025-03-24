@@ -799,15 +799,6 @@ function readaloud_cron() {
 }
 
 /**
- * If branded Moodle does not interfere with the icon display and probably other things later
- *
- * @return boolean
- **/
-function readaloud_is_branded() {
-    return true;
-}
-
-/**
  * Returns all other caps used in the module
  *
  * @example return array('moodle/site:accessallgroups');
