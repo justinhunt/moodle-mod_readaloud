@@ -3,7 +3,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('speech_browser: initialising');
+    log.debug('mod_readaloud browser speech rec: initialising');
 
     return {
 
@@ -23,27 +23,38 @@ define(['jquery', 'core/log'], function ($, log) {
         },
 
         will_work_ok: function(opts){
-            //Brave looks like it does speech rec, but it doesnt
+            //let's check if we are in an iframe
+            var is_iframe = false;
+            if (window.self !== window.top) {
+                is_iframe = true;
+            }
+
+            //is mobileapp ?
+            var is_mobileapp = false;
+            if (navigator.userAgent.indexOf("MoodleMobile") > -1) {
+                is_mobileapp = true;
+            }
+
+            //Brave looks like it does speech rec, but it doesn't
             var brave = typeof navigator.brave !== 'undefined';
             if(brave){
                 this.browsertype = 'brave';
-               // return false;
             }
 
             //Edge may or may not work, but its hard to tell from the browser agent
             var edge = navigator.userAgent.toLowerCase().indexOf("edg/") > -1;
            if(edge && this.browsertype === ''){
                this.browsertype = 'edge';
-               //return false;
            }
 
             //Safari may or may not work, but its hard to tell from the browser agent
             var has_chrome = navigator.userAgent.indexOf('Chrome') > -1;
             var has_safari = navigator.userAgent.indexOf("Safari") > -1;
+            var is_ios = (navigator.userAgent.indexOf("iPhone") > -1 ||
+                navigator.userAgent.indexOf("iPad") > -1);
             var safari = has_safari && !has_chrome;
             if(safari && this.browsertype === ''){
                 this.browsertype = 'safari';
-                //return false;
             }
 
             //This is feature detection, and for chrome it can be trusted.
@@ -54,8 +65,14 @@ define(['jquery', 'core/log'], function ($, log) {
 
             //This is feature detection, and for chrome it can be trusted.
             // The others might say they do speech rec, but that does not mean it works
-            return hasspeechrec;
-
+            // we know safari in webapp does not so we nix that here
+            if(is_mobileapp && is_ios) {
+                return false;
+            } else if(this.browsertype === 'brave'){
+                return false;
+            } else {
+                return hasspeechrec;
+            }
         },
 
         init: function (lang,waveheight,uniqueid) {
@@ -104,9 +121,8 @@ define(['jquery', 'core/log'], function ($, log) {
             that.interval = setInterval(function() {
                 that.drawWave();
             }, 100);
-
-
         },
+
         stop: function () {
             var that=this;
             this.recognizing = false;

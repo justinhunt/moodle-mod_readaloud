@@ -655,6 +655,22 @@ div.mod_readaloud_attemptsummarytable {
   background-color: red;
 }
 
+.mod_readaloud_ttrec_waveButtonContainer .ttrec_ready {
+  background: green;
+}
+
+.mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_waveButton.ttrec_waiting {
+  background: grey;
+  box-shadow: none;
+}
+.mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_waveForm.ttrec_waiting {
+  display: none;
+}
+
+.mod_readaloud_ttrec_waveButtonContainer .ttrec_engaged {
+  background: #e52;
+}
+
 .mod_intro_box.mod_readaloud_center {
   max-width: 920px;
   margin: auto;

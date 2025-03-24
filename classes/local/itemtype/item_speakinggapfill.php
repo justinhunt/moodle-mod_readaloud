@@ -68,6 +68,17 @@ class item_speakinggapfill extends item {
         $testitem->allowretry = $this->itemrecord->{constants::GAPFILLALLOWRETRY} == 1;
         $testitem->hidestartpage = $this->itemrecord->{constants::GAPFILLHIDESTARTPAGE} == 1;
 
+        // Do we need a streaming token?
+        $alternatestreaming = get_config(constants::M_COMPONENT, 'alternatestreaming');
+        $isenglish = strpos($this->moduleinstance->ttslanguage, 'en') === 0;
+        if ($isenglish) {
+            $testitem->speechtoken = utils::fetch_streaming_token($this->moduleinstance->region);
+            $testitem->speechtokentype = 'assemblyai';
+            if ($alternatestreaming) {
+                $testitem->forcestreaming = true;
+            }
+        }
+
         // Cloudpoodll
         $testitem = $this->set_cloudpoodll_details($testitem);
 

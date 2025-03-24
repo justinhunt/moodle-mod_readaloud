@@ -685,7 +685,13 @@ $string['unit_wpm']="words/min";
 $string['unit_percent']="percent";
 $string['unit_words']="words";
 
-$string['totalwords']="Total Words";
+$string['totalwords'] = 'Total Words';
+$string['sentences'] = 'Sentences';
+$string['uniquewords'] = 'Unique Words';
+$string['ideacount'] = 'Concepts';
+$string['relevance'] = 'Relevance';
+$string['original'] = 'Original';
+$string['corrected'] = 'Corrected';
 
 $string['confirm_cancel_recording']="Cancel recording and quit this attempt?";
 $string['aitextutilsshow']="Show AI Text Utils (Beta)";
@@ -931,3 +937,6 @@ $string['enableread'] = 'Enable Read';
 $string['enablequiz'] = 'Enable Quiz';
 $string['activitysteps'] = 'Activity Steps';
 $string['activitystepsdetails'] = 'Set the learning steps in this ReadAloud activity.';
+
+$string['alternatestreaming'] = 'Enable alternate streaming';
+$string['alternatestreaming_details'] = 'Streams recorded audio for open transcription. Slightly slower then the default browser transcription and only works in English. On by default in mobile app.';

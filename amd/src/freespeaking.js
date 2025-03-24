@@ -146,7 +146,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions','mod_readaloud/cloudpo
       //show a spinner while we do the AI stuff
       self.resultsbox.hide();
       self.actionbox.hide();
-      self.pendingbox.show();
+      self.pendingbox.removeClass('hidden');
       
       //do evaluation
       this.quizhelper.evaluateTranscript(speechtext,this.itemdata.itemid).then(function(ajaxresult) {
@@ -179,7 +179,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions','mod_readaloud/cloudpo
                 }
                 //show and hide
                 self.resultsbox.show();
-                self.pendingbox.hide();
+                self.pendingbox.addClass('hidden');
                 self.actionbox.hide();
                 templates.runTemplateJS(js);
                 //reset timer and wordcount on this page, in case reattempt
@@ -192,7 +192,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions','mod_readaloud/cloudpo
         } else {
           log.debug('transcript_evaluation: oh no it failed');
           self.resultsbox.hide();
-          self.pendingbox.hide();
+          self.pendingbox.removeClass('hidden');
           self.actionbox.show();
         }
       }); 
