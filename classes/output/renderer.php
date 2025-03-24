@@ -676,10 +676,9 @@ class renderer extends \plugin_renderer_base {
 
         // Recorder data.
         $data = [
-            'data-id' => 'readaloud_ttrecorder',
             'uniqueid' => 'readaloud_ttrecorder',
-            'data-language' => $moduleinstance->ttslanguage,
-            'data-region' => $moduleinstance->region,
+            'language' => $moduleinstance->ttslanguage,
+            'region' => $moduleinstance->region,
             'waveheight' => 75,
             'maxtime' => 15000,
             'asrurl' => utils::fetch_lang_server_url($moduleinstance->region, 'transcribe'),
@@ -690,6 +689,17 @@ class renderer extends \plugin_renderer_base {
                 constants::M_LANG_HEIL,
             ]),
         ];
+
+        // Do we need a streaming token?
+        $alternatestreaming = get_config(constants::M_COMPONENT, 'alternatestreaming');
+        $isenglish = strpos($moduleinstance->ttslanguage, 'en') === 0;
+        if ($isenglish) {
+            $data['speechtoken'] = utils::fetch_streaming_token($moduleinstance->region);
+            $data['speechtokentype'] = 'assemblyai';
+            if ($alternatestreaming) {
+                $data['forcestreaming'] = true;
+            }
+        }
 
         // Extract passagehash if applicable.
         $thefullhash = $moduleinstance->usecorpus == constants::GUIDEDTRANS_CORPUS

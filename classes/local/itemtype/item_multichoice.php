@@ -48,13 +48,36 @@ class item_multichoice extends item {
         $testitem = $this->set_layout($testitem);
         // multichoice also needs sentences if we are listening. Its a bit of double up but we do that here.
         $testitem->sentences = [];
-        if($itemrecord->{constants::LISTENORREAD} == constants::LISTENORREAD_LISTEN ||
-            $itemrecord->{constants::LISTENORREAD} == constants::LISTENORREAD_LISTENANDREAD) {
-            $testitem->audiocontent = 1;
+        $testitem->imagecontent = false;
+        $testitem->audiocontent = false;
+        switch ($itemrecord->{constants::LISTENORREAD}) {
+            case constants::LISTENORREAD_LISTEN:
+            case constants::LISTENORREAD_LISTENANDREAD:
+                $testitem->audiocontent = true;
+                break;
+            case constants::LISTENORREAD_IMAGE:
+                $testitem->imagecontent = true;
+                break;
         }
+
         for ($anumber = 1; $anumber <= constants::MAXANSWERS; $anumber++) {
+            // If we have an image we fetch it.
+            $themediaurl = '';
+            $sentencetext = '';
+            if ($testitem->imagecontent) {
+                $mediaurls = $this->fetch_media_urls(constants::FILEANSWER . $anumber, $itemrecord);
+                if ($mediaurls && count($mediaurls) > 0) {
+                    $themediaurl = $mediaurls[0];
+                }
+            }
+            // If we have a sentence, we fetch it.
             if (!empty(trim($itemrecord->{constants::TEXTANSWER . $anumber}))) {
-                $sentence = trim($itemrecord->{constants::TEXTANSWER . $anumber});
+                $sentencetext = trim($itemrecord->{constants::TEXTANSWER . $anumber});
+            }
+
+            // If we have a sentence or an image, we add an answer to the mustache template data.
+            if (!empty($sentencetext) || !empty($themediaurl)) {
+                $sentence = $sentencetext;
 
                 $s = new \stdClass();
                 $s->index = $anumber - 1;
@@ -62,12 +85,14 @@ class item_multichoice extends item {
                 $s->sentence = $sentence;
                 $s->length = \core_text::strlen($sentence);
 
-                if($itemrecord->{constants::LISTENORREAD} == constants::LISTENORREAD_LISTEN) {
+                if ($itemrecord->{constants::LISTENORREAD} == constants::LISTENORREAD_LISTEN) {
                     $s->prompt = $this->dottify_text($sentence);
-                }else {
+                } else {
                     $s->prompt = $sentence;
                 }
-
+                if (!empty($themediaurl)) {
+                    $s->mediaurl = $themediaurl;
+                }
                 $testitem->sentences[] = $s;
             }
         }
@@ -82,6 +107,7 @@ class item_multichoice extends item {
         $error = new \stdClass();
         $error->col = '';
         $error->message = '';
+        /* The presence of images now means this check is not valid (no text + image is a possibility)
 
         if($newrecord->customtext1 == ''){
             $error->col = 'customtext1';
@@ -99,7 +125,7 @@ class item_multichoice extends item {
             $error->message = get_string('error:correctanswer', constants::M_COMPONENT);
             return $error;
         }
-
+        */
         // return false to indicate no error
         return false;
     }
@@ -114,6 +140,9 @@ class item_multichoice extends item {
         $keycols['int4'] = ['jsonname' => 'promptvoiceopt', 'type' => 'voiceopts', 'optional' => true, 'default' => null, 'dbname' => constants::POLLYOPTION];
         $keycols['int3'] = ['jsonname' => 'confirmchoice', 'type' => 'boolean', 'optional' => true, 'default' => 0, 'dbname' => constants::CONFIRMCHOICE];
         $keycols['int2'] = ['jsonname' => 'listenorread', 'type' => 'int', 'optional' => true, 'default' => 0, 'dbname' => constants::LISTENORREAD]; // not boolean ..
+        for ($i = 1; $i <= constants::MAXANSWERS; $i++) {
+            $keycols['fileanswer'.($i + constants::MAXANSWERS)] = ['jsonname' => constants::FILEANSWER.$i, 'type' => 'anonymousfile', 'optional' => true, 'default' => null, 'dbname' => false];
+        }
         return $keycols;
     }
 

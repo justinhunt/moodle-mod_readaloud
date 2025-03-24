@@ -728,6 +728,34 @@ abstract class item implements templatable, renderable {
             $theitem->{constants::TEXTQUESTION} = $data->{constants::TEXTQUESTION};
         }
 
+        //Files (audio or images) for answer options
+        for ($i = 1; $i <= constants::MAXANSWERS; $i++) {
+            if (property_exists($data, constants::FILEANSWER . $i)) {
+                //if this is from an import, it will be an array
+                if (is_array($data->{constants::FILEANSWER . $i})) {
+                    foreach ($data->{constants::FILEANSWER . $i} as $filename => $filecontent) {
+                        $filerecord = array(
+                            'contextid' => $this->context->id,
+                            'component' => constants::M_COMPONENT,
+                            'filearea'  => constants::FILEANSWER . $i,
+                            'itemid'    => $theitem->id,
+                            'filepath'  => '/',
+                            'filename'  => $filename,
+                            'userid'    => $USER->id,
+                        );
+                        $fs = get_file_storage();
+                        $fs->create_file_from_string($filerecord, base64_decode($filecontent));
+                    }
+                } else {
+                    //if this is from a form submission, this will involve draft files
+                    file_save_draft_area_files($data->{constants::FILEANSWER . $i},
+                        $this->context->id, constants::M_COMPONENT,
+                        constants::FILEANSWER . $i, $theitem->id,
+                        $this->filemanageroptions);
+                }
+            }
+        }
+
         // Question instructions
         if (property_exists($data, constants::TEXTINSTRUCTIONS)) {
             $theitem->{constants::TEXTINSTRUCTIONS} = $data->iteminstructions;
