@@ -104,7 +104,7 @@ define(['jquery',
                 // Move on after short time, to next prompt, or next question.
                 if (self.game.pointer < self.items.length - 1) {
                     setTimeout(function() {
-                        $(".tgapfill_reply_" + self.game.pointer).hide();
+                        $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer).hide();
                         self.game.pointer++;
                         self.nextPrompt();
                     }, 2000);
@@ -214,7 +214,7 @@ define(['jquery',
 
             if (self.game.pointer < self.items.length - 1) {
                 setTimeout(function() {
-                    $(".tgapfill_reply_" + self.game.pointer).hide();
+                    $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer).hide();
                     self.game.pointer++;
                     self.nextPrompt();
                 }, 2000);
@@ -226,7 +226,7 @@ define(['jquery',
         getComparison: function(passage, transcript, callback) {
             var self = this;
 
-            $(".tgapfill_ctrl-btn").prop("disabled", true);
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_ctrl-btn").prop("disabled", true);
 
             var correctanswer = true;
 
@@ -291,7 +291,7 @@ define(['jquery',
 
             var self = this;
 
-            $(".tgapfill_ctrl-btn").prop("disabled", false);
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_ctrl-btn").prop("disabled", false);
 
             self.updateProgressDots();
 
@@ -336,7 +336,7 @@ define(['jquery',
             code += "</div>";
             $("#" + self.itemdata.uniqueid + "_container .question").append(code);
 
-            var newreply = $(".tgapfill_reply_" + self.game.pointer);
+            var newreply = $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer);
 
             anim.do_animate(newreply, 'zoomIn animate__faster', 'in').then(
                 function() {
