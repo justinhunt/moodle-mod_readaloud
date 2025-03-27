@@ -808,6 +808,16 @@ function readaloud_get_extra_capabilities() {
     return array();
 }
 
+/**
+ * Whether the activity is branded.
+ * This information is used, for instance, to decide if a filter should be applied to the icon or not.
+ *
+ * @return bool True if the activity is branded, false otherwise.
+ */
+function readaloud_is_branded(){
+    return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Gradebook API                                                              //
 ////////////////////////////////////////////////////////////////////////////////

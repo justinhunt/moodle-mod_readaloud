@@ -644,6 +644,22 @@ div.mod_readaloud_attemptsummarytable {
   background-color: red;
 }
 
+.mod_readaloud_ttrec_waveButtonContainer .ttrec_ready {
+  background: green;
+}
+
+.mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_waveButton.ttrec_waiting {
+  background: grey;
+  box-shadow: none;
+}
+.mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_waveForm.ttrec_waiting {
+  display: none;
+}
+
+.mod_readaloud_ttrec_waveButtonContainer .ttrec_engaged {
+  background: #e52;
+}
+
 .mod_intro_box.mod_readaloud_center {
   max-width: 920px;
   margin: auto;
@@ -1222,9 +1238,6 @@ div.mod_readaloud_attemptsummarytable {
   border: 1px solid grey;
 }
 
-
-
-
 .readaloud_actionbutton {
   margin: 5px;
   padding: 5px;
@@ -1240,7 +1253,9 @@ div.mod_readaloud_attemptsummarytable {
   cursor: pointer;
   font-size: 1.33em;
   overflow: auto;
+  margin-bottom: 5px;
 }
+
 .readaloud_mc_confirmchoice {
   text-align: center;
   background-color: blue;
@@ -2469,6 +2484,25 @@ div#mod_readaloud_quiz_finished {
 .ra_qf_itemresults {
   max-width: 80%;
   margin: auto;
+}
+
+.readaloud_mc_image {
+  position: relative; /* Needed for padding trick */
+  width: 100%;
+  padding-bottom: 75%; /* Example aspect ratio (4:3). Adjust as needed */
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.readaloud_mc_image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: scale-down; /* or contain */
 }
 
 /* the background color of gapfill words char inputs when marked correct */

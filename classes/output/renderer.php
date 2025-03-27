@@ -619,67 +619,15 @@ class renderer extends \plugin_renderer_base {
         return $html;
     }
 
-    // public function show_landr($moduleinstance) {
-
-    //     // Recorder modal.
-    //     $title = get_string('landrreading', constants::M_COMPONENT);
-
-    //     // The TT recorder stuff.
-    //     $data = [
-    //         'data-id' => 'readaloud_ttrecorder',
-    //                     'uniqueid' => 'readaloud_ttrecorder',
-    //         'data-language' => $moduleinstance->ttslanguage,
-    //         'data-region' => $moduleinstance->region,
-    //         'waveheight' => 75,
-    //         'maxtime' => 15000,
-    //     ];
-
-    //     // For right to left languages we want to add the RTL direction and right justify.
-    //     switch($moduleinstance->ttslanguage){
-    //         case constants::M_LANG_ARAE:
-    //         case constants::M_LANG_ARSA:
-    //         case constants::M_LANG_FAIR:
-    //         case constants::M_LANG_HEIL:
-    //             $data['rtl'] = true;
-    //             break;
-    //         default:
-    //             // Nothing special.
-    //     }
-
-    //     // Passagehash if not empty will be region|hash eg tokyo|2353531453415134545
-    //     // but we only send the hash up so we strip the region.
-    //     $thefullhash = $moduleinstance->usecorpus == constants::GUIDEDTRANS_CORPUS ? $moduleinstance->corpushash : $moduleinstance->passagehash;
-
-    //     if (!empty($thefullhash)) {
-    //         $hashbits = explode('|', $thefullhash);
-    //         if (count($hashbits) == 2) {
-    //             $data['passagehash']  = $hashbits[1];
-    //         }
-    //     }
-
-    //     // Fetch lang services url.
-    //     $data['asrurl'] = utils::fetch_lang_server_url($moduleinstance->region, 'transcribe');
-
-    //     // This will set some opts for the recorder, but others are set by fetch_activity_amd
-    //     // and it is applied in listen and repeat.js.
-    //     $content = $this->render_from_template('mod_readaloud/listenandrepeat', $data);
-
-    //     $data['containertag'] = 'landr_container';
-    //     $data['title'] = $title;
-    //     $data['content'] = $content;
-
-    //     return $data;
-    // }
     public function show_landr($moduleinstance, $token) {
         // Recorder modal title.
         $title = get_string('landrreading', constants::M_COMPONENT);
 
         // Recorder data.
         $data = [
-            'data-id' => 'readaloud_ttrecorder',
             'uniqueid' => 'readaloud_ttrecorder',
-            'data-language' => $moduleinstance->ttslanguage,
-            'data-region' => $moduleinstance->region,
+            'language' => $moduleinstance->ttslanguage,
+            'region' => $moduleinstance->region,
             'waveheight' => 75,
             'maxtime' => 15000,
             'asrurl' => utils::fetch_lang_server_url($moduleinstance->region, 'transcribe'),
@@ -690,6 +638,17 @@ class renderer extends \plugin_renderer_base {
                 constants::M_LANG_HEIL,
             ]),
         ];
+
+        // Do we need a streaming token?
+        $alternatestreaming = get_config(constants::M_COMPONENT, 'alternatestreaming');
+        $isenglish = strpos($moduleinstance->ttslanguage, 'en') === 0;
+        if ($isenglish) {
+            $data['speechtoken'] = utils::fetch_streaming_token($moduleinstance->region);
+            $data['speechtokentype'] = 'assemblyai';
+            if ($alternatestreaming) {
+                $data['forcestreaming'] = true;
+            }
+        }
 
         // Extract passagehash if applicable.
         $thefullhash = $moduleinstance->usecorpus == constants::GUIDEDTRANS_CORPUS

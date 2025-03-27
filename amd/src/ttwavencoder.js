@@ -21,7 +21,7 @@ define(['jquery', 'core/log'], function ($, log) {
             this.dataViews = [];
         },
 
-        encode: function(buffer) {
+        audioprocess: function(buffer) {
             //this would be an event that occurs after recorder has stopped lets just ignore it
             if(this.dataViews===undefined){
                 return;

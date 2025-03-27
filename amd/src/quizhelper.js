@@ -32,6 +32,8 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         log.debug(activitydata);
         this.quizdata = activitydata.quizdata;
         this.region = activitydata.region;
+        this.token = activitydata.token;
+        this.owner = activitydata.owner;
         this.ttslanguage = activitydata.ttslanguage;
         this.controls.quizcontainer = $("." + activitydata.quizcontainer);
         this.controls.quizitemscontainer = $("." + activitydata.quizitemscontainer);
@@ -49,7 +51,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         
   
 
-        polly.init(this.quizdata.token,this.quizdata.region,this.quizdata.owner);
+        polly.init(this.token, this.region, this.owner);
         this.prepare_html();
         this.init_questions(this.quizdata);
         this.register_events();

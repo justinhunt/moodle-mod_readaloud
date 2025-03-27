@@ -34,7 +34,6 @@ define(['jquery',
             self.register_events();
             self.setvoice();
             self.getItems();
-            self.appReady();
         },
 
         next_question: function() {
@@ -157,7 +156,7 @@ define(['jquery',
                 // Move on after short time, to next prompt, or next question
                 if (self.game.pointer < self.items.length - 1) {
                     setTimeout(function() {
-                        $(".lgapfill_reply_" + self.game.pointer).hide();
+                        $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer).hide();
                         self.game.pointer++;
                         self.nextPrompt();
                     }, 2000);
@@ -264,6 +263,9 @@ define(['jquery',
                     if (self.items.filter(function(e) {
                         return e.audio == null;
                     }).length == 0) {
+                        // Calling AppReady caused issues when the appReady had already been called AND hidestartpage was true
+                        //it would cause next prompt -> next reply to be called again, and two prompts would be shown at once
+                        //probably ok just to call it here
                         self.appReady();
                     }
                 });
@@ -316,7 +318,7 @@ define(['jquery',
 
             if (self.game.pointer < self.items.length - 1) {
                 setTimeout(function() {
-                    $(".lgapfill_reply_" + self.game.pointer).hide();
+                    $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer).hide();
                     self.game.pointer++;
                     self.nextPrompt();
                 }, 2000);
@@ -345,9 +347,7 @@ define(['jquery',
 
         getComparison: function(passage, transcript, callback) {
             var self = this;
-
-            $(".lgapfill_ctrl-btn").prop("disabled", true);
-
+            $("#" + self.itemdata.uniqueid + "_container .lgapfill_ctrl-btn").prop("disabled", true);
             var correctanswer = true;
 
             passage.forEach(function(data, index) {
@@ -413,14 +413,16 @@ define(['jquery',
 
             var self = this;
 
-            $(".lgapfill_ctrl-btn").prop("disabled", false);
+            $("#" + self.itemdata.uniqueid + "_container .lgapfill_ctrl-btn").prop("disabled", false);
 
             self.updateProgressDots();
 
             self.nextReply();
 
-            //play the audio
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_listen_btn").trigger('click');
+            //play the audio (if the audio player is ready)
+            if(self.items[self.game.pointer].audio !==null) {
+                $("#" + self.itemdata.uniqueid + "_container .lgapfill_listen_btn").trigger('click');
+            }
         },
 
         updateProgressDots: function() {
@@ -463,7 +465,7 @@ define(['jquery',
 
             code += "</div>";
             $("#" + self.itemdata.uniqueid + "_container .question").append(code);
-            var newreply = $(".lgapfill_reply_" + self.game.pointer);
+            var newreply = $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer);
 
             anim.do_animate(newreply, 'zoomIn animate__faster', 'in').then(
                 function() {

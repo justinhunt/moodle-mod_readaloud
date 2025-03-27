@@ -1,28 +1,28 @@
 <div class="ml_freespeaking_results">
 <div class="ml_freespeaking_results_summaries">
   <div class="ml_fs_results_summary">
-    <span class="ml_fs_sumcell_title">sentences</span>
+    <span class="ml_fs_sumcell_title">{{#str}}sentences, mod_readaloud{{/str}}</span>
     <span class="ml_fs_sumcell_content">{{stats.sentences}}</span>
   </div>
   <div class="ml_fs_results_summary">
-    <span class="ml_fs_sumcell_title">words</span>
+    <span class="ml_fs_sumcell_title">{{#str}}totalwords, mod_readaloud{{/str}}</span>
     <span class="ml_fs_sumcell_content">{{stats.words}}</span>
   </div>
   <div class="ml_fs_results_summary">
-    <span class="ml_fs_sumcell_title">unique words</span>
+    <span class="ml_fs_sumcell_title">{{#str}}uniquewords, mod_readaloud{{/str}}</span>
     <span class="ml_fs_sumcell_content">{{stats.wordsunique}}</span>
   </div>
   <div class="ml_fs_results_summary">
-    <span class="ml_fs_sumcell_title">idea count</span>
+    <span class="ml_fs_sumcell_title">{{#str}}ideacount, mod_readaloud{{/str}}</span>
     <span class="ml_fs_sumcell_content">{{stats.ideacount}}</span>
   </div>
   <div class="ml_fs_results_summary">
-    <span class="ml_fs_sumcell_title">relevance</span>
+    <span class="ml_fs_sumcell_title">{{#str}}relevance, mod_readaloud{{/str}}</span>
     <span class="ml_fs_sumcell_content">{{stats.relevance}}%</span>
   </div>
 </div>
-<div class="mlfsr_originaltext_container"><b>Original:</b><br/><span class="mlfsr_originaltext">{{{markeduppassage}}}</span></div>
-<div class="mlfsr_correctedtext_container"><b>Corrected:</b><br/>
+<div class="mlfsr_originaltext_container"><b>{{#str}}original, mod_readaloud{{/str}}:</b><br/><span class="mlfsr_originaltext">{{{markeduppassage}}}</span></div>
+<div class="mlfsr_correctedtext_container"><b>{{#str}}corrected, mod_readaloud{{/str}}:</b><br/>
   <span class="mlfsr_correctedtext">{{{markedupcorrections}}}</span>
   {{>mod_readaloud/summary_togglecorrections}}
 </div>
@@ -43,6 +43,7 @@
   </div>
 </div>
 </div>
+<div class="ra_freespeaking_feedback">
 <br/><b>{{#str}}aigrade_feedback_title , mod_readaloud{{/str}}:</b>
 <ul class="{{rtl}}">
 {{#feedback}}

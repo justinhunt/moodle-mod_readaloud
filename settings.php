@@ -133,6 +133,11 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
         $label, $details, $default, $options));
 
+    $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/alternatestreaming',
+    get_string('alternatestreaming', constants::M_COMPONENT), get_string('alternatestreaming_details', constants::M_COMPONENT), 0));
+
+    
+
     // Activity Step settings
     $stepoptions = [constants::STEP_LISTEN => new lang_string('enablepreview', constants::M_COMPONENT),
         constants::STEP_PRACTICE => new lang_string('enablelandr', constants::M_COMPONENT),
