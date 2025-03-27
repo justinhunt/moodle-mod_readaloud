@@ -29,6 +29,8 @@
     </div>
 
     <div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}} d-flex flex-wrap align-items-center justify-content-center p-3">
+
+    {{#stepsenabled.step_listen}}
         <div class="mode-journey d-flex align-items-center">
             <div class="mode {{mode-status}} completed" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}completed{{/str}}">
                 <i class="fa-solid fa-headphones"></i>
@@ -36,7 +38,8 @@
             </div>
             <i class="fa-solid fa-arrow-right journey-arrow"></i>
         </div>
-
+    {{/stepsenabled.step_listen}}
+    {{#stepsenabled.step_practice}}
         <div class="mode-journey d-flex align-items-center">
             <div class="mode {{mode-status}} completed" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}completed{{/str}}">
                 <i class="fa-solid fa-comment"></i>
@@ -44,7 +47,9 @@
             </div>
             <i class="fa-solid fa-arrow-right journey-arrow"></i>
         </div>
+    {{/stepsenabled.step_practice}}
 
+    {{#stepsenabled.step_shadow}}
         <div class="mode-journey d-flex align-items-center">
             <div class="mode {{mode-status}} in-progress" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
                 <i class="fa-solid fa-comments"></i>
@@ -52,7 +57,9 @@
             </div>
             <i class="fa-solid fa-arrow-right journey-arrow"></i>
         </div>
+    {{/stepsenabled.step_shadow}}
 
+    {{#stepsenabled.step_read}}
         <div class="mode-journey d-flex align-items-center">
             <div class="mode {{mode-status}} upcoming" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
                 <i class="fa-solid fa-book-open-reader"></i>
@@ -60,7 +67,9 @@
             </div>
             <i class="fa-solid fa-arrow-right journey-arrow"></i>
         </div>
+    {{/stepsenabled.step_read}}
 
+    {{#stepsenabled.step_quiz}}
         <div class="mode-journey d-flex align-items-center">
             <div class="mode {{mode-status}} upcoming" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
                 <i class="fa-solid fa-circle-question"></i>
@@ -68,7 +77,9 @@
             </div>
             <i class="fa-solid fa-arrow-right journey-arrow"></i>
         </div>
+    {{/stepsenabled.step_quiz}}
 
+    {{#stepsenabled.step_report}}
         <div class="mode-journey d-flex align-items-center">
             <div class="mode {{mode-status}} upcoming" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_end, mod_readaloud{{/str}}">
                 <i class="fa-solid fa-chart-simple"></i>
@@ -76,6 +87,7 @@
             </div>
             <i class="fa-solid fa-arrow-right journey-arrow last-mode"></i>
         </div>
+    {{/stepsenabled.step_report}}
     </div>
 
 
