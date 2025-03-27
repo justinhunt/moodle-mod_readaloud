@@ -1,0 +1,48 @@
+{{> mod_readaloud/questionheader}}
+<div class="readaloud_lgapfill_player_box gapfill-container">
+    <div style="display:none;" class="lgapfill_results">{{#str}}dc_results, mod_readaloud{{/str}}</div>
+
+    <div class="lgapfill_title text-center">{{#str}}listeninggapfill, mod_readaloud{{/str}}</div>
+
+    <div class="lgapfill_mainmenu">
+        <div class="lgapfill_loaded" style="display:none;">
+            <button disabled class='btn btn-block btn-primary lgapfill_start_btn'>
+                <i class='fa fa-play'></i> {{#str}}start, mod_readaloud{{/str}}
+            </button>
+
+        </div>
+        <div class="lgapfill_not_loaded">
+            <p>{{#str}}loading, mod_readaloud{{/str}}</p>
+        </div>
+    </div>
+
+    <div class="progress-container d-flex" style="display:none;">
+        <div id="progresstimer" class="flex-grow-1"></div>
+        <div>
+            <i style="display:none;" class="fa fa-clock-o" aria-hidden="true"></i>
+        </div>
+    </div>
+
+    <div style="display:none;" class="lgapfill_listen_cont">
+        <button class="btn btn-secondary lgapfill_listen_btn">
+            <i class="fa fa-volume-up"></i>
+        </button>
+    </div>
+
+    <div style="display:none;" class="question"></div>
+
+    <div style="display:none;" class="lgapfill_controls">
+
+        <button class="btn btn-success lgapfill_ctrl-btn lgapfill_check_btn">
+            <i class="fa fa-check"></i> {{#str}}check, mod_readaloud{{/str}}
+        </button>
+
+        <button class="btn btn-danger lgapfill_ctrl-btn lgapfill_skip_btn">
+            {{#str}}skip, mod_readaloud{{/str}} <i class="fa fa-arrow-right"></i>
+        </button>
+
+    </div>
+
+    <div class="lgapfill_resultscontainer"></div>
+</div>
+{{> mod_readaloud/questionfooter}}

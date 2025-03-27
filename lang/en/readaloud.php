@@ -893,6 +893,8 @@ $string["allowmicaccess"]="Please allow access to your microphone.";
 $string["nomicdetected"]="No microphone detected.";
 $string["speechnotrecognized"]="We could not recognize your speech.";
 $string['gapfill_results'] = 'Results';
+$string['loading'] = 'Loading...';
+$string['dc_results'] = 'Results';
 
 $string["quizsettingsheader"]="Quiz settings";
 $string["showqtitles"]="Show question titles";
