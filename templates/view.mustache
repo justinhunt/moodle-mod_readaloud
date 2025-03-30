@@ -41,153 +41,149 @@
             {{{showintro}}}
         {{/showintro}}
 
-        <div class="card-body p-3">
-            <div class="row">
-                <div class="col-12 col-md-2 border-right my-n3 py-3">
-                    {{>mod_readaloud/bigbuttonmenu}}
+        <div class="d-flex">
+            {{>mod_readaloud/bigbuttonmenu}}
+            <div class="readaloud-content">
+                <div id="{{M_MODE_IMAGE_CONTAINER}}" class="mode-content-icon fa-solid text-primary d-block mx-auto mb-4"></div>
+
+                <div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
+                    <div class="box">
+                        <div class="{{M_CLASS}}_center {{M_PREVIEWINSTRUCTIONS}}">
+                            {{#str}} previewhelp, mod_readaloud {{/str}}
+                        </div>
+                    </div>
                 </div>
-                <div class="col-12 col-md-10">
-                    <div id="{{M_MODE_IMAGE_CONTAINER}}" class="mode-content-icon fa-solid text-primary d-block mx-auto mb-4"></div>
 
-                    <div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
-                        <div class="box">
-                            <div class="{{M_CLASS}}_center {{M_PREVIEWINSTRUCTIONS}}">
-                                {{#str}} previewhelp, mod_readaloud {{/str}}
-                            </div>
+                <div id="{{M_LANDRINSTRUCTIONS_CONTAINER}}" class="{{M_LANDRINSTRUCTIONS_CONTAINER}}">
+                    <div class="box">
+                        <div class="{{M_CLASS}}_center {{M_LANDRINSTRUCTIONS}}">
+                            {{#str}} landrhelp, mod_readaloud {{/str}}
                         </div>
                     </div>
-
-                    <div id="{{M_LANDRINSTRUCTIONS_CONTAINER}}" class="{{M_LANDRINSTRUCTIONS_CONTAINER}}">
-                        <div class="box">
-                            <div class="{{M_CLASS}}_center {{M_LANDRINSTRUCTIONS}}">
-                                {{#str}} landrhelp, mod_readaloud {{/str}}
-                            </div>
-                        </div>
-                    </div>
-
-                    {{#instructions}}
-                    <div id="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}" class="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}">
-                        <div class="box py-3 generalbox">
-                            <div class="{{M_CLASS}}_center {{M_INSTRUCTIONS}}">
-                                {{{instructions}}}
-                            </div>
-                        </div>
-                    </div>
-                    {{/instructions}}
-
-                    {{#feedback}}
-                    <div id="{{M_FEEDBACK_CONTAINER}}" class="{{M_FEEDBACK_CONTAINER}}">
-                        <div class="box">
-                            <div class="{{M_CLASS}}_center">
-                                {{{feedback}}}
-                            </div>
-                        </div>
-                    </div>
-                    {{/feedback}}
-
-                    {{#error}}
-                    <div id="{{M_ERROR_CONTAINER}}" class="{{M_ERROR_CONTAINER}}">
-                        <div class="box">
-                            <h3 class="main">{{#str}} errorheader, mod_readaloud {{/str}}</h3>
-                            <div>{{#str}} uploadconverterror, mod_readaloud {{/str}}</div>
-                        </div>
-                    </div>
-                    {{/error}}
-
-                    <div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active">
-                        {{>mod_readaloud/home}}
-                    </div>
-
-                    <div id="{{M_QUIZ_CONTAINER}}" class="{{M_QUIZ_CONTAINER}}">
-                        {{{quizhtml}}}
-                    </div>
-
-                    <div id="mod_readaloud_readingcontainer" class="mod_readaloud_readingcontainer">
-                        {{{passagehtml}}}
-                    </div>
-                    <!-- Hidden input for update control -->
-                    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
-
-                    <!-- Hidden input storing JSON configuration -->
-                    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
-
-                    {{#recorder}}
-                    <div class="{{M_RECORDING_CONTAINER}}">
-                        <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}} {{M_CLASS_CENTER}}">
-                            <div id="{{M_RECORDERID}}" class="{{M_CLASS_CENTER}}"
-                                data-id="{{M_RECORDERID}}"
-                                data-parent="{{wwwroot}}"
-                                data-localloading="auto"
-                                data-localloader="/mod/readaloud/poodllloader.html"
-                                data-media="audio"
-                                data-appid="{{M_COMPONENT}}"
-                                data-owner="{{owner}}"
-                                data-type="{{recorder_type}}"
-                                data-width="{{recorder_width}}"
-                                data-height="{{recorder_height}}"
-                                data-updatecontrol="{{M_UPDATE_CONTROL}}"
-                                data-timelimit="{{timelimit}}"
-                                data-transcode="1"
-                                data-transcribe="{{transcribe}}"
-                                data-language="{{language}}"
-                                data-expiredays="{{expiredays}}"
-                                data-region="{{region}}"
-                                data-fallback="warning"
-                                data-speechevents="{{speechevents}}"
-                                data-hints="{{hints}}"
-                                data-token="{{token}}"
-                                data-transcribevocab="{{transcribevocab}}">
-                            </div>
-                        </div>
-                    </div>
-                    {{/recorder}}
-
-                    {{#progress}}
-                    <div id="{{M_HIDER}}" class="{{M_HIDER}}"></div>
-                    <div id="{{M_PROGRESS_CONTAINER}}" class="{{M_PROGRESS_CONTAINER}}">
-                        <h4>{{#str}} processing, mod_readaloud {{/str}}</h4>
-                        <i class="fa fa-spinner fa-5x fa-spin"></i>
-                    </div>
-                    {{/progress}}
-
-                    {{#wheretonext}}
-                    <div class="{{M_WHERETONEXT_CONTAINER}} text-center">
-                        {{#backtotop}}
-                        <a class="{{M_CLASS}}_center btn btn-secondary {{M_BACKTOTOP}}"
-                           id="{{M_BACKTOTOP}}"
-                           href="{{backtotop_url}}">
-                            {{#str}} backtotop, mod_readaloud {{/str}}
-                        </a>
-                        {{/backtotop}}
-
-                        {{#nextactivity}}
-                        <a class="{{M_CLASS}}_center btn btn-primary {{M_NEXTACTIVITY}}"
-                           href="{{nextactivity_url}}">
-                            {{nextactivity_label}}
-                        </a>
-                        {{/nextactivity}}
-                    </div>
-                    {{/wheretonext}}
-
-                    {{#landr}}
-                        {{>mod_readaloud/modalcontainer}}
-                    {{/landr}}
-
-                    {{#smallreport}}
-                        {{>mod_readaloud/smallreport}}
-                    {{/smallreport}}
-
-                    {{#stopandplay}}
-                    <div id="{{M_STOPANDPLAY}}" class="d-flex justify-content-center hidden p-1">
-                        <button id="{{M_STOP_BTN}}" class="btn btn-outline-primary m-2">
-                            <i class="fa fa-stop"></i> {{#str}} stopbutton, mod_readaloud {{/str}}
-                        </button>
-                        <button id="{{M_PLAY_BTN}}" class="btn btn-primary m-2">
-                            <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
-                        </button>
-                    </div>
-                    {{/stopandplay}}
                 </div>
+
+                {{#instructions}}
+                <div id="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}" class="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}">
+                    <div class="box py-3 generalbox">
+                        <div class="{{M_CLASS}}_center {{M_INSTRUCTIONS}}">
+                            {{{instructions}}}
+                        </div>
+                    </div>
+                </div>
+                {{/instructions}}
+
+                {{#feedback}}
+                <div id="{{M_FEEDBACK_CONTAINER}}" class="{{M_FEEDBACK_CONTAINER}}">
+                    <div class="box">
+                        <div class="{{M_CLASS}}_center">
+                            {{{feedback}}}
+                        </div>
+                    </div>
+                </div>
+                {{/feedback}}
+
+                {{#error}}
+                <div id="{{M_ERROR_CONTAINER}}" class="{{M_ERROR_CONTAINER}}">
+                    <div class="box">
+                        <h3 class="main">{{#str}} errorheader, mod_readaloud {{/str}}</h3>
+                        <div>{{#str}} uploadconverterror, mod_readaloud {{/str}}</div>
+                    </div>
+                </div>
+                {{/error}}
+
+                <div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active">
+                    {{>mod_readaloud/home}}
+                </div>
+
+                <div id="{{M_QUIZ_CONTAINER}}" class="{{M_QUIZ_CONTAINER}}">
+                    {{{quizhtml}}}
+                </div>
+
+                <div id="mod_readaloud_readingcontainer" class="mod_readaloud_readingcontainer">
+                    {{{passagehtml}}}
+                </div>
+                <!-- Hidden input for update control -->
+                <input id="{{M_UPDATE_CONTROL}}" type="hidden">
+
+                <!-- Hidden input storing JSON configuration -->
+                <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
+
+                {{#recorder}}
+                <div class="{{M_RECORDING_CONTAINER}}">
+                    <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}} {{M_CLASS_CENTER}}">
+                        <div id="{{M_RECORDERID}}" class="{{M_CLASS_CENTER}}"
+                            data-id="{{M_RECORDERID}}"
+                            data-parent="{{wwwroot}}"
+                            data-localloading="auto"
+                            data-localloader="/mod/readaloud/poodllloader.html"
+                            data-media="audio"
+                            data-appid="{{M_COMPONENT}}"
+                            data-owner="{{owner}}"
+                            data-type="{{recorder_type}}"
+                            data-width="{{recorder_width}}"
+                            data-height="{{recorder_height}}"
+                            data-updatecontrol="{{M_UPDATE_CONTROL}}"
+                            data-timelimit="{{timelimit}}"
+                            data-transcode="1"
+                            data-transcribe="{{transcribe}}"
+                            data-language="{{language}}"
+                            data-expiredays="{{expiredays}}"
+                            data-region="{{region}}"
+                            data-fallback="warning"
+                            data-speechevents="{{speechevents}}"
+                            data-hints="{{hints}}"
+                            data-token="{{token}}"
+                            data-transcribevocab="{{transcribevocab}}">
+                        </div>
+                    </div>
+                </div>
+                {{/recorder}}
+
+                {{#progress}}
+                <div id="{{M_HIDER}}" class="{{M_HIDER}}"></div>
+                <div id="{{M_PROGRESS_CONTAINER}}" class="{{M_PROGRESS_CONTAINER}}">
+                    <h4>{{#str}} processing, mod_readaloud {{/str}}</h4>
+                    <i class="fa fa-spinner fa-5x fa-spin"></i>
+                </div>
+                {{/progress}}
+
+                {{#wheretonext}}
+                <div class="{{M_WHERETONEXT_CONTAINER}} text-center">
+                    {{#backtotop}}
+                    <a class="{{M_CLASS}}_center btn btn-secondary {{M_BACKTOTOP}}"
+                        id="{{M_BACKTOTOP}}"
+                        href="{{backtotop_url}}">
+                        {{#str}} backtotop, mod_readaloud {{/str}}
+                    </a>
+                    {{/backtotop}}
+
+                    {{#nextactivity}}
+                    <a class="{{M_CLASS}}_center btn btn-primary {{M_NEXTACTIVITY}}"
+                        href="{{nextactivity_url}}">
+                        {{nextactivity_label}}
+                    </a>
+                    {{/nextactivity}}
+                </div>
+                {{/wheretonext}}
+
+                {{#landr}}
+                    {{>mod_readaloud/modalcontainer}}
+                {{/landr}}
+
+                {{#smallreport}}
+                    {{>mod_readaloud/smallreport}}
+                {{/smallreport}}
+
+                {{#stopandplay}}
+                <div id="{{M_STOPANDPLAY}}" class="d-flex justify-content-center hidden p-1">
+                    <button id="{{M_STOP_BTN}}" class="btn btn-outline-primary m-2">
+                        <i class="fa fa-stop"></i> {{#str}} stopbutton, mod_readaloud {{/str}}
+                    </button>
+                    <button id="{{M_PLAY_BTN}}" class="btn btn-primary m-2">
+                        <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
+                    </button>
+                </div>
+                {{/stopandplay}}
             </div>
         </div>
     </div>

@@ -504,16 +504,16 @@ div.mod_readaloud_attemptsummarytable {
   align-items: center;
   transition: none;
 }
-.nav-label {
+/* .nav-label {
   display: inline-block;
   transition: transform 0.3s ease;
   transform-origin: center;
-}
-.nav-link:hover .nav-label,
+} */
+/* .nav-link:hover .nav-label,
 .nav-link:focus .nav-label,
 .nav-link:active .nav-label {
   transform: scale(1.1);
-}
+} */
 
 .mode-chooser.no-show {
   display:none;
@@ -2693,23 +2693,80 @@ overflow: auto;
 /* why do we need this Justin 2025-03-09 */
 
 .hidden {
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
 }
 
 .visible {
-  visibility: visible;
-  opacity: 1;
+    visibility: visible;
+    opacity: 1;
 }
 
-/* #mod_readaloud_button_stopandplay .btn-outline-secondary {
-  border: 1px solid #dee2e6 !important;
-  color: #000 !important;
-  font-weight: 500;
+/* Nav-drawer */
+#mod_readaloud_menubuttons_cont .nav-item {
+    align-items: center;
+    display: flex;
+    min-height: 50px;
 }
 
-#mod_readaloud_button_stopandplay .btn-outline-secondary:hover {
-  color: #FFF !important;
-  font-weight: 500;
-} */
+#mod_readaloud_menubuttons_cont a.nav-link[data-mode="home"]::before {
+    content: "\f015";
+}
+#mod_readaloud_menubuttons_cont a.nav-link[data-mode="preview"]::before {
+    content: "\f025";
+}
+#mod_readaloud_menubuttons_cont a.nav-link[data-mode="landr"]::before {
+    content: "\f075";
+}
+#mod_readaloud_menubuttons_cont a.nav-link[data-mode="shadow"]::before {
+    content: "\f086";
+}
+#mod_readaloud_menubuttons_cont a.nav-link[data-mode="startnoshadow"]::before {
+    content: "\f5da";
+}
+#mod_readaloud_menubuttons_cont a.nav-link[data-mode="quiz"]::before {
+    content: "\f059";
+}
+#mod_readaloud_menubuttons_cont a.nav-link[data-mode="fullreport"]::before {
+    content: "\e473";
+}
+#mod_readaloud_menubuttons_cont a.nav-link {
+    display: block;
+    position: relative;
+}
+#mod_readaloud_menubuttons_cont a.nav-link::before {
+    content: "";
+    font-family: 'Font Awesome 6 Free';
+    font-size: 18px;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Nav-drawer closed */
+#mod_readaloud_menubuttons_cont.closed {
+    overflow: visible;
+    width: 70px;
+    left: 0;
+}
+#mod_readaloud_menubuttons_cont.closed .nav-text-group {
+    display: none;
+}
+#mod_readaloud_menubuttons_cont.closed .nav-link:hover .nav-text-group {
+    align-items: center;
+    background-color: #FFF;
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    display: inline-flex;
+    left: calc(60% + 10px);
+    padding: 8px 16px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+}
+#mod_readaloud_menubuttons_cont.closed .nav-link:hover .nav-text-group .nav-label {
+    margin-right: 5px;
+}

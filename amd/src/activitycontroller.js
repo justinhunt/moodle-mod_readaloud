@@ -837,7 +837,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 }
 
                 // Update the Font Awesome icon.
-                var $iconSpan = $li.find('.nav-icon');
+                var $iconSpan = $li.find('.nav-completion-icon');
                 if ($iconSpan.length) {
                     if (status === 'completed') {
                         $iconSpan.html('<i class="fa-solid fa-circle-check text-success" title="Complete"></i>');
