@@ -375,6 +375,29 @@ class mod_readaloud_external extends external_api {
         return new external_value(PARAM_RAW);
     }
 
+
+    public static function fetch_student_reading_report_parameters() {
+        return new external_function_parameters([
+                'cmid' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function fetch_student_reading_report($cmid) {
+        global $DB, $USER, $PAGE;
+        //$params = self::validate_parameters(self::fetch_student_reading_report_parameters(), ['cmid' => $cmid]);
+        $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        $modulecontext = context_module::instance($cmid);
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'id DESC');
+        $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
+        $report = $renderer->get_smallreport_data($moduleinstance, $modulecontext, $attempts, $token);
+        return $report;
+    }
+
+    public static function fetch_student_reading_report_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
     public static function delete_item_parameters() {
         return new external_function_parameters(
                 [

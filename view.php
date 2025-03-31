@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -50,15 +49,15 @@ if (!empty($userid) && !empty($secret) ) {
 
 if ($id) {
     $cm = get_coursemodule_from_id('readaloud', $id, 0, false, MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $moduleinstance = $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST);
 } else if ($n) {
-    $moduleinstance = $DB->get_record('readaloud', array('id' => $n), '*', MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record('readaloud', ['id' => $n], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $moduleinstance->course], '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance('readaloud', $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
     // Soft eject if they get here.
-    $redirecturl = new moodle_url('/', array());
+    $redirecturl = new moodle_url('/', []);
     redirect($redirecturl, get_string('invalidcoursemodule', 'error'));
     // print_error('invalidcourseid');
 }
@@ -89,7 +88,7 @@ if ($moduleinstance->passagesegments === null) {
     $olditem = false;
     list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($moduleinstance, $olditem);
     if (!empty($thephonetic)) {
-        $DB->update_record(constants::M_TABLE, array('id' => $moduleinstance->id, 'phonetic' => $thephonetic, 'passagesegments' => $thepassagesegments));
+        $DB->update_record(constants::M_TABLE, ['id' => $moduleinstance->id, 'phonetic' => $thephonetic, 'passagesegments' => $thepassagesegments]);
         $moduleinstance->phonetic = $thephonetic;
         $moduleinstance->passagesegments = $thepassagesegments;
     }
@@ -130,7 +129,7 @@ $modelaudiorenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'modelaudio');
 
 // Do we have attempts and ai data.
 $attempts = utils::fetch_user_attempts($moduleinstance);
-$ai_evals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->id);
+$aievals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->id);
 
 // Can attempt ?
 $canattempt = true;
@@ -156,9 +155,9 @@ if (!$canpreview) {
 
  // For Japanese (and later other languages we collapse spaces).
  $collapsespaces = false;
- if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
-     $collapsespaces = true;
- }
+if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+    $collapsespaces = true;
+}
 
 // Fetch a token and report a failure to a display item: $problembox.
 $problembox = '';
@@ -188,12 +187,12 @@ if ($attempts) {
         $latestaigrade = false;
     }
 
-    $have_humaneval = $latestattempt->sessiontime != null;
-    $have_aieval = $latestaigrade && $latestaigrade->has_transcripts();
+    $havehumaneval = $latestattempt->sessiontime != null;
+    $haveaieval = $latestaigrade && $latestaigrade->has_transcripts();
 } else {
     $latestattempt = false;
-    $have_humaneval = false;
-    $have_aieval = false;
+    $havehumaneval = false;
+    $haveaieval = false;
     $latestaigrade = false;
 }
 
@@ -222,9 +221,9 @@ if ($config->enablesetuptab && empty($moduleinstance->passage)) {
 // If we are reviewing attempts we do that here and return.
 // If we are going to the dashboard we output that below.
 if ($attempts && $reviewattempts) {
-    $attemptreview_html = $renderer->show_attempt_for_review($moduleinstance, $attempts,
-            $have_humaneval, $have_aieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer, $embed);
-    echo $attemptreview_html;
+    $attemptreviewhtml = $renderer->show_attempt_for_review($moduleinstance, $attempts,
+            $havehumaneval, $haveaieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer, $embed);
+    echo $attemptreviewhtml;
 
     return;
 }
@@ -232,7 +231,7 @@ if ($attempts && $reviewattempts) {
 // Show all the main parts. Many will be hidden and displayed by JS
 // so here we just put them on the page in the correct sequence.
 
-// FIXME: Everything below here should be in the templatecontext data. 
+// FIXME: Everything below here should be in the templatecontext data.
 
 // Show small report.
 if ($attempts) {
