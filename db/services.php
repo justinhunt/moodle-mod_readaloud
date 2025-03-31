@@ -112,5 +112,13 @@ $functions = array(
                 'capabilities' => 'mod/readaloud:view',
                 'type'        => 'write',
                 'ajax'        => true,
-        ),           
+        ),
+ 'mod_readaloud_fetch_student_reading_report' => array(
+                'classname'   => 'mod_readaloud_external',
+                'methodname'  => 'fetch_student_reading_report',
+                'description' => 'Fetch the marked passage+results for a student to see',
+                'capabilities' => 'mod/readaloud:view',
+                'type'        => 'read',
+                'ajax'        => true,
+ ),
 );

@@ -2,9 +2,10 @@
 define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
         'core/ajax','core/notification','mod_readaloud/smallreporthelper',
-        'mod_readaloud/listenandrepeat','mod_readaloud/quizhelper'],
+        'mod_readaloud/listenandrepeat','mod_readaloud/quizhelper','mod_readaloud/clicktohear'
+    ],
     function ($, log, str,def, recorderhelper, modelaudiokaraoke,
-              Ajax, notification, smallreporthelper, landr, quizhelper) {
+              Ajax, notification, smallreporthelper, landr, quizhelper, clicktohear) {
 
     "use strict"; // jshint ;_;
 
@@ -45,12 +46,15 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         //pass in config, the jquery video/audio object, and a function to be called when conversion has finshed
         init: function (props) {
             var dd = this.clone();
-
+/*
             log.debug('Steps enabled:', props.stepsenabled);
             log.debug('Steps open:', props.stepsopen);
             log.debug('Complete:', props.stepscomplete);
             log.debug('Steps enabled:', props.stepsenabled);
-
+            log.debug('props:');
+            log.debug(props);
+            log.debug(props,'props:');
+            */
 
             //pick up opts from html
             var theid = '#amdopts_' + props.widgetid;
@@ -81,7 +85,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             //TO DO make these usable in JS (here) and not just in mustache
             dd.steps_enabled = dd.activitydata.stepsenabled; // this is not passed through to JS (only mustache)
             dd.steps_open = dd.activitydata.stepsopen;// this is not passed through to JS (only mustache)
-
+            dd.steps_complete = dd.activitydata.stepscomplete;// this is not passed through to JS (only mustache)
+            
             // Set up model audio.
             dd.setupmodelaudio();
 
@@ -97,6 +102,9 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
             // Set up quiz.
             dd.setupquiz();
+
+            //Set up click to hear
+            dd.setupclicktohear();
 
             // Set initial mode.
             // We used to check the settings but now we just show the non-options greyed out
@@ -135,6 +143,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 // Complete the current step (update server and ui)
                 dd.update_activity_step(dd.activitydata.steps.step_practice);
             }
+        },
+
+        setupclicktohear: function(){
+            var dd = this;
+            var clicktohear_opts={token: dd.activitydata.token, ttsvoice: dd.activitydata.ttsvoice,
+                region: dd.activitydata.region, owner: dd.activitydata.owner};
+            clicktohear.init(clicktohear_opts);
         },
 
         setupquiz: function(){
@@ -182,10 +197,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 startreadbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_read + '"]'),
                 startshadowbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_shadow + '"]'),
                 startquizbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_quiz + '"]'),
+                readagainbutton: $('#' + opts['readagainbutton']),
+                fullreportbutton: $('#' + opts['fullreportbutton']),
                 startreportbutton: $('#' + opts['startreportbutton']),
                 returnmenubutton: $('#' + opts['returnmenubutton']),
                 stopandplay: $('#' + opts['stopandplay']),
                 smallreportcontainer: $('#' + opts['smallreportcontainer']),
+                fullreportcontainer: $('#' + opts['fullreportcontainer']),
                 readingcontainer: $('#' + def.readingcontainer),
                 modeimagecontainer: $('#' + opts['modeimagecontainer']),
                 modejourneycontainer: $('#' + opts['modejourneycontainer']),
@@ -271,8 +289,10 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 // Complete the current step (update server and ui)
                 dd.update_activity_step(dd.activitydata.steps.step_read);
 
-                //and let the user know that they are all done
-                dd.dofinishedlayout();
+                // NEW send user to the finished report immediately
+                //OLD and let the user know that they are all done
+                //dd.dofinishedlayout();
+                dd.doreportlayout();
             };
 
             //init the recorder
@@ -316,16 +336,38 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 }
             });
             dd.controls.startreadbutton.click(function(e){
+                if(dd.steps_complete.step_read){
+                    dd.doreportlayout();   
+                }else{
+                    dd.letsshadow=false;
+                    dd.doreadinglayout();
+                }
+            });
+            dd.controls.startreadbutton.keypress(function(e){
+                if (e.which == 32 || e.which == 13) {
+                    if(dd.steps_complete.step_read){
+                        dd.doreportlayout();   
+                    }else{
+                        dd.letsshadow=false;
+                        dd.doreadinglayout();
+                    }
+                    e.preventDefault();
+                }
+            });
+
+            dd.controls.readagainbutton.click(function(e){
                 dd.letsshadow=false;
                 dd.doreadinglayout();
             });
-            dd.controls.startreadbutton.keypress(function(e){
+
+            dd.controls.readagainbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13) {
                     dd.letsshadow=false;
                     dd.doreadinglayout();
                     e.preventDefault();
                 }
             });
+
             dd.controls.startshadowbutton.click(function(e){
                 //landr shadowing
                 //dd.dolandrlayout();
@@ -363,6 +405,18 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                     dd.domenulayout();
                 }
             });
+
+            dd.controls.fullreportbutton.click(function(e){
+                if(dd.controls.fullreportcontainer.is(":visible")){
+                    dd.controls.fullreportcontainer.hide();
+                }else{
+                    dd.controls.fullreportcontainer.show();
+                    //hack till we figure out how to do this properly
+                    $('.mod_readaloud_passage_cont.reviewmode').show();
+                }
+                e.preventDefault();
+            });
+
             dd.controls.startreportbutton.click(function(e){
                 dd.doreportlayout();
             });

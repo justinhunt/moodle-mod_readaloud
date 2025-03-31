@@ -403,6 +403,7 @@ $string['total_mistranscriptions'] = 'Total mistranscriptions: {$a}';
 
 $string['previewreading'] = 'Listen';
 $string['startreading'] = 'Read';
+$string['readagain'] = 'Read Again';
 $string['startshadowreading'] = 'Shadow Practice';
 $string['landrreading'] = 'Practice';
 

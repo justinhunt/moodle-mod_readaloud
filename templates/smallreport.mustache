@@ -27,6 +27,8 @@
             {{/ready}}
     </div>
     <div class='mod_readaloud_smallreport_fullreportbutton {{^ready}}hide{{/ready}}'>
-        {{{fullreportbutton}}}
+        <a id="{{fullreportbutton}}" class="btn btn-secondary" href="#">{{#str}}fullreport , mod_readaloud{{/str}}</a>
+        <a id="{{readagainbutton}}" class="btn btn-secondary" href="#">{{#str}}readagain , mod_readaloud{{/str}}</a>
     </div>
+    {{> mod_readaloud/fullreport}}
 </div>
