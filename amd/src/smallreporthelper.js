@@ -50,6 +50,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
                 return;
             }
 
+            this.cmid=opts['cmid'];
             this.attemptid=opts['attemptid'];
             this.ready=opts['ready'];
             this.remotetranscribe=opts['remotetranscribe'];
@@ -66,17 +67,30 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
             passagemarkuphelper.init($('.' + this.cd.fullreportcontainer));
             if(opts['sessionmatches']){
                 passagemarkuphelper.markup_passage(opts['sessionmatches'],opts['sessionerrors'],opts['sessionendword']);
+
             }
 
+            //if we are ready, we can start checking for results
             if(!this.ready && this.attemptid){
-                if(this.remotetranscribe) {
-                    //check for ai results
-                    this.check_for_results(this, 15);
-                }
-                //check for audio audio
-                this.check_for_audio(0);
+                this.start_check_for_results();
             }
 
+        },
+
+        start_check_for_results: function(){
+            //hide the full report because we are not ready yet
+            this.controls.fullreportcontainer.hide();
+
+            //reset the small report to the default state
+            //how do we do that?
+
+            //if we are doing remote transcribe, we need to check for results
+            if(this.remotetranscribe) {
+                //check for ai results
+                this.check_for_results(this, 15);
+            }
+            //check for audio audio
+            this.check_for_audio(0);
         },
 
         init_strings: function(){
@@ -91,6 +105,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
         //load all the controls so we do not have to do it later
         register_controls: function(){
             this.controls.heading = $('.' + def.smallreportheading);
+            this.controls.fullreportcontainer = $('.' + def.fullreportcontainer);
             this.controls.player = $('.' + def.smallreportplayer);
             this.controls.dummyplayer = $('.' + def.smallreportdummyplayer);
             this.controls.stars = $('.' + def.smallreportstars);
@@ -171,7 +186,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
             Ajax.call([{
                 methodname: 'mod_readaloud_check_for_results',
                 args: {
-                    attemptid: that.attemptid
+                    cmid: that.cmid
                 },
                 done: function (ajaxresult) {
                     var payloadobject = JSON.parse(ajaxresult);
@@ -225,10 +240,17 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
                                 that.controls.status.hide();
 
                                 //re-markup the full report passage
+                                log.debug('clearing passage markup');
                                 passagemarkuphelper.clear_markup();
                                 if(that.showstats) {
-                                    passagemarkuphelper.markup_passage(opts['sessionmatches'], opts['sessionerrors'], opts['sessionendword']);
+                                    log.debug('marking up passage');
+                                    passagemarkuphelper.markup_passage(payloadobject.sessionmatches,
+                                        payloadobject.sessionerrors, payloadobject.sessionendword);
                                 }
+
+                                //show the full report
+                                log.debug('showing full report');
+                                that.controls.fullreportcontainer.show();
 
                                 break;
 

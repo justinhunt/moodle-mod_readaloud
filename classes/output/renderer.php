@@ -244,11 +244,8 @@ class renderer extends \plugin_renderer_base {
      * @param int $embed
      * @return mixed
      */
-    protected function get_smallreport_data($moduleinstance, $modulecontext, $token, $attempts = false, $attempt = false, $aigrade = false ) {
-        // If we have no attempt we won't show the small report.
-        if (!$attempt) {
-            return false;
-        }
+    protected function get_smallreport_data($moduleinstance, $modulecontext, $cm, $attempts = false, $attempt = false, $aigrade = false ) {
+
 
         // Template data for small report.
         $tdata = [];
@@ -258,10 +255,10 @@ class renderer extends \plugin_renderer_base {
         $showgrades = ($moduleinstance->targetwpm > 0 && $showstats &&
                     $moduleinstance->humanpostattempt != constants::POSTATTEMPT_EVALERRORSNOGRADE);
         // If this is in gradebook or not.
-        $notingradebook = $attempt->dontgrade > 0;
+        $notingradebook = $attempt ? $attempt->dontgrade > 0 : false;
 
         // Attempt has been graded yet?
-        $havehumaneval = ($attempt->sessiontime != null);
+        $havehumaneval = $attempt ? ($attempt->sessiontime != null) : false;
         $haveaieval   = ($aigrade && $aigrade->has_transcripts());
         $graded        = $havehumaneval || $haveaieval;
 
@@ -296,10 +293,14 @@ class renderer extends \plugin_renderer_base {
 
         // Audio filename.
         $tdata['src'] = '';
-        if ($ready && $attempt->filename) {
+        if ($ready && $attempt && $attempt->filename) {
             // If the attempt is not ready, audio may not be available yet.
-            $tdata['src'] = $attempt->filename;
+             $filename = $attempt->filename;
+        }else{
+            // If the attempt is not ready, audio may not be available yet.
+            $filename = '';
         }
+        $tdata['src'] = $filename;
 
         // Determine whether remote transcription is allowed.
         $remotetranscribe = utils::can_transcribe($moduleinstance);
@@ -321,8 +322,9 @@ class renderer extends \plugin_renderer_base {
 
         // JavaScript to initiate small report
         $opts = [
-            'filename'         => $attempt->filename,
+            'filename'         => $filename,
             'attemptid'        => $attempt ? $attempt->id : false,
+            'cmid'             => $cm->id,
             'ready'            => $ready,
             'remotetranscribe' => $remotetranscribe,
             'showgrades'       => $showgrades,
@@ -1345,7 +1347,7 @@ break;
         $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
         $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
         $opendate = $moduleinstance->viewstart > 0 ? $moduleinstance->viewstart : null;
-        $smallreport = $this->get_smallreport_data($moduleinstance, $modulecontext, $token, $attempts, $latestattempt, $latestaigrade);
+        $smallreport = $this->get_smallreport_data($moduleinstance, $modulecontext, $cm, $attempts, $latestattempt, $latestaigrade);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
 
         return array_merge([

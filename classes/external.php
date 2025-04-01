@@ -43,11 +43,11 @@ class mod_readaloud_external extends external_api {
 
     public static function check_for_results_parameters() {
         return new external_function_parameters([
-                'attemptid' => new external_value(PARAM_INT),
+                'cmid' => new external_value(PARAM_INT),
         ]);
     }
 
-    public static function check_for_results($attemptid) {
+    public static function check_for_results($cmid) {
         global $DB, $USER;
         // defaults
         $ret = ['ready' => false, 'rating' => 0, 'src' => ''];
@@ -56,10 +56,13 @@ class mod_readaloud_external extends external_api {
         $aigrade = false;
 
         $params = self::validate_parameters(self::check_for_results_parameters(),
-                ['attemptid' => $attemptid]);
+                ['cmid' => $cmid]);
 
         // fetch attempt information
-        $attempt = $DB->get_record(constants::M_USERTABLE, ['userid' => $USER->id, 'id' => $attemptid]);
+        $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+        $attempt = false;
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'id DESC');
+        if($attempts){$attempt = reset($attempts);}
         if ($attempt) {
             $readaloud = $DB->get_record('readaloud', ['id' => $attempt->readaloudid], '*', MUST_EXIST);
             $cm = get_coursemodule_from_instance('readaloud', $readaloud->id, $readaloud->course, false, MUST_EXIST);

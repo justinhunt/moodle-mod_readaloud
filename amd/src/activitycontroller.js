@@ -295,6 +295,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 // NEW send user to the finished report immediately
                 //OLD and let the user know that they are all done
                 //dd.dofinishedlayout();
+                smallreporthelper.start_check_for_results();
                 dd.doreportlayout();
             };
 
@@ -600,6 +601,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.homecontainer.show();
             m.controls.introbox.show();
             m.controls.menuinstructionscontainer.show();
+            m.controls.menubuttonscontainer.show();
 
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
             m.controls.readingcontainer.removeClass(def.containerfillscreen);
@@ -662,6 +664,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.wheretonextcontainer.hide();
 
             // Show.
+            m.controls.menubuttonscontainer.show();
             m.controls.passagecontainer.show();
             m.controls.previewinstructionscontainer.show();
             m.controls.returnmenubutton.show();
@@ -689,11 +692,12 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.progresscontainer.hide();
             m.controls.quizcontainer.hide();
             m.controls.recordingcontainer.hide();
-            m.controls.returnmenubutton.show();
             m.controls.smallreportcontainer.hide();
             m.controls.wheretonextcontainer.hide();
 
             // Show.
+            m.controls.returnmenubutton.show();
+            m.controls.menubuttonscontainer.show();
             m.controls.landrinstructionscontainer.show();
             m.controls.passagecontainer.show();
 
@@ -725,6 +729,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.progresscontainer.fadeIn('fast');
         },
 
+
         dofinishedlayout: function () {
             var m = this;
 
@@ -737,6 +742,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.smallreportcontainer.hide();
 
             // Show.
+            m.controls.menubuttonscontainer.show();
             m.controls.feedbackcontainer.show();
             m.controls.wheretonextcontainer.show();
 
@@ -755,6 +761,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
 
             // Show.
+            m.controls.menubuttonscontainer.show();
             m.controls.errorcontainer.show();
             m.controls.wheretonextcontainer.show();
 
@@ -772,10 +779,18 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.landrinstructionscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.previewinstructionscontainer.hide();
+            m.controls.menuinstructionscontainer.hide();
             m.controls.quizcontainer.hide();
             m.controls.recordingcontainer.hide();
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
+
+            //clean up upload layout
+            m.controls.readingcontainer.removeClass(def.containerfillscreen);
+            m.controls.hider.fadeOut('fast');
+            m.controls.progresscontainer.fadeOut('fast');
+
             // Show.
+            m.controls.menubuttonscontainer.show();
             m.controls.returnmenubutton.show();
             m.controls.smallreportcontainer.show();
 
