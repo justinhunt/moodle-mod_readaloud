@@ -106,6 +106,9 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             //Set up click to hear
             dd.setupclicktohear();
 
+            //Set up small report helper
+            smallreporthelper.init(dd.activitydata);
+
             // Set initial mode.
             // We used to check the settings but now we just show the non-options greyed out
             if(dd.stepshadow_enabled || dd.steplisten_enabled || true){
@@ -177,7 +180,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 progresscontainer: $('.' + opts['progresscontainer']),
                 feedbackcontainer: $('.' + opts['feedbackcontainer']),
                 errorcontainer: $('.' + opts['errorcontainer']),
-                passagecontainer: $('.' + opts['passagecontainer']),
+                passagecontainer: $('.mod_readaloud_readingcontainer ' +  '.' + opts['passagecontainer']),
+                reviewpassagecontainer: $('.mod_readaloud_studentreportpassage ' +  '.' + opts['passagecontainer']),
                 recordingcontainer: $('.' + opts['recordingcontainer']),
                 dummyrecorder: $('.' + opts['dummyrecorder']),
                 recordercontainer: $('.' + opts['recordercontainer']),
@@ -198,7 +202,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 startshadowbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_shadow + '"]'),
                 startquizbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_quiz + '"]'),
                 readagainbutton: $('#' + opts['readagainbutton']),
-                fullreportbutton: $('#' + opts['fullreportbutton']),
                 startreportbutton: $('#' + opts['startreportbutton']),
                 returnmenubutton: $('#' + opts['returnmenubutton']),
                 stopandplay: $('#' + opts['stopandplay']),
@@ -406,20 +409,15 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 }
             });
 
-            dd.controls.fullreportbutton.click(function(e){
-                if(dd.controls.fullreportcontainer.is(":visible")){
-                    dd.controls.fullreportcontainer.hide();
-                }else{
-                    dd.controls.fullreportcontainer.show();
-                    //hack till we figure out how to do this properly
-                    $('.mod_readaloud_passage_cont.reviewmode').show();
-                }
-                e.preventDefault();
-            });
-
             dd.controls.startreportbutton.click(function(e){
                 dd.doreportlayout();
             });
+            dd.controls.startreportbutton.keypress(function(e){
+                if (e.which == 32 || e.which == 13 ) {
+                    dd.doreportlayout();
+                }
+            });
+
             dd.controls.startquizbutton.click(function(e){
                 dd.doquizlayout();
             });
@@ -776,7 +774,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.previewinstructionscontainer.hide();
             m.controls.quizcontainer.hide();
             m.controls.recordingcontainer.hide();
-
+            m.controls.stopandplay.removeClass('visible').addClass('hidden');
             // Show.
             m.controls.returnmenubutton.show();
             m.controls.smallreportcontainer.show();
@@ -866,8 +864,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
             var stepsComplete = dd.activitydata.stepscomplete || {};
 
-            var $container = dd.controls.menubuttonscontainer;
-            if (!$container || !$container.length) {
+            var thecontainer = dd.controls.menubuttonscontainer;
+            if (!thecontainer || !thecontainer.length) {
                 console.error('Menu buttons container not found.');
                 return;
             }
@@ -875,7 +873,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             // Flag to ensure only the first incomplete step is marked "in-progress".
             var foundIncomplete = false;
 
-            $menu.find('li.mode-chooser').each(function(index, liElem) {
+            thecontainer.find('li.mode-chooser').each(function(index, liElem) {
                 var $li = $(liElem);
                 var stepName = stepsOrder[index];
 

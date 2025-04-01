@@ -1736,13 +1736,8 @@ class utils {
             return false;
         }
 
-        //if we are machine grading we need an entry to AI table too
-        //But ... there is the chance a user will CHANGE the machgrademethod value after submissions have begun,
-        //If they do, INNER JOIN SQL in grade related logic will mess up gradebook if aigrade record is not available.
-        //So for prudence sake we ALWAYS create an aigrade record
-        if (true ||
-                $readaloud->machgrademethod == constants::MACHINEGRADE_HYBRID ||
-                $readaloud->machgrademethod == constants::MACHINEGRADE_MACHINEONLY) {
+        //If we do not have an AI grade we make one
+        if(!$DB->record_exists(constants::M_AITABLE, ['attemptid' => $currentattempt->id])){
             aigrade::create_record($currentattempt, $readaloud->timelimit);
         }
 
@@ -2019,18 +2014,28 @@ class utils {
         $have_humaneval = $attempt->sessiontime != null;
         $have_aieval = $aigrade && $aigrade->has_transcripts();
         $stats = new \stdClass();
+
         if(!$have_humaneval && !$have_aieval){
             $stats->wpm = ".";
             $stats->accuracy = ".";
             $stats->sessionendword = ".";
+            $stats->sessionerrors = false;
+            $stats->sessionmatches = false;
         }elseif($have_humaneval){
+            $sessionmatches = $aigrade->aidata->sessionmatches;
             $stats->wpm = $attempt->wpm;
             $stats->accuracy = $attempt->accuracy;
             $stats->sessionendword = $attempt->sessionendword;
+            $stats->sessionerrors = json_decode($attempt->sessionerrors);
+            $stats->sessionmatches = is_string($sessionmatches) ? json_decode($sessionmatches) : $sessionmatches;
         }else{
+            $sessionmatches = $aigrade->aidata->sessionmatches;
+            $sessionerrors = $aigrade->aidata->sessionerrors;
             $stats->wpm = $aigrade->aidata->wpm;
             $stats->accuracy = $aigrade->aidata->accuracy;
             $stats->sessionendword = $aigrade->aidata->sessionendword;
+            $stats->sessionerrors = is_string($sessionerrors) ? json_decode($sessionerrors) : $sessionerrors;
+            $stats->sessionmatches = is_string($sessionmatches) ? json_decode($sessionmatches) : $sessionmatches;
         }
         return $stats;
     }

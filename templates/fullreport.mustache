@@ -1,3 +1,32 @@
-<div id="{{fullreportcontainer}}" class='{{fullreportcontainer}} mod_readaloud_center' style='display: none'>
-  {{{fullreport}}}
+<div id="{{fullreportcontainer}}" class='{{fullreportcontainer}} mod_readaloud_center'>
+
+  <!--For more than 1 event we have a summary -->
+  {{#hasattemptssummary}}
+    {{>mod_readaloud/studentreadingattemptssummary}}
+    {{>mod_readaloud/studentreadingattemptschart}}
+  {{/hasattemptssummary}}
+
+  <!--General Feedback -->
+  <div class="{{M_FEEDBACK_CONTAINER}} {{constants::M_POSTATTEMPT}}" id="{{M_FEEDBACK_CONTAINER}}">
+    <div class="box py-3 generalbox">
+      <div class="mod_readaloud_center">
+        {{generalfeedback}}
+      </div>
+    </div>
+  </div>
+
+  <!--Evaluation Message -->
+  <!--
+  <div class='{{M_EVALUATED_MESSAGE}}  mod_readaloud_center' id='{M_EVALUATED_MESSAGE}}'>
+    {{#evaluationstatus}}
+      {{#str}} evaluatedmessage, mod_readaloud {{/str}}
+    {{/evaluationstatus}}
+    {{^evaluationstatus}}
+      {{#str}} notgradedyet, mod_readaloud {{/str}}
+    {{/evaluationstatus}}
+  </div>
+-->
+  <!--The marked up passage -->
+  {{>mod_readaloud/studentreadingpassage}}
+
 </div>

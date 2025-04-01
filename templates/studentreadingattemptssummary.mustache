@@ -12,27 +12,27 @@
                     <th class="header c0"></th>
                     <th class="header c1">{{#str}}wpm, mod_readaloud{{/str}}</th>
                     <th class="header c2">{{#str}}accuracy_p, mod_readaloud{{/str}}</th>
-                    {{#showgrades}}
+                    {{#attemptshowgrades}}
                         <th class="header c3">{{#str}}grade_p, mod_readaloud{{/str}}</th>
-                    {{/showgrades}}
+                    {{/attemptshowgrades}}
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td class="cell c0">{{#str}}averages, mod_readaloud{{/str}}
-                    <td class="cell c1">{{summary.av_wpm}}</td>
-                    <td class="cell c2">{{summary.av_accuracy}}</td>
-                    {{#showgrades}}
-                        <td class="cell c3">{{summary.av_sessionscore}}</td>
-                    {{/showgrades}}
+                    <td class="cell c1">{{attemptssummary.av_wpm}}</td>
+                    <td class="cell c2">{{attemptssummary.av_accuracy}}</td>
+                    {{#attemptshowgrades}}
+                        <td class="cell c3">{{attemptssummary.av_sessionscore}}</td>
+                    {{/attemptshowgrades}}
                 </tr>
                 <tr>
                     <td class="cell c0">{{#str}}highest, mod_readaloud{{/str}}
-                    <td class="cell c1">{{summary.h_wpm}}</td>
-                    <td class="cell c2">{{summary.h_accuracy}}</td>
-                    {{#showgrades}}
-                        <td class="cell c3">{{summary.h_sessionscore}}</td>
-                    {{/showgrades}}
+                    <td class="cell c1">{{attemptssummary.h_wpm}}</td>
+                    <td class="cell c2">{{attemptssummary.h_accuracy}}</td>
+                    {{#attemptshowgrades}}
+                        <td class="cell c3">{{attemptssummary.h_sessionscore}}</td>
+                    {{/attemptshowgrades}}
                 </tr>
             </tbody>
         </table>

@@ -74,9 +74,9 @@ class mod_readaloud_external extends external_api {
             $haveaieval = $aigrade && $aigrade->has_transcripts();
         }
 
-        // If no results, thats that. return.
+        // If no results, that's that. return.
         if (!$haveaieval && !$havehumaneval) {
-            // Just return defaults.
+            // Just return
             // If we got results return ratings.
         } else {
             $ret['ready'] = true;
@@ -88,6 +88,9 @@ class mod_readaloud_external extends external_api {
             $ret['wpm'] = $stats->wpm;
             $ret['acc'] = $stats->accuracy;
             $ret['totalwords'] = $stats->sessionendword;
+            $ret['sessionerrors'] = $stats->sessionerrors;
+            $ret['sessionendword'] = $stats->sessionendword;
+            $ret['sessionmatches'] = $stats->sessionmatches;
         }
         return json_encode($ret);
     }

@@ -26,9 +26,10 @@
                 {{/remotetranscribe}}
             {{/ready}}
     </div>
-    <div class='mod_readaloud_smallreport_fullreportbutton {{^ready}}hide{{/ready}}'>
-        <a id="{{fullreportbutton}}" class="btn btn-secondary" href="#">{{#str}}fullreport , mod_readaloud{{/str}}</a>
+    <div class='mod_readaloud_smallreport_readagainbutton {{^ready}}hide{{/ready}}'>
         <a id="{{readagainbutton}}" class="btn btn-secondary" href="#">{{#str}}readagain , mod_readaloud{{/str}}</a>
     </div>
     {{> mod_readaloud/fullreport}}
+    <!-- Hidden input storing JSON configuration -->
+    <input id="{{configcontrolid}}" type="hidden" value="{{configjsonstring}}" />
 </div>

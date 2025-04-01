@@ -72,12 +72,12 @@ class passage_renderer extends \plugin_renderer_base {
 
     public function render_userreview($passagehelper, $language, $collapsespaces=false, $nograde=false) {
         $actionheader = $this->render_attempt_scoresheader($passagehelper, $nograde);
-        $passagereview = $this->render_attempt_passage($passagehelper, $language, $collapsespaces, $nograde);
+        $passagereview = $this->render_attempted_passage($passagehelper, $language, $collapsespaces);
         $ret = $actionheader . $passagereview;
         return $ret;
     }
 
-    public function render_attempted_passage($passagehelper, $language, $collapsespaces=false, $nograde=false) {
+    public function render_attempted_passage($passagehelper, $language, $collapsespaces=false) {
 
         // we put some CSS at the top of the passage container to control things like padding word separation etc
         $extraclasses = 'reviewmode';
@@ -86,8 +86,7 @@ class passage_renderer extends \plugin_renderer_base {
             $extraclasses .= ' collapsespaces';
         }
         $thepassage = $this->render_passage($passagehelper->attemptdetails('passagesegments'), $language, false, $extraclasses);
-        $ret = \html_writer::div($thepassage, constants::M_CLASS . '_postattempt');
-        return $ret;
+        return $thepassage;
     }
 
     public function render_machinereview($passagehelper, $language, $debug = false) {

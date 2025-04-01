@@ -286,6 +286,7 @@ class renderer extends \plugin_renderer_base {
             $tdata['totalwords']  = $stats->sessionendword;
             $tdata['notingradebook'] = $notingradebook;
         } else {
+            $stats = false;
             $ready = false;
         }
 
@@ -303,22 +304,22 @@ class renderer extends \plugin_renderer_base {
         // Determine whether remote transcription is allowed.
         $remotetranscribe = utils::can_transcribe($moduleinstance);
 
-        // Get Full Report
-        $tdata['fullreportcontainer']  = constants::M_FULLREPORT_CONTAINER;
-        $tdata['fullreport'] = $this->get_fullreport_html(
-            $moduleinstance,
-            $modulecontext,
-            $attempts,
-            $token
-        );
-
         $tdata['fullreportbutton'] = constants::M_FULLREPORT;
         $tdata['readagainbutton'] = constants::M_READAGAIN;
         $tdata['showgrades'] = $showgrades;
         $tdata['showstats']  = $showstats;
         $tdata['remotetranscribe'] = $remotetranscribe;
 
-        // JavaScript to refresh small report.
+        // Get Full Report and merge it into tdata
+        $tdata['fullreportcontainer']  = constants::M_FULLREPORT_CONTAINER;
+        $fullreportdata = $this->get_full_student_report_data(
+            $moduleinstance,
+            $modulecontext,
+            $attempts
+        );
+        $tdata = array_merge($tdata, $fullreportdata);
+
+        // JavaScript to initiate small report
         $opts = [
             'filename'         => $attempt->filename,
             'attemptid'        => $attempt ? $attempt->id : false,
@@ -327,8 +328,15 @@ class renderer extends \plugin_renderer_base {
             'showgrades'       => $showgrades,
             'showstats'        => $showstats,
             'notingradebook'   => $notingradebook,
+            'sessionerrors'    => $stats ? $stats->sessionerrors : false,
+            'sessionmatches'    => $stats ? $stats->sessionmatches : false,
+            'sessionendword'    => $stats ? $stats->sessionendword : false,
         ];
-        $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', [$opts]);
+        $tdata['configjsonstring'] = json_encode($opts);
+        $tdata['configcontrolid'] = constants::M_SMALLREPORT_CONTAINER . '_opts';
+
+
+        $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', [['configcontrolid' => $tdata['configcontrolid']]]);
         $this->page->requires->strings_for_js(
             ['secs_till_check', 'notgradedyet', 'evaluatedmessage', 'checking', 'notaddedtogradebook'],
             constants::M_COMPONENT
@@ -1061,7 +1069,7 @@ break;
      *
      *
      */
-    public function get_fullreport_html($moduleinstance, $modulecontext, $attempts, $token) {
+    public function get_full_student_report_data($moduleinstance, $modulecontext, $attempts) {
 
         // Fetch passage renderer
         $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
@@ -1085,11 +1093,6 @@ break;
             $latestaigrade = false;
         }
 
-        // Default values.
-        $chartsummary = "";
-        $tablesummary = "";
-        $nograde = $latestattempt->dontgrade || $moduleinstance->targetwpm == 0;
-        $readonly = true;
 
         //For passage rendering
         $extraclasses = "readmode";
@@ -1101,6 +1104,8 @@ break;
             $extraclasses .= " collapsespaces";
         }
 
+        //initiate return
+        $ret = [];
 
         // Show an attempt summary if we have more than one attempt and we are not the guest user.
         // This is a chart of the attempts
@@ -1120,29 +1125,25 @@ break;
                 case constants::POSTATTEMPT_EVALERRORS:
                     $attemptsummarydata = utils::fetch_attempt_summary($moduleinstance);
                     if ($attemptsummarydata) {
+                        $ret['hasattemptsummary'] = true;
+
                         // Show the attempt summary. (table data of averages and highest)
-                        $tablesummary = $this->render_from_template('mod_readaloud/studentreadingattemptssummary', [
-                            'summary' => $attemptsummarydata,
-                            'showgrades' => $showgradesinchart,
-                        ]);
+                        $ret['attemptssummary'] = $attemptsummarydata;
+                        $ret['attemptshowgrades'] = $showgradesinchart;
 
                         // Show the chart of attempt results
                         $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
                         $renderedchart = $this->fetch_rendered_attemptchart($chartdata, $showgradesinchart);
-                        $chartsummary = $this->render_from_template('mod_readaloud/studentreadingattemptschart', [
-                            'renderedchart' => $renderedchart,
-                        ]);
+                        $ret['attemptschart'] =  $renderedchart;
                     }
             }
         }
 
         // Show feedback summary.
-        $feedbackcontext = [];
-        $feedbackcontext['feedback_text'] = $moduleinstance->feedback;
-        $feedbackcontext['feedback_container'] = constants::M_FEEDBACK_CONTAINER;
-        $feedbackcontext['feedback_postattempt'] = constants::M_POSTATTEMPT;
-        $textfeedback = $this->render_from_template('mod_readaloud/studentreadingtextfeedback', $feedbackcontext);
+        $ret['generalfeedback'] = $moduleinstance->feedback;
 
+
+        //render the passage itself (to be marked up in JS)
         if ($havehumaneval || $haveaieval) {
             // We used to distingush between humanpostattempt and machinepostattempt but we simplified it,
             // and just use the human value for all.
@@ -1151,57 +1152,23 @@ break;
                     $thepassage = $passagerenderer->render_passage($moduleinstance->passagesegments, $moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
                     break;
                 case constants::POSTATTEMPT_EVAL:
-                    $evaluationstatus = $this->show_evaluated_message();
-                    if ($havehumaneval) {
-                        $forceaidata = false;
-                    } else {
-                        $forceaidata = true;
-                    }
-                    $passagehelper = new \mod_readaloud\passagehelper($latestattempt->id, $modulecontext->id);
-                    $reviewmode = constants::REVIEWMODE_SCORESONLY;
-                    $passagejavascript = $passagehelper->prepare_javascript($reviewmode, $forceaidata, $readonly);
-                    $thepassage = $passagerenderer->render_attempted_passage($passagehelper, $moduleinstance->ttslanguage, $collapsespaces, $nograde);
-
-                    break;
-
                 case constants::POSTATTEMPT_EVALERRORS:
-                    $evaluationstatus = $this->show_evaluated_message();
-                    if ($havehumaneval) {
-                        $reviewmode = constants::REVIEWMODE_HUMAN;
-                        $forceaidata = false;
-                    } else {
-                        $reviewmode = constants::REVIEWMODE_MACHINE;
-                        $forceaidata = true;
-                    }
+                case constants::POSTATTEMPT_EVALERRORSNOGRADE:
+                    $evaluationstatus = true;
                     $passagehelper = new \mod_readaloud\passagehelper($latestattempt->id, $modulecontext->id);
-                    $passagejavascript = $passagehelper->prepare_javascript($reviewmode, $forceaidata, $readonly);
-                    $thepassage = $passagerenderer->render_attempted_passage($passagehelper, $moduleinstance->ttslanguage, $collapsespaces, $nograde);
+                    $thepassage = $passagerenderer->render_attempted_passage($passagehelper, $moduleinstance->ttslanguage, $collapsespaces);
                     break;
 
-                case constants::POSTATTEMPT_EVALERRORSNOGRADE:
-                    $evaluationstatus =  $this->show_evaluated_message();
-                    if ($havehumaneval) {
-                        $reviewmode = constants::REVIEWMODE_HUMAN;
-                        $forceaidata = false;
-                    } else {
-                        $reviewmode = constants::REVIEWMODE_MACHINE;
-                        $forceaidata = true;
-                    }
-                    $passagehelper = new \mod_readaloud\passagehelper($latestattempt->id, $modulecontext->id);
-                    $passagejavascript = $passagehelper->prepare_javascript($reviewmode, $forceaidata, $readonly);
-                    $nograde = true;
-                    $thepassage = $passagerenderer->render_attempted_passage($passagehelper, $moduleinstance->ttslanguage, $collapsespaces, $nograde);
-                    break;
             }
         } else {
-            $evaluationstatus = $this->show_ungradedyet();
+            $evaluationstatus = false;
             $thepassage = $passagerenderer->render_passage($moduleinstance->passagesegments, $moduleinstance->ttslanguage, constants::M_PASSAGE_CONTAINER, $extraclasses);
-
         }
-
-        $ret = $tablesummary . $chartsummary . $textfeedback . $passagejavascript . $evaluationstatus . $thepassage;
+        $ret['evaluationstatus'] = $evaluationstatus;
+        $ret['thepassage'] = $thepassage;
 
         return $ret;
+
     }
 
     /**

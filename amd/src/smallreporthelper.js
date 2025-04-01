@@ -1,5 +1,5 @@
-define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax','core/templates','core/notification'],
-    function ($, log, def, str, Ajax,templates, notification) {
+define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagemarkuphelper','core/str','core/ajax','core/templates','core/notification'],
+    function ($, log, def, passagemarkuphelper, str, Ajax,templates, notification) {
     "use strict"; // jshint ;_;
     /*
     This file does small report
@@ -22,8 +22,34 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
         evaluated: 'Your reading has been evaluated.',
         notaddedtogradebook: 'This was a shadow practice, and not added to gradebook.',
 
+        //class definitions
+        cd: {
+            wordclass: def.wordclass,
+            spaceclass: def.spaceclass,
+            badwordclass: def.badwordclass,
+            endspaceclass: def.endspaceclass,
+            unreadwordclass: def.unreadwordclass,
+            unreadspaceclass: def.unreadspaceclass,
+            aiunmatched: def.aiunmatched,
+            passagecontainer: def.passagecontainer,
+            fullreportcontainer: def.fullreportcontainer,
+        },
+
         //init the module
-        init: function(opts){
+        init: function(props){
+
+            //pick up opts from html
+            var theid = props['configcontrolid'];
+            var configcontrol = $('#' + theid).get(0);
+            if (configcontrol) {
+                var opts = JSON.parse(configcontrol.value);
+                $(theid).remove();
+            } else {
+                //if there is no config we might as well give up
+                log.debug('Small Report: No config found on page. Giving up.');
+                return;
+            }
+
             this.attemptid=opts['attemptid'];
             this.ready=opts['ready'];
             this.remotetranscribe=opts['remotetranscribe'];
@@ -31,10 +57,16 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.showgrades =opts['showgrades'];
             this.filename=opts['filename'];
             this.notingradebook=opts['notingradebook'];
+
             this.init_strings();
             this.register_controls();
             this.register_events();
 
+            //Init the full report passage
+            passagemarkuphelper.init($('.' + this.cd.fullreportcontainer));
+            if(opts['sessionmatches']){
+                passagemarkuphelper.markup_passage(opts['sessionmatches'],opts['sessionerrors'],opts['sessionendword']);
+            }
 
             if(!this.ready && this.attemptid){
                 if(this.remotetranscribe) {
@@ -64,7 +96,6 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.controls.stars = $('.' + def.smallreportstars);
             this.controls.cards = $('.' + def.smallreportcards);
             this.controls.status = $('.' + def.smallreportstatus);
-            this.controls.fullreportbutton = $('.' + def.fullreportbutton);
         },
 
         //attach the various event handlers we need
@@ -178,7 +209,6 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                                 //if we are not showing stats, we really should not be here
                                 if(!that.showstats){
                                     that.controls.status.hide();
-                                    that.controls.fullreportbutton.show();
                                     break;
                                 }
 
@@ -192,9 +222,14 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                                     }
                                 );
 
-
                                 that.controls.status.hide();
-                                that.controls.fullreportbutton.show();
+
+                                //re-markup the full report passage
+                                passagemarkuphelper.clear_markup();
+                                if(that.showstats) {
+                                    passagemarkuphelper.markup_passage(opts['sessionmatches'], opts['sessionerrors'], opts['sessionendword']);
+                                }
+
                                 break;
 
                             case false:
@@ -208,6 +243,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                 fail: notification.exception
             }]);
         },
+
 
     };//end of return value
 });

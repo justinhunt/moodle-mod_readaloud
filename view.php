@@ -238,7 +238,6 @@ if ($attempts) {
     if (!$latestattempt) {
         $latestattempt = current($attempts);
     }
-    // echo $renderer->show_smallreport($moduleinstance, $latestattempt, $latestaigrade, $embed);
 }
 
 // If we have a problem (usually with auth/token) we display and return.

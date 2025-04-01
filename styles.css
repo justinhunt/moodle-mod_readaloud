@@ -2790,3 +2790,11 @@ overflow: auto;
 #mod_readaloud_menubuttons_cont:not(.closed) a.nav-link::before {
     display: none;
 }
+.mod_readaloud_studentreportpassage {
+  margin: initial;
+  text-align: initial;
+}
+div.mod_readaloud_studentreportpassage .mod_readaloud_grading_unreadword {
+  text-decoration: none;
+  background-color: lightgrey;
+}
