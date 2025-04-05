@@ -1,4 +1,5 @@
-define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagemarkuphelper','core/str','core/ajax','core/templates','core/notification'],
+define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagemarkuphelper',
+    'core/str','core/ajax','core/templates','core/notification'],
     function ($, log, def, passagemarkuphelper, str, Ajax,templates, notification) {
     "use strict"; // jshint ;_;
     /*
@@ -78,11 +79,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
         },
 
         start_check_for_results: function(){
-            //hide the full report because we are not ready yet
-            this.controls.fullreportcontainer.hide();
-
-            //reset the small report to the default state
-            //how do we do that?
+            //reset the results display to the pre-data state
+            this.reset_display();
 
             //if we are doing remote transcribe, we need to check for results
             if(this.remotetranscribe) {
@@ -111,6 +109,12 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
             this.controls.stars = $('.' + def.smallreportstars);
             this.controls.cards = $('.' + def.smallreportcards);
             this.controls.status = $('.' + def.smallreportstatus);
+        },
+
+        //attach the various event handlers we need
+        update_filename: function(filename) {
+            var that = this;
+            that.filename = filename;
         },
 
         //attach the various event handlers we need
@@ -169,6 +173,18 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
             }
 
             return result;
+        },
+
+        reset_display: function(){
+            //reset the small report to the default state
+            this.controls.heading.text(this.notgradedyet);
+            this.controls.stars.html('');
+            this.controls.cards.html('');
+            this.controls.status.text(this.notgradedyet);
+            this.controls.status.show();
+            this.controls.fullreportcontainer.hide();
+            this.controls.player.html('');
+            this.controls.dummyplayer.show();
         },
 
         check_for_results: function (that, seconds) {

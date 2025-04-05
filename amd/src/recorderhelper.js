@@ -8,7 +8,14 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
 
     return {
 
+        opts: null,
         status: 'stopped',
+
+        reset: function () {
+            var container = $('#' + this.opts['recorderid']);
+            container.attr('data-alreadyparsed', 'false');
+            container.html('');
+        },
 
         init: function (opts, on_recording_start,
                         on_recording_end,
@@ -16,7 +23,8 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
                         on_speech) {
 
             var that = this;
-            var recid=opts['recorderid'];
+            that.opts = opts;
+            var recid = opts['recorderid'];
             cloudpoodll.init(recid,
                 function (message) {
                     switch (message.type) {
