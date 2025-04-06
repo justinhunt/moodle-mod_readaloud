@@ -48,6 +48,24 @@ define(['jquery'], function($) {
             modeMenu.addEventListener('transitionend', function() {
                 console.log("Mode Menu transition ended.");
             });
+
+            // Show both passage and quiz columns
+            document.getElementById('btnAll').addEventListener('click', function() {
+                document.getElementById('quizpassage').style.display = 'block';
+                document.getElementById('quizquestion').style.display = 'block';
+            });
+
+            // Show only the passage column
+            document.getElementById('btnPassage').addEventListener('click', function() {
+                document.getElementById('quizpassage').style.display = 'block';
+                document.getElementById('quizquestion').style.display = 'none';
+            });
+
+            // Show only the quiz column
+            document.getElementById('btnQuiz').addEventListener('click', function() {
+                document.getElementById('quizpassage').style.display = 'none';
+                document.getElementById('quizquestion').style.display = 'block';
+            });
         }
     };
 
