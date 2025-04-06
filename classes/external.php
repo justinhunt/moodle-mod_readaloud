@@ -62,7 +62,9 @@ class mod_readaloud_external extends external_api {
         $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
         $attempt = false;
         $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'id DESC');
-        if($attempts){$attempt = reset($attempts);}
+        if ($attempts) {
+            $attempt = reset($attempts);
+        }
         if ($attempt) {
             $readaloud = $DB->get_record('readaloud', ['id' => $attempt->readaloudid], '*', MUST_EXIST);
             $cm = get_coursemodule_from_instance('readaloud', $readaloud->id, $readaloud->course, false, MUST_EXIST);
@@ -390,7 +392,7 @@ class mod_readaloud_external extends external_api {
 
     public static function fetch_student_reading_report($cmid) {
         global $DB, $USER, $PAGE;
-        //$params = self::validate_parameters(self::fetch_student_reading_report_parameters(), ['cmid' => $cmid]);
+        // $params = self::validate_parameters(self::fetch_student_reading_report_parameters(), ['cmid' => $cmid]);
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
         $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
         $modulecontext = context_module::instance($cmid);

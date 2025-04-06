@@ -122,11 +122,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             var dd = this;
             // Set up strings
             str.get_strings([
-                { "key": "confirm_cancel_recording", "component": def.component}
+                { "key": "confirm_cancel_recording", "component": def.component},
+                { "key": "confirm_read_again", "component": def.component},
                 //more strings here
             ]).done(function (s) {
                 var i = 0;
-                dd.strings.confirm_cancel_recording= s[i++];
+                dd.strings.confirm_cancel_recording = s[i++];
+                dd.strings.confirm_read_again = s[i++];
                 //more strings here
             });
         },
@@ -223,6 +225,11 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 && navigator.mediaDevices.getUserMedia);
         },
 
+        reset_recorder: function () {
+            recorderhelper.reset();
+            this.setup_recorder();
+        },
+
         setup_recorder: function () {
             var dd = this;
 
@@ -292,9 +299,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 // Complete the current step (update server and ui)
                 dd.update_activity_step(dd.activitydata.steps.step_read);
 
-                // NEW send user to the finished report immediately
-                //OLD and let the user know that they are all done
-                //dd.dofinishedlayout();
+                // Send user to the finished report immediately
+                smallreporthelper.update_filename(eventdata.mediaurl);
                 smallreporthelper.start_check_for_results();
                 dd.doreportlayout();
             };
@@ -360,6 +366,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             });
 
             dd.controls.readagainbutton.click(function(e){
+                var result = confirm(dd.strings.confirm_read_again);
+                    //exit if they dont want to
+                    if (!result) {
+                        return;
+                    }
+                //reset the recorder and start again    
+                dd.reset_recorder();    
                 dd.letsshadow=false;
                 dd.doreadinglayout();
             });
@@ -628,6 +641,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.quizcontainer.hide();
             m.controls.smallreportcontainer.hide();
             m.controls.wheretonextcontainer.hide();
+            m.controls.passagecontainer.removeClass(m.passagefinished);
 
             // Show.
             m.controls.recordingcontainer.show();

@@ -695,6 +695,7 @@ $string['original'] = 'Original';
 $string['corrected'] = 'Corrected';
 
 $string['confirm_cancel_recording']="Cancel recording and quit this attempt?";
+$string['confirm_read_again']="Cancel this reading and make a new one?";
 $string['aitextutilsshow']="Show AI Text Utils (Beta)";
 $string['aitextutilshide']="Hide AI Text Utils (Beta)";
 $string['textgenerator_instructions']="Enter a short non fiction topic description and press the button to generate a passage. It will often not be factually accurate. Please be careful be using it with students.";

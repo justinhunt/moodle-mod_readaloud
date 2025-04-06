@@ -1717,7 +1717,9 @@ class utils {
         $attempts = utils::fetch_user_attempts($readaloud);
         if($attempts){
             $latestattempt = current($attempts);
-            if($latestattempt->status < $readaloud->steps){
+            //This line makes it difficult to re-attempt from within the activity.
+            //setting it to always true. And we can add a "new attempt" button on the final results page as we do for MiniLesson
+            if(true ||$latestattempt->status < $readaloud->steps){
                 //most recent attempt is incomplete, so we use it
                 $currentattempt = $latestattempt; 
             }
@@ -1736,8 +1738,12 @@ class utils {
             return false;
         }
 
-        //If we do not have an AI grade we make one
-        if(!$DB->record_exists(constants::M_AITABLE, ['attemptid' => $currentattempt->id])){
+        //If we have an AI grade we need to clear the transcripts, because user has decided to reattempt - urgh
+        if($DB->record_exists(constants::M_AITABLE, ['attemptid' => $currentattempt->id])){
+            $theaigrade = new aigrade($currentattempt->id);
+            $theaigrade->clear_transcripts();
+        }else{
+            //If we do not have an AI grade we make one
             aigrade::create_record($currentattempt, $readaloud->timelimit);
         }
 
