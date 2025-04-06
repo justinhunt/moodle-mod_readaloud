@@ -635,7 +635,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.homecontainer.hide();
             m.controls.introbox.hide();
             m.controls.menuinstructionscontainer.hide();
-            m.controls.menubuttonscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.progresscontainer.hide();
             m.controls.quizcontainer.hide();
@@ -818,7 +817,6 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.homecontainer.hide();
             m.controls.landrinstructionscontainer.hide();
-            m.controls.menubuttonscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.quizplaceholder.hide();
