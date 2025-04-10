@@ -44,7 +44,7 @@ define(['jquery'], function($) {
             }
             window.addEventListener("resize", checkResponsive);
 
-            // Optional: Listen for the end of CSS transitions.
+            // Listen for the end of CSS transitions.
             modeMenu.addEventListener('transitionend', function() {
                 console.log("Mode Menu transition ended.");
             });
@@ -53,12 +53,14 @@ define(['jquery'], function($) {
             document.getElementById('btnAll').addEventListener('click', function() {
                 document.getElementById('quizpassage').style.display = 'block';
                 document.getElementById('quizquestion').style.display = 'block';
+                document.querySelector('.mod_readaloud_passage_cont').classList.remove('hide');
             });
 
             // Show only the passage column
             document.getElementById('btnPassage').addEventListener('click', function() {
                 document.getElementById('quizpassage').style.display = 'block';
                 document.getElementById('quizquestion').style.display = 'none';
+                document.querySelector('.mod_readaloud_passage_cont').classList.remove('hide');
             });
 
             // Show only the quiz column
