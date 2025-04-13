@@ -2,10 +2,9 @@ define(['jquery',
       'core/log',
       'mod_readaloud/definitions',
       'mod_readaloud/pollyhelper',
-      'mod_readaloud/cloudpoodllloader',
       'mod_readaloud/ttrecorder',
       'mod_readaloud/animatecss'],
-    function($, log, def, polly,cloudpoodll, ttrecorder, anim) {
+    function($, log, def, polly,  ttrecorder, anim) {
   "use strict"; // jshint ;_;
 
   /*

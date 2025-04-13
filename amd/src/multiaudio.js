@@ -2,10 +2,9 @@ define(['jquery',
     'core/log',
     'mod_readaloud/definitions',
     'mod_readaloud/pollyhelper',
-    'mod_readaloud/cloudpoodllloader',
     'mod_readaloud/ttrecorder',
     'mod_readaloud/animatecss'
-    ], function($, log, def, polly,cloudpoodll, ttrecorder,anim) {
+    ], function($, log, def, polly, ttrecorder,anim) {
   "use strict"; // jshint ;_;
 
   /*
@@ -234,29 +233,21 @@ define(['jquery',
             } //end of switch message type
         };
 
+        //init tt recorder
+        var opts = {};
+        opts.uniqueid = itemdata.uniqueid;
+        log.debug('ma uniqueid:' + itemdata.uniqueid);
+        opts.callback = theCallback;
+        opts.stt_guided=quizhelper.is_stt_guided();
+        app.ttrec = ttrecorder.clone();
+        app.ttrec.init(opts);
 
-
-        if(quizhelper.use_ttrecorder()) {
-            //init tt recorder
-            var opts = {};
-            opts.uniqueid = itemdata.uniqueid;
-            log.debug('ma uniqueid:' + itemdata.uniqueid);
-            opts.callback = theCallback;
-            opts.stt_guided=quizhelper.is_stt_guided();
-            app.ttrec = ttrecorder.clone();
-            app.ttrec.init(opts);
-
-            //prompt for TT recorder
-            var allsentences="";
-            for(var i=0;i< itemdata.sentences.length; i++){
-                allsentences += quizhelper.cleanText(itemdata.sentences[i].sentence) + ' ';
-            }
-            app.ttrec.currentPrompt=allsentences;
-
-        }else{
-            //init cloudpoodll push recorder
-            cloudpoodll.init('readaloud-recorder-multiaudio-' + itemdata.id, theCallback);
+        //prompt for TT recorder
+        var allsentences="";
+        for(var i=0;i< itemdata.sentences.length; i++){
+            allsentences += quizhelper.cleanText(itemdata.sentences[i].sentence) + ' ';
         }
+        app.ttrec.currentPrompt=allsentences;
 
     }, //end of init components
 

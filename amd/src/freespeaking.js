@@ -1,6 +1,6 @@
-define(['jquery', 'core/log', 'mod_readaloud/definitions','mod_readaloud/cloudpoodllloader',
+define(['jquery', 'core/log', 'mod_readaloud/definitions',
     'mod_readaloud/ttrecorder', 'mod_readaloud/correctionsmarkup', 'core/templates'],
-    function($, log, def, cloudpoodll, ttrecorder, correctionsmarkup, templates) {
+    function($, log, def, ttrecorder, correctionsmarkup, templates) {
   "use strict"; // jshint ;_;
 
   /*
@@ -112,20 +112,15 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions','mod_readaloud/cloudpo
         } //end of switch message type
       };
 
-      if(quizhelper.use_ttrecorder()) {
-          //init tt recorder
-          var opts = {};
-          opts.uniqueid = itemdata.uniqueid;
-          opts.callback = recorderCallback;
-          opts.shadow = false;
-          opts.stt_guided=false;
-          self.ttrec = ttrecorder.clone();
-          self.ttrec.init(opts);
+      //init tt recorder
+      var opts = {};
+      opts.uniqueid = itemdata.uniqueid;
+      opts.callback = recorderCallback;
+      opts.shadow = false;
+      opts.stt_guided=false;
+      self.ttrec = ttrecorder.clone();
+      self.ttrec.init(opts);
 
-      }else{
-          //init cloudpoodll push recorder
-          cloudpoodll.init('readaloud-recorder-passagereading-' + itemdata.id, recorderCallback);
-      }
     }, //end of init components
 
     do_corrections_markup: function(grammarerrors,grammarmatches,insertioncount) {

@@ -1,5 +1,5 @@
-define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_readaloud/cloudpoodllloader', 'mod_readaloud/ttrecorder'],
-    function($, log, ajax, def, cloudpoodll, ttrecorder) {
+define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_readaloud/ttrecorder'],
+    function($, log, ajax, def,  ttrecorder) {
   "use strict"; // jshint ;_;
 
   log.debug('Readaloud listen and repeat: initialising');

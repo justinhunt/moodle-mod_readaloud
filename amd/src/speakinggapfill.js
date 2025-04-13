@@ -3,12 +3,11 @@ define(['jquery',
     'core/ajax',
     'mod_readaloud/definitions',
     'mod_readaloud/pollyhelper',
-    'mod_readaloud/cloudpoodllloader',
     'mod_readaloud/ttrecorder',
     'mod_readaloud/animatecss',
     'mod_readaloud/progresstimer',
     'core/templates'
-], function($, log, ajax, def, polly, cloudpoodll, ttrecorder, anim, progresstimer, templates) {
+], function($, log, ajax, def, polly,  ttrecorder, anim, progresstimer, templates) {
     "use strict"; // jshint ;_;
 
     log.debug('Readaloud speaking gap fill: initialising');
@@ -54,18 +53,14 @@ define(['jquery',
 
             };
 
-            if (quizhelper.use_ttrecorder()) {
-                var opts = {};
-                opts.uniqueid = itemdata.uniqueid;
-                opts.callback = theCallback;
-                opts.stt_guided = quizhelper.is_stt_guided();
-                opts.wwwroot = quizhelper.is_stt_guided();
-                self.ttrec = ttrecorder.clone();
-                self.ttrec.init(opts);
-            } else {
-                // Init cloudpoodll push recorder
-                cloudpoodll.init('readaloud-recorder-listenrepeat-' + itemdata.id, theCallback);
-            }
+            // Set up the ttrecorder
+            var opts = {};
+            opts.uniqueid = itemdata.uniqueid;
+            opts.callback = theCallback;
+            opts.stt_guided = quizhelper.is_stt_guided();
+            opts.wwwroot = quizhelper.is_stt_guided();
+            self.ttrec = ttrecorder.clone();
+            self.ttrec.init(opts);
 
             self.itemdata = itemdata;
             log.debug("itemdata");
