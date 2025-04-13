@@ -46,7 +46,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         //pass in config, the jquery video/audio object, and a function to be called when conversion has finshed
         init: function (props) {
             var dd = this.clone();
-/*
+
             log.debug('Steps enabled:', props.stepsenabled);
             log.debug('Steps open:', props.stepsopen);
             log.debug('Complete:', props.stepscomplete);
@@ -54,7 +54,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             log.debug('props:');
             log.debug(props);
             log.debug(props,'props:');
-            */
+
 
             //pick up opts from html
             var theid = '#amdopts_' + props.widgetid;
@@ -86,7 +86,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             dd.steps_enabled = dd.activitydata.stepsenabled; // this is not passed through to JS (only mustache)
             dd.steps_open = dd.activitydata.stepsopen;// this is not passed through to JS (only mustache)
             dd.steps_complete = dd.activitydata.stepscomplete;// this is not passed through to JS (only mustache)
-            
+
             // Set up model audio.
             dd.setupmodelaudio();
 
@@ -204,7 +204,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 startshadowbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_shadow + '"]'),
                 startquizbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_quiz + '"]'),
                 readagainbutton: $('#' + opts['readagainbutton']),
-                startreportbutton: $('#' + opts['startreportbutton']),
+                startreportbutton: $('#' + opts['startreportbutton'] + ' .mode-chooser[data-step="' + opts.steps.step_report + '"]'),
                 returnmenubutton: $('#' + opts['returnmenubutton']),
                 stopandplay: $('#' + opts['stopandplay']),
                 smallreportcontainer: $('#' + opts['smallreportcontainer']),
@@ -348,7 +348,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             });
             dd.controls.startreadbutton.click(function(e){
                 if(dd.steps_complete.step_read){
-                    dd.doreportlayout();   
+                    dd.doreportlayout();
                 }else{
                     dd.letsshadow=false;
                     dd.doreadinglayout();
@@ -357,7 +357,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             dd.controls.startreadbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13) {
                     if(dd.steps_complete.step_read){
-                        dd.doreportlayout();   
+                        dd.doreportlayout();
                     }else{
                         dd.letsshadow=false;
                         dd.doreadinglayout();
@@ -372,8 +372,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                     if (!result) {
                         return;
                     }
-                //reset the recorder and start again    
-                dd.reset_recorder();    
+                //reset the recorder and start again
+                dd.reset_recorder();
                 dd.letsshadow=false;
                 dd.doreadinglayout();
             });
@@ -832,98 +832,101 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.modeimagecontainer.addClass('fa-circle-question d-block');
         },
 
-        updateModeStatuses: function() {
+        // Shared helper for bigbuttonmenu and modejourney.
+        // Updates each step element based on its enabled/completed state.
+        // Assumes "stepsOrder" is fixed and that both templates output numeric data-step values.
+        // Marks report as complete if either of step_read or step_quiz is completed.
+        updateStepsStatus: function($container, itemSelector, renderCallback) {
             var dd = this;
-
-            var stepsOrder = [
-                'step_listen',
-                'step_practice',
-                'step_shadow',
-                'step_read',
-                'step_quiz',
-                'step_report'
-            ];
-
+            var stepsOrder = ['step_listen', 'step_practice', 'step_shadow', 'step_read', 'step_quiz', 'step_report'];
             var stepsComplete = dd.activitydata.stepscomplete || {};
+            var stepsEnabled  = dd.activitydata.stepsenabled  || {};
+            var stepsMapping  = dd.activitydata.steps || {}; // Maps canonical keys to numeric values.
 
-            var $container = dd.controls.modejourneycontainer;
             if (!$container || !$container.length) {
-                console.error('Mode journey container not found.');
+                console.error('Container not found.');
                 return;
             }
 
-            // Flag to ensure only the first incomplete step is marked in-progress.
-            var foundIncomplete = false;
+            // Build an array of enabled step keys (in fixed order).
+            var enabledSteps = stepsOrder.filter(function(step) {
+                return !!stepsEnabled[step];
+            });
 
-            $container.find('.mode').each(function(index, modeElem) {
-                var $mode = $(modeElem);
-                var stepName = stepsOrder[index];
-
-                $mode.removeClass('completed in-progress upcoming');
-
-                var isComplete = (stepsComplete[stepName] === true || stepsComplete[stepName] === 'true');
-
-                // If the step is complete, mark it complete.
-                if (isComplete) {
-                    $mode.addClass('completed');
+            // Determine the first enabled but incomplete step (skip step_report).
+            var firstIncomplete = null;
+            for (var i = 0; i < enabledSteps.length; i++) {
+                var step = enabledSteps[i];
+                if (step === 'step_report') { continue; }
+                if (!(stepsComplete[step] === true || stepsComplete[step] === 'true')) {
+                    firstIncomplete = step;
+                    break;
                 }
-                // If it's not complete and no incomplete step has been marked yet, mark it as in-progress.
-                else if (!foundIncomplete) {
-                    $mode.addClass('in-progress');
-                    foundIncomplete = true;
+            }
+
+            // Process each element in the container.
+            $container.find(itemSelector).each(function() {
+                var $elem = $(this);
+                // Here data-step returns the numeric value.
+                var stepNumber = $elem.data("step");
+                if (stepNumber === undefined || stepNumber === null) {
+                    console.error("Missing data-step on element, skipping.");
+                    return true; // Continue.
                 }
-                // Otherwise, mark it as upcoming.
-                else {
-                    $mode.addClass('upcoming');
+                // Reverse lookup: find the canonical step key that matches the numeric value.
+                var stepKey = null;
+                $.each(stepsMapping, function(key, value) {
+                    if (parseInt(value, 10) === parseInt(stepNumber, 10)) {
+                        stepKey = key;
+                        return false; // Break out of the loop.
+                    }
+                });
+                if (!stepKey) {
+                    console.error("No canonical step key found for data-step value:", stepNumber);
+                    return true;
                 }
+                // Only process if enabled.
+                if (!stepsEnabled[stepKey]) {
+                    return true;
+                }
+                var status;
+                // Mark step_report as completed if step_read or step_quiz is completed.
+                if (stepKey === 'step_report' &&
+                    ((stepsComplete['step_read'] === true || stepsComplete['step_read'] === 'true') ||
+                     (stepsComplete['step_quiz'] === true || stepsComplete['step_quiz'] === 'true'))) {
+                    status = 'completed';
+                } else {
+                    var isComplete = (stepsComplete[stepKey] === true || stepsComplete[stepKey] === 'true');
+                    if (isComplete) {
+                        status = 'completed';
+                    } else if (stepKey === firstIncomplete) {
+                        status = 'in-progress';
+                    } else {
+                        status = 'upcoming';
+                    }
+                }
+                console.log('Step:', stepKey, 'status:', status);
+                renderCallback($elem, status, stepKey);
+            });
+        },
+
+        updateModeStatuses: function() {
+            var dd = this;
+            dd.updateStepsStatus(dd.controls.modejourneycontainer, '.mode', function($elem, status, stepKey) {
+                $elem.removeClass('completed in-progress upcoming').addClass(status);
             });
         },
 
         updateBigButtonMenuModeStatus: function() {
             var dd = this;
-            var stepsOrder = [
-                'step_listen',
-                'step_practice',
-                'step_shadow',
-                'step_read',
-                'step_quiz',
-                'step_report'
-            ];
-
-            var stepsComplete = dd.activitydata.stepscomplete || {};
-
-            var thecontainer = dd.controls.menubuttonscontainer;
-            if (!thecontainer || !thecontainer.length) {
-                console.error('Menu buttons container not found.');
-                return;
-            }
-
-            // Flag to ensure only the first incomplete step is marked "in-progress".
-            var foundIncomplete = false;
-
-            thecontainer.find('li.mode-chooser').each(function(index, liElem) {
-                var $li = $(liElem);
-                var stepName = stepsOrder[index];
-
-                var isComplete = (stepsComplete[stepName] === true || stepsComplete[stepName] === 'true');
-                var status;
-                if (isComplete) {
-                    status = 'completed';
-                } else if (!foundIncomplete) {
-                    status = 'in-progress';
-                    foundIncomplete = true;
-                } else {
-                    status = 'upcoming';
-                }
-
-                // Update the Font Awesome icon.
-                var $iconSpan = $li.find('.nav-completion-icon');
+            dd.updateStepsStatus(dd.controls.menubuttonscontainer, 'li.mode-chooser', function($elem, status, stepKey) {
+                var $iconSpan = $elem.find('.nav-completion-icon');
                 if ($iconSpan.length) {
                     if (status === 'completed') {
                         $iconSpan.html('<i class="fa-solid fa-circle-check text-success" title="Complete"></i>');
                     } else if (status === 'in-progress') {
                         $iconSpan.html('<i class="fa-regular fa-circle text-warning" title="In progress"></i>');
-                    } else { // upcoming.
+                    } else { // Upcoming.
                         $iconSpan.html('<i class="fa-solid fa-lock text-secondary" title="Locked"></i>');
                     }
                 }

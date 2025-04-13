@@ -461,11 +461,15 @@ const STEP_PRACTICE = 2;
 const STEP_SHADOW = 4;
 const STEP_READ = 8;
 const STEP_QUIZ = 16;
-const STEPS = ["step_listen" => constants::STEP_LISTEN,
+const STEP_REPORT = 0;
+const STEPS = [
+    "step_listen" => constants::STEP_LISTEN,
     "step_practice" => constants::STEP_PRACTICE,
     "step_shadow" => constants::STEP_SHADOW,
     "step_read" => constants::STEP_READ,
-    "step_quiz" => constants::STEP_QUIZ];
+    "step_quiz" => constants::STEP_QUIZ,
+    "step_report" => constants::STEP_REPORT,
+];
 
 const M_HOME_CONTAINER='mod_readaloud_home_cont';
 const M_QUIZ_CONTAINER='mod_readaloud_quiz_cont';
