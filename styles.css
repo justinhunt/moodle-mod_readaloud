@@ -2707,10 +2707,11 @@ overflow: auto;
 #mod_readaloud_menubuttons_cont {
     overflow-y: auto;
     top: 60px;
-    transition: right 0.5s ease,left 0.5s ease;
     width: 285px;
     z-index: 999;
     -webkit-overflow-scrolling: touch;
+    outline: none;
+    transition: right 0.5s ease, left 0.5s ease, transform 0.3s ease;
 }
 
 #mod_readaloud_menubuttons_cont .nav-item {

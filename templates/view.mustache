@@ -35,6 +35,19 @@
                 </div>
             </div>
             {{/openclosedates.hasopenclosedates}}
+            <button
+            aria-expanded="false"
+            aria-controls="mod_readaloud_menubuttons_cont"
+            type="button"
+            class="btn nav-link float-sm-left navbar-toggler"
+            data-toggle="toggle-mode-menu"
+            data-side="left"
+            data-preference="drawer-open-nav"
+            id="menu-toggle"
+            style="align-items: center; background-color: red; border-radius: 4px; display: flex; height: 40px; justify-content: center; margin-left: -3px; padding: 0; width: 40px;">
+            <i class="slicon-menu navbar-toggler"></i>
+            <span class="sr-only">Mode menu</span>
+            </button>
         </div>
 
         {{#showintro}}
@@ -190,3 +203,8 @@
         </div>
     </div>
 </div>
+{{#js}}
+require(['mod_readaloud/togglemodemenu'], function(ToggleModeMenu) {
+    ToggleModeMenu.init();
+});
+{{/js}}
