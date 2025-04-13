@@ -23,16 +23,18 @@
     {
     }
 }}
-<div id="toggleButtons" class="mb-3">
-  <button id="btnAll" type="button" class="btn btn-primary">All</button>
-  <button id="btnPassage" type="button" class="btn btn-secondary">Passage</button>
-  <button id="btnQuiz" type="button" class="btn btn-info">Quiz</button>
-</div>
-<div id="{{M_QUIZ_CONTAINER}}" class="{{M_QUIZ_CONTAINER}} d-flex">
-    <div id="quizpassage" class="quizpassage col-12 col-md-8">
-        {{{passagehtml}}}
+<div id="{{M_QUIZ_CONTAINER_WRAP}}" class="{{M_QUIZ_CONTAINER_WRAP}}">
+    <div id="toggleButtons" class="mb-3">
+    <button id="btnAll" type="button" class="btn btn-primary">All</button>
+    <button id="btnPassage" type="button" class="btn btn-secondary">Passage</button>
+    <button id="btnQuiz" type="button" class="btn btn-info">Quiz</button>
     </div>
-    <div id="quizquestion" class="quizquestion col-12 col-md-4">
-        {{{quizhtml}}}
+    <div id="{{M_QUIZ_CONTAINER}}" class="{{M_QUIZ_CONTAINER}} d-flex">
+        <div id="quizpassage" class="quizpassage col-12 col-md-8">
+            {{{passagehtml}}}
+        </div>
+        <div id="quizquestion" class="quizquestion col-12 col-md-4">
+            {{{quizhtml}}}
+        </div>
     </div>
 </div>

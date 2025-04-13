@@ -469,6 +469,7 @@ const STEPS = ["step_listen" => constants::STEP_LISTEN,
 
 const M_HOME_CONTAINER='mod_readaloud_home_cont';
 const M_QUIZ_CONTAINER='mod_readaloud_quiz_cont';
+const M_QUIZ_CONTAINER_WRAP='mod_readaloud_quiz_cont_wrap';
 const M_QUIZ_ITEMS_CONTAINER='mod_readaloud_quiz_items_cont';
 const M_QUIZ_PLACEHOLDER='mod_readaloud_placeholder';
 const M_QUIZ_SKELETONBOX='mod_readaloud_skeleton_box';

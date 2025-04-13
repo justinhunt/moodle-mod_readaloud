@@ -213,6 +213,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 modeimagecontainer: $('#' + opts['modeimagecontainer']),
                 modejourneycontainer: $('#' + opts['modejourneycontainer']),
                 quizcontainer: $('.' +  opts['quizcontainer']),
+                quizcontainerwrap: $('.' +  opts['quizcontainerwrap']),
                 quizplaceholder: $('.' +  opts['quizplaceholder']),
                 quizresultscontainer: $("." + opts['quizresultscontainer']),
                 homecontainer: $('.' +  opts['homecontainer']),
@@ -604,7 +605,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.previewinstructionscontainer.hide();
             m.controls.progresscontainer.hide();
             m.controls.passagecontainer.hide();
-            m.controls.quizcontainer.hide();
+            m.controls.quizcontainerwrap.hide();
             m.controls.recordingcontainer.hide();
             m.controls.returnmenubutton.hide();
             m.controls.smallreportcontainer.hide();
@@ -637,7 +638,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.menuinstructionscontainer.hide();
             m.controls.passagecontainer.hide();
             m.controls.progresscontainer.hide();
-            m.controls.quizcontainer.hide();
+            m.controls.quizcontainerwrap.hide();
             m.controls.smallreportcontainer.hide();
             m.controls.wheretonextcontainer.hide();
             m.controls.passagecontainer.removeClass(m.passagefinished);
@@ -670,7 +671,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.menuinstructionscontainer.hide();
             m.controls.modelaudioplayer.hide();
             m.controls.progresscontainer.hide();
-            m.controls.quizcontainer.hide();
+            m.controls.quizcontainerwrap.hide();
             m.controls.recordingcontainer.hide();
             m.controls.smallreportcontainer.hide();
             m.controls.stopandplay.show();
@@ -703,7 +704,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.modelaudioplayer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.progresscontainer.hide();
-            m.controls.quizcontainer.hide();
+            m.controls.quizcontainerwrap.hide();
             m.controls.recordingcontainer.hide();
             m.controls.smallreportcontainer.hide();
             m.controls.wheretonextcontainer.hide();
@@ -749,7 +750,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             // Hide.
             m.controls.activityinstructionscontainer.hide();
             m.controls.passagecontainer.hide();
-            m.controls.quizcontainer.hide();
+            m.controls.quizcontainerwrap.hide();
             m.controls.recordingcontainer.hide();
             m.controls.returnmenubutton.hide();
             m.controls.smallreportcontainer.hide();
@@ -770,7 +771,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
 
             // Hide.
             m.controls.passagecontainer.hide();
-            m.controls.quizcontainer.hide();
+            m.controls.quizcontainerwrap.hide();
             m.controls.recordingcontainer.hide();
 
             // Show.
@@ -793,7 +794,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.passagecontainer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.menuinstructionscontainer.hide();
-            m.controls.quizcontainer.hide();
+            m.controls.quizcontainerwrap.hide();
             m.controls.recordingcontainer.hide();
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
 
@@ -824,7 +825,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.smallreportcontainer.hide();
 
             // Show.
-            m.controls.quizcontainer.show();
+            m.controls.quizcontainerwrap.show();
 
             m.controls.stopandplay.removeClass('visible').addClass('hidden');
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple');
