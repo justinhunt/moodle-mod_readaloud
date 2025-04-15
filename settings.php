@@ -87,6 +87,12 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT . '/apisecret',
             get_string('apisecret', constants::M_COMPONENT), $showbelowapisecret, '', PARAM_TEXT));
 
+    // Cloud Poodll Server.
+    $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/cloudpoodllserver',
+        get_string('cloudpoodllserver', constants::M_COMPONENT),
+        get_string('cloudpoodllserver_details', constants::M_COMPONENT),
+        constants::M_DEFAULT_CLOUDPOODLL, PARAM_URL));
+
     $settings->add(new admin_setting_configcheckbox(constants::M_COMPONENT . '/enableai',
             get_string('enableai', constants::M_COMPONENT), get_string('enableai_details', constants::M_COMPONENT), 1));
 

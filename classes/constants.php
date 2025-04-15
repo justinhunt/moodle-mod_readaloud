@@ -13,6 +13,7 @@ defined('MOODLE_INTERNAL') || die();
 class constants {
     //component name, db tables, things that define app
     const M_COMPONENT = 'mod_readaloud';
+    const M_DEFAULT_CLOUDPOODLL = 'cloud.poodll.com';
     const M_FILEAREA_SUBMISSIONS = 'submission';
     const M_TABLE = 'readaloud';
     const M_USERTABLE = 'readaloud_attempt';

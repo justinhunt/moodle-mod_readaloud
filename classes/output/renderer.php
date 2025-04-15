@@ -856,6 +856,7 @@ class renderer extends \plugin_renderer_base {
 
         return [
             'wwwroot' => $CFG->wwwroot,
+            'cloudpoodllurl' => utils::get_cloud_poodll_server(),
             'owner' => hash('md5', $USER->username),
             'recorder_type' => $debug ? "upload" : $moduleinstance->recorder,
             'recorder_width' => $debug ? "500" : "210",

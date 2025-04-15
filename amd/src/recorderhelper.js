@@ -1,4 +1,4 @@
-define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, log, cloudpoodll) {
+define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, log, cloudpoodllloader) {
     "use strict"; // jshint ;_;
     /*
     This file sets up the cloud poodll recorder and passes on events to registered handlers
@@ -25,7 +25,7 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
             var that = this;
             that.opts = opts;
             var recid = opts['recorderid'];
-            cloudpoodll.init(recid,
+            cloudpoodllloader.init(recid,
                 function (message) {
                     switch (message.type) {
                         case 'recording':

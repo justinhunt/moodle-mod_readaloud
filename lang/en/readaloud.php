@@ -941,6 +941,7 @@ $string['enableread'] = 'Enable Read';
 $string['enablequiz'] = 'Enable Quiz';
 $string['activitysteps'] = 'Activity Steps';
 $string['activitystepsdetails'] = 'Set the learning steps in this ReadAloud activity.';
-
 $string['alternatestreaming'] = 'Enable alternate streaming';
 $string['alternatestreaming_details'] = 'Streams recorded audio for open transcription. Slightly slower then the default browser transcription and only works in English. On by default in mobile app.';
+$string['cloudpoodllserver'] = 'Cloud Poodll Server';
+$string['cloudpoodllserver_details'] = 'The server to use for Cloud Poodll. Only change this if Poodll has provided a different one.';
