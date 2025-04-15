@@ -108,9 +108,7 @@
                     {{>mod_readaloud/home}}
                 </div>
 
-                <div id="{{M_QUIZ_CONTAINER}}" class="{{M_QUIZ_CONTAINER}}">
-                    {{{quizhtml}}}
-                </div>
+                {{>mod_readaloud/quizcontainer}}
 
                 <div id="mod_readaloud_readingcontainer" class="mod_readaloud_readingcontainer">
                     {{{passagehtml}}}
@@ -186,7 +184,7 @@
                 {{#smallreport}}
                     {{>mod_readaloud/smallreport}}
                 {{/smallreport}}
-                
+
                 {{>mod_readaloud/hiddenaudioplayer}}
 
                 {{#stopandplay}}

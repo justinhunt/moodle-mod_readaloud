@@ -155,7 +155,7 @@
         {{/stepsenabled.step_quiz}}
 
         {{#stepsenabled.step_report}}
-        <li class="nav-item mode-chooser {{^stepsopen.step_report}}no-click{{/stepsopen.step_report}}" id="{{M_STARTREPORT}}">
+        <li class="nav-item mode-chooser {{^stepsopen.step_report}}no-click{{/stepsopen.step_report}}" id="{{M_STARTREPORT}}" data-step="{{steps.step_report}}">
             <a href="javascript:void(0)" class="nav-link h6 w-100" data-mode="fullreport">
                 <div class="nav-text-group">
                     <span class="nav-label">{{#str}} mode_report, mod_readaloud {{/str}}</span>

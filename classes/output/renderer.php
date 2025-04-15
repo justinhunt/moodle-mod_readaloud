@@ -935,6 +935,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
         $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
+        $recopts['quizcontainerwrap'] = constants::M_QUIZ_CONTAINER_WRAP;
         $recopts['quizitemscontainer'] = constants::M_QUIZ_ITEMS_CONTAINER;
         $recopts['quizplaceholder'] = constants::M_QUIZ_PLACEHOLDER;
         $recopts['homecontainer'] = constants::M_HOME_CONTAINER;
