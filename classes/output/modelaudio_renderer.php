@@ -103,6 +103,7 @@ class modelaudio_renderer extends \plugin_renderer_base {
                         'data-language'=> $moduleinstance->ttslanguage,
                         'data-expiredays' => "9999",
                         'data-region' => $moduleinstance->region,
+                        'data-cloudpoodllurl' => utils::get_cloud_poodll_server(),
                         'data-fallback' => 'warning',
                         'data-token' => $token
                 )

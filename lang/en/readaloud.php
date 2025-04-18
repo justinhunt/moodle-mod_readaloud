@@ -723,3 +723,5 @@ $string['passagepicture_descr']='*The passage picture is not used yet. It is par
 $string['stdashboardid']='Student Dashboard ID';
 $string['stdashboardid_details']='If the student dashboard block is installed, put the id of the block here.';
 $string['eventreadaloudattemptsubmitted'] = 'ReadAloud attempt submitted';
+$string['cloudpoodllserver'] = 'Cloud Poodll Server';
+$string['cloudpoodllserver_details'] = 'The server to use for Cloud Poodll. Only change this if Poodll has provided a different one.';
