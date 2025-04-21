@@ -1998,7 +1998,8 @@ class utils {
                 "singapore" => get_string("singapore",constants::M_COMPONENT),
                 "mumbai" => get_string("mumbai",constants::M_COMPONENT),
                 "bahrain" => get_string("bahrain", constants::M_COMPONENT),
-                "capetown" => get_string("capetown", constants::M_COMPONENT)
+                "capetown" => get_string("capetown", constants::M_COMPONENT),
+                "ningxia" => get_string("ningxia",constants::M_COMPONENT),
         );
     }
 

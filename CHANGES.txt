@@ -1,3 +1,6 @@
+2.1.23 (Build 2024122002)
+- Support for Ningxia region (requires Poodll China subscription)
+
 2.1.22 (Build 2024122001)
  - Support for custom cloud poodll server
  - Fixes for PHP 8.4

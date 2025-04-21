@@ -11,7 +11,7 @@ $cloudpoodllurl = optional_param('cloudpoodllurl', '', PARAM_URL);
 <head>
     <title>Poodll Recorder</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="https://cloud.poodll.com/local/cpapi/cloudstyles.css?v=023">
+    <link rel="stylesheet" type="text/css" href="<?php echo $cloudpoodllurl ?>/local/cpapi/cloudstyles.css?v=023">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript">
         M={};

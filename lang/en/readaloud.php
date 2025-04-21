@@ -210,6 +210,7 @@ $string['london'] = 'London, U.K';
 $string['saopaulo'] = 'Sao Paulo, Brazil';
 $string['singapore'] = 'Singapore';
 $string['mumbai'] = 'Mumbai, India';
+$string['ningxia'] = 'Ningxia, China';
 $string['forever'] = 'Never expire';
 
 $string['en-us'] = 'English (US)';
