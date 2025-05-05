@@ -2128,9 +2128,25 @@ class utils {
         return $options;
     }
     
-    public static function fetch_ttsvoice_options($langcode=''){
-        $alllang= constants::ALL_VOICES;
+    public static function fetch_ttsvoice_options($region='useast1'){
 
+        switch($region){
+            case "ningxia":
+                $alllang = constants::ALL_VOICES_NINGXIA;
+                break;
+            case "useast1":
+            case "tokyo":
+            case "sydney":
+            case "dublin":
+            case "ottawa":
+            case "capetown":
+            case "frankfurt":
+            case "london":
+            case "singapore":
+            case "mumbai":
+            default:
+                $alllang = constants::ALL_VOICES;
+        };
 
         $lang_options = self::get_lang_options();
         $ret=[];
@@ -2320,7 +2336,7 @@ class utils {
         $mform->addHelpButton('ttslanguage', 'ttslanguage', constants::M_COMPONENT);
 
         //tts voice
-        $langoptions = \mod_readaloud\utils::fetch_ttsvoice_options();
+        $langoptions = \mod_readaloud\utils::fetch_ttsvoice_options($config->awsregion);
         $mform->addElement('select', 'ttsvoice', get_string('ttsvoice', constants::M_COMPONENT), $langoptions);
         $mform->setDefault('ttsvoice', $config->ttsvoice);
         $mform->addHelpButton('ttsvoice', 'ttsvoice', constants::M_COMPONENT);

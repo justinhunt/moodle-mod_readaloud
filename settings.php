@@ -213,7 +213,7 @@ if ($ADMIN->fulltree) {
     $label = get_string($name, constants::M_COMPONENT);
     $details = "";
     $default = "Amy";
-    $options = \mod_readaloud\utils::fetch_ttsvoice_options();
+    $options = \mod_readaloud\utils::fetch_ttsvoice_options('useast1');
     $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
             $label, $details, $default, $options));
 
