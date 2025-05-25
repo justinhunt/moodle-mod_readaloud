@@ -69,11 +69,12 @@ class constants {
         constants::M_LANG_ESUS => ['Miguel'=>'Miguel','Penelope'=>'Penelope','Lupe'=>'Lupe','Pedro'=>'Pedro'],
         constants::M_LANG_ESES => [ 'Enrique'=>'Enrique', 'Conchita'=>'Conchita', 'Lucia'=>'Lucia'],
         constants::M_LANG_SVSE => ['Astrid'=>'Astrid'],
+        constants::M_LANG_SOSO => ['so-SO-Azure-UbaxNeural'=>'Ubax_a','so-SO-Azure-MuuseNeural'=>'Muuse_a'],
         constants::M_LANG_TRTR => ['Filiz'=>'Filiz'],
     );
     const ALL_VOICES = array(
         constants::M_LANG_ARAE => ['Hala'=>'Hala','Zayd'=>'Zayd'],
-        constants::M_LANG_ARSA => ['Zeina'=>'Zeina','ar-XA-Wavenet-B'=>'Amir_g','ar-XA-Wavenet-A'=>'Salma_g'],
+        constants::M_LANG_ARSA => ['Zeina'=>'Zeina','ar-XA-Wavenet-B'=>'Amir_g','ar-XA-Wavenet-A'=>'Salma_g','ar-MA-Azure-JamalNeural'=>'Jamal_a','ar-MA-Azure-MounaNeural'=>'Mouna_a'],
         constants::M_LANG_BGBG => ['bg-BG-Standard-A' => 'Mila_g'],//nikolai
         constants::M_LANG_HRHR => ['hr-HR-Whisper-alloy'=>'Marko','hr-HR-Whisper-shimmer'=>'Ivana'],
         constants::M_LANG_ZHCN => ['Zhiyu'=>'Zhiyu'],
@@ -93,8 +94,6 @@ class constants {
         // constants::M_LANG_ENIE => [],
         constants::M_LANG_ENWL => ["Geraint"=>"Geraint"],
         // constants::M_LANG_ENAB => [],
-
-        //constants::M_LANG_FAIR => [],
         constants::M_LANG_FILPH => ['fil-PH-Wavenet-A'=>'Darna_g','fil-PH-Wavenet-B'=>'Reyna_g','fil-PH-Wavenet-C'=>'Bayani_g','fil-PH-Wavenet-D'=>'Ernesto_g'],
         constants::M_LANG_FIFI => ['Suvi'=>'Suvi','fi-FI-Wavenet-A'=>'Kaarina_g'],
         constants::M_LANG_FRCA => ['Chantal'=>'Chantal', 'Gabrielle'=>'Gabrielle','Liam'=>'Liam'],
@@ -117,6 +116,8 @@ class constants {
         constants::M_LANG_MKMK => ['mk-MK-Whisper-alloy'=>'Trajko','mk-MK-Whisper-shimmer'=>'Marija'],
         constants::M_LANG_MSMY => ['ms-MY-Whisper-alloy'=>'Afsah','ms-MY-Whisper-shimmer'=>'Siti'],
         constants::M_LANG_NONO => ['Liv'=>'Liv','Ida'=>'Ida','nb-NO-Wavenet-B'=>'Lars_g','nb-NO-Wavenet-A'=>'Hedda_g','nb-NO-Wavenet-D'=>'Anders_g'],
+        constants::M_LANG_PSAF => ['ps-AF-Azure-GulNawazNeural'=>'GulNawaz_a','ps-AF-Azure-LatifaNeural'=>'Latifa_a'],
+        constants::M_LANG_FAIR => ['fa-IR-Azure-FaridNeural'=>'Farid_a', 'fa-IR-Azure-DilaraNeural'=>'Dilara_a'],
         constants::M_LANG_PLPL => ['Ewa'=>'Ewa','Maja'=>'Maja','Jacek'=>'Jacek','Jan'=>'Jan'],
         constants::M_LANG_PTBR => ['Ricardo'=>'Ricardo', 'Vitoria'=>'Vitoria','Camila'=>'Camila'],
         constants::M_LANG_PTPT => ["Ines"=>"Ines",'Cristiano'=>'Cristiano'],
@@ -127,6 +128,7 @@ class constants {
         constants::M_LANG_SVSE => ['Astrid'=>'Astrid','Elin'=>'Elin'],
         constants::M_LANG_SKSK => ['sk-SK-Wavenet-A' => 'Laura_g', 'sk-SK-Standard-A' => 'Natalia_g'],
         constants::M_LANG_SLSI => ['sl-SI-Whisper-alloy'=>'Vid','sl-SI-Whisper-shimmer'=>'Pia'],
+        constants::M_LANG_SOSO => ['so-SO-Azure-UbaxNeural'=>'Ubax_a','so-SO-Azure-MuuseNeural'=>'Muuse_a'],
         constants::M_LANG_SRRS => ['sr-RS-Standard-A' => 'Milena_g'],
         constants::M_LANG_TAIN => ['ta-IN-Wavenet-A'=>'Dyuthi_g','ta-IN-Wavenet-B'=>'Bhoomik_g'],
         constants::M_LANG_TEIN => ['te-IN-Standard-A'=>'Anandi_g','te-IN-Standard-B'=>'Kai_g'],
@@ -325,6 +327,7 @@ class constants {
     const M_LANG_NONO ='no-NO';
     const M_LANG_NBNO ='nb-NO';
     const M_LANG_NNNO ='nn-NO';
+    const M_LANG_PSAF = 'ps-AF';
     const M_LANG_PLPL ='pl-PL';
     const M_LANG_RORO ='ro-RO';
     const M_LANG_SVSE ='sv-SE';
@@ -342,6 +345,7 @@ class constants {
     const M_LANG_LTLT = 'lt-LT';
     const M_LANG_LVLV = 'lv-LV';
     const M_LANG_SKSK = 'sk-SK';
+    const M_LANG_SOSO = 'so-SO';
     const M_LANG_SLSI = 'sl-SI';
     const M_LANG_ISIS = 'is-IS';
     const M_LANG_MKMK = 'mk-MK';
