@@ -4,15 +4,15 @@ header("Pragma: no-cache");
 header("Expires: -1");
 header("Cache-Control: no-cache");
 // Get cloud poodll url from cp parameter to this page.
-$cloudpoodllurl = optional_param('cloudpoodllurl', '', PARAM_URL);
+$cloudpoodllurl = optional_param('cloudpoodllurl', 'https://cloud.poodll.com', PARAM_URL);
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Poodll Recorder</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="https://cloud.poodll.com/local/cpapi/cloudstyles.css?v=023">
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="<?php echo $cloudpoodllurl ?>/local/cpapi/cloudstyles.css?v=023">
+    <link rel="stylesheet" type="text/css" href="<?php echo $cloudpoodllurl ?>/local/cpapi/assets/font-awesome/css/font-awesome.min.css?v=023">
     <script type="text/javascript">
         M={};
         M.cfg = {};
@@ -41,6 +41,6 @@ $cloudpoodllurl = optional_param('cloudpoodllurl', '', PARAM_URL);
     </style>
 </head>
 <body>
-    <div id="AUTOID"></div>
+<div id="AUTOID"></div>
 </body>
 </html>

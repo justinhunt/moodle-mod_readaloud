@@ -210,6 +210,7 @@ $string['london'] = 'London, U.K';
 $string['saopaulo'] = 'Sao Paulo, Brazil';
 $string['singapore'] = 'Singapore';
 $string['mumbai'] = 'Mumbai, India';
+$string['ningxia'] = 'Ningxia, China';
 $string['forever'] = 'Never expire';
 
 $string['en-us'] = 'English (US)';
@@ -241,7 +242,7 @@ $string['en-wl'] = 'English (Wales)';
 $string['en-ab'] = 'English (Scotland)';
 $string['en-nz'] = 'English (New Zealand)';
 $string['en-za'] = 'English (South Africa)';
-$string['fa-ir'] = 'Farsi';
+$string['fa-ir'] = 'Persian';
 
 $string['he-il'] = 'Hebrew';
 $string['id-id'] = 'Indonesian';
@@ -274,6 +275,8 @@ $string['lt-lt'] = 'Lithuanian'; // Lithuanian
 $string['lv-lv'] = 'Latvian'; // Latvian
 $string['sk-sk'] = 'Slovak'; // Slovak
 $string['sl-si'] = 'Slovenian'; // Slovenian
+$string['so-so'] = 'Somali'; // Slovenian
+$string['ps-af'] = 'Pashto'; // Afghan Pashto
 $string['is-is'] = 'Icelandic'; // Icelandic
 $string['mk-mk'] = 'Macedonian'; // Macedonian
 $string['sr-rs'] = 'Serbian'; // Serbian

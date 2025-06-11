@@ -1,13 +1,19 @@
+2.1.24 (Build 2025031502)
+- limited list of TTS voices for Ningxia region
+- support for lang server in Ningxia
+
 2.1.23 (Build 2025011806)
-added a fetch_quiz_results ajax callable web service
+- added a fetch_quiz_results ajax callable web service
+- Support for Ningxia region (requires Poodll China subscription)
 
 2.1.22x
 - Added fix for speech rec. on Polish numbers 22 - 99
 - added support for native language feedback
 - fixed bug in multichoice question that might mark a correct question incorrect
-
-2.1.22 (Build 20250118XX)
-- Added quiz
+ - Support for custom cloud poodll server
+ - Fixes for PHP 8.4
+ - Branded icon so the app icon is not a pink smudge
+-  Added quiz
 
 2.1.21 (Build 2024122000)
  - Fix for recorded model audio clear button not working properly
