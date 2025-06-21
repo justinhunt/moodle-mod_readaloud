@@ -1242,36 +1242,147 @@ break;
         ];
     }
 
-
-
     /**
      * Get the data for the view page.
      *
-     * @param mixed $moduleinstance The module instance.
-     * @param mixed $cm The course module.
-     * @param mixed $context The context.
-     * @param mixed $canattempt Whether the user can attempt the activity.
-     * @param mixed $attempts The attempts.
-     * @param mixed $config The configuration.
-     * @param mixed $embed The embed option.
-     * @return array The view page data.
+     * @param cm_info   $cm             The course module.
+     * @param stdClass  $config         Plugin configuration.
+     * @param int       $debug          Debug flag.
+     * @param int       $embed          Embed flag.
+     * @param context   $modulecontext  The context.
+     * @param stdClass  $moduleinstance The module instance.
+     * @param int       $reviewattempts Review‐attempts.
+     * @return array    The view page data.
      */
     public function get_view_page_data(
-        $moduleinstance,
         $cm,
-        $modulecontext,
-        $canattempt,
-        $attempts,
         $config,
+        $debug,
         $embed,
-        $token,
-        $latestattempt,
-        $latestaigrade,
-        $debug
-        ) {
-        global $CFG;
+        $modulecontext,
+        $moduleinstance,
+        $reviewattempts
+    ) { // TODO: add in the : array once the imported functions are resolved.
+        global $CFG, $DB;
 
         // TODO: remove moodle/mod/readaloud/templates/openclosedates.mustache
+// In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
+if ($moduleinstance->passagesegments === null) {
+    $olditem = false;
+    list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($moduleinstance, $olditem);
+    if (!empty($thephonetic)) {
+        $DB->update_record(constants::M_TABLE, ['id' => $moduleinstance->id, 'phonetic' => $thephonetic, 'passagesegments' => $thepassagesegments]);
+        $moduleinstance->phonetic = $thephonetic;
+        $moduleinstance->passagesegments = $thepassagesegments;
+    }
+}
+// All attempts code.
+// Do we have attempts and ai data.
+$attempts = utils::fetch_user_attempts($moduleinstance);
+// $aievals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->id);
+
+// For Japanese (and later other languages we collapse spaces).
+ $collapsespaces = false;
+if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+    $collapsespaces = true;
+}
+
+// Can attempt ?
+$canattempt = true;
+$canpreview = has_capability('mod/readaloud:preview', $modulecontext);
+if (!$canpreview && $moduleinstance->maxattempts > 0) {
+    $gradeableattempts = 0;
+    if ($attempts) {
+        foreach ($attempts as $candidate) {
+            if ($candidate->dontgrade == 0) {
+                $gradeableattempts++;
+            }
+        }
+    }
+    if ($attempts && $gradeableattempts >= $moduleinstance->maxattempts) {
+        $canattempt = false;
+    }
+}
+
+// Debug mode is for teachers only.
+if (!$canpreview) {
+    $debug = false;
+}
+
+// Fetch attempt information.
+if ($attempts) {
+    $latestattempt = current($attempts);
+
+    if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
+        $latestaigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
+    } else {
+        $latestaigrade = false;
+    }
+
+    $havehumaneval = $latestattempt->sessiontime != null;
+    $haveaieval = $latestaigrade && $latestaigrade->has_transcripts();
+} else {
+    $latestattempt = false;
+    $havehumaneval = false;
+    $haveaieval = false;
+    $latestaigrade = false;
+}
+
+// If we are reviewing attempts we do that here and return.
+// If we are going to the dashboard we output that below.
+$passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
+if ($attempts && $reviewattempts) {
+    $attemptreviewhtml = $renderer->show_attempt_for_review($moduleinstance, $attempts,
+            $havehumaneval, $haveaieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer, $embed);
+    echo $attemptreviewhtml;
+
+    return;
+}
+
+// Show small report.
+if ($attempts) {
+    if (!$latestattempt) {
+        $latestattempt = current($attempts);
+    }
+}
+
+// Fetch a token and report a failure to a display item: $problembox.
+$problembox = '';
+$token = "";
+if (empty($config->apiuser) || empty($config->apisecret)) {
+    $message = get_string('nocredentials', constants::M_COMPONENT,
+            $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+    $problembox = $this->show_problembox($message);
+} else {
+    // Fetch token.
+    $token = utils::fetch_token($config->apiuser, $config->apisecret);
+
+    // Check token authenticated and no errors in it.
+    $errormessage = utils::fetch_token_error($token);
+    if (!empty($errormessage)) {
+        $problembox = $this->show_problembox($errormessage);
+    }
+}
+
+// If we have a problem (usually with auth/token) we display and return.
+if (!empty($problembox)) {
+    $problembox = true;
+}
+
+// Show model audio player.
+// $visible = false;
+// $modelaudiorenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'modelaudio');
+// echo $modelaudiorenderer->render_modelaudio_player($moduleinstance, $token, $visible);
+
+$modelaudiorenderer = $this->page->get_renderer(
+    constants::M_COMPONENT,
+    'modelaudio'
+);
+$modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
+    $moduleinstance,
+    $token,
+    false
+);
 
         // Need to check why this outputs twice.
         $showintro = ($CFG->version < 2022041900) ? $this->show_intro($moduleinstance, $cm) : '';
@@ -1389,6 +1500,9 @@ break;
             'stopandplay' => true, // TEMP.
             'welcomemessage' => $welcomemessage,
             'wheretonext' => $wheretonext,
+            'problembox'     => $problembox,
+            'token'          => $token,
+            'modelaudiohtml' => $modelaudiohtml,
         ], $this->get_all_constants());
     }
 }
