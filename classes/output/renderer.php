@@ -1254,17 +1254,10 @@ break;
     ) { // TODO: add in the : array once the imported functions are resolved.
         global $CFG, $DB, $USER;
 
-        // The activity_info header.
-        $cminfo = cm_info::create($cm);
-        $courserenderer = $this->page->get_renderer('core_course');
-        // Get the activity dates.
-        $rawdates = activity_dates::get_dates_for_module($cminfo, $USER->id);
-        $datesrenderable = new activity_dates_renderer($rawdates);
-        $datecontext = $datesrenderable->export_for_template($courserenderer);
-        // Get the completion data.
-        $completion = cm_completion_details::get_instance($cminfo, $USER->id);
-        $completionrenderable = new activity_completion_renderer($cminfo, $completion);
-        $completioncontext = $completionrenderable->export_for_template($courserenderer);
+        // The activity header.
+        $header = $this->page->activityheader;
+        $corerenderer = $this->page->get_renderer('core');
+        $headercontent = $header->export_for_template($corerenderer);
 
 
         // TODO: remove moodle/mod/readaloud/templates/openclosedates.mustache
@@ -1466,33 +1459,13 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
 
         return array_merge([
-            // Completion props.
-            'activityname'         => $completioncontext->activityname,
-            'uservisible'          => $completioncontext->uservisible,
-            'hascompletion'        => $completioncontext->hascompletion,
-            'isautomatic'          => $completioncontext->isautomatic,
-            'ismanual'             => $completioncontext->ismanual,
-            'showmanualcompletion' => $completioncontext->showmanualcompletion,
-            'istrackeduser'        => $completioncontext->istrackeduser,
-            'completiondetails'    => $completioncontext->completiondetails,
-            'overallcomplete'      => $completioncontext->overallcomplete,
-            'overallincomplete'    => $completioncontext->overallincomplete,
-            'withavailability'     => $completioncontext->withavailability,
-            'overrideby'           => $completioncontext->overrideby,
-            'accessibledescription' => $completioncontext->accessibledescription,
-            'normalbutton'         => $completioncontext->normalbutton,
-
-            // Dates props.
-            'activitydates' => $datecontext->activitydates,
-            'hasdates'      => $datecontext->hasdates,
-
-            // The rest.
             'activityamddata' => $activityamddata,
             'attempts' => $attempts,
             'canattempt' => $modevisibility['canattempt'],
             'canshadowattempt' => $modevisibility['canshadowattempt'],
             'enablenoshadow' => $modevisibility['enablenoshadow'],
             'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
+            'headercontent' => $headercontent,
             'embed' => $embed,
             'steps' => constants::STEPS,
             'stepsenabled' => $stepsenabled,
