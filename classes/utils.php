@@ -2738,7 +2738,7 @@ class utils {
     }
 
     public static function prepare_file_and_json_stuff( $moduleinstance,  $context) {
-        // NB: $moduleinstance may be either formdata or record—if record, it has ->id.
+        // NB: $moduleinstance may be either formdata or record — if record, it has ->id.
         $ednofileoptions = readaloud_editor_no_files_options($context);
         $editors         = readaloud_get_editornames();
         $itemid          = isset($moduleinstance->id) ? $moduleinstance->id : 0;
@@ -2756,7 +2756,7 @@ class utils {
             );
         }
 
-        // Passage picture: prepare the draft area for THIS instance.
+        // Passage picture: prepare the draft area for this instance.
         $ppoptions   = readaloud_picturefile_options($context);
         $draftitemid = file_get_submitted_draft_itemid('passagepicture');
         file_prepare_draft_area(

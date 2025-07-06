@@ -60,6 +60,7 @@ class renderer extends \plugin_renderer_base {
         $output = $this->output->header();
 
         $context = \context_module::instance($cm->id);
+        // FIXME: Temp hide the tabs whilst building the new UI.
         // if (has_capability('mod/readaloud:viewreports', $context) && $embed !== 2) {
         //     if (!empty($currenttab)) {
         //         ob_start();
@@ -1214,7 +1215,7 @@ break;
     // }
 
     /**
-     * Return the pluginfile URL of the passage picture, or '' if none.
+     * Return the pluginfile URL of the passage picture.
      *
      * @param stdClass $moduleinstance
      * @return string
@@ -1225,7 +1226,7 @@ break;
             $modulecontext->id,
             'mod_readaloud',
             'passagepicture',
-            $moduleinstance->id,    // use the real instance id, not 0
+            $moduleinstance->id,
             'timemodified',
             false
         );

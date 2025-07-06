@@ -494,7 +494,7 @@ function readaloud_process_editors(stdClass $readaloud, ?mod_readaloud_mod_form 
 
     // Standard editor fields.
     $editors   = readaloud_get_editornames();
-    $itemid    = $readaloud->id; // use real instance id
+    $itemid    = $readaloud->id;
     $edoptions = readaloud_editor_no_files_options($context);
     foreach ($editors as $editor) {
         $readaloud = file_postupdate_standard_editor(
@@ -508,7 +508,7 @@ function readaloud_process_editors(stdClass $readaloud, ?mod_readaloud_mod_form 
         );
     }
 
-    // Now save the passage-picture from draft into the permanent filearea.
+    // Save the passage-picture from draft into the permanent filearea.
     $ppoptions = readaloud_picturefile_options($context);
     file_save_draft_area_files(
         $readaloud->{constants::PASSAGEPICTURE},
