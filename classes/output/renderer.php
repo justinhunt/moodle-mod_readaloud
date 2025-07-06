@@ -30,6 +30,9 @@ use mod_readaloud\quizhelper;
 use ReflectionClass;
 use cm_info;
 use moodle_url;
+use core_completion\cm_completion_details;
+use core_course\output\activity_completion;
+use core_course\output\activity_dates;
 
 class renderer extends \plugin_renderer_base {
 
@@ -1282,6 +1285,98 @@ break;
     }
 
     /**
+     * Return the activity‐completion context for use in templates.
+     *
+     * @param renderer_base $output
+     * @return array empty if no completion, or the flat array from export_for_template()
+     */
+    // protected function get_activity_completion_data(\renderer_base $output): array {
+    //     global $USER;
+    //     if (!$this->page->activityrecord) {
+    //         return [];
+    //     }
+    //     $cm = $this->page->cm;
+    //     $userid = $USER->id;
+    //     $cmcompletion = cm_completion_details::get_instance($cm, $userid);
+    //     $activitycompletion = new activity_completion($cm, $completiondetails);
+    //     return (array)$activitycompletion->export_for_template($output);
+    // }
+
+    /**
+     * Return the activity‐completion context for use in templates.
+     *
+     * @param renderer_base $output
+     * @return array empty if no completion, or the flat array from export_for_template()
+     */
+    protected function get_activity_completion_data(\renderer_base $output): array {
+        global $USER;
+        if (!$this->page->activityrecord) {
+            return [];
+        }
+        $cm = $this->page->cm;
+        $userid = $USER->id;
+
+        $completiondetails = \core_completion\cm_completion_details::get_instance($cm, $userid);
+        $activitycompletion = new \core_course\output\activity_completion($cm, $completiondetails);
+
+        return (array)$activitycompletion->export_for_template($output);
+    }
+
+
+    /**
+     * Return the activity‐dates context for use in templates.
+     *
+     * @param renderer_base $output
+     * @return array empty if no dates, or the flat array from export_for_template()
+     */
+    protected function get_activity_dates_data(\renderer_base $output): array {
+        global $USER;
+        if (!$this->page->activityrecord) {
+            return [];
+        }
+        $cm = $this->page->cm;
+        $userid = $USER->id;
+
+        $activitydates = \core\activity_dates::get_dates_for_module($cm, $userid);
+        $activitydates = new \core_course\output\activity_dates($activitydates);
+
+        return (array)$activitydates->export_for_template($output);
+    }
+
+     /**
+     * Return the activity‐dates context for use in templates.
+     *
+     * @param renderer_base $output
+     * @return array empty if no dates, or the flat array from export_for_template()
+     */
+    protected function get_activity_header_data(\renderer_base $output, $modulecontext, $moduleinstance): array {
+        global $USER;
+        if (!$this->page->activityrecord) {
+            return [];
+        }
+        $cm = $this->page->cm;
+        $userid = $USER->id;
+
+        // Activity dates.
+        $activitydates = \core\activity_dates::get_dates_for_module($cm, $userid);
+        $activitydates = new \core_course\output\activity_dates($activitydates);
+        $activitydatesdata = (array) $activitydates->export_for_template($output);
+        // Activity completion.
+        $completiondetails = \core_completion\cm_completion_details::get_instance($cm, $userid);
+        $activitycompletion = new \core_course\output\activity_completion($cm, $completiondetails);
+        $activitycompletiondata = (array) $activitycompletion->export_for_template($output);
+
+        $activityheader = array_merge(
+            $activitydatesdata,
+            $activitycompletiondata,
+            // $headercontent,
+            // ['passagepictureurl' => $passagepictureurl]
+        );
+
+        return $activityheader;
+    }
+
+    /**
      * Get the data for the view page.
      *
      * @param cm_info   $cm             The course module.
@@ -1306,10 +1401,23 @@ break;
 
         // The activity header.
         $header = $this->page->activityheader;
-        $corerenderer = $this->page->get_renderer('core');
-        $headercontent = $header->export_for_template($corerenderer);
+        // $corerenderer = $this->page->get_renderer('core');
+        $corecourserenderer = $this->page->get_renderer('core_course');
+        $headercontent = $header->export_for_template($corecourserenderer);
         $passagepictureurl = $this->get_passage_picture($moduleinstance, $modulecontext);
 
+        // $rawdates = activity_dates_helper::get_dates_for_module($cm, $USER->id);
+        // $datesrenderable = new dates_renderer($rawdates);
+        // $datesrenderable = new \core_course\output\activity_dates($rawdates);
+        // $datecontext = $datesrenderable->export_for_template($corecourserenderer);
+
+
+        // Now overwrite/attach our two separate chunks:
+        // $activitycompletiondata = $this->get_activity_completion_data($corerenderer);
+        // $activitydates        = $this->get_activity_dates_data($corecourserenderer);
+
+        // $activityinfodata        = $this->get_activity_info_data($corecourserenderer);
+        $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
 
         // TODO: remove moodle/mod/readaloud/templates/openclosedates.mustache
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
@@ -1516,7 +1624,6 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'canshadowattempt' => $modevisibility['canshadowattempt'],
             'enablenoshadow' => $modevisibility['enablenoshadow'],
             'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
-            'headercontent' => $headercontent,
             'embed' => $embed,
             'steps' => constants::STEPS,
             'stepsenabled' => $stepsenabled,
@@ -1538,7 +1645,6 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
                 'opendate' => $opendate,
             ],
             'passagehtml' => isset($passagehtml) ? $passagehtml : null,
-            'passagepictureurl' => $passagepictureurl,
             'progress' => true, // TEMP.
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => isset($quizhtml) ? $quizhtml : null,
@@ -1551,6 +1657,9 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'problembox'     => $problembox,
             'token'          => $token,
             'modelaudiohtml' => $modelaudiohtml,
+            'activityheader' => $activityheader,
+            'headercontent' => $headercontent,
+            'passagepictureurl' => $passagepictureurl,
         ], $this->get_all_constants());
     }
 }

@@ -27,71 +27,89 @@
 
     Example context (json):
     {
-        "title": "Assignment 1",
-        "description": "The assignment does something",
-        "completion": "<div class='activitycompletion'>Some activity completion criteria</div>",
-        "additional_items": {
-            "id": "url_select_test",
-            "action": "https://example.com/post",
-            "formid": "url_select_form",
-            "sesskey": "sesskey",
-            "label": "core/url_select",
-            "helpicon": {
-                "title": "Help with something",
-                "text": "Help with something",
-                "url": "http://example.org/help",
-                "linktext": "",
-                "icon":{
-                    "extraclasses": "",
-                    "attributes": [
-                        {"name": "src", "value": "../../../pix/help.svg"},
-                        {"name": "alt", "value": "Help icon"}
-                    ]
-                }
+        "activityheader": true,
+        "activityname": "Read Aloud activity",
+        "hascompletion": true,
+        "uservisible": true,
+        "isautomatic": true,
+        "completiondetails": [
+            {
+            "type": "grade",
+            "criteria": "Must score at least 80%"
+            }
+        ],
+        "showmanualcompletion": false,
+        "description": "<p>Welcome to the Read Aloud activity! Practice reading the passage aloud and get instant feedback.</p>",
+        "passagepictureurl": "https://example.org/images/passage.jpg",
+        "hasdates": true,
+        "activitydates": [
+            {
+            "label": "Opened",
+            "date": "Saturday, 14 June 2025, 11:00 AM"
             },
-            "showbutton": "Go",
-            "options": [{
-                "name": "Group 1", "isgroup": true, "options":
-                [
-                    {"name": "Item 1", "isgroup": false, "value": "1"},
-                    {"name": "Item 2", "isgroup": false, "value": "2"}
-                ]},
-                {"name": "Group 2", "isgroup": true, "options":
-                [
-                    {"name": "Item 3", "isgroup": false, "value": "3"},
-                    {"name": "Item 4", "isgroup": false, "value": "4"}
-                ]}],
-            "disabled": false,
-            "title": "Some cool title"
-        }
+            {
+            "label": "Due",
+            "date": "Monday, 15 June 2026, 13:00 PM"
+            }
+        ]
     }
 }}
-<span id="maincontent"></span>
-{{#title}}
-    <h2>{{{title}}}</h2>
-{{/title}}
 
-<div class="mod_readaloud-activity-header bg-info rounded d-flex flex-wrap align-items-center
-         p-3 gap-4" data-for="page-activity-header">
-    {{#description}}
+<span id="maincontent"></span>
+
+{{#activityheader}}
+<div class="mod_readaloud-activity-header d-flex flex-column gap-4">
+    {{#hascompletion}}
+        {{#uservisible}}
+        <div class="mod_readaloud-activity-completion" data-region="completion-info">
+            {{#isautomatic}}
+            <div class="mod_readaloud-activity-completion-automatic"
+                data-region="completionrequirements"
+                role="list"
+                aria-label="{{#str}}completionrequirements, core_course, {{activityname}}{{/str}}">
+                {{#completiondetails}}
+                {{> core_course/completion_automatic }}
+                {{/completiondetails}}
+            </div>
+            {{/isautomatic}}
+            {{^isautomatic}}
+            {{#showmanualcompletion}}
+                <div class="mod_readaloud-activity-completion-manual">
+                {{> core_course/completion_manual }}
+                </div>
+            {{/showmanualcompletion}}
+            {{/isautomatic}}
+        </div>
+        {{/uservisible}}
+    {{/hascompletion}}
+
+    <div class="mod_readaloud-activity-header-main bg-info rounded d-flex flex-wrap align-items-center p-3 gap-4"
+        data-for="page-activity-header">
+        {{#description}}
         <div class="mod_readaloud-activity-description flex-grow-1" id="intro">
             {{{description}}}
         </div>
-    {{/description}}
-    {{#passagepictureurl}}
+        {{/description}}
+
+        {{#passagepictureurl}}
         <div class="mod_readaloud-activity-picture">
             <img class="rounded-4" src="{{passagepictureurl}}" alt="">
         </div>
-    {{/passagepictureurl}}
+        {{/passagepictureurl}}
+    </div>
+
+    <div class="mod_readaloud-activity-info d-flex flex-column align-items-start align-self-stretch bg-white rounded p-3 gap-4">
+        <div class="mod_readaloud-activity-progress-bar">
+        {{> mod_readaloud/progress_bar}}
+        </div>
+
+        {{#hasdates}}
+        <div class="mod_readaloud-activity-dates" data-region="activity-dates">
+            {{#activitydates}}
+            {{> core_course/activity_date}}
+            {{/activitydates}}
+        </div>
+        {{/hasdates}}
+    </div>
 </div>
-
-{{#completion}}
-    <span class="visually-hidden">{{#str}} overallaggregation, completion {{/str}}</span>
-    {{{completion}}}
-{{/completion}}
-
-{{#additional_items}}
-    <nav aria-label="{{#str}} additionalcustomnav, core {{/str}}">
-        {{> core/url_select}}
-    </nav>
-{{/additional_items}}
+{{/activityheader}}
