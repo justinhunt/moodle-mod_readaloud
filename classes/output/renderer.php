@@ -28,11 +28,8 @@ use mod_readaloud\constants;
 use mod_readaloud\utils;
 use mod_readaloud\quizhelper;
 use ReflectionClass;
-use core\activity_dates;
-use core_course\output\activity_dates as activity_dates_renderer;
-use core_completion\cm_completion_details;
-use core_course\output\activity_completion as activity_completion_renderer;
 use cm_info;
+use moodle_url;
 
 class renderer extends \plugin_renderer_base {
 
@@ -63,14 +60,14 @@ class renderer extends \plugin_renderer_base {
         $output = $this->output->header();
 
         $context = \context_module::instance($cm->id);
-        if (has_capability('mod/readaloud:viewreports', $context) && $embed !== 2) {
-            if (!empty($currenttab)) {
-                ob_start();
-                include($CFG->dirroot . '/mod/readaloud/tabs.php');
-                $output .= ob_get_contents();
-                ob_end_clean();
-            }
-        }
+        // if (has_capability('mod/readaloud:viewreports', $context) && $embed !== 2) {
+        //     if (!empty($currenttab)) {
+        //         ob_start();
+        //         include($CFG->dirroot . '/mod/readaloud/tabs.php');
+        //         $output .= ob_get_contents();
+        //         ob_end_clean();
+        //     }
+        // }
 
         return $output;
     }
@@ -1198,6 +1195,58 @@ break;
     }
 
     /**
+     * Retrieves the passage picture for the given module instance.
+     *
+     * @param object $moduleinstance The module instance containing the passage picture.
+     * @return string The HTML for the passage picture or an empty string if not available.
+     */
+    // public function get_passage_picture($moduleinstance) {
+    //     if ($moduleinstance->passagepicture) {
+    //         $zeroitem = new \stdClass();
+    //         $zeroitem->id = 0;
+    //         $picurl = $comptest->fetch_media_url(constants::PASSAGEPICTURE_FILEAREA, $zeroitem);
+    //         $picture = \html_writer::img($picurl, '', ['role' => 'decoration']);
+    //         $picturecontainer = \html_writer::div($picture, constants::M_COMPONENT . '-passage-pic');
+    //     } else {
+    //         $picturecontainer = '';
+    //     }
+    //     return '';
+    // }
+
+    /**
+     * Return the pluginfile URL of the passage picture, or '' if none.
+     *
+     * @param stdClass $moduleinstance
+     * @return string
+     */
+    public function get_passage_picture($moduleinstance, $modulecontext) {
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(
+            $modulecontext->id,
+            'mod_readaloud',
+            'passagepicture',
+            $moduleinstance->id,    // use the real instance id, not 0
+            'timemodified',
+            false
+        );
+        if (empty($files)) {
+            return '';
+        }
+        /** @var \stored_file $file */
+        $file = reset($files);
+
+        // Build and return the pluginfile URL.
+        return moodle_url::make_pluginfile_url(
+            $modulecontext->id,
+            'mod_readaloud',
+            'passagepicture',
+            $moduleinstance->id,
+            $file->get_filepath(),
+            $file->get_filename()
+        )->out(false);
+    }
+
+    /**
      * Get all constants from the constants class.
      *
      * @return array
@@ -1258,6 +1307,7 @@ break;
         $header = $this->page->activityheader;
         $corerenderer = $this->page->get_renderer('core');
         $headercontent = $header->export_for_template($corerenderer);
+        $passagepictureurl = $this->get_passage_picture($moduleinstance, $modulecontext);
 
 
         // TODO: remove moodle/mod/readaloud/templates/openclosedates.mustache
@@ -1487,6 +1537,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
                 'opendate' => $opendate,
             ],
             'passagehtml' => isset($passagehtml) ? $passagehtml : null,
+            'passagepictureurl' => $passagepictureurl,
             'progress' => true, // TEMP.
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => isset($quizhtml) ? $quizhtml : null,

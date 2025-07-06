@@ -335,7 +335,7 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
               GROUP BY u.id";
 
             $human_sql = "SELECT u.id, u.id AS userid,MAX(a.sessionscore) AS rawgrade
-                  FROM {user} u,  {" . constants::M_USERTABLE . "} a 
+                  FROM {user} u,  {" . constants::M_USERTABLE . "} a
                  WHERE  u.id = a.userid AND a.readaloudid = :moduleid AND a.dontgrade = 0
                        $user
               GROUP BY u.id";
@@ -480,23 +480,48 @@ function readaloud_get_editornames() {
     return array('welcome', 'feedback');
 }
 
-function readaloud_process_editors(stdClass $readaloud,?mod_readaloud_mod_form $mform = null) {
-    global $DB;
-    $cmid = $readaloud->coursemodule;
+/**
+ * After form submission, save editor fields and the passage-picture into filearea.
+ *
+ * @param stdClass $readaloud   The record being saved, includes ->id and ->passagepicture (draftid).
+ * @param mod_readaloud_mod_form|null $mform  The form instance (unused here).
+ * @return stdClass             The updated $readaloud record.
+ */
+function readaloud_process_editors(stdClass $readaloud, ?mod_readaloud_mod_form $mform = null): stdClass {
+
+    $cmid    = $readaloud->coursemodule;
     $context = context_module::instance($cmid);
-    $editors = readaloud_get_editornames();
-    $itemid = 0;
+
+    // Standard editor fields.
+    $editors   = readaloud_get_editornames();
+    $itemid    = $readaloud->id; // use real instance id
     $edoptions = readaloud_editor_no_files_options($context);
     foreach ($editors as $editor) {
-        $readaloud = file_postupdate_standard_editor($readaloud, $editor, $edoptions, $context, constants::M_COMPONENT, $editor,
-            $itemid);
+        $readaloud = file_postupdate_standard_editor(
+            $readaloud,
+            $editor,
+            $edoptions,
+            $context,
+            constants::M_COMPONENT,
+            $editor,
+            $itemid,
+        );
     }
-    //do the passage picture field
-    $ppoptions=readaloud_picturefile_options($context);
-    file_save_draft_area_files($readaloud->{constants::PASSAGEPICTURE}, $context->id, constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, 0, $ppoptions);
+
+    // Now save the passage-picture from draft into the permanent filearea.
+    $ppoptions = readaloud_picturefile_options($context);
+    file_save_draft_area_files(
+        $readaloud->{constants::PASSAGEPICTURE},
+        $context->id,
+        constants::M_COMPONENT,
+        constants::PASSAGEPICTURE_FILEAREA,
+        $itemid,
+        $ppoptions,
+    );
 
     return $readaloud;
 }
+
 
 /**
  * Saves a new instance of the readaloud into the database
@@ -981,7 +1006,7 @@ function mod_readaloud_cm_info_dynamic(cm_info $cm) {
             $cm->override_customdata('duedate', $moduleinstance->viewend);
             $cm->override_customdata('allowsubmissionsfromdate', $moduleinstance->viewstart);
         }
-    
+
 }
 function readaloud_get_coursemodule_info($coursemodule) {
     global $DB;

@@ -70,18 +70,26 @@
 {{#title}}
     <h2>{{{title}}}</h2>
 {{/title}}
-<div class="mod_readaloud-activity-header" data-for="page-activity-header">{{!
-    }}{{#completion}}
-        <span class="visually-hidden">{{#str}} overallaggregation, completion {{/str}}</span>
-        {{{completion}}}
-    {{/completion}}
-    <div class="alert alert-info">This is Jo's READALOUD activity_header template.</div>
+
+<div class="mod_readaloud-activity-header bg-info rounded d-flex flex-wrap align-items-center
+         p-3 gap-4" data-for="page-activity-header">
     {{#description}}
-        <div class="activity-description" id="intro">
+        <div class="mod_readaloud-activity-description flex-grow-1" id="intro">
             {{{description}}}
         </div>
-    {{/description}}{{!
-}}</div>
+    {{/description}}
+    {{#passagepictureurl}}
+        <div class="mod_readaloud-activity-picture">
+            <img class="rounded-4" src="{{passagepictureurl}}" alt="">
+        </div>
+    {{/passagepictureurl}}
+</div>
+
+{{#completion}}
+    <span class="visually-hidden">{{#str}} overallaggregation, completion {{/str}}</span>
+    {{{completion}}}
+{{/completion}}
+
 {{#additional_items}}
     <nav aria-label="{{#str}} additionalcustomnav, core {{/str}}">
         {{> core/url_select}}

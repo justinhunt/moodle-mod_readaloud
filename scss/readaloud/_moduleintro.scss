@@ -3,5 +3,12 @@
         .activity-header {
             display: none;
         }
+        .mod_readaloud-activity-header {
+            .mod_readaloud-activity-picture img {
+                aspect-ratio: 1/1;
+                height: 122px;
+                width: 122px;
+            }
+        }
     }
 }
