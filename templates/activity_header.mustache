@@ -1,0 +1,115 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/activity_header
+
+    Activity header for the Read Aloud activity.
+
+    Context variables required for this template:
+    * title - The title of the activity module
+    * description - The intro for the module
+    * completion - The completion info if available for the the module as acquired via the activity_information method
+    * additional_items - Any additional URL select navigation that needs to show up in the header
+
+    Example context (json):
+    {
+        "activityheader": true,
+        "activityname": "Read Aloud activity",
+        "hascompletion": true,
+        "uservisible": true,
+        "isautomatic": true,
+        "completiondetails": [
+            {
+            "type": "grade",
+            "criteria": "Must score at least 80%"
+            }
+        ],
+        "showmanualcompletion": false,
+        "description": "<p>Welcome to the Read Aloud activity! Practice reading the passage aloud and get instant feedback.</p>",
+        "passagepictureurl": "https://example.org/images/passage.jpg",
+        "hasdates": true,
+        "activitydates": [
+            {
+            "label": "Opened",
+            "date": "Saturday, 14 June 2025, 11:00 AM"
+            },
+            {
+            "label": "Due",
+            "date": "Monday, 15 June 2026, 13:00 PM"
+            }
+        ]
+    }
+}}
+
+<span id="maincontent"></span>
+
+{{#activityheader}}
+<div class="mod_readaloud-activity-header d-flex flex-column gap-4">
+    {{#hascompletion}}
+        {{#uservisible}}
+        <div class="mod_readaloud-activity-completion" data-region="completion-info">
+            {{#isautomatic}}
+            <div class="mod_readaloud-activity-completion-automatic"
+                data-region="completionrequirements"
+                role="list"
+                aria-label="{{#str}}completionrequirements, core_course, {{activityname}}{{/str}}">
+                {{#completiondetails}}
+                {{> core_course/completion_automatic }}
+                {{/completiondetails}}
+            </div>
+            {{/isautomatic}}
+            {{^isautomatic}}
+            {{#showmanualcompletion}}
+                <div class="mod_readaloud-activity-completion-manual">
+                {{> core_course/completion_manual }}
+                </div>
+            {{/showmanualcompletion}}
+            {{/isautomatic}}
+        </div>
+        {{/uservisible}}
+    {{/hascompletion}}
+
+    <div class="mod_readaloud-activity-header-main bg-info rounded d-flex flex-wrap align-items-center p-3 gap-4"
+        data-for="page-activity-header">
+        {{#description}}
+        <div class="mod_readaloud-activity-description flex-grow-1" id="intro">
+            {{{description}}}
+        </div>
+        {{/description}}
+
+        {{#passagepictureurl}}
+        <div class="mod_readaloud-activity-picture">
+            <img class="rounded-4" src="{{passagepictureurl}}" alt="">
+        </div>
+        {{/passagepictureurl}}
+    </div>
+
+    <div class="mod_readaloud-activity-info d-flex flex-column align-items-start align-self-stretch bg-white rounded p-3 gap-4">
+        <div class="mod_readaloud-activity-progress-bar">
+        {{> mod_readaloud/progress_bar}}
+        </div>
+
+        {{#hasdates}}
+        <div class="mod_readaloud-activity-dates" data-region="activity-dates">
+            {{#activitydates}}
+            {{> core_course/activity_date}}
+            {{/activitydates}}
+        </div>
+        {{/hasdates}}
+    </div>
+</div>
+{{/activityheader}}

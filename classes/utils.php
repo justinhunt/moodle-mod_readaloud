@@ -1731,7 +1731,7 @@ class utils {
             //setting it to always true. And we can add a "new attempt" button on the final results page as we do for MiniLesson
             if(true ||$latestattempt->status < $readaloud->steps){
                 //most recent attempt is incomplete, so we use it
-                $currentattempt = $latestattempt; 
+                $currentattempt = $latestattempt;
             }
         }
         if(!$currentattempt){
@@ -2737,29 +2737,44 @@ class utils {
         return $corpushash;
     }
 
-    public static function prepare_file_and_json_stuff($moduleinstance, $context){
-        //nb basically moduleinstance = formdata here
+    public static function prepare_file_and_json_stuff( $moduleinstance,  $context) {
+        // NB: $moduleinstance may be either formdata or record — if record, it has ->id.
         $ednofileoptions = readaloud_editor_no_files_options($context);
-        $editors = readaloud_get_editornames();
-        $itemid = 0;
+        $editors         = readaloud_get_editornames();
+        $itemid          = isset($moduleinstance->id) ? $moduleinstance->id : 0;
+
+        // Standard editor fields.
         foreach ($editors as $editor) {
-             $moduleinstance = file_prepare_standard_editor((object) $moduleinstance, $editor, $ednofileoptions, $context,
-                   constants::M_COMPONENT, $editor, $itemid);
+            $moduleinstance = file_prepare_standard_editor(
+                (object)$moduleinstance,
+                $editor,
+                $ednofileoptions,
+                $context,
+                constants::M_COMPONENT,
+                $editor,
+                $itemid
+            );
         }
 
-        //passage picture
-        $ppoptions = readaloud_picturefile_options($context);
+        // Passage picture: prepare the draft area for this instance.
+        $ppoptions   = readaloud_picturefile_options($context);
         $draftitemid = file_get_submitted_draft_itemid('passagepicture');
-        file_prepare_draft_area($draftitemid, $context->id, constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, 0,
-            $ppoptions);
-        $moduleinstance->passagepicture=$draftitemid;
+        file_prepare_draft_area(
+            $draftitemid,
+            $context->id,
+            constants::M_COMPONENT,
+            constants::PASSAGEPICTURE_FILEAREA,
+            $itemid,
+            $ppoptions
+        );
+        // Store the draft ID so the form will show the current picture.
+        $moduleinstance->passagepicture = $draftitemid;
 
-        //steps
+        // Steps unpacking, etc.
         $moduleinstance = self::unpack_steps($moduleinstance);
 
         return $moduleinstance;
-
-    }//end of prepare_file_and_json_stuff
+    }
 
     public static function pack_steps($moduleinstance){
         $steps = 0;
@@ -3321,7 +3336,7 @@ class utils {
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
         $modulecontext = \context_module::instance($cm->id);
         $moduleinstance  = $DB->get_record(constants::M_MODNAME, ['id' => $cm->instance], '*', MUST_EXIST);
-        
+
         // Check user can be here.
         $modulecontext = \context_module::instance($cm->id);
         if(!has_capability('mod/readaloud:view',$modulecontext)){
@@ -3393,13 +3408,13 @@ class utils {
         global $DB, $USER;
         $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
         $moduleinstance  = $DB->get_record(constants::M_MODNAME, ['id' => $cm->instance], '*', MUST_EXIST);
-        
+
         // Check user can be here.
         $modulecontext = \context_module::instance($cm->id);
         if(!has_capability('mod/readaloud:view',$modulecontext)){
             return false;
         }
-        
+
         // Get or create attempt.
         $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id, 'userid' => $USER->id], 'id DESC');
         if (!$attempts) {
@@ -3631,7 +3646,7 @@ class utils {
                 return true;
             }
         }
-        
+
     }
     // Get the enabled state of all the steps (for mustache/js)
     public static function get_steps_enabled_state($moduleinstance) {
@@ -3657,7 +3672,7 @@ class utils {
         $opensteps['step_report'] = self::is_step_complete(constants::STEP_READ,$attempt);
         return $opensteps;
     }
-    
+
     public static function get_steps_complete_state($moduleinstance, $attempt) {
         $complete = [];
         foreach (constants::STEPS as $stepname => $step) {
@@ -3683,7 +3698,7 @@ class utils {
         } else {
             return ($attempt->status & $step) !== 0;
         }
-        
+
     }
 
     // Is a specific attempt step open (or not opened yet)

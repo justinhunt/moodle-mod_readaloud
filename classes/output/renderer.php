@@ -28,6 +28,11 @@ use mod_readaloud\constants;
 use mod_readaloud\utils;
 use mod_readaloud\quizhelper;
 use ReflectionClass;
+use cm_info;
+use moodle_url;
+use core_completion\cm_completion_details;
+use core_course\output\activity_completion;
+use core_course\output\activity_dates;
 
 class renderer extends \plugin_renderer_base {
 
@@ -54,40 +59,25 @@ class renderer extends \plugin_renderer_base {
                 $embed = 0;
         }
 
-        $activityname = format_string($moduleinstance->name, true, $moduleinstance->course);
-        if (empty($extrapagetitle)) {
-            $title = $this->page->course->shortname . ": " . $activityname;
-        } else {
-            $title = $this->page->course->shortname . ": " . $activityname . ": " . $extrapagetitle;
-        }
-
-        // Build the buttons.
-        $context = \context_module::instance($cm->id);
-
-        // Header setup.
-        $this->page->set_title($title);
         $this->page->set_heading($this->page->course->fullname);
         $output = $this->output->header();
 
-        if (!$moduleinstance->foriframe && $embed !== 2) {
-            $thetitle = $this->output->heading($activityname, 3, 'main');
-            $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
-            $output .= $displaytext;
-        }
-
-        if (has_capability('mod/readaloud:viewreports', $context) && $embed !== 2) {
-            // $output .= $this->output->heading_with_help($activityname, 'overview', constants::M_COMPONENT);
-
-            if (!empty($currenttab)) {
-                ob_start();
-                include($CFG->dirroot . '/mod/readaloud/tabs.php');
-                $output .= ob_get_contents();
-                ob_end_clean();
-            }
-        }
+        $context = \context_module::instance($cm->id);
+        // FIXME: Temp hide the tabs whilst building the new UI.
+        // if (has_capability('mod/readaloud:viewreports', $context) && $embed !== 2) {
+        //     if (!empty($currenttab)) {
+        //         ob_start();
+        //         include($CFG->dirroot . '/mod/readaloud/tabs.php');
+        //         $output .= ob_get_contents();
+        //         ob_end_clean();
+        //     }
+        // }
 
         return $output;
     }
+
+
+
 
     public function show_no_content($cm, $showsetup) {
         $displaytext = $this->output->box_start();
@@ -1209,6 +1199,58 @@ break;
     }
 
     /**
+     * Retrieves the passage picture for the given module instance.
+     *
+     * @param object $moduleinstance The module instance containing the passage picture.
+     * @return string The HTML for the passage picture or an empty string if not available.
+     */
+    // public function get_passage_picture($moduleinstance) {
+    //     if ($moduleinstance->passagepicture) {
+    //         $zeroitem = new \stdClass();
+    //         $zeroitem->id = 0;
+    //         $picurl = $comptest->fetch_media_url(constants::PASSAGEPICTURE_FILEAREA, $zeroitem);
+    //         $picture = \html_writer::img($picurl, '', ['role' => 'decoration']);
+    //         $picturecontainer = \html_writer::div($picture, constants::M_COMPONENT . '-passage-pic');
+    //     } else {
+    //         $picturecontainer = '';
+    //     }
+    //     return '';
+    // }
+
+    /**
+     * Return the pluginfile URL of the passage picture.
+     *
+     * @param stdClass $moduleinstance
+     * @return string
+     */
+    public function get_passage_picture($moduleinstance, $modulecontext) {
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(
+            $modulecontext->id,
+            'mod_readaloud',
+            'passagepicture',
+            $moduleinstance->id,
+            'timemodified',
+            false
+        );
+        if (empty($files)) {
+            return '';
+        }
+        /** @var \stored_file $file */
+        $file = reset($files);
+
+        // Build and return the pluginfile URL.
+        return moodle_url::make_pluginfile_url(
+            $modulecontext->id,
+            'mod_readaloud',
+            'passagepicture',
+            $moduleinstance->id,
+            $file->get_filepath(),
+            $file->get_filename()
+        )->out(false);
+    }
+
+    /**
      * Get all constants from the constants class.
      *
      * @return array
@@ -1243,6 +1285,98 @@ break;
     }
 
     /**
+     * Return the activity‐completion context for use in templates.
+     *
+     * @param renderer_base $output
+     * @return array empty if no completion, or the flat array from export_for_template()
+     */
+    // protected function get_activity_completion_data(\renderer_base $output): array {
+    //     global $USER;
+    //     if (!$this->page->activityrecord) {
+    //         return [];
+    //     }
+    //     $cm = $this->page->cm;
+    //     $userid = $USER->id;
+    //     $cmcompletion = cm_completion_details::get_instance($cm, $userid);
+    //     $activitycompletion = new activity_completion($cm, $completiondetails);
+    //     return (array)$activitycompletion->export_for_template($output);
+    // }
+
+    /**
+     * Return the activity‐completion context for use in templates.
+     *
+     * @param renderer_base $output
+     * @return array empty if no completion, or the flat array from export_for_template()
+     */
+    protected function get_activity_completion_data(\renderer_base $output): array {
+        global $USER;
+        if (!$this->page->activityrecord) {
+            return [];
+        }
+        $cm = $this->page->cm;
+        $userid = $USER->id;
+
+        $completiondetails = \core_completion\cm_completion_details::get_instance($cm, $userid);
+        $activitycompletion = new \core_course\output\activity_completion($cm, $completiondetails);
+
+        return (array)$activitycompletion->export_for_template($output);
+    }
+
+
+    /**
+     * Return the activity‐dates context for use in templates.
+     *
+     * @param renderer_base $output
+     * @return array empty if no dates, or the flat array from export_for_template()
+     */
+    protected function get_activity_dates_data(\renderer_base $output): array {
+        global $USER;
+        if (!$this->page->activityrecord) {
+            return [];
+        }
+        $cm = $this->page->cm;
+        $userid = $USER->id;
+
+        $activitydates = \core\activity_dates::get_dates_for_module($cm, $userid);
+        $activitydates = new \core_course\output\activity_dates($activitydates);
+
+        return (array)$activitydates->export_for_template($output);
+    }
+
+     /**
+     * Return the activity‐dates context for use in templates.
+     *
+     * @param renderer_base $output
+     * @return array empty if no dates, or the flat array from export_for_template()
+     */
+    protected function get_activity_header_data(\renderer_base $output, $modulecontext, $moduleinstance): array {
+        global $USER;
+        if (!$this->page->activityrecord) {
+            return [];
+        }
+        $cm = $this->page->cm;
+        $userid = $USER->id;
+
+        // Activity dates.
+        $activitydates = \core\activity_dates::get_dates_for_module($cm, $userid);
+        $activitydates = new \core_course\output\activity_dates($activitydates);
+        $activitydatesdata = (array) $activitydates->export_for_template($output);
+        // Activity completion.
+        $completiondetails = \core_completion\cm_completion_details::get_instance($cm, $userid);
+        $activitycompletion = new \core_course\output\activity_completion($cm, $completiondetails);
+        $activitycompletiondata = (array) $activitycompletion->export_for_template($output);
+
+        $activityheader = array_merge(
+            $activitydatesdata,
+            $activitycompletiondata,
+            // $headercontent,
+            // ['passagepictureurl' => $passagepictureurl]
+        );
+
+        return $activityheader;
+    }
+
+    /**
      * Get the data for the view page.
      *
      * @param cm_info   $cm             The course module.
@@ -1263,7 +1397,27 @@ break;
         $moduleinstance,
         $reviewattempts
     ) { // TODO: add in the : array once the imported functions are resolved.
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
+
+        // The activity header.
+        $header = $this->page->activityheader;
+        // $corerenderer = $this->page->get_renderer('core');
+        $corecourserenderer = $this->page->get_renderer('core_course');
+        $headercontent = $header->export_for_template($corecourserenderer);
+        $passagepictureurl = $this->get_passage_picture($moduleinstance, $modulecontext);
+
+        // $rawdates = activity_dates_helper::get_dates_for_module($cm, $USER->id);
+        // $datesrenderable = new dates_renderer($rawdates);
+        // $datesrenderable = new \core_course\output\activity_dates($rawdates);
+        // $datecontext = $datesrenderable->export_for_template($corecourserenderer);
+
+
+        // Now overwrite/attach our two separate chunks:
+        // $activitycompletiondata = $this->get_activity_completion_data($corerenderer);
+        // $activitydates        = $this->get_activity_dates_data($corecourserenderer);
+
+        // $activityinfodata        = $this->get_activity_info_data($corecourserenderer);
+        $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
 
         // TODO: remove moodle/mod/readaloud/templates/openclosedates.mustache
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
@@ -1503,6 +1657,9 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'problembox'     => $problembox,
             'token'          => $token,
             'modelaudiohtml' => $modelaudiohtml,
+            'activityheader' => $activityheader,
+            'headercontent' => $headercontent,
+            'passagepictureurl' => $passagepictureurl,
         ], $this->get_all_constants());
     }
 }
