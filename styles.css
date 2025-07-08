@@ -10,10 +10,6 @@
 #page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-info {
   border: 1px solid #E3E3E4;
 }
-#page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-info .mod_readaloud-activity-dates {
-  display: flex;
-  gap: 1.5rem;
-}
 
 .mod_readaloud_center {
   text-align: center;
