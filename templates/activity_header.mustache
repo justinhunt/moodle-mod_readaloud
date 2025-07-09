@@ -99,12 +99,12 @@
     </div>
 
     <div class="mod_readaloud-activity-info d-flex flex-column align-items-start align-self-stretch bg-white rounded p-3 gap-4">
-        <div class="mod_readaloud-activity-progress-bar">
+        <div class="mod_readaloud-activity-progress-bar w-100">
         {{> mod_readaloud/progress_bar}}
         </div>
 
         {{#hasdates}}
-        <div class="mod_readaloud-activity-dates" data-region="activity-dates">
+        <div class="mod_readaloud-activity-dates d-flex gap-4" data-region="activity-dates">
             {{#activitydates}}
             {{> core_course/activity_date}}
             {{/activitydates}}

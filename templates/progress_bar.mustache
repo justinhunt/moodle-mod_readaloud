@@ -17,7 +17,7 @@
 {{!
     @template mod_readaloud/progress_bar
 
-    Moodle progress bar template for mod_readdloud.
+    Moodle progress bar template for mod_readaloud.
 
     The purpose of this template is to render a progress bar with a brief description.
 
@@ -41,9 +41,9 @@
 
 }}
 <div id="progress-{{uniqid}}">
-    {{#str}} completed, core {{/str}}
+    <span class="fw-bold gap-3">{{#str}} completed, core {{/str}}</span>
     {{#progresstext}}{{progresstextvalue}}{{/progresstext}}
     {{#percentlabel}}<span class="progress-label">{{percentlabelvalue}}</span>{{/percentlabel}}
 </div>
-<progress class="progress" aria-describedby="progress-{{uniqid}}"
+<progress class="progress w-100 mt-3" aria-describedby="progress-{{uniqid}}"
     value="{{$percentage}}{{percentagevalue}}{{/percentage}}" max="100"></progress>
