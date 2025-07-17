@@ -185,6 +185,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
               $('#' + that.cd.wordclass + '_' + thewordnumber).addClass((that.cd.activesentence));
             }
           }
+          log.debug('Current start break:');
+          log.debug(that.currentstartbreak);
+          log.debug('finished sentence:' + finishedsentence);
           that.on_reach_audio_break(finishedsentence, that.previousstartbreak, that.currentstartbreak, that.breaks);
         }
       };

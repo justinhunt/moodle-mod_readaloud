@@ -554,9 +554,9 @@ class renderer extends \plugin_renderer_base {
         return $html;
     }
 
-    public function show_landr($moduleinstance, $token) {
+    public function show_practice($moduleinstance, $token) {
         // Recorder modal title.
-        $title = get_string('landrreading', constants::M_COMPONENT);
+        $title = get_string('practicereading', constants::M_COMPONENT);
 
         // Recorder data.
         $data = [
@@ -596,14 +596,17 @@ class renderer extends \plugin_renderer_base {
                 $data['passagehash'] = $hashbits[1];
             }
         }
+        //create lines of text to be read
+        $linestoread = [];
+
 
         // Render content from listenandrepeat.mustache.
-        $content = $this->render_from_template('mod_readaloud/listenandrepeat', $data);
+        $content = $this->render_from_template('mod_readaloud/practicecontrols', $data);
 
         return [
             'title' => $title,
             'content' => $content,
-            'containertag' => 'landr_container',
+            'containertag' => 'practice_container',
         ];
     }
 
@@ -916,13 +919,14 @@ class renderer extends \plugin_renderer_base {
         $recopts['hider'] = constants::M_HIDER;
         $recopts['hiddenaudioplayer'] = constants::M_HIDDEN_PLAYER;
         $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
-        $recopts['landrinstructionscontainer'] = constants::M_LANDRINSTRUCTIONS_CONTAINER;
+        $recopts['practiceinstructionscontainer'] = constants::M_PRACTICEINSTRUCTIONS_CONTAINER;
         $recopts['menubuttonscontainer'] = constants::M_MENUBUTTONS_CONTAINER;
         $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
         $recopts['modeimagecontainer'] = constants::M_MODE_IMAGE_CONTAINER;
         $recopts['modejourneycontainer'] = constants::M_MODE_JOURNEY_CONTAINER;
         $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
+        $recopts['practicecontainerwrap'] = constants::M_PRACTICE_CONTAINER_WRAP;
         $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
         $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
@@ -1588,8 +1592,8 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         // Render the recorder.
         $recorder = $this->show_recorder($moduleinstance, $token, $debug);
 
-        // Render the landr html.
-        $landr = $this->show_landr($moduleinstance, $token);
+        // Render the practice html.
+        $practice = $this->show_practice($moduleinstance, $token);
 
         // Fetch data for JS.
         $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed, $latestattempt);
@@ -1631,7 +1635,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'stepscomplete'  => $stepscomplete,
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
-            'landr' => $landr,
+            'practice' => $practice,
             'instructions' => $instructions,
             'mode' => null,
             'modequiz' => $modequiz,

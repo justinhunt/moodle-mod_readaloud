@@ -87,7 +87,7 @@
                         return;
                     }
                     var language = 'en-US';
-                    textutils.call_ai(theprompt, passagelanguage.val(), '', 'generate_article', function (thearticle) {
+                    textutils.call_ai(theprompt, passagelanguage.val(), 'none', 'generate_article', function (thearticle) {
                         messagearea.text('');
                         passagebox.val(thearticle);
                     });

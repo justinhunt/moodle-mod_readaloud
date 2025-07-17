@@ -408,7 +408,7 @@ $string['previewreading'] = 'Listen';
 $string['startreading'] = 'Read';
 $string['readagain'] = 'Read Again';
 $string['startshadowreading'] = 'Shadow Practice';
-$string['landrreading'] = 'Practice';
+$string['practicereading'] = 'Practice';
 
 
 $string['transcriber'] = 'Line Transcriber';

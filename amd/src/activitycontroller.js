@@ -2,10 +2,10 @@
 define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
         'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
         'core/ajax','core/notification','mod_readaloud/smallreporthelper',
-        'mod_readaloud/listenandrepeat','mod_readaloud/quizhelper','mod_readaloud/clicktohear'
+        'mod_readaloud/practice','mod_readaloud/quizhelper','mod_readaloud/clicktohear'
     ],
     function ($, log, str,def, recorderhelper, modelaudiokaraoke,
-              Ajax, notification, smallreporthelper, landr, quizhelper, clicktohear) {
+              Ajax, notification, smallreporthelper, practice, quizhelper, clicktohear) {
 
     "use strict"; // jshint ;_;
 
@@ -91,7 +91,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             dd.setupmodelaudio();
 
             // Set up listen and repeat.
-            dd.setuplandr();
+            dd.setuppractice();
 
             // Init recorder and html and events.
             dd.setup_recorder();
@@ -138,13 +138,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             modelaudiokaraoke.init(karaoke_opts);
         },
 
-        setuplandr: function(){
+        setuppractice: function(){
             var dd = this;
-            var landr_opts={modelaudiokaraoke: modelaudiokaraoke, cmid: this.cmid, language: this.activitydata.language,
+            var practice_opts={modelaudiokaraoke: modelaudiokaraoke, cmid: this.cmid, language: this.activitydata.language,
                 region: this.activitydata.region, phonetics: this.activitydata.phonetics, stt_guided: this.activitydata.stt_guided};
-            landr.init(landr_opts);
+            practice.init(practice_opts);
             //set the callback function to complete the activity
-            landr.on_complete = function(){
+            practice.on_complete = function(){
                 // Complete the current step (update server and ui)
                 dd.update_activity_step(dd.activitydata.steps.step_practice);
             }
@@ -190,7 +190,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 menubuttonscontainer: $('.' + opts['menubuttonscontainer']),
                 menuinstructionscontainer: $('.' + opts['menuinstructionscontainer']),
                 previewinstructionscontainer: $('.' + opts['previewinstructionscontainer']),
-                landrinstructionscontainer: $('.' + opts['landrinstructionscontainer']),
+                practiceinstructionscontainer: $('.' + opts['practiceinstructionscontainer']),
+                practicecontainerwrap: $('.' +  opts['practicecontainerwrap']),
                 activityinstructionscontainer: $('.' + opts['activityinstructionscontainer']),
                 recinstructionscontainerright: $('.' + opts['recinstructionscontainerright']),
                 recinstructionscontainerleft: $('.' + opts['recinstructionscontainerleft']),
@@ -338,11 +339,11 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
                 }
             });
             dd.controls.startpracticebutton.click(function(e){
-                dd.dolandrlayout();
+                dd.dopracticelayout();
             });
             dd.controls.startpracticebutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13 ) {
-                    dd.dolandrlayout();
+                    dd.dopracticelayout();
                     e.preventDefault();
                 }
             });
@@ -387,17 +388,17 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             });
 
             dd.controls.startshadowbutton.click(function(e){
-                //landr shadowing
-                //dd.dolandrlayout();
-                // landr.shadow=true;
+                //practice shadowing
+                //dd.dopracticelayout();
+                // practice.shadow=true;
 
                 dd.letsshadow=true;
                 dd.doreadinglayout();
             });
             dd.controls.startshadowbutton.keypress(function(e){
                 if (e.which == 32 || e.which == 13) {
-                    //dd.dolandrlayout();
-                    //landr.shadow=true;
+                    //dd.dopracticelayout();
+                    //practice.shadow=true;
 
                     dd.letsshadow=true;
                     dd.doreadinglayout();
@@ -406,7 +407,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             });
             dd.controls.returnmenubutton.click(function(e){
                 //in most cases ajax hide show is ok, but L&R stuffs up android for normal readaloud so we reload
-                if(dd.isandroid() && dd.controls.landrinstructionscontainer.is(":visible")) {
+                if(dd.isandroid() && dd.controls.practiceinstructionscontainer.is(":visible")) {
                     location.reload();
                 }else if(dd.controls.readingcontainer.is(":visible")
                     && dd.controls.passagecontainer.hasClass('readmode')
@@ -599,8 +600,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.activityinstructionscontainer.hide();
             m.controls.feedbackcontainer.hide();
             m.controls.hider.hide();
-            m.controls.landrinstructionscontainer.hide();
-            landr.deactivate();
+            m.controls.practiceinstructionscontainer.hide();
+            m.controls.practicecontainerwrap.hide();
             m.controls.modelaudioplayer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.progresscontainer.hide();
@@ -667,7 +668,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.hider.hide();
             m.controls.homecontainer.hide();
             m.controls.introbox.hide();
-            m.controls.landrinstructionscontainer.hide();
+            m.controls.practiceinstructionscontainer.hide();
+            m.controls.practicecontainerwrap.hide();
             m.controls.menuinstructionscontainer.hide();
             m.controls.modelaudioplayer.hide();
             m.controls.progresscontainer.hide();
@@ -692,7 +694,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             modelaudiokaraoke.modeling=false;
         },
 
-        dolandrlayout: function () {
+        dopracticelayout: function () {
             var m = this;
 
             // Hide.
@@ -702,8 +704,10 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.hider.hide();
             m.controls.introbox.hide();
             m.controls.modelaudioplayer.hide();
+            m.controls.passagecontainer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.progresscontainer.hide();
+
             m.controls.quizcontainerwrap.hide();
             m.controls.recordingcontainer.hide();
             m.controls.smallreportcontainer.hide();
@@ -712,17 +716,13 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             // Show.
             m.controls.returnmenubutton.show();
             m.controls.menubuttonscontainer.show();
-            m.controls.landrinstructionscontainer.show();
-            m.controls.passagecontainer.show();
+            m.controls.practiceinstructionscontainer.show();
+            m.controls.practicecontainerwrap.show();
+            //m.controls.passagecontainer.show();
 
-            m.controls.passagecontainer.removeClass('readmode shadowmode reviewmode nothingmode');
-            m.controls.passagecontainer.addClass('previewmode');
             m.controls.stopandplay.removeClass('hidden').addClass('visible');
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
             m.controls.modeimagecontainer.addClass('fa-comment d-block');
-
-            landr.activate();
-
             modelaudiokaraoke.modeling=false;
         },
 
@@ -790,7 +790,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             // Hide.
             m.controls.activityinstructionscontainer.hide();
             m.controls.homecontainer.hide();
-            m.controls.landrinstructionscontainer.hide();
+            m.controls.practiceinstructionscontainer.hide();
+            m.controls.practicecontainerwrap.hide();
             m.controls.passagecontainer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.menuinstructionscontainer.hide();
@@ -817,7 +818,8 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             // Hide.
             m.controls.activityinstructionscontainer.hide();
             m.controls.homecontainer.hide();
-            m.controls.landrinstructionscontainer.hide();
+            m.controls.practiceinstructionscontainer.hide();
+            m.controls.practicecontainerwrap.hide();
             m.controls.passagecontainer.hide();
             m.controls.previewinstructionscontainer.hide();
             m.controls.quizplaceholder.hide();

@@ -91,8 +91,8 @@ define(['jquery', 'core/log'], function ($, log) {
         smallreportheading: 'mod_readaloud_smallreport_heading',
         fullreportbutton: 'mod_readaloud_smallreport_fullreportbutton',
 
-        //listen and repeat container
-        landrcontainer: 'mod_readaloud_landr_container',
+        //Practice container
+        practicecontainer: 'mod_readaloud_practice_container',
 
          //rsquestions
          noitemscontainer: 'mod_readaloud_noitems_cont',
