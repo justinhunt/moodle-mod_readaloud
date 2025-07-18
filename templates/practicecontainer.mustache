@@ -24,5 +24,20 @@
     }
 }}
 <div id="{{M_PRACTICE_CONTAINER_WRAP}}" class="{{M_PRACTICE_CONTAINER_WRAP}}">
-    {{{practice.content}}}
+    <div id="mod_readaloud_practice_inner">
+        <div id="mod_readaloud_practice_target_phrase" style="display: flex; border: 1px grey solid; border-radius: 5px; padding: 10px; margin: auto; justify-content: center;" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}}"></div><hr />
+        <button id="mod_readaloud_practice_skipback" class="btn btn-lg btn-secondary"><i class="fa fa-arrow-left"></i></button>
+        <button id="mod_readaloud_practice_skipforward" class="btn btn-lg btn-secondary"><i class="fa fa-arrow-right"></i></button>
+        <button id="mod_readaloud_practice_play" class="btn btn-lg btn-secondary"><i class="fa fa-volume-up"></i></button>
+        <button id="mod_readaloud_practice_playself"  class="btn btn-lg btn-secondary"><i class="fa fa-repeat"></i></button>
+        <div id="mod_readaloud_practice_controls" style="display: flex; align-items: center; gap: 10px;">
+            <div><input type="checkbox" id="mod_readaloud_practice_shadow" name="shadow" value="false"><label for="shadow">&nbsp;+ <i class="fa fa-microphone"></i></label></div>
+            <div>
+                {{{practice.recorder}}}
+            </div>
+            <button id="mod_readaloud_practice_finished" class="btn btn-lg btn-secondary"><i class="fa fa-check"></i></button>
+        </div>
+        <audio id='mod_readaloud_practice_hiddenplayer' class="mod_readaloud_practice_hiddenplayer nomediaplugin nopoodll"></audio>
+        <audio id='mod_readaloud_practice_hiddenselfplayer' class="mod_readaloud_practice_hiddenselfplayer nomediaplugin nopoodll"></audio>
+    </div>
 </div>

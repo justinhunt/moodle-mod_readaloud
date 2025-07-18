@@ -712,15 +712,14 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             m.controls.recordingcontainer.hide();
             m.controls.smallreportcontainer.hide();
             m.controls.wheretonextcontainer.hide();
+            m.controls.stopandplay.removeClass('visible').addClass('hidden');
 
             // Show.
             m.controls.returnmenubutton.show();
             m.controls.menubuttonscontainer.show();
             m.controls.practiceinstructionscontainer.show();
             m.controls.practicecontainerwrap.show();
-            //m.controls.passagecontainer.show();
 
-            m.controls.stopandplay.removeClass('hidden').addClass('visible');
             m.controls.modeimagecontainer.removeClass('fa-headphones fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
             m.controls.modeimagecontainer.addClass('fa-comment d-block');
             modelaudiokaraoke.modeling=false;

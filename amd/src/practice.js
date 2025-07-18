@@ -23,9 +23,12 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       var self = this;
       self.cmid = props.cmid;
+
+      //Get info from modelaudiokaraoke about breaks and text, for use here
       self.mak = props.modelaudiokaraoke;
       self.audiourl = self.mak.fetch_audio_url();
       self.set_breaks(self.mak.breaks);
+
       self.language = props.language;
       self.region = props.region;
       self.phonetics = props.phonetics;
@@ -35,6 +38,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       //recorder stuff
       var theCallback =function(message) {
+          log.debug('Readaloud Practice: ttrecorder callback', message);
+          log.debug(message);
           switch (message.type) {
             case 'recordingstarted':
               if (self.controls.shadowplaycheckbox.is(":checked")) {
@@ -112,7 +117,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         var self = this;
         self.breaks = breaks;
         self.sort_breaks();
-        self.number_breaks();
+        self.add_info_to_breaks();
     },
 
     sort_breaks: function() {
@@ -122,12 +127,12 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       });
     },
 
-    number_breaks: function(){
+    add_info_to_breaks: function(){
       var self=this;
       var lastbreakaudioend = 0;
       var lastbreakwordnumber = 0;
       for (var i = 0; i < self.breaks.length; i++) {
-          //Set the break number and audio start time
+          //Set the break number and audio start time (end time of previous break)
           self.breaks[i].breaknumber=i+1;
           self.breaks[i].audiostarttime= lastbreakaudioend;
           
@@ -184,6 +189,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           return;
         }
         var thesentence = thebreak.sentence.trim();
+        self.currentSentence = thesentence;
 
         //in some cases ttrecorder wants to know the currentsentence
         if(!self.ttr.usebrowserrec) {

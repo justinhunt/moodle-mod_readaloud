@@ -596,17 +596,13 @@ class renderer extends \plugin_renderer_base {
                 $data['passagehash'] = $hashbits[1];
             }
         }
-        //create lines of text to be read
-        $linestoread = [];
-
 
         // Render content from listenandrepeat.mustache.
-        $content = $this->render_from_template('mod_readaloud/practicecontrols', $data);
+        $practicerecorder = $this->render_from_template('mod_readaloud/quiz_ttrecorder', $data);
 
         return [
-            'title' => $title,
-            'content' => $content,
-            'containertag' => 'practice_container',
+            'recorder' => $practicerecorder,
+            'rtl' => $data['rtl']
         ];
     }
 
