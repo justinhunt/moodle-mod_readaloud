@@ -626,30 +626,16 @@ class renderer extends \plugin_renderer_base {
     /**
      *  Show grades admin heading
      */
-    public function show_admintab_heading($showtitle, $showinstructions) {
-        $thetitle = $this->output->heading($showtitle, 3, 'main');
-        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
-        $displaytext .= $this->output->box_start();
-        $displaytext .= \html_writer::div($showinstructions, constants::M_CLASS . '_center');
-        $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext);
+    // public function show_admintab_heading($showtitle, $showinstructions) {
+    //     $thetitle = $this->output->heading($showtitle, 3, 'main');
+    //     $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
+    //     $displaytext .= $this->output->box_start();
+    //     $displaytext .= \html_writer::div($showinstructions, constants::M_CLASS . '_center');
+    //     $displaytext .= $this->output->box_end();
+    //     $ret = \html_writer::div($displaytext);
 
-        return $ret;
-    }
-
-    /**
-     * Show the introduction text is as set in the activity description
-     */
-    public function show_intro($readaloud, $cm) {
-        $ret = "";
-        if (utils::super_trim(strip_tags($readaloud->intro))) {
-            $ret .= $this->output->box_start(constants::M_INTRO_CONTAINER . ' ' . constants::M_CLASS . '_center ');
-            $ret .= format_module_intro('readaloud', $readaloud, $cm->id);
-            $ret .= $this->output->box_end();
-        }
-
-        return $ret;
-    }
+    //     return $ret;
+    // }
 
     /**
      * Show the reading passage after the attempt, basically set it to display on load and give it a background color
@@ -860,25 +846,6 @@ class renderer extends \plugin_renderer_base {
             'token' => $token,
             'transcribevocab' => $transcribevocab,
         ];
-    }
-
-    /**
-     * Show open and close dates for the activity.
-     *
-     * @param object $moduleinstance The module instance.
-     * @return string The HTML content for the open and close dates.
-     */
-    public function show_open_close_dates($moduleinstance) {
-        $tdata = [];
-        if ($moduleinstance->viewstart > 0) {
-            $tdata['opendate'] = $moduleinstance->viewstart;
-        }
-        if ($moduleinstance->viewend > 0) {
-            $tdata['closedate'] = $moduleinstance->viewend;
-        }
-        $ret = $this->output->render_from_template( constants::M_COMPONENT . '/openclosedates', $tdata);
-
-        return $ret;
     }
 
     /**
@@ -1419,7 +1386,6 @@ break;
         // $activityinfodata        = $this->get_activity_info_data($corecourserenderer);
         $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
 
-        // TODO: remove moodle/mod/readaloud/templates/openclosedates.mustache
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
 if ($moduleinstance->passagesegments === null) {
     $olditem = false;
@@ -1538,9 +1504,6 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
     false
 );
 
-        // Need to check why this outputs twice.
-        $showintro = ($CFG->version < 2022041900) ? $this->show_intro($moduleinstance, $cm) : '';
-
         // $welcomemessage = $canattempt ? get_string('welcomemenu', constants::M_COMPONENT) :
         // get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts);
 
@@ -1636,20 +1599,11 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'mode' => null,
             'modequiz' => $modequiz,
             'moduleinstance' => $moduleinstance,
-            'openclosedates' => [
-                'activityisclosed' => $activityisclosed,
-                'activitynotopenyet' => $activitynotopenyet,
-                'canpreview' => $canpreview,
-                'closedate' => $closedate,
-                'hasopenclosedates' => $hasopenclosedates,
-                'opendate' => $opendate,
-            ],
             'passagehtml' => isset($passagehtml) ? $passagehtml : null,
             'progress' => true, // TEMP.
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => isset($quizhtml) ? $quizhtml : null,
             'recorder' => $recorder,
-            'showintro' => $showintro,
             'smallreport' => $smallreport,
             'stopandplay' => true, // TEMP.
             'welcomemessage' => $welcomemessage,
@@ -1660,6 +1614,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'activityheader' => $activityheader,
             'headercontent' => $headercontent,
             'passagepictureurl' => $passagepictureurl,
+            'hasbody' => true, // TEMP.
         ], $this->get_all_constants());
     }
 }
