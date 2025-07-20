@@ -2,6 +2,12 @@
 #page-mod-readaloud-view #page.drawers .activity-header {
   display: none;
 }
+#page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main {
+  background: rgba(81, 61, 235, 0.06);
+}
+#page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-description {
+  color: #565559;
+}
 #page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-picture img {
   aspect-ratio: 1/1;
   height: 122px;
