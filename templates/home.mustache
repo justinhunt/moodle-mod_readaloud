@@ -17,82 +17,34 @@
 {{!
     @template mod_readaloud/home
 
-    TODO describe template home
+    The list of steps in the Read Aloud activity.
 
     Example context (json):
     {
     }
 }}
 
-<div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active">
-
-    <div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}} d-flex flex-wrap align-items-center justify-content-center p-3">
-
-    {{#stepsenabled.step_listen}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_listen}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}completed{{/str}}">
-                <i class="fa-solid fa-headphones"></i>
-                {{#str}}mode_listen, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_listen}}
-    {{#stepsenabled.step_practice}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_practice}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}completed{{/str}}">
-                <i class="fa-solid fa-comment"></i>
-                {{#str}}mode_practice, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_practice}}
-
-    {{#stepsenabled.step_shadow}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_shadow}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
-                <i class="fa-solid fa-comments"></i>
-                {{#str}}mode_shadow, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_shadow}}
-
-    {{#stepsenabled.step_read}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_read}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
-                <i class="fa-solid fa-book-open-reader"></i>
-                {{#str}}mode_read, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_read}}
-
-    {{#stepsenabled.step_quiz}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_quiz}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
-                <i class="fa-solid fa-circle-question"></i>
-                {{#str}}mode_quiz, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_quiz}}
-
-    {{#stepsenabled.step_report}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_report}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_end, mod_readaloud{{/str}}">
-                <i class="fa-solid fa-chart-simple"></i>
-                {{#str}}mode_report, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow last-mode"></i>
-        </div>
-    {{/stepsenabled.step_report}}
-    </div>
-
-
-    <div id="{{M_HOME_NEXT_CONTAINER}}" class="{{M_HOME_NEXT_CONTAINER}} border rounded p-3 w-100">
-        <h5>Recommended next</h5>
-        <a class="btn btn-primary" href="#">Continue with last accessed</a>
-        <a class="btn btn-outline-primary" href="#">View something or other</a>
+<div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active w-100">
+    <div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}}">
+        <ol class="list-unstyled p-0">
+            {{#steps}}
+            <li class="nav-item {{classes}} p-3 mb-4 d-flex border rounded" data-step="{{stepnumber}}">
+                <a href="javascript:void(0)" class="nav-link h6 w-100 mb-0 d-flex align-items-center justify-content-between" data-mode="{{mode}}">
+                    <div class="nav-text-group">
+                        <img src="{{iconurl}}" alt="{{label}}" class="step-icon flex-shrink-0" />
+                        <span class="nav-label">{{label}}</span>
+                    </div>
+                    <img src="{{statusicon}}" alt="{{label}}" class="nav-completion-icon ml-auto" />
+                </a>
+                {{#warningtext}}
+                <span class="mod_readaloud_menubutton_warning">{{warningtext}}</span>
+                {{/warningtext}}
+            </li>
+            {{/steps}}
+            {{^steps}}
+            <li>No steps available</li>
+            {{/steps}}
+        </ol>
     </div>
 </div>
 

@@ -1,138 +1,136 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
 
-<div class="card">
-    <div class="card-header bg-transparent">
-        <button
-        aria-expanded="false"
-        aria-controls="mod_readaloud_menubuttons_cont"
-        type="button"
-        class="btn nav-link float-sm-left navbar-toggler"
-        data-toggle="toggle-mode-menu"
-        data-side="left"
-        data-preference="drawer-open-nav"
-        id="menu-toggle"
-        style="align-items: center; background-color: red; border-radius: 4px; display: flex; height: 40px; justify-content: center; margin-left: -3px; padding: 0; width: 40px;">
-        <i class="slicon-menu navbar-toggler"></i>
-        <span class="sr-only">Mode menu</span>
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/activity_header
+
+    The Read Aloud activity body.
+
+    Example context (json):
+    {
+    }
+}}
+
+<div class="py-3">
+    {{> mod_readaloud/home}}
+    {{> mod_readaloud/quizcontainer}}
+    {{> mod_readaloud/practicecontainer}}
+
+    <div id="mod_readaloud_readingcontainer" class="mod_readaloud_readingcontainer">
+        {{{passagehtml}}}
+    </div>
+    <!-- Hidden input for update control -->
+    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
+
+    <!-- Hidden input storing JSON configuration -->
+    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
+
+    {{#recorder}}
+        {{> mod_readaloud/recorder}}
+    {{/recorder}}
+
+    {{#progress}}
+    <div id="{{M_HIDER}}" class="{{M_HIDER}}"></div>
+    <div id="{{M_PROGRESS_CONTAINER}}" class="{{M_PROGRESS_CONTAINER}}">
+        <h4>{{#str}} processing, mod_readaloud {{/str}}</h4>
+        <i class="fa fa-spinner fa-5x fa-spin"></i>
+    </div>
+    {{/progress}}
+
+    {{#wheretonext}}
+    <div class="{{M_WHERETONEXT_CONTAINER}} text-center">
+        {{#backtotop}}
+        <a class="{{M_CLASS}}_center btn btn-secondary {{M_BACKTOTOP}}"
+            id="{{M_BACKTOTOP}}"
+            href="{{backtotop_url}}">
+            {{#str}} backtotop, mod_readaloud {{/str}}
+        </a>
+        {{/backtotop}}
+
+        {{#nextactivity}}
+        <a class="{{M_CLASS}}_center btn btn-primary {{M_NEXTACTIVITY}}"
+            href="{{nextactivity_url}}">
+            {{nextactivity_label}}
+        </a>
+        {{/nextactivity}}
+    </div>
+    {{/wheretonext}}
+
+    {{#landr}}
+        {{>mod_readaloud/modalcontainer}}
+    {{/landr}}
+
+    {{#smallreport}}
+        {{>mod_readaloud/smallreport}}
+    {{/smallreport}}
+
+    {{>mod_readaloud/hiddenaudioplayer}}
+
+    {{#stopandplay}}
+    <div id="{{M_STOPANDPLAY}}" class="d-flex justify-content-center hidden p-1">
+        <button id="{{M_STOP_BTN}}" class="btn btn-outline-primary m-2">
+            <i class="fa fa-stop"></i> {{#str}} stopbutton, mod_readaloud {{/str}}
+        </button>
+        <button id="{{M_PLAY_BTN}}" class="btn btn-primary m-2">
+            <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
         </button>
     </div>
-
-    <div class="d-flex">
-
-        {{>mod_readaloud/mainmenu}}
-
-        <div class="readaloud-content">
-            <div id="{{M_MODE_IMAGE_CONTAINER}}" class="mode-content-icon fa-solid text-primary d-block mx-auto mb-4"></div>
-
-            <div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
-                <div class="box">
-                    <div class="{{M_CLASS}}_center {{M_PREVIEWINSTRUCTIONS}}">
-                        {{#str}} previewhelp, mod_readaloud {{/str}}
-                    </div>
-                </div>
+    {{/stopandplay}}
+    <!--<div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
+        <div class="box">
+            <div class="{{M_CLASS}}_center {{M_PREVIEWINSTRUCTIONS}}">
+                {{#str}} previewhelp, mod_readaloud {{/str}}
             </div>
-
-            <div id="{{M_LANDRINSTRUCTIONS_CONTAINER}}" class="{{M_LANDRINSTRUCTIONS_CONTAINER}}">
-                <div class="box">
-                    <div class="{{M_CLASS}}_center {{M_LANDRINSTRUCTIONS}}">
-                        {{#str}} landrhelp, mod_readaloud {{/str}}
-                    </div>
-                </div>
-            </div>
-
-            {{#instructions}}
-            <div id="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}" class="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}">
-                <div class="box py-3 generalbox">
-                    <div class="{{M_CLASS}}_center {{M_INSTRUCTIONS}}">
-                        {{{instructions}}}
-                    </div>
-                </div>
-            </div>
-            {{/instructions}}
-
-            {{#feedback}}
-            <div id="{{M_FEEDBACK_CONTAINER}}" class="{{M_FEEDBACK_CONTAINER}}">
-                <div class="box">
-                    <div class="{{M_CLASS}}_center">
-                        {{{feedback}}}
-                    </div>
-                </div>
-            </div>
-            {{/feedback}}
-
-            {{#error}}
-            <div id="{{M_ERROR_CONTAINER}}" class="{{M_ERROR_CONTAINER}}">
-                <div class="box">
-                    <h3 class="main">{{#str}} errorheader, mod_readaloud {{/str}}</h3>
-                    <div>{{#str}} uploadconverterror, mod_readaloud {{/str}}</div>
-                </div>
-            </div>
-            {{/error}}
-
-            {{> mod_readaloud/home}}
-
-            {{> mod_readaloud/quizcontainer}}
-             {{>mod_readaloud/practicecontainer}}
-
-            <div id="mod_readaloud_readingcontainer" class="mod_readaloud_readingcontainer">
-                {{{passagehtml}}}
-            </div>
-            <!-- Hidden input for update control -->
-            <input id="{{M_UPDATE_CONTROL}}" type="hidden">
-
-            <!-- Hidden input storing JSON configuration -->
-            <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
-
-            {{#recorder}}
-                {{> mod_readaloud/recorder}}
-            {{/recorder}}
-
-            {{#progress}}
-            <div id="{{M_HIDER}}" class="{{M_HIDER}}"></div>
-            <div id="{{M_PROGRESS_CONTAINER}}" class="{{M_PROGRESS_CONTAINER}}">
-                <h4>{{#str}} processing, mod_readaloud {{/str}}</h4>
-                <i class="fa fa-spinner fa-5x fa-spin"></i>
-            </div>
-            {{/progress}}
-
-            {{#wheretonext}}
-            <div class="{{M_WHERETONEXT_CONTAINER}} text-center">
-                {{#backtotop}}
-                <a class="{{M_CLASS}}_center btn btn-secondary {{M_BACKTOTOP}}"
-                    id="{{M_BACKTOTOP}}"
-                    href="{{backtotop_url}}">
-                    {{#str}} backtotop, mod_readaloud {{/str}}
-                </a>
-                {{/backtotop}}
-
-                {{#nextactivity}}
-                <a class="{{M_CLASS}}_center btn btn-primary {{M_NEXTACTIVITY}}"
-                    href="{{nextactivity_url}}">
-                    {{nextactivity_label}}
-                </a>
-                {{/nextactivity}}
-            </div>
-            {{/wheretonext}}
-
-            {{#landr}}
-                {{>mod_readaloud/modalcontainer}}
-            {{/landr}}
-
-            {{#smallreport}}
-                {{>mod_readaloud/smallreport}}
-            {{/smallreport}}
-
-            {{>mod_readaloud/hiddenaudioplayer}}
-
-            {{#stopandplay}}
-            <div id="{{M_STOPANDPLAY}}" class="d-flex justify-content-center hidden p-1">
-                <button id="{{M_STOP_BTN}}" class="btn btn-outline-primary m-2">
-                    <i class="fa fa-stop"></i> {{#str}} stopbutton, mod_readaloud {{/str}}
-                </button>
-                <button id="{{M_PLAY_BTN}}" class="btn btn-primary m-2">
-                    <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
-                </button>
-            </div>
-            {{/stopandplay}}
         </div>
     </div>
+
+    <div id="{{M_LANDRINSTRUCTIONS_CONTAINER}}" class="{{M_LANDRINSTRUCTIONS_CONTAINER}}">
+        <div class="box">
+            <div class="{{M_CLASS}}_center {{M_LANDRINSTRUCTIONS}}">
+                {{#str}} landrhelp, mod_readaloud {{/str}}
+            </div>
+        </div>
+    </div>
+
+    {{#instructions}}
+    <div id="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}" class="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}">
+        <div class="box py-3 generalbox">
+            <div class="{{M_CLASS}}_center {{M_INSTRUCTIONS}}">
+                {{{instructions}}}
+            </div>
+        </div>
+    </div>
+    {{/instructions}}
+
+    {{#feedback}}
+    <div id="{{M_FEEDBACK_CONTAINER}}" class="{{M_FEEDBACK_CONTAINER}}">
+        <div class="box">
+            <div class="{{M_CLASS}}_center">
+                {{{feedback}}}
+            </div>
+        </div>
+    </div>
+    {{/feedback}}
+
+    {{#error}}
+    <div id="{{M_ERROR_CONTAINER}}" class="{{M_ERROR_CONTAINER}}">
+        <div class="box">
+            <h3 class="main">{{#str}} errorheader, mod_readaloud {{/str}}</h3>
+            <div>{{#str}} uploadconverterror, mod_readaloud {{/str}}</div>
+        </div>
+    </div>
+    {{/error}}-->
 </div>

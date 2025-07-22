@@ -21,11 +21,14 @@ $string['readaloudfieldset'] = 'Custom example fieldset';
 $string['readaloudname'] = 'Poodll ReadAloud';
 $string['readaloudname_help'] =
         'This is the content of the help tooltip associated with the readaloudname field. Markdown syntax is supported.';
-//$string['readaloud'] = 'readaloud';
+
+
 $string['activitylink'] = 'Link to next activity';
-$string['activitylink_help'] =
-        'To provide a link after the attempt to another activity in the course, select the activity from the dropdown list.';
+$string['activitylink_help'] = 'To provide a link after the attempt to another activity in the course, select the activity from the dropdown list.';
 $string['activitylinkname'] = 'Continue to next activity: {$a}';
+$string['complete'] = 'Complete';
+$string['inprogress'] = 'In progress';
+$string['locked'] = 'Locked';
 $string['pluginadministration'] = 'ReadAloud Administration';
 $string['pluginname'] = 'Poodll ReadAloud';
 $string['readaloud:addinstance'] = 'Add a new Read Aloud';
