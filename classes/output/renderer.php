@@ -626,30 +626,16 @@ class renderer extends \plugin_renderer_base {
     /**
      *  Show grades admin heading
      */
-    public function show_admintab_heading($showtitle, $showinstructions) {
-        $thetitle = $this->output->heading($showtitle, 3, 'main');
-        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
-        $displaytext .= $this->output->box_start();
-        $displaytext .= \html_writer::div($showinstructions, constants::M_CLASS . '_center');
-        $displaytext .= $this->output->box_end();
-        $ret = \html_writer::div($displaytext);
+    // public function show_admintab_heading($showtitle, $showinstructions) {
+    //     $thetitle = $this->output->heading($showtitle, 3, 'main');
+    //     $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
+    //     $displaytext .= $this->output->box_start();
+    //     $displaytext .= \html_writer::div($showinstructions, constants::M_CLASS . '_center');
+    //     $displaytext .= $this->output->box_end();
+    //     $ret = \html_writer::div($displaytext);
 
-        return $ret;
-    }
-
-    /**
-     * Show the introduction text is as set in the activity description
-     */
-    public function show_intro($readaloud, $cm) {
-        $ret = "";
-        if (utils::super_trim(strip_tags($readaloud->intro))) {
-            $ret .= $this->output->box_start(constants::M_INTRO_CONTAINER . ' ' . constants::M_CLASS . '_center ');
-            $ret .= format_module_intro('readaloud', $readaloud, $cm->id);
-            $ret .= $this->output->box_end();
-        }
-
-        return $ret;
-    }
+    //     return $ret;
+    // }
 
     /**
      * Show the reading passage after the attempt, basically set it to display on load and give it a background color
@@ -863,25 +849,6 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
-     * Show open and close dates for the activity.
-     *
-     * @param object $moduleinstance The module instance.
-     * @return string The HTML content for the open and close dates.
-     */
-    public function show_open_close_dates($moduleinstance) {
-        $tdata = [];
-        if ($moduleinstance->viewstart > 0) {
-            $tdata['opendate'] = $moduleinstance->viewstart;
-        }
-        if ($moduleinstance->viewend > 0) {
-            $tdata['closedate'] = $moduleinstance->viewend;
-        }
-        $ret = $this->output->render_from_template( constants::M_COMPONENT . '/openclosedates', $tdata);
-
-        return $ret;
-    }
-
-    /**
      * Fetches the activity AMD configuration.
      *
      * @param object $cm The course module object.
@@ -919,7 +886,6 @@ class renderer extends \plugin_renderer_base {
         $recopts['menubuttonscontainer'] = constants::M_MENUBUTTONS_CONTAINER;
         $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
         $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
-        $recopts['modeimagecontainer'] = constants::M_MODE_IMAGE_CONTAINER;
         $recopts['modejourneycontainer'] = constants::M_MODE_JOURNEY_CONTAINER;
         $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
         $recopts['practicecontainerwrap'] = constants::M_PRACTICE_CONTAINER_WRAP;
@@ -1397,29 +1363,15 @@ break;
         $moduleinstance,
         $reviewattempts
     ) { // TODO: add in the : array once the imported functions are resolved.
-        global $CFG, $DB, $USER;
+        global $CFG, $DB;
 
         // The activity header.
         $header = $this->page->activityheader;
-        // $corerenderer = $this->page->get_renderer('core');
         $corecourserenderer = $this->page->get_renderer('core_course');
         $headercontent = $header->export_for_template($corecourserenderer);
         $passagepictureurl = $this->get_passage_picture($moduleinstance, $modulecontext);
-
-        // $rawdates = activity_dates_helper::get_dates_for_module($cm, $USER->id);
-        // $datesrenderable = new dates_renderer($rawdates);
-        // $datesrenderable = new \core_course\output\activity_dates($rawdates);
-        // $datecontext = $datesrenderable->export_for_template($corecourserenderer);
-
-
-        // Now overwrite/attach our two separate chunks:
-        // $activitycompletiondata = $this->get_activity_completion_data($corerenderer);
-        // $activitydates        = $this->get_activity_dates_data($corecourserenderer);
-
-        // $activityinfodata        = $this->get_activity_info_data($corecourserenderer);
         $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
 
-        // TODO: remove moodle/mod/readaloud/templates/openclosedates.mustache
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
 if ($moduleinstance->passagesegments === null) {
     $olditem = false;
@@ -1538,9 +1490,6 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
     false
 );
 
-        // Need to check why this outputs twice.
-        $showintro = ($CFG->version < 2022041900) ? $this->show_intro($moduleinstance, $cm) : '';
-
         // $welcomemessage = $canattempt ? get_string('welcomemenu', constants::M_COMPONENT) :
         // get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts);
 
@@ -1551,12 +1500,94 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $mode = 'noquiz';
         if ($mode === 'quiz') {
             $modequiz = true;
-        }else{
+        } else {
             $modequiz = false;
         }
+
+        $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
+        $canattempt = $modevisibility['canattempt'];
+        $canshadowattempt = $modevisibility['canshadowattempt'];
+        $hasaudiobreaks = $modevisibility['hasaudiobreaks'];
+
+        $stepnumbers = constants::STEPS;
+
+        // Get the steps enabled, open and complete states.
         $stepsenabled = utils::get_steps_enabled_state($moduleinstance);
         $stepsopen = utils::get_steps_open_state($moduleinstance, $latestattempt);
         $stepscomplete = utils::get_steps_complete_state($moduleinstance, $latestattempt);
+
+        $stepdefs = [
+            'step_listen'   => ['mode' => 'preview',       'label' => 'mode_listen'],
+            'step_practice' => ['mode' => 'landr',         'label' => 'mode_practice'],
+            'step_shadow'   => ['mode' => 'shadow',        'label' => 'mode_shadow'],
+            'step_read'     => ['mode' => 'startnoshadow', 'label' => 'mode_read'],
+            'step_quiz'     => ['mode' => 'quiz',          'label' => 'mode_quiz'],
+            'step_report'   => ['mode' => 'fullreport',    'label' => 'mode_report'],
+        ];
+
+        $stepsdata = [];
+
+        foreach ($stepdefs as $key => $def) {
+            if (empty($stepsenabled[$key])
+                || ($key === 'step_practice' && ! $hasaudiobreaks)
+                || ($key === 'step_shadow'   && ! $canshadowattempt)
+                || ($key === 'step_read'     && ! $canattempt)
+                || ($key === 'step_quiz'     && ! empty($noquiz))
+            ) {
+                continue;
+            }
+
+            $open     = !empty($stepsopen[$key]);
+            $complete = !empty($stepscomplete[$key]);
+
+            // CSS classes.
+            $classes = trim(implode(' ', [
+                'mode-chooser',
+                $open ? '' : 'no-click',
+            ]));
+
+            // Status icon html.
+            if (!$open) {
+                $statusicon = $this->output
+                    ->image_url('padlock', constants::M_COMPONENT)
+                    ->out(false);
+            } else if ($complete) {
+                $statusicon = $statusicon = $this->output
+                ->image_url('checkbox', constants::M_COMPONENT)
+                ->out(false);
+            } else {
+                $statusicon = '<i class="fa-regular fa-circle text-warning" title="'
+                          . get_string('inprogress', 'mod_readaloud') . '"></i>';
+            }
+
+            $label = get_string($def['label'], 'mod_readaloud');
+
+            // Warning text.
+            $warningtext = '';
+            if ($key === 'step_practice' && ! $hasaudiobreaks) {
+                $warningtext = get_string('modelaudiowarning', 'mod_readaloud');
+            } else if ($key === 'step_read' && ! $canattempt) {
+                $warningtext = get_string('exceededallattempts', 'mod_readaloud');
+            } else if ($key === 'step_quiz' && ! empty($stepscomplete['step_quiz'])) {
+                $warningtext = get_string('quizcompletedwarning', 'mod_readaloud');
+            }
+
+            // Get the URL of pix/{mode}.svg.
+            $iconurl = $this->output
+                ->image_url($def['mode'], constants::M_COMPONENT)
+                ->out(false);
+
+            // Assemble.
+            $stepsdata[] = (object) [
+                'stepnumber'  => $stepnumbers[$key],
+                'mode'        => $def['mode'],
+                'classes'     => $classes,
+                'statusicon'  => $statusicon,
+                'label'       => $label,
+                'warningtext'  => $warningtext,
+                'iconurl'     => $iconurl,
+            ];
+        }
 
         // Render the passage.
         $widgetid = constants::M_RECORDERID . '_opts_9999';
@@ -1603,53 +1634,29 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $quizhelper = new quizhelper($cm);
         $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm);
 
-        $currenttime = time();
-
-        $activityisclosed = ($moduleinstance->viewend > 0 && $currenttime > $moduleinstance->viewend);
-        $activitynotopenyet = ($moduleinstance->viewstart > 0 && $currenttime < $moduleinstance->viewstart);
         $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
-        $closedate = $moduleinstance->viewend > 0 ? $moduleinstance->viewend : null;
         $feedback = !empty($moduleinstance->feedback) ? $moduleinstance->feedback : null;
-        $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
         $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
-        $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
-        $opendate = $moduleinstance->viewstart > 0 ? $moduleinstance->viewstart : null;
         $smallreport = $this->get_smallreport_data($moduleinstance, $modulecontext, $cm, $attempts, $latestattempt, $latestaigrade);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
 
         return array_merge([
             'activityamddata' => $activityamddata,
             'attempts' => $attempts,
-            'canattempt' => $modevisibility['canattempt'],
-            'canshadowattempt' => $modevisibility['canshadowattempt'],
-            'enablenoshadow' => $modevisibility['enablenoshadow'],
-            'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'embed' => $embed,
-            'steps' => constants::STEPS,
-            'stepsenabled' => $stepsenabled,
-            'stepsopen' => $stepsopen,
-            'stepscomplete'  => $stepscomplete,
+            'steps' => $stepsdata, // false
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
             'practice' => $practice,
             'instructions' => $instructions,
-            'mode' => null,
-            'modequiz' => $modequiz,
+            // 'mode' => null,
+            // 'modequiz' => $modequiz,
             'moduleinstance' => $moduleinstance,
-            'openclosedates' => [
-                'activityisclosed' => $activityisclosed,
-                'activitynotopenyet' => $activitynotopenyet,
-                'canpreview' => $canpreview,
-                'closedate' => $closedate,
-                'hasopenclosedates' => $hasopenclosedates,
-                'opendate' => $opendate,
-            ],
             'passagehtml' => isset($passagehtml) ? $passagehtml : null,
             'progress' => true, // TEMP.
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => isset($quizhtml) ? $quizhtml : null,
             'recorder' => $recorder,
-            'showintro' => $showintro,
             'smallreport' => $smallreport,
             'stopandplay' => true, // TEMP.
             'welcomemessage' => $welcomemessage,
@@ -1660,6 +1667,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'activityheader' => $activityheader,
             'headercontent' => $headercontent,
             'passagepictureurl' => $passagepictureurl,
+            'hasbody' => true, // TEMP.
         ], $this->get_all_constants());
     }
 }

@@ -253,7 +253,6 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
         $recopts['hider'] = constants::M_HIDER;
         $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
-        $recopts['modeimagecontainer'] = constants::M_MODE_IMAGE_CONTAINER;
         $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
         $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
         $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
