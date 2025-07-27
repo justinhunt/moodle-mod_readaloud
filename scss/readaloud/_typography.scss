@@ -7,7 +7,7 @@ body.path-mod-readaloud #page-content {
 
     h1,
     .h1 {
-        font-size: 24px;
+        font-size: $font-size-base * 1.5; // 24px;
         font-weight: 600;
         line-height: normal;
     }
