@@ -26,15 +26,17 @@
 
 <div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active w-100">
     <div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}}">
-        <ol class="list-unstyled p-0">
+        <ol class="main-nav list-unstyled p-0">
             {{#steps}}
-            <li class="nav-item {{classes}} p-3 mb-4 d-flex border rounded" data-step="{{stepnumber}}">
+            <li class="nav-item {{classes}} p-3 mb-4 d-flex rounded" data-step="{{stepnumber}}">
                 <a href="javascript:void(0)" class="nav-link h6 w-100 mb-0 d-flex align-items-center justify-content-between" data-mode="{{mode}}">
                     <div class="nav-text-group">
-                        <img src="{{iconurl}}" alt="{{label}}" class="step-icon flex-shrink-0" />
+                        <span class="step-icon flex-shrink-0 mr-2">
+                            {{{modeicon}}}
+                        </span>
                         <span class="nav-label">{{label}}</span>
                     </div>
-                    <img src="{{statusicon}}" alt="{{label}}" class="nav-completion-icon ml-auto" />
+                    <img src="{{statusicon}}" alt="{{label}}" class="nav-status-icon ml-auto" />
                 </a>
                 {{#warningtext}}
                 <span class="mod_readaloud_menubutton_warning">{{warningtext}}</span>
