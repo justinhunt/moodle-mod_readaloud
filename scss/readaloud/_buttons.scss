@@ -1,0 +1,5 @@
+body.path-mod-readaloud #page-content {
+    .btn {
+        @include readaloud-btn-size();
+    }
+}

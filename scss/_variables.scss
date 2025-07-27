@@ -32,5 +32,14 @@ $raleway: "Raleway", $font-family-system, !default;
 $passagepicturesize: 122px !default;
 
 // Typography.
-$font-size-base: 16px !default;
+$font-size-base: 1rem !default;
 $font-weight-semibold: 600 !default;
+
+// Components.
+$border-radius-lg: 0.5rem !default;
+
+// Buttons.
+$btn-padding-y: 0.75rem !default;
+$btn-padding-x: 0.75rem !default;
+$btn-font-size: $font-size-base * 0.875 !default;
+$btn-border-radius: $border-radius-lg !default;

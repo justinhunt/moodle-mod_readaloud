@@ -1,4 +1,12 @@
 @charset "UTF-8";
+body.path-mod-readaloud #page-content .btn {
+  --bs-btn-padding-y: 0.75rem;
+  --bs-btn-padding-x: 0.75rem;
+  --bs-btn-font-size: 0.875rem;
+  --bs-btn-border-radius: 0.5rem;
+  line-height: normal;
+}
+
 /* cyrillic-ext */
 @font-face {
   font-family: "Raleway";
@@ -2936,20 +2944,20 @@ div.mod_readaloud_studentreportpassage .mod_readaloud_grading_unreadword {
 
 body.path-mod-readaloud #page-content {
   font-family: "Raleway", -apple-system, BlinkMacSystemFont, Helvetica, Arial, Lucida, sans-serif;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
   line-height: 160%;
 }
 body.path-mod-readaloud #page-content h1,
 body.path-mod-readaloud #page-content .h1 {
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: normal;
 }
 body.path-mod-readaloud #page-content h2,
 body.path-mod-readaloud #page-content .h2 {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 600;
   line-height: normal;
 }
@@ -2965,7 +2973,7 @@ body.path-mod-readaloud #page-content .h6 {
   line-height: normal;
 }
 body.path-mod-readaloud #page-content .font-sm {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: normal;
 }
