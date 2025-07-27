@@ -1517,12 +1517,18 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $stepscomplete = utils::get_steps_complete_state($moduleinstance, $latestattempt);
 
         $stepdefs = [
-            'step_listen'   => ['mode' => 'preview',       'label' => 'mode_listen'],
-            'step_practice' => ['mode' => 'landr',         'label' => 'mode_practice'],
-            'step_shadow'   => ['mode' => 'shadow',        'label' => 'mode_shadow'],
-            'step_read'     => ['mode' => 'startnoshadow', 'label' => 'mode_read'],
-            'step_quiz'     => ['mode' => 'quiz',          'label' => 'mode_quiz'],
-            'step_report'   => ['mode' => 'fullreport',    'label' => 'mode_report'],
+            'step_listen'   => ['mode' => 'preview',       'label' => 'mode_listen',   'icon' => 'listen'],
+            'step_practice' => ['mode' => 'landr',         'label' => 'mode_practice', 'icon' => 'practice'],
+            'step_shadow'   => ['mode' => 'shadow',        'label' => 'mode_shadow',   'icon' => 'shadow'],
+            'step_read'     => ['mode' => 'startnoshadow', 'label' => 'mode_read',     'icon' => 'read'],
+            'step_quiz'     => ['mode' => 'quiz',          'label' => 'mode_quiz',     'icon' => 'quiz'],
+            'step_report'   => ['mode' => 'fullreport',    'label' => 'mode_report',   'icon' => 'report'],
+        ];
+
+        $statusicons = [
+            'locked'   => 'locked',
+            'complete' => 'checked',
+            'current'  => 'current',
         ];
 
         $stepsdata = [];
@@ -1537,30 +1543,39 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
                 continue;
             }
 
-            $open     = !empty($stepsopen[$key]);
+            $open = !empty($stepsopen[$key]);
             $complete = !empty($stepscomplete[$key]);
+
+            if (!$open) {
+                $status = 'locked';
+            } else if ($complete) {
+                $status = 'complete';
+            } else {
+                $status = 'current';
+            }
 
             // CSS classes.
             $classes = trim(implode(' ', [
-                'mode-chooser',
-                $open ? '' : 'no-click',
+                "mode-chooser",
+                "state-{$status}",
+                $status === 'locked' ? 'no-click' : '',
             ]));
 
-            // Status icon html.
-            if (!$open) {
-                $statusicon = $this->output
-                    ->image_url('padlock', constants::M_COMPONENT)
-                    ->out(false);
-            } else if ($complete) {
-                $statusicon = $statusicon = $this->output
-                ->image_url('checkbox', constants::M_COMPONENT)
-                ->out(false);
-            } else {
-                $statusicon = '<i class="fa-regular fa-circle text-warning" title="'
-                          . get_string('inprogress', 'mod_readaloud') . '"></i>';
-            }
+            // Get the mode icon.
+            $iconname = $def['icon'] . '.svg';
+            $pixdir   = $CFG->dirroot . '/mod/readaloud/pix/';
+            $svgfile  = $pixdir . $iconname;
+            $modeicon = is_readable($svgfile)
+                ? file_get_contents($svgfile)
+                : '';
 
             $label = get_string($def['label'], 'mod_readaloud');
+
+            // Get the status icon.
+            $iconkey = $statusicons[$status];
+            $statusicon = $this->output
+                ->image_url($iconkey, constants::M_COMPONENT)
+                ->out(false);
 
             // Warning text.
             $warningtext = '';
@@ -1572,11 +1587,6 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
                 $warningtext = get_string('quizcompletedwarning', 'mod_readaloud');
             }
 
-            // Get the URL of pix/{mode}.svg.
-            $iconurl = $this->output
-                ->image_url($def['mode'], constants::M_COMPONENT)
-                ->out(false);
-
             // Assemble.
             $stepsdata[] = (object) [
                 'stepnumber'  => $stepnumbers[$key],
@@ -1585,7 +1595,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
                 'statusicon'  => $statusicon,
                 'label'       => $label,
                 'warningtext'  => $warningtext,
-                'iconurl'     => $iconurl,
+                'modeicon'     => $modeicon,
             ];
         }
 

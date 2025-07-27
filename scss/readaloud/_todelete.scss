@@ -514,29 +514,7 @@
   .nav-link:active .nav-label {
     transform: scale(1.1);
   } */
-  
-  .mode-chooser.no-show {
-    display:none;
-  }
-  .mode-chooser.no-click a {
-    color: gray;
-    cursor: not-allowed;
-    font-weight: normal;
-    pointer-events: none;
-  }
-  
-  /* .mode-chooser-label {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    height: 80px;
-    border-top: 1px solid darkgray;
-    text-align: center;
-    padding: 5px;
-    font-size: 14px;
-  } */
-  
+
   /* #mod_readaloud_button_stopandplay {
     height: 40px;
     border: 1px solid transparent;

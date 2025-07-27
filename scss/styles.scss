@@ -1,7 +1,11 @@
-// Import the variables.
+// Import the variables and mixins.
 @import "variables";
+@import "readaloud/mixins";
 
 // Import readaloud scss.
+@import "readaloud/buttons";
+@import "readaloud/fonts";
 @import "readaloud/home";
 @import "readaloud/moduleintro";
 @import "readaloud/todelete";
+@import "readaloud/typography";
