@@ -90,6 +90,7 @@ $PAGE->set_heading(format_string($course->fullname));
 // This library is licensed with the hippocratic license (https://github.com/EthicalSource/hippocratic-license/)
 // which is not GPL3 compat. so cant be distributed with plugin. Hence we load it from CDN.
 $PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
+$PAGE->requires->css('/mod/readaloud/scss/styles.css');
 
 // If we need a non standard font we can do that from here.
 if (!empty($moduleinstance->customfont)) {

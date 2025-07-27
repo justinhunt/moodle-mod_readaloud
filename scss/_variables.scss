@@ -8,5 +8,13 @@ $purple: #513DEB !default;
 $yellow: #FFDA20 !default;
 $purple6: rgba($purple, 0.06) !default;
 
+// Fonts.
+$font-family-system: -apple-system, BlinkMacSystemFont, Helvetica, Arial, Lucida, sans-serif;
+$raleway: "Raleway", $font-family-system, !default;
+
 // Imagery.
 $passagepicturesize: 122px !default;
+
+// Typography.
+$font-size-base: 16px !default;
+$font-weight-semibold: 600 !default;
