@@ -1,0 +1,15 @@
+// Import Bootstrap.
+@import "../../../../theme/boost/scss/bootstrap/functions";
+@import "../../../../theme/boost/scss/bootstrap/variables";
+@import "../../../../theme/boost/scss/bootstrap/vendor/rfs";
+@import "../../../../theme/boost/scss/bootstrap/mixins/buttons";
+
+// Readaloud button mixins.
+@mixin readaloud-btn-size {
+    @include button-size($btn-padding-y, $btn-padding-x, $btn-font-size, $btn-border-radius);
+    line-height: normal;
+}
+
+@mixin readaloud-btn-variant($background, $border, $color: color-contrast($background)) {
+    @include button-variant($background, $border, $color);
+}
