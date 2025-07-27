@@ -1,0 +1,40 @@
+body.path-mod-readaloud #page-content {
+    font-family: $raleway;
+    font-size: $font-size-base * 0.875; // 14px.
+    font-style: normal;
+    font-weight: 400;
+    line-height: 160%; // 22.4px.
+
+    h1,
+    .h1 {
+        font-size: 24px;
+        font-weight: 600;
+        line-height: normal;
+    }
+
+    h2,
+    .h2 {
+        font-size: $font-size-base * 1.125; // 18px.
+        font-weight: 600;
+        line-height: normal;
+    }
+
+    h3,
+    .h3,
+    h4,
+    .h4,
+    h5,
+    .h5,
+    h6,
+    .h6 {
+        font-weight: 400;
+        line-height: normal;
+    }
+
+    .font-sm {
+        font-size: $font-size-base * 0.875; // 14px.
+        font-weight: 600;
+        line-height: normal;
+    }
+}
+
