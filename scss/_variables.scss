@@ -1,12 +1,28 @@
 
-// Colors.
-$gray-100: #E3E3E4 !default;
-$gray-600: #727276 !default;
-$gray-700: #565559 !default;
-$gray-900: #1D1C1E !default;
+// Color.
+// Primary.
 $purple: #513DEB !default;
+$purple6: rgba($purple, 0.06) !default; // 6% of $purple.
+
+// Grey.
+$white: #FFFFFF !default;
+$gray-100: #F9F9FA !default;
+$gray-200: #E3E3E4 !default;
+$gray-300: #CFCED1 !default;
+$gray-400: #BAB9BD !default;
+$gray-500: #A4A3A8 !default;
+$gray-600: #8F8E94 !default;
+$gray-700: #727276 !default;
+$gray-800: #565559 !default;
+$gray-900: #1D1C1E !default;
+
+// Action.
+$green: #00AE34 !default;
+$green6: rgba(0, 174, 52, 0.06) !default; // 6% of $green.
+$red: #FF0000 !default;
+$red15: rgba(255, 0, 0, 0.06) !default; // 6% of $red.
 $yellow: #FFDA20 !default;
-$purple6: rgba($purple, 0.06) !default;
+$yellow15: rgba(255, 218, 32, 0.15) !default; // 15% of $yellow.
 
 // Fonts.
 $font-family-system: -apple-system, BlinkMacSystemFont, Helvetica, Arial, Lucida, sans-serif;

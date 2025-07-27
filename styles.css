@@ -96,7 +96,7 @@
   background: rgba(81, 61, 235, 0.06);
 }
 #page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-description {
-  color: #565559;
+  color: #727276;
 }
 #page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-picture img {
   aspect-ratio: 1/1;
@@ -104,7 +104,7 @@
   width: 122px;
 }
 #page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-info {
-  border: 1px solid #E3E3E4;
+  border: 1px solid #F9F9FA;
 }
 
 .mod_readaloud_center {
