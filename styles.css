@@ -1,6 +1,4 @@
 @charset "UTF-8";
-<<<<<<< HEAD
-=======
 /* cyrillic-ext */
 @font-face {
   font-family: "Raleway";
@@ -91,11 +89,6 @@
   src: url(https://fonts.gstatic.com/s/raleway/v36/1Ptug8zYS_SKggPNyC0ITw.woff2) format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-#mod_readaloud_home_cont #mod_readaloud_mode_journey_container .nav-label {
-  font-weight: 600;
-}
-
->>>>>>> 0693d82... Add design system typography
 #page-mod-readaloud-view #page.drawers .activity-header {
   display: none;
 }
@@ -2945,7 +2938,7 @@ div.mod_readaloud_studentreportpassage .mod_readaloud_grading_unreadword {
 }
 
 body.path-mod-readaloud #page-content {
-  font-family: "Raleway", -apple-system, BlinkMacSystemFont, "Work Sans", Helvetica, Arial, Lucida, sans-serif;
+  font-family: "Raleway", -apple-system, BlinkMacSystemFont, Helvetica, Arial, Lucida, sans-serif;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
