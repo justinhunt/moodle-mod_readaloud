@@ -1,54 +1,23 @@
-{{!
-    This file is part of Moodle - http://moodle.org/
-
-    Moodle is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Moodle is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-}}
-{{!
-    @template mod_readaloud/home
-
-    The list of steps in the Read Aloud activity.
-
-    Example context (json):
-    {
-    }
-}}
-
-<div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active w-100">
-    <div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}}">
-        <ol class="main-nav list-unstyled p-0">
-            {{#steps}}
-            <li class="nav-item {{classes}} p-3 mb-4 d-flex rounded" data-step="{{stepnumber}}">
-                <a href="javascript:void(0)" class="nav-link h6 w-100 mb-0 d-flex align-items-center justify-content-between" data-mode="{{mode}}">
-                    <div class="nav-text-group">
-                        <span class="step-icon flex-shrink-0 mr-2">
-                            {{{modeicon}}}
-                        </span>
-                        <span class="nav-label">{{label}}</span>
-                    </div>
-                    <img src="{{statusicon}}" alt="{{label}}" class="nav-status-icon ml-auto" />
-                </a>
-                {{#warningtext}}
-                <span class="mod_readaloud_menubutton_warning">{{warningtext}}</span>
-                {{/warningtext}}
-            </li>
-            {{/steps}}
-            {{^steps}}
-            <li>No steps available</li>
-            {{/steps}}
-        </ol>
-    </div>
+<div id="{{M_MENUBUTTONS_CONTAINER}}" class="{{M_MENUBUTTONS_CONTAINER}} w-100">
+    <ol class="main-nav list-unstyled p-0">
+        {{#stepsdata}}
+        <li class="nav-item mode-chooser {{classes}} p-3 mb-4 d-flex rounded" data-step="{{stepnumber}}">
+            <a href="javascript:void(0)" class="nav-link h6 w-100 mb-0 d-flex align-items-center justify-content-between" data-mode="{{mode}}">
+                <div class="nav-text-group">
+                    <span class="step-icon flex-shrink-0 mr-2">
+                        {{{modeicon}}}
+                    </span>
+                    <span class="nav-label">{{label}}</span>
+                </div>
+                <img src="{{statusicon}}" alt="{{label}}" class="nav-status-icon ml-auto" />
+            </a>
+            {{#warningtext}}
+            <span class="mod_readaloud_menubutton_warning">{{warningtext}}</span>
+            {{/warningtext}}
+        </li>
+        {{/stepsdata}}
+        {{^stepsdata}}
+        <li>No steps available</li>
+        {{/stepsdata}}
+    </ol>
 </div>
-
-
-

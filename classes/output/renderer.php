@@ -1343,6 +1343,110 @@ break;
     }
 
     /**
+     * Build and return the steps data for display.
+     *
+     * @param stdClass $moduleinstance    The current module instance.
+     * @param bool     $canattempt        Initial “can attempt” flag; will be updated based on mode visibility.
+     * @param stdClass $latestattempt     The user’s latest attempt record.
+     * @param bool     $noquiz            Optional flag to disable the quiz step.
+     * @return stdClass[]                 Array of step‐data objects.
+     */
+    protected function get_steps_data($moduleinstance, $canattempt, $latestattempt, $stepsenabled,
+    $stepsopen, $stepscomplete) {
+        global $CFG;
+
+        $modevisibility   = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
+        $canattempt       = $modevisibility['canattempt'];
+        $canshadowattempt = $modevisibility['canshadowattempt'];
+        $hasaudiobreaks   = $modevisibility['hasaudiobreaks'];
+
+        $stepnumbers   = constants::STEPS;
+
+        $stepdefs = [
+            'step_listen'   => ['mode' => 'preview',       'label' => 'mode_listen',   'icon' => 'listen'],
+            'step_practice' => ['mode' => 'landr',         'label' => 'mode_practice', 'icon' => 'practice'],
+            'step_shadow'   => ['mode' => 'shadow',        'label' => 'mode_shadow',   'icon' => 'shadow'],
+            'step_read'     => ['mode' => 'startnoshadow', 'label' => 'mode_read',     'icon' => 'read'],
+            'step_quiz'     => ['mode' => 'quiz',          'label' => 'mode_quiz',     'icon' => 'quiz'],
+            'step_report'   => ['mode' => 'fullreport',    'label' => 'mode_report',   'icon' => 'report'],
+        ];
+        $statusicons = [
+            'locked'   => 'locked',
+            'complete' => 'checked',
+            'current'  => 'current',
+        ];
+
+        $stepsdata = [];
+
+        foreach ($stepdefs as $key => $def) {
+            if (empty($stepsenabled[$key])
+                || ($key === 'step_practice' && ! $hasaudiobreaks)
+                || ($key === 'step_shadow'   && ! $canshadowattempt)
+                || ($key === 'step_read'     && ! $canattempt)
+                || ($key === 'step_quiz'     && ! empty($noquiz))
+            ) {
+                continue;
+            }
+
+            $open     = !empty($stepsopen[$key]);
+            $complete = !empty($stepscomplete[$key]);
+
+            if (!$open) {
+                $status = 'locked';
+            } else if ($complete) {
+                $status = 'complete';
+            } else {
+                $status = 'current';
+            }
+
+            // CSS classes.
+            $classes = trim(implode(' ', [
+                $status,
+                $status === 'locked' ? 'no-click' : '',
+            ]));
+
+            // Get the mode icon.
+            $iconname = $def['icon'] . '.svg';
+            $pixdir   = $CFG->dirroot . '/mod/readaloud/pix/';
+            $svgfile  = $pixdir . $iconname;
+            $modeicon = is_readable($svgfile)
+                ? file_get_contents($svgfile)
+                : '';
+
+            $label = get_string($def['label'], 'mod_readaloud');
+
+            // Get the status icon.
+            $iconkey = $statusicons[$status];
+            $statusicon = $this->output
+                ->image_url($iconkey, constants::M_COMPONENT)
+                ->out(false);
+
+            // Warning text.
+            $warningtext = '';
+            if ($key === 'step_practice' && ! $hasaudiobreaks) {
+                $warningtext = get_string('modelaudiowarning', 'mod_readaloud');
+            } else if ($key === 'step_read' && ! $canattempt) {
+                $warningtext = get_string('exceededallattempts', 'mod_readaloud');
+            } else if ($key === 'step_quiz' && ! empty($stepscomplete['step_quiz'])) {
+                $warningtext = get_string('quizcompletedwarning', 'mod_readaloud');
+            }
+
+            // Build stepsdata.
+            $stepsdata[] = (object)[
+                'stepnumber'  => $stepnumbers[$key],
+                'mode'        => $def['mode'],
+                'classes'     => $classes,
+                'statusicon'  => $statusicon,
+                'label'       => $label,
+                'warningtext' => $warningtext,
+                'modeicon'    => $modeicon,
+            ];
+        }
+
+        return $stepsdata;
+    }
+
+    /**
      * Get the data for the view page.
      *
      * @param cm_info   $cm             The course module.
@@ -1363,7 +1467,7 @@ break;
         $moduleinstance,
         $reviewattempts
     ) { // TODO: add in the : array once the imported functions are resolved.
-        global $CFG, $DB;
+        global $CFG, $DB, $USER;
 
         // The activity header.
         $header = $this->page->activityheader;
@@ -1500,104 +1604,12 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $mode = 'noquiz';
         if ($mode === 'quiz') {
             $modequiz = true;
-        } else {
+        }else{
             $modequiz = false;
         }
-
-        $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
-        $canattempt = $modevisibility['canattempt'];
-        $canshadowattempt = $modevisibility['canshadowattempt'];
-        $hasaudiobreaks = $modevisibility['hasaudiobreaks'];
-
-        $stepnumbers = constants::STEPS;
-
-        // Get the steps enabled, open and complete states.
         $stepsenabled = utils::get_steps_enabled_state($moduleinstance);
         $stepsopen = utils::get_steps_open_state($moduleinstance, $latestattempt);
         $stepscomplete = utils::get_steps_complete_state($moduleinstance, $latestattempt);
-
-        $stepdefs = [
-            'step_listen'   => ['mode' => 'preview',       'label' => 'mode_listen',   'icon' => 'listen'],
-            'step_practice' => ['mode' => 'landr',         'label' => 'mode_practice', 'icon' => 'practice'],
-            'step_shadow'   => ['mode' => 'shadow',        'label' => 'mode_shadow',   'icon' => 'shadow'],
-            'step_read'     => ['mode' => 'startnoshadow', 'label' => 'mode_read',     'icon' => 'read'],
-            'step_quiz'     => ['mode' => 'quiz',          'label' => 'mode_quiz',     'icon' => 'quiz'],
-            'step_report'   => ['mode' => 'fullreport',    'label' => 'mode_report',   'icon' => 'report'],
-        ];
-
-        $statusicons = [
-            'locked'   => 'locked',
-            'complete' => 'checked',
-            'current'  => 'current',
-        ];
-
-        $stepsdata = [];
-
-        foreach ($stepdefs as $key => $def) {
-            if (empty($stepsenabled[$key])
-                || ($key === 'step_practice' && ! $hasaudiobreaks)
-                || ($key === 'step_shadow'   && ! $canshadowattempt)
-                || ($key === 'step_read'     && ! $canattempt)
-                || ($key === 'step_quiz'     && ! empty($noquiz))
-            ) {
-                continue;
-            }
-
-            $open = !empty($stepsopen[$key]);
-            $complete = !empty($stepscomplete[$key]);
-
-            if (!$open) {
-                $status = 'locked';
-            } else if ($complete) {
-                $status = 'complete';
-            } else {
-                $status = 'current';
-            }
-
-            // CSS classes.
-            $classes = trim(implode(' ', [
-                "mode-chooser",
-                "state-{$status}",
-                $status === 'locked' ? 'no-click' : '',
-            ]));
-
-            // Get the mode icon.
-            $iconname = $def['icon'] . '.svg';
-            $pixdir   = $CFG->dirroot . '/mod/readaloud/pix/';
-            $svgfile  = $pixdir . $iconname;
-            $modeicon = is_readable($svgfile)
-                ? file_get_contents($svgfile)
-                : '';
-
-            $label = get_string($def['label'], 'mod_readaloud');
-
-            // Get the status icon.
-            $iconkey = $statusicons[$status];
-            $statusicon = $this->output
-                ->image_url($iconkey, constants::M_COMPONENT)
-                ->out(false);
-
-            // Warning text.
-            $warningtext = '';
-            if ($key === 'step_practice' && ! $hasaudiobreaks) {
-                $warningtext = get_string('modelaudiowarning', 'mod_readaloud');
-            } else if ($key === 'step_read' && ! $canattempt) {
-                $warningtext = get_string('exceededallattempts', 'mod_readaloud');
-            } else if ($key === 'step_quiz' && ! empty($stepscomplete['step_quiz'])) {
-                $warningtext = get_string('quizcompletedwarning', 'mod_readaloud');
-            }
-
-            // Assemble.
-            $stepsdata[] = (object) [
-                'stepnumber'  => $stepnumbers[$key],
-                'mode'        => $def['mode'],
-                'classes'     => $classes,
-                'statusicon'  => $statusicon,
-                'label'       => $label,
-                'warningtext'  => $warningtext,
-                'modeicon'     => $modeicon,
-            ];
-        }
 
         // Render the passage.
         $widgetid = constants::M_RECORDERID . '_opts_9999';
@@ -1644,23 +1656,47 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $quizhelper = new quizhelper($cm);
         $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm);
 
+        $currenttime = time();
+
+        $activityisclosed = ($moduleinstance->viewend > 0 && $currenttime > $moduleinstance->viewend);
+        $activitynotopenyet = ($moduleinstance->viewstart > 0 && $currenttime < $moduleinstance->viewstart);
         $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
+        $closedate = $moduleinstance->viewend > 0 ? $moduleinstance->viewend : null;
         $feedback = !empty($moduleinstance->feedback) ? $moduleinstance->feedback : null;
+        $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
         $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
+        $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
+        $opendate = $moduleinstance->viewstart > 0 ? $moduleinstance->viewstart : null;
         $smallreport = $this->get_smallreport_data($moduleinstance, $modulecontext, $cm, $attempts, $latestattempt, $latestaigrade);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
+
+        $stepsdata = $this->get_steps_data (
+            $moduleinstance,
+            $canattempt,
+            $latestattempt,
+            $stepsenabled,
+            $stepsopen,
+            $stepscomplete
+        );
 
         return array_merge([
             'activityamddata' => $activityamddata,
             'attempts' => $attempts,
+            'canattempt' => $modevisibility['canattempt'],
+            'canshadowattempt' => $modevisibility['canshadowattempt'],
+            'enablenoshadow' => $modevisibility['enablenoshadow'],
+            'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'embed' => $embed,
-            'steps' => $stepsdata, // false
+            'steps' => constants::STEPS,
+            'stepsenabled' => $stepsenabled,
+            'stepsopen' => $stepsopen,
+            'stepscomplete'  => $stepscomplete,
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
             'practice' => $practice,
             'instructions' => $instructions,
-            // 'mode' => null,
-            // 'modequiz' => $modequiz,
+            'mode' => null,
+            'modequiz' => $modequiz,
             'moduleinstance' => $moduleinstance,
             'passagehtml' => isset($passagehtml) ? $passagehtml : null,
             'progress' => true, // TEMP.
@@ -1678,6 +1714,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'headercontent' => $headercontent,
             'passagepictureurl' => $passagepictureurl,
             'hasbody' => true, // TEMP.
+            'stepsdata' => $stepsdata,
         ], $this->get_all_constants());
     }
 }
