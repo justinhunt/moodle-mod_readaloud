@@ -23,3 +23,4 @@ gulp.task( 'sass', function() {
 gulp.task( 'watch', function() {
     gulp.watch('./scss/**/*.scss', gulp.series('sass'));
 });
+gulp.task('compile', gulp.series('sass'));

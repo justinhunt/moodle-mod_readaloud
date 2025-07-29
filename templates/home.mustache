@@ -1,100 +1,23 @@
-{{!
-    This file is part of Moodle - http://moodle.org/
-
-    Moodle is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Moodle is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-}}
-{{!
-    @template mod_readaloud/home
-
-    TODO describe template home
-
-    Example context (json):
-    {
-    }
-}}
-
-<div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}} mode-section active">
-
-    <div id="{{M_MODE_JOURNEY_CONTAINER}}" class="{{M_MODE_JOURNEY_CONTAINER}} d-flex flex-wrap align-items-center justify-content-center p-3">
-
-    {{#stepsenabled.step_listen}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_listen}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}completed{{/str}}">
-                <i class="fa-solid fa-headphones"></i>
-                {{#str}}mode_listen, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_listen}}
-    {{#stepsenabled.step_practice}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_practice}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}completed{{/str}}">
-                <i class="fa-solid fa-comment"></i>
-                {{#str}}mode_practice, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_practice}}
-
-    {{#stepsenabled.step_shadow}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_shadow}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
-                <i class="fa-solid fa-comments"></i>
-                {{#str}}mode_shadow, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_shadow}}
-
-    {{#stepsenabled.step_read}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_read}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
-                <i class="fa-solid fa-book-open-reader"></i>
-                {{#str}}mode_read, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_read}}
-
-    {{#stepsenabled.step_quiz}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_quiz}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_notcomplete, mod_readaloud{{/str}}">
-                <i class="fa-solid fa-circle-question"></i>
-                {{#str}}mode_quiz, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow"></i>
-        </div>
-    {{/stepsenabled.step_quiz}}
-
-    {{#stepsenabled.step_report}}
-        <div class="mode-journey d-flex align-items-center">
-            <div class="mode upcoming {{mode-status}}" data-step="{{steps.step_report}}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{#str}}mode_tooltip_end, mod_readaloud{{/str}}">
-                <i class="fa-solid fa-chart-simple"></i>
-                {{#str}}mode_report, mod_readaloud{{/str}}
-            </div>
-            <i class="fa-solid fa-arrow-right journey-arrow last-mode"></i>
-        </div>
-    {{/stepsenabled.step_report}}
-    </div>
-
-
-    <div id="{{M_HOME_NEXT_CONTAINER}}" class="{{M_HOME_NEXT_CONTAINER}} border rounded p-3 w-100">
-        <h5>Recommended next</h5>
-        <a class="btn btn-primary" href="#">Continue with last accessed</a>
-        <a class="btn btn-outline-primary" href="#">View something or other</a>
-    </div>
+<div id="{{M_MENUBUTTONS_CONTAINER}}" class="{{M_MENUBUTTONS_CONTAINER}} w-100">
+    <ol class="main-nav list-unstyled p-0">
+        {{#stepsdata}}
+        <li class="nav-item mode-chooser {{classes}} p-3 mb-4 d-flex rounded" data-step="{{stepnumber}}">
+            <a href="javascript:void(0)" class="nav-link h6 w-100 mb-0 d-flex align-items-center justify-content-between" data-mode="{{mode}}">
+                <div class="nav-text-group">
+                    <span class="step-icon flex-shrink-0 mr-2">
+                        {{{modeicon}}}
+                    </span>
+                    <span class="nav-label">{{label}}</span>
+                </div>
+                <img src="{{statusicon}}" alt="{{label}}" class="nav-status-icon ml-auto" />
+            </a>
+            {{#warningtext}}
+            <span class="mod_readaloud_menubutton_warning">{{warningtext}}</span>
+            {{/warningtext}}
+        </li>
+        {{/stepsdata}}
+        {{^stepsdata}}
+        <li>No steps available</li>
+        {{/stepsdata}}
+    </ol>
 </div>
-
-
-

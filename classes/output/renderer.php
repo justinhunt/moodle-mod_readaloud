@@ -1344,6 +1344,110 @@ break;
     }
 
     /**
+     * Build and return the steps data for display.
+     *
+     * @param stdClass $moduleinstance    The current module instance.
+     * @param bool     $canattempt        Initial “can attempt” flag; will be updated based on mode visibility.
+     * @param stdClass $latestattempt     The user’s latest attempt record.
+     * @param bool     $noquiz            Optional flag to disable the quiz step.
+     * @return stdClass[]                 Array of step‐data objects.
+     */
+    protected function get_steps_data($moduleinstance, $canattempt, $latestattempt, $stepsenabled,
+    $stepsopen, $stepscomplete) {
+        global $CFG;
+
+        $modevisibility   = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
+        $canattempt       = $modevisibility['canattempt'];
+        $canshadowattempt = $modevisibility['canshadowattempt'];
+        $hasaudiobreaks   = $modevisibility['hasaudiobreaks'];
+
+        $stepnumbers   = constants::STEPS;
+
+        $stepdefs = [
+            'step_listen'   => ['mode' => 'preview',       'label' => 'mode_listen',   'icon' => 'listen'],
+            'step_practice' => ['mode' => 'landr',         'label' => 'mode_practice', 'icon' => 'practice'],
+            'step_shadow'   => ['mode' => 'shadow',        'label' => 'mode_shadow',   'icon' => 'shadow'],
+            'step_read'     => ['mode' => 'startnoshadow', 'label' => 'mode_read',     'icon' => 'read'],
+            'step_quiz'     => ['mode' => 'quiz',          'label' => 'mode_quiz',     'icon' => 'quiz'],
+            'step_report'   => ['mode' => 'fullreport',    'label' => 'mode_report',   'icon' => 'report'],
+        ];
+        $statusicons = [
+            'locked'   => 'locked',
+            'complete' => 'checked',
+            'current'  => 'current',
+        ];
+
+        $stepsdata = [];
+
+        foreach ($stepdefs as $key => $def) {
+            if (empty($stepsenabled[$key])
+                || ($key === 'step_practice' && ! $hasaudiobreaks)
+                || ($key === 'step_shadow'   && ! $canshadowattempt)
+                || ($key === 'step_read'     && ! $canattempt)
+                || ($key === 'step_quiz'     && ! empty($noquiz))
+            ) {
+                continue;
+            }
+
+            $open     = !empty($stepsopen[$key]);
+            $complete = !empty($stepscomplete[$key]);
+
+            if (!$open) {
+                $status = 'locked';
+            } else if ($complete) {
+                $status = 'complete';
+            } else {
+                $status = 'current';
+            }
+
+            // CSS classes.
+            $classes = trim(implode(' ', [
+                $status,
+                $status === 'locked' ? 'no-click' : '',
+            ]));
+
+            // Get the mode icon.
+            $iconname = $def['icon'] . '.svg';
+            $pixdir   = $CFG->dirroot . '/mod/readaloud/pix/';
+            $svgfile  = $pixdir . $iconname;
+            $modeicon = is_readable($svgfile)
+                ? file_get_contents($svgfile)
+                : '';
+
+            $label = get_string($def['label'], 'mod_readaloud');
+
+            // Get the status icon.
+            $iconkey = $statusicons[$status];
+            $statusicon = $this->output
+                ->image_url($iconkey, constants::M_COMPONENT)
+                ->out(false);
+
+            // Warning text.
+            $warningtext = '';
+            if ($key === 'step_practice' && ! $hasaudiobreaks) {
+                $warningtext = get_string('modelaudiowarning', 'mod_readaloud');
+            } else if ($key === 'step_read' && ! $canattempt) {
+                $warningtext = get_string('exceededallattempts', 'mod_readaloud');
+            } else if ($key === 'step_quiz' && ! empty($stepscomplete['step_quiz'])) {
+                $warningtext = get_string('quizcompletedwarning', 'mod_readaloud');
+            }
+
+            // Build stepsdata.
+            $stepsdata[] = (object)[
+                'stepnumber'  => $stepnumbers[$key],
+                'mode'        => $def['mode'],
+                'classes'     => $classes,
+                'statusicon'  => $statusicon,
+                'label'       => $label,
+                'warningtext' => $warningtext,
+                'modeicon'    => $modeicon,
+            ];
+        }
+
+        return $stepsdata;
+    }
+
+    /**
      * Get the data for the view page.
      *
      * @param cm_info   $cm             The course module.
@@ -1368,22 +1472,9 @@ break;
 
         // The activity header.
         $header = $this->page->activityheader;
-        // $corerenderer = $this->page->get_renderer('core');
         $corecourserenderer = $this->page->get_renderer('core_course');
         $headercontent = $header->export_for_template($corecourserenderer);
         $passagepictureurl = $this->get_passage_picture($moduleinstance, $modulecontext);
-
-        // $rawdates = activity_dates_helper::get_dates_for_module($cm, $USER->id);
-        // $datesrenderable = new dates_renderer($rawdates);
-        // $datesrenderable = new \core_course\output\activity_dates($rawdates);
-        // $datecontext = $datesrenderable->export_for_template($corecourserenderer);
-
-
-        // Now overwrite/attach our two separate chunks:
-        // $activitycompletiondata = $this->get_activity_completion_data($corerenderer);
-        // $activitydates        = $this->get_activity_dates_data($corecourserenderer);
-
-        // $activityinfodata        = $this->get_activity_info_data($corecourserenderer);
         $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
 
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
@@ -1580,6 +1671,15 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $smallreport = $this->get_smallreport_data($moduleinstance, $modulecontext, $cm, $attempts, $latestattempt, $latestaigrade);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
 
+        $stepsdata = $this->get_steps_data (
+            $moduleinstance,
+            $canattempt,
+            $latestattempt,
+            $stepsenabled,
+            $stepsopen,
+            $stepscomplete
+        );
+
         return array_merge([
             'activityamddata' => $activityamddata,
             'attempts' => $attempts,
@@ -1615,6 +1715,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'headercontent' => $headercontent,
             'passagepictureurl' => $passagepictureurl,
             'hasbody' => true, // TEMP.
+            'stepsdata' => $stepsdata,
         ], $this->get_all_constants());
     }
 }
