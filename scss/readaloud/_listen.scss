@@ -1,6 +1,6 @@
 .mod_readaloud_passage_cont {
     border: $border-width solid $border-color;
-    border-radius: 0.5rem;
+    border-radius: $border-radius-lg;
     color: $gray-900;
     font-size: $font-size-base * 1.125;
     line-height: 210%;
