@@ -119,6 +119,15 @@ body.path-mod-readaloud #page-content .btn {
   color: #8F8E94;
 }
 
+.mod_readaloud_passage_cont {
+  border: 1px solid #E3E3E4;
+  border-radius: 0.5rem;
+  color: #1D1C1E;
+  font-size: 1.125rem;
+  line-height: 210%;
+  padding: 2rem;
+}
+
 #page-mod-readaloud-view #page.drawers .activity-header {
   display: none;
 }
