@@ -1,6 +1,5 @@
 // Defining requirements
 const { src, dest } = require('gulp');
-// var sass = require('gulp-sass');
 const sass = require('gulp-sass')(require('sass'));
 var gulp = require('gulp');
 var sourcemaps = require('gulp-sourcemaps');
@@ -23,4 +22,3 @@ gulp.task( 'sass', function() {
 gulp.task( 'watch', function() {
     gulp.watch('./scss/**/*.scss', gulp.series('sass'));
 });
-gulp.task('compile', gulp.series('sass'));

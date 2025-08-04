@@ -98,6 +98,7 @@ if (!empty($moduleinstance->customfont)) {
         $PAGE->requires->css(new moodle_url('https://fonts.googleapis.com/css?family=' . $moduleinstance->customfont));
     }
 }
+$PAGE->requires->css('/mod/readaloud/styles.css');
 
 // We need to load jquery for some old themes (Essential mainly).
 $PAGE->requires->jquery();
