@@ -469,7 +469,10 @@ $string['shadowhelp'] = "Read the passage aloud, along with the teacher. You sho
 $string['landrhelp'] = "Listen to the speaker. Repeat after each sentence and check your pronunciation.";
 $string['quizhelp'] = "Read the passage silently. Then answer the questions about the passafe.";
 $string['playbutton'] = "Play";
+$string['recordbutton'] = "Record";
 $string['stopbutton'] = "Stop";
+$string['taptolisten'] = "Tap to listen";
+$string['taptorecord'] = "Tap to record";
 
 $string['returntomenu']="Return to Menu";
 $string['fullreport'] = "View Full Report";

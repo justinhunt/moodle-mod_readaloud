@@ -10,6 +10,13 @@
     line-height: normal;
 }
 
-@mixin readaloud-btn-variant($background, $border, $color: color-contrast($background)) {
-    @include button-variant($background, $border, $color);
+@mixin readaloud-btn-variant($background, $border, $color) {
+    background-color: $background;
+    border-color: $border;
+    color: $color;
+}
+
+@mixin readaloud-control-btn-variant($background, $border, $color) {
+    @include readaloud-btn-variant($background, $border, $color);
+    box-shadow: 0 0 0 6px rgba($background, 0.15);
 }

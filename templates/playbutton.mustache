@@ -1,0 +1,14 @@
+<button
+    class="control control--playbutton"
+    type="button"
+    aria-label="{{label}}"
+    aria-pressed="false"
+    aria-describedby="playbutton-desc"
+    data-control="{{name}}"
+>
+    {{> mod_readaloud/play}}
+    {{> mod_readaloud/stop}}
+</button>
+<span id="playbutton-desc" class="control-label p-2">
+    {{#str}} taptolisten, mod_readaloud {{/str}}
+</span>

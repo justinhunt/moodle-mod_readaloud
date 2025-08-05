@@ -640,20 +640,20 @@ class renderer extends \plugin_renderer_base {
     /**
      * Show the reading passage after the attempt, basically set it to display on load and give it a background color
      */
-    public function show_passage_postattempt($readaloud, $collapsespaces=false) {
-        $ret = "";
-        $displaypassage = utils::lines_to_brs($readaloud->passage);
+    // public function show_passage_postattempt($readaloud, $collapsespaces=false) {
+    //     $ret = "";
+    //     $displaypassage = utils::lines_to_brs($readaloud->passage);
 
-        // For some languages we do not want spaces. Japanese, Chinese. For now this is manual.
-        // TODO: auto determine when to use collapsespaces.
-        $collapsespaces = $collapsespaces ? ' reviewmode collapsespaces' : '';
+    //     // For some languages we do not want spaces. Japanese, Chinese. For now this is manual.
+    //     // TODO: auto determine when to use collapsespaces.
+    //     $collapsespaces = $collapsespaces ? ' reviewmode collapsespaces' : '';
 
-        $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER . ' '
-                . constants::M_POSTATTEMPT . $collapsespaces,
-                ['id' => constants::M_PASSAGE_CONTAINER]);
+    //     $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER . ' '
+    //             . constants::M_POSTATTEMPT . $collapsespaces,
+    //             ['id' => constants::M_PASSAGE_CONTAINER]);
 
-        return $ret;
-    }
+    //     return $ret;
+    // }
 
     public function render_hiddenaudioplayer($audiourl=false) {
         $src = $audiourl ? $audiourl : '';
@@ -666,15 +666,15 @@ class renderer extends \plugin_renderer_base {
     /**
      * Show the reading passage
      */
-    public function show_passage($readaloud, $cm) {
+    // public function show_passage($readaloud, $cm) {
 
-        $ret = "";
-        $displaypassage = utils::lines_to_brs($readaloud->passage);
-        $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER,
-                ['id' => constants::M_PASSAGE_CONTAINER]);
+    //     $ret = "";
+    //     $displaypassage = utils::lines_to_brs($readaloud->passage);
+    //     $ret .= \html_writer::div($displaypassage, constants::M_PASSAGE_CONTAINER,
+    //             ['id' => constants::M_PASSAGE_CONTAINER]);
 
-        return $ret;
-    }
+    //     return $ret;
+    // }
 
     public function show_evaluated_message() {
         $displaytext = get_string('evaluatedmessage', constants::M_COMPONENT);
@@ -1165,23 +1165,31 @@ break;
     }
 
     /**
-     * Retrieves the passage picture for the given module instance.
+     * Prepare the data for the play/stop button.
      *
-     * @param object $moduleinstance The module instance containing the passage picture.
-     * @return string The HTML for the passage picture or an empty string if not available.
+     * @param bool $pressed Whether the play button is currently pressed.
+     * @return array{name:string,label:string,pressed:bool} Button context for Mustache.
      */
-    // public function get_passage_picture($moduleinstance) {
-    //     if ($moduleinstance->passagepicture) {
-    //         $zeroitem = new \stdClass();
-    //         $zeroitem->id = 0;
-    //         $picurl = $comptest->fetch_media_url(constants::PASSAGEPICTURE_FILEAREA, $zeroitem);
-    //         $picture = \html_writer::img($picurl, '', ['role' => 'decoration']);
-    //         $picturecontainer = \html_writer::div($picture, constants::M_COMPONENT . '-passage-pic');
-    //     } else {
-    //         $picturecontainer = '';
-    //     }
-    //     return '';
-    // }
+    public function get_playbutton(bool $pressed = false): array {
+        return [
+            'name'    => 'playbutton',
+            'label'   => get_string('playbutton', constants::M_COMPONENT),
+            'pressed' => $pressed,
+        ];
+    }
+
+    /**
+     * Prepare the data for the record/stop button.
+     *
+     * @return array{name:string,label:string} Button context for Mustache.
+     */
+    public function get_recordbutton(bool $pressed = false): array {
+        return [
+            'name'  => 'recordbutton',
+            'label' => get_string('recordbutton', constants::M_COMPONENT),
+            'pressed' => $pressed,
+        ];
+    }
 
     /**
      * Return the pluginfile URL of the passage picture.
@@ -1594,9 +1602,6 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
     false
 );
 
-        // $welcomemessage = $canattempt ? get_string('welcomemenu', constants::M_COMPONENT) :
-        // get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts);
-
         $welcomemessage = get_string('welcomemenu', constants::M_COMPONENT) .
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
 
@@ -1604,7 +1609,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $mode = 'noquiz';
         if ($mode === 'quiz') {
             $modequiz = true;
-        }else{
+        } else {
             $modequiz = false;
         }
         $stepsenabled = utils::get_steps_enabled_state($moduleinstance);
@@ -1656,17 +1661,10 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $quizhelper = new quizhelper($cm);
         $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm);
 
-        $currenttime = time();
-
-        $activityisclosed = ($moduleinstance->viewend > 0 && $currenttime > $moduleinstance->viewend);
-        $activitynotopenyet = ($moduleinstance->viewstart > 0 && $currenttime < $moduleinstance->viewstart);
         $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
-        $closedate = $moduleinstance->viewend > 0 ? $moduleinstance->viewend : null;
         $feedback = !empty($moduleinstance->feedback) ? $moduleinstance->feedback : null;
-        $hasopenclosedates = $moduleinstance->viewend > 0 || $moduleinstance->viewstart > 0;
         $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
         $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
-        $opendate = $moduleinstance->viewstart > 0 ? $moduleinstance->viewstart : null;
         $smallreport = $this->get_smallreport_data($moduleinstance, $modulecontext, $cm, $attempts, $latestattempt, $latestaigrade);
         $wheretonext = $this->show_wheretonext($moduleinstance, $embed);
 
@@ -1714,6 +1712,8 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'headercontent' => $headercontent,
             'passagepictureurl' => $passagepictureurl,
             'hasbody' => true, // TEMP.
+            'playbutton' => $this->get_playbutton(),
+            'recordbutton' => $this->get_recordbutton(),
             'stepsdata' => $stepsdata,
         ], $this->get_all_constants());
     }
