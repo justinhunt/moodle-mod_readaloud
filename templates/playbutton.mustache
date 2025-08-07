@@ -1,14 +1,28 @@
-<button
-    class="control control--playbutton"
-    type="button"
-    aria-label="{{label}}"
-    aria-pressed="false"
-    aria-describedby="playbutton-desc"
-    data-control="{{name}}"
->
-    {{> mod_readaloud/play}}
-    {{> mod_readaloud/stop}}
-</button>
-<span id="playbutton-desc" class="control-label p-2">
-    {{#str}} taptolisten, mod_readaloud {{/str}}
-</span>
+<div id="{{M_STOPANDPLAY}}" class="d-flex flex-column align-items-center">
+    <button
+        class="control control--playbutton"
+        type="button"
+        aria-label="{{label}}"
+        aria-pressed="false"
+        aria-describedby="playbutton-desc"
+        data-control="{{name}}"
+    >
+        {{> mod_readaloud/play}}
+        {{> mod_readaloud/stop}}
+    </button>
+    <span id="playbutton-desc" class="control-label p-2">
+        {{#str}} taptolisten, mod_readaloud {{/str}}
+    </span>
+</div>
+
+
+<!--{{#stopandplay}}
+<div id="{{M_STOPANDPLAY}}" class="d-flex justify-content-center hidden p-1">
+    <button id="{{M_STOP_BTN}}" class="btn btn-outline-primary m-2">
+        <i class="fa fa-stop"></i> {{#str}} stopbutton, mod_readaloud {{/str}}
+    </button>
+    <button id="{{M_PLAY_BTN}}" class="btn btn-primary m-2">
+        <i class="fa fa-play"></i> {{#str}} playbutton, mod_readaloud {{/str}}
+    </button>
+</div>
+{{/stopandplay}}-->
