@@ -446,6 +446,21 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             dd.controls.homebutton.click(function(e){
                 dd.domenulayout();
             });
+
+            dd.controls.stopandplay.on('click', 'button.control--playbutton', function () {
+                var $btn = $(this);
+                var pressed = $btn.attr('aria-pressed') === 'true';
+                $btn.attr('aria-pressed', pressed ? 'false' : 'true');
+            });
+
+            dd.controls.stopandplay.on('keypress', 'button.control--playbutton', function (e) {
+                if (e.which == 32 || e.which == 13) { // Space or Enter
+                    var $btn = $(this);
+                    var pressed = $btn.attr('aria-pressed') === 'true';
+                    $btn.attr('aria-pressed', pressed ? 'false' : 'true');
+                    e.preventDefault();
+                }
+            });
         },
 
         // when a step is completed, we update the activity completion on the server

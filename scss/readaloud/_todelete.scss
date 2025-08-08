@@ -89,37 +89,13 @@
     height: 170px;
   }
   
-  .mod_readaloud_start_button_cont,
-  .mod_readaloud_record_button_cont,
-  .mod_readaloud_stop_button_cont {
-    clear: both;
-    padding: 5px;
-    text-align: center;
-    width: 100%;
-  }
-  
-  /* .mod_readaloud_stop_button,
-  .mod_readaloud_start_button, */
-  .mod_readaloud_record_button {
-    margin: auto;
-    width: 200px;
-  }
   
   .mod_readaloud_voicecanvas {
     width: 239px;
     height: 100px;
     z-index: 8;
   }
-  
-  .mod_readaloud_passage_cont {
-    font-size: 1.5em;
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    line-height: 2em;
-    margin: 1rem auto;
-    max-width: 1200px;
-    padding: 1rem;
-  }
+
   
   .mod_readaloud_grading_action_cont {
     padding: 3px;

@@ -26,6 +26,12 @@ body.path-mod-readaloud #page-content button.control.control--playbutton .icon-p
 body.path-mod-readaloud #page-content button.control.control--playbutton .icon-stop {
   display: none;
 }
+body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true] {
+  background-color: #FF0000;
+  border-color: #FF0000;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.15);
+}
 body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true] .icon-play {
   display: none;
 }
@@ -37,12 +43,6 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton {
   border-color: #513DEB;
   color: #FFFFFF;
   box-shadow: 0 0 0 6px rgba(81, 61, 235, 0.15);
-}
-body.path-mod-readaloud #page-content button.control.control--stopbutton {
-  background-color: #FF0000;
-  border-color: #FF0000;
-  color: #FFFFFF;
-  box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.15);
 }
 
 /* cyrillic-ext */

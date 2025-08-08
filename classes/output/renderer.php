@@ -1174,7 +1174,7 @@ break;
         return [
             'name'    => 'playbutton',
             'label'   => get_string('playbutton', constants::M_COMPONENT),
-            'pressed' => $pressed,
+            'pressed' => $pressed ? 'true' : 'false',
         ];
     }
 
