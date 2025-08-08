@@ -25,6 +25,7 @@ body.path-mod-readaloud #page-content {
 
                 // When aria-pressed="true" swap them.
                 &[aria-pressed="true"] {
+                    @include readaloud-control-btn-variant($red, $red, $white);
                     .icon-play {
                         display: none;
                     }
@@ -35,9 +36,6 @@ body.path-mod-readaloud #page-content {
             }
             &--recordbutton {
                 @include readaloud-control-btn-variant($purple, $purple, $white);
-            }
-            &--stopbutton {
-                @include readaloud-control-btn-variant($red, $red, $white);
             }
         }
     }
