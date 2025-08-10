@@ -1,33 +1,36 @@
-#mod_readaloud_menubuttons_cont {
-    .main-nav li {
-        border: $border-width solid $gray-200;
+#mod_readaloud_home_cont {
+    #mod_readaloud_menubuttons_cont {
+        .main-nav li {
+            border: $border-width solid $gray-200;
 
-        .nav-text-group {
-            .nav-label {
-                font-weight: $font-weight-semibold;
+            .nav-text-group {
+                .nav-label {
+                    font-weight: $font-weight-semibold;
+                }
             }
-        }
 
-        &.current {
-            border-color: $purple;
-
-            .step-icon svg,
-            .nav-label {
-                color: $purple;
-            }
-        }
-
-        &.mode-chooser {
-            &.no-click a {
-                cursor: not-allowed;
-                font-weight: normal;
-                pointer-events: none;
+            &.current {
+                border-color: $purple;
 
                 .step-icon svg,
                 .nav-label {
-                    color: $gray-600;
+                    color: $purple;
+                }
+            }
+
+            &.mode-chooser {
+                &.no-click a {
+                    cursor: not-allowed;
+                    font-weight: normal;
+                    pointer-events: none;
+
+                    .step-icon svg,
+                    .nav-label {
+                        color: $gray-600;
+                    }
                 }
             }
         }
     }
 }
+

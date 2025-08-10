@@ -135,26 +135,100 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton {
   src: url(https://fonts.gstatic.com/s/raleway/v36/1Ptug8zYS_SKggPNyC0ITw.woff2) format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
-#mod_readaloud_menubuttons_cont .main-nav li {
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  position: relative;
+}
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav::before {
+  border-top: 2px dotted #E3E3E4;
+  content: "";
+  left: 20px;
+  position: absolute;
+  right: 20px;
+  top: 18px;
+  z-index: 0;
+}
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li {
+  display: flex;
+  flex: 0 0 auto;
+  margin-bottom: 0 !important;
+  padding: 0 !important;
+}
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li .nav-link {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li .nav-link .nav-text-group {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li .nav-link .nav-text-group .step-icon {
+  align-items: center;
+  background: #FFFFFF;
   border: 1px solid #E3E3E4;
+  border-radius: 0.5rem;
+  display: flex;
+  gap: 8px;
+  height: 36px;
+  justify-content: center;
+  margin-right: 0 !important;
+  padding: 8px 10px;
+  position: relative;
+  width: 40px;
+  z-index: 1;
 }
-#mod_readaloud_menubuttons_cont .main-nav li .nav-text-group .nav-label {
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li .nav-link .nav-text-group .nav-label {
   font-weight: 600;
+  margin-top: 4px;
 }
-#mod_readaloud_menubuttons_cont .main-nav li.current {
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li .nav-link .nav-status-icon {
+  display: none;
+}
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li.current {
   border-color: #513DEB;
 }
-#mod_readaloud_menubuttons_cont .main-nav li.current .step-icon svg,
-#mod_readaloud_menubuttons_cont .main-nav li.current .nav-label {
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li.current .step-icon svg,
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li.current .nav-label {
   color: #513DEB;
 }
-#mod_readaloud_menubuttons_cont .main-nav li.mode-chooser.no-click a {
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li.mode-chooser.no-click a {
   cursor: not-allowed;
   font-weight: normal;
   pointer-events: none;
 }
-#mod_readaloud_menubuttons_cont .main-nav li.mode-chooser.no-click a .step-icon svg,
-#mod_readaloud_menubuttons_cont .main-nav li.mode-chooser.no-click a .nav-label {
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li.mode-chooser.no-click a .step-icon svg,
+#mod_readaloud_footernav_cont #mod_readaloud_menubuttons_cont ol.main-nav > li.mode-chooser.no-click a .nav-label {
+  color: #8F8E94;
+}
+
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li {
+  border: 1px solid #E3E3E4;
+}
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li .nav-text-group .nav-label {
+  font-weight: 600;
+}
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.current {
+  border-color: #513DEB;
+}
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.current .step-icon svg,
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.current .nav-label {
+  color: #513DEB;
+}
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.mode-chooser.no-click a {
+  cursor: not-allowed;
+  font-weight: normal;
+  pointer-events: none;
+}
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.mode-chooser.no-click a .step-icon svg,
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.mode-chooser.no-click a .nav-label {
   color: #8F8E94;
 }
 
