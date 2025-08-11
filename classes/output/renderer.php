@@ -1264,24 +1264,6 @@ break;
      * @param renderer_base $output
      * @return array empty if no completion, or the flat array from export_for_template()
      */
-    // protected function get_activity_completion_data(\renderer_base $output): array {
-    //     global $USER;
-    //     if (!$this->page->activityrecord) {
-    //         return [];
-    //     }
-    //     $cm = $this->page->cm;
-    //     $userid = $USER->id;
-    //     $cmcompletion = cm_completion_details::get_instance($cm, $userid);
-    //     $activitycompletion = new activity_completion($cm, $completiondetails);
-    //     return (array)$activitycompletion->export_for_template($output);
-    // }
-
-    /**
-     * Return the activity‐completion context for use in templates.
-     *
-     * @param renderer_base $output
-     * @return array empty if no completion, or the flat array from export_for_template()
-     */
     protected function get_activity_completion_data(\renderer_base $output): array {
         global $USER;
         if (!$this->page->activityrecord) {

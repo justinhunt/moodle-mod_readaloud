@@ -24,6 +24,7 @@ $red: #FF0000 !default;
 $red6: rgba(255, 0, 0, 0.06) !default; // 6% of $red.
 $yellow: #FFDA20 !default;
 $yellow15: rgba(255, 218, 32, 0.15) !default; // 15% of $yellow.
+$yellow30: rgba(255, 218, 32, 0.30); // 30% of $yellow. Used for highlighting.
 
 // Fonts.
 $font-family-system: -apple-system, BlinkMacSystemFont, Helvetica, Arial, Lucida, sans-serif;
@@ -31,6 +32,7 @@ $raleway: "Raleway", $font-family-system, !default;
 
 // Imagery.
 $passagepicturesize: 122px !default;
+$inpagepassagepicturesize: 34px !default;
 
 // Typography.
 $font-size-base: 1rem !default;

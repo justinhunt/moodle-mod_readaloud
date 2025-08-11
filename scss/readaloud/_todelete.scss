@@ -1,6 +1,6 @@
-.mod_readaloud_center {
-    text-align: center;
-  }
+// .mod_readaloud_center {
+//     text-align: center;
+//   }
   
   .mod_readaloud_center>div,
   .mod_readaloud_center>table
@@ -433,11 +433,7 @@
     max-width: 450px;
     margin: auto;
   }
-  
-  .mod_readaloud_modelaudio_activesentence {
-    background-color: lightyellow;
-  }
-  
+
   .collapsespaces .mod_readaloud_grading_passagespace:not(.mod_readaloud_grading_endspace) {
     display: none;
   }
