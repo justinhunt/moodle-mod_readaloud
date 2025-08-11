@@ -248,6 +248,7 @@ class constants {
     const M_FULLREPORT_CONTAINER = 'mod_readaloud_fullreport_cont';
     const M_INTRO_CONTAINER = 'mod_intro_box';
     const M_MODE_JOURNEY_CONTAINER = 'mod_readaloud_mode_journey_container';
+    const M_FOOTERNAV_CONTAINER = 'mod_readaloud_footernav_cont';
 
 
     const M_PASSAGE_CONTAINER = 'mod_readaloud_passage_cont';

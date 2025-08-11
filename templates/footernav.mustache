@@ -1,0 +1,25 @@
+<div id="{{M_FOOTERNAV_CONTAINER}}" class="{{M_FOOTERNAV_CONTAINER}}">
+    <div id="{{M_MENUBUTTONS_CONTAINER}}" class="{{M_MENUBUTTONS_CONTAINER}} w-100">
+        <ol class="main-nav list-unstyled p-0">
+            {{#stepsdata}}
+            <li class="nav-item mode-chooser {{classes}} p-3 mb-4 d-flex rounded" data-step="{{stepnumber}}">
+                <a href="javascript:void(0)" class="nav-link h6 w-100 mb-0 d-flex align-items-center justify-content-between" data-mode="{{mode}}">
+                    <div class="nav-text-group">
+                        <span class="step-icon flex-shrink-0 mr-2">
+                            {{{modeicon}}}
+                        </span>
+                        <span class="nav-label">{{label}}</span>
+                    </div>
+                    <img src="{{statusicon}}" alt="{{label}}" class="nav-status-icon ml-auto" />
+                </a>
+                {{#warningtext}}
+                <span class="mod_readaloud_menubutton_warning">{{warningtext}}</span>
+                {{/warningtext}}
+            </li>
+            {{/stepsdata}}
+            {{^stepsdata}}
+            <li>No steps available</li>
+            {{/stepsdata}}
+        </ol>
+    </div>
+</div>
