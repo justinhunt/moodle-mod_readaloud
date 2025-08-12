@@ -5,4 +5,8 @@
     font-size: $font-size-base * 1.125;
     line-height: 210%;
     padding: 2rem;
+
+    .mod_readaloud_modelaudio_activesentence {
+        background-color: $yellow30;
+    }
 }

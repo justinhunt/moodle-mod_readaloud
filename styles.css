@@ -1,3 +1,34 @@
+.path-mod-readaloud #page.drawers .activity-header {
+  display: none;
+}
+.path-mod-readaloud #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-description {
+  color: #727276;
+}
+.path-mod-readaloud #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-picture img {
+  aspect-ratio: 1/1;
+  height: 122px;
+  width: 122px;
+}
+.path-mod-readaloud #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-info {
+  border: 1px solid #F9F9FA;
+}
+.path-mod-readaloud #page.drawers .mod_readaloud-activity-header-inpage .mod_readaloud-activity-header-main .backarrow svg {
+  height: 1rem;
+  width: 1rem;
+}
+.path-mod-readaloud #page.drawers .mod_readaloud-activity-header-inpage .mod_readaloud-activity-header-main .mod_readaloud-activity-picture img {
+  aspect-ratio: 1/1;
+  height: 34px;
+  width: 34px;
+  border-radius: 50%;
+}
+.path-mod-readaloud #page.drawers .mod_readaloud-activity-header-inpage .mod_readaloud-activity-header-main .activity-name {
+  font-weight: 700;
+}
+.path-mod-readaloud #page.drawers .mod_readaloud-activity-header-main {
+  background: rgba(81, 61, 235, 0.06);
+}
+
 body.path-mod-readaloud #page-content .btn {
   --bs-btn-padding-y: 0.75rem;
   --bs-btn-padding-x: 0.75rem;
@@ -240,23 +271,8 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton {
   line-height: 210%;
   padding: 2rem;
 }
-
-#page-mod-readaloud-view #page.drawers .activity-header {
-  display: none;
-}
-#page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main {
-  background: rgba(81, 61, 235, 0.06);
-}
-#page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-description {
-  color: #727276;
-}
-#page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-picture img {
-  aspect-ratio: 1/1;
-  height: 122px;
-  width: 122px;
-}
-#page-mod-readaloud-view #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-info {
-  border: 1px solid #F9F9FA;
+.mod_readaloud_passage_cont .mod_readaloud_modelaudio_activesentence {
+  background-color: rgba(255, 218, 32, 0.3);
 }
 
 body.path-mod-readaloud #page-content {

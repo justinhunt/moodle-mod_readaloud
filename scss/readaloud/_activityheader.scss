@@ -1,0 +1,46 @@
+.path-mod-readaloud {
+    #page.drawers {
+        // Hide the core header.
+        .activity-header {
+            display: none;
+        }
+
+        // Style the home activity header.
+        .mod_readaloud-activity-header {
+            .mod_readaloud-activity-header-main {
+                .mod_readaloud-activity-description {
+                    color: $gray-700;
+                }
+                .mod_readaloud-activity-picture img {
+                    @include readaloud-passage-picture($passagepicturesize);
+                }
+            }
+            .mod_readaloud-activity-info {
+                border: $border-width solid $gray-100;
+            }
+        }
+
+        // Style the inpage activity header.
+        .mod_readaloud-activity-header-inpage {
+            .mod_readaloud-activity-header-main {
+                .backarrow svg {
+                    height: 1rem;
+                    width: 1rem;
+                }
+                .mod_readaloud-activity-picture img {
+                    @include readaloud-passage-picture($inpagepassagepicturesize);
+                    border-radius: 50%;
+                }
+                .activity-name {
+                    font-weight: $font-weight-bold;
+                }
+            }
+        }
+
+        // Generic styles for the activity header.
+        .mod_readaloud-activity-header-main {
+            background: $purple6;
+        }
+    }
+}
+
