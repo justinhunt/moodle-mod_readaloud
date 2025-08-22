@@ -939,6 +939,8 @@ $string['mode_listenandrepeat'] = 'Listen and Repeat';
 $string['mode_tooltip_notcomplete'] = 'Next: {{a}}'; // Adds the next mode name.
 $string['mode_tooltip_end'] = 'End';
 
+$string['practiceiconalt'] = 'Practice';
+
 $string['enablenativelanguage'] = "Enable Native Language";
 $string['enablenativelanguage_details'] = 'If set, the student can choose their native language, this will override the default feedback language that AI returns with the quiz free writing and free speaking results. The language must currently be <a href="https://support.poodll.com/en/support/solutions/articles/19000163890-definitions-in-user-s-native-language">set in Poodll WordCards</a>.';
 $string['letsadditems'] ='Lets add some questions!';

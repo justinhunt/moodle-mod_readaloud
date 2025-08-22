@@ -275,6 +275,37 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton {
   background-color: rgba(255, 218, 32, 0.3);
 }
 
+#practicemodal .modal-dialog {
+  max-width: 325px;
+}
+#practicemodal .modal-dialog .modal-body h5 {
+  font-weight: 600;
+}
+#practicemodal .modal-dialog .modal-body p {
+  color: #727276;
+}
+#practicemodal .modal-dialog .modal-body .icon {
+  color: #513DEB;
+  height: 24px;
+  width: 24px;
+}
+#practicemodal .modal-dialog .modal-footer button {
+  flex: 1 1 0%;
+}
+#practicemodal .modal-dialog .modal-footer button.btn-primary {
+  background-color: #513DEB;
+  border-color: #513DEB;
+  color: #FFFFFF;
+}
+#practicemodal .modal-dialog .modal-footer button.btn-secondary {
+  background-color: rgba(81, 61, 235, 0.06);
+  border-color: rgba(81, 61, 235, 0.06);
+  color: #513DEB;
+}
+#practicemodal .modal-dialog .modal-footer button.btn-link {
+  color: #513DEB;
+}
+
 body.path-mod-readaloud #page-content {
   font-family: "Raleway", -apple-system, BlinkMacSystemFont, Helvetica, Arial, Lucida, sans-serif;
   font-size: 0.875rem;

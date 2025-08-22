@@ -1,6 +1,11 @@
-{{>mod_readaloud/passagecontainer}}
+{{> mod_readaloud/passagecontainer}}
 <div class="controls d-flex flex-column align-items-center p-3 mt-4" role="group" aria-label="Audio controls">
     {{#playbutton}}
         {{> mod_readaloud/playbutton}}
     {{/playbutton}}
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#practicemodal">
+    Temp button to test modal
+    </button>
+    {{> mod_readaloud/modal_practice}}
 </div>

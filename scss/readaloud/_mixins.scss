@@ -5,6 +5,7 @@
 @import "../../../../theme/boost/scss/bootstrap/mixins/buttons";
 
 // Readaloud button mixins.
+// Added to .btn in buttons.scss.
 @mixin readaloud-btn-size {
     @include button-size($btn-padding-y, $btn-padding-x, $btn-font-size, $btn-border-radius);
     line-height: normal;
@@ -16,6 +17,7 @@
     color: $color;
 }
 
+// The listen, stop, record buttons.
 @mixin readaloud-control-btn-variant($background, $border, $color) {
     @include readaloud-btn-variant($background, $border, $color);
     box-shadow: 0 0 0 6px rgba($background, 0.15);
