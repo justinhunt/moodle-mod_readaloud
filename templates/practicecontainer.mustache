@@ -25,17 +25,40 @@
 }}
 <div id="{{M_PRACTICE_CONTAINER_WRAP}}" class="{{M_PRACTICE_CONTAINER_WRAP}}">
     <div id="mod_readaloud_practice_inner">
-        <div id="mod_readaloud_practice_target_phrase" style="display: flex; border: 1px grey solid; border-radius: 5px; padding: 10px; margin: auto; justify-content: center;" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}}"></div><hr />
-        <button id="mod_readaloud_practice_skipback" class="btn btn-lg btn-secondary"><i class="fa fa-arrow-left"></i></button>
-        <button id="mod_readaloud_practice_skipforward" class="btn btn-lg btn-secondary"><i class="fa fa-arrow-right"></i></button>
-        <button id="mod_readaloud_practice_play" class="btn btn-lg btn-secondary"><i class="fa fa-volume-up"></i></button>
-        <button id="mod_readaloud_practice_playself"  class="btn btn-lg btn-secondary"><i class="fa fa-repeat"></i></button>
-        <div id="mod_readaloud_practice_controls" style="display: flex; align-items: center; gap: 10px;">
-            <div><input type="checkbox" id="mod_readaloud_practice_shadow" name="shadow" value="false"><label for="shadow">&nbsp;+ <i class="fa fa-microphone"></i></label></div>
+
+        <div id="mod_readaloud_practice_target_phrase" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}} border p-3"></div>
+
+        <div id="mod_readaloud_practice_navigation" class="btn-group w-100" role="group" aria-label="Practice navigation">
+            <button id="mod_readaloud_practice_skipback" class="btn btn-link text-start" type="button" >
+                <i class="fa-solid fa-chevron-left me-2" aria-hidden="true"></i>{{#str}} prev, mod_readaloud {{/str}}
+            </button>
+            <button id="mod_readaloud_practice_skipforward" class="btn btn-link text-end" type="button" >
+                {{#str}} next, mod_readaloud {{/str}}<i class="fa-solid fa-chevron-right ms-2" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <button id="mod_readaloud_practice_play" class="btn btn-lg btn-secondary">
+            <i class="fa fa-volume-up"></i>
+        </button>
+        <button id="mod_readaloud_practice_playself" class="btn btn-lg btn-secondary">
+            <i class="fa fa-repeat"></i>
+        </button>
+
+        {{> mod_readaloud/recordbutton}}
+
+        <div id="mod_readaloud_practice_controls">
             <div>
+                <input type="checkbox" id="mod_readaloud_practice_shadow" name="shadow" value="false">
+                <label for="shadow">&nbsp;+
+                    <i class="fa fa-microphone"></i>
+                </label>
+            </div>
+            <div id="mod_readaloud_practice_recorder">
                 {{{practice.recorder}}}
             </div>
-            <button id="mod_readaloud_practice_finished" class="btn btn-lg btn-secondary"><i class="fa fa-check"></i></button>
+            <button id="mod_readaloud_practice_finished" class="btn btn-lg btn-secondary">
+                <i class="fa fa-check"></i>
+            </button>
         </div>
         <audio id='mod_readaloud_practice_hiddenplayer' class="mod_readaloud_practice_hiddenplayer nomediaplugin nopoodll"></audio>
         <audio id='mod_readaloud_practice_hiddenselfplayer' class="mod_readaloud_practice_hiddenselfplayer nomediaplugin nopoodll"></audio>

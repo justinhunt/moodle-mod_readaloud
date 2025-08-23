@@ -36,6 +36,24 @@ body.path-mod-readaloud #page-content {
             }
             &--recordbutton {
                 @include readaloud-control-btn-variant($purple, $purple, $white);
+                 // Show mic by default.
+                 .icon-mic {
+                    display: inline-block;
+                }
+                .icon-stop {
+                    display: none;
+                }
+
+                // When aria-pressed="true" swap them.
+                &[aria-pressed="true"] {
+                    @include readaloud-control-btn-variant($red, $red, $white);
+                    .icon-play {
+                        display: none;
+                    }
+                    .icon-stop {
+                        display: inline-block;
+                    }
+                }
             }
         }
     }

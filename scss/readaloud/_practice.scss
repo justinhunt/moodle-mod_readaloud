@@ -1,0 +1,17 @@
+#mod_readaloud_practice_cont_wrap {
+    #mod_readaloud_practice_inner {
+        #mod_readaloud_practice_target_phrase {
+            border-radius: $border-radius-lg;
+        }
+        #mod_readaloud_practice_navigation {
+            button {
+                color: $gray-600;
+            }
+        }
+        #mod_readaloud_practice_controls {
+            align-items: center;
+            display: flex;
+            gap: 10px;
+        }
+    }
+}

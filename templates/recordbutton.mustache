@@ -1,9 +1,20 @@
-<button
-    class="control control--recordbutton"
-    type="button"
-    aria-label="{{label}}"
-    data-control="{{name}}"
->
-    {{> mod_readaloud/mic}}
-    {{> mod_readaloud/stop}}
-</button>
+<div id="{{M_STOPANDRECORD}}" class="d-flex flex-column align-items-center">
+    <button
+        class="control control--recordbutton"
+        type="button"
+        aria-label="{{label}}"
+        aria-pressed="{{pressed}}"
+        aria-describedby="recordbutton-desc"
+        data-control="{{name}}"
+    >
+        <span id="{{M_RECORD_BTN}}">
+        {{> mod_readaloud/mic}}
+        </span>
+        <span id="{{M_STOP_BTN}}">
+        {{> mod_readaloud/stop}}
+        </span>
+    </button>
+    <span id="recordbutton-desc" class="control-label p-2">
+        {{#str}} taptospeak, mod_readaloud {{/str}}
+    </span>
+</div>

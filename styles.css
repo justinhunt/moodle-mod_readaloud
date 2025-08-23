@@ -75,6 +75,24 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton {
   color: #FFFFFF;
   box-shadow: 0 0 0 6px rgba(81, 61, 235, 0.15);
 }
+body.path-mod-readaloud #page-content button.control.control--recordbutton .icon-mic {
+  display: inline-block;
+}
+body.path-mod-readaloud #page-content button.control.control--recordbutton .icon-stop {
+  display: none;
+}
+body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-pressed=true] {
+  background-color: #FF0000;
+  border-color: #FF0000;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.15);
+}
+body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-pressed=true] .icon-play {
+  display: none;
+}
+body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-pressed=true] .icon-stop {
+  display: inline-block;
+}
 
 /* cyrillic-ext */
 @font-face {
@@ -304,6 +322,18 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton {
 }
 #practicemodal .modal-dialog .modal-footer button.btn-link {
   color: #513DEB;
+}
+
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_target_phrase {
+  border-radius: 0.5rem;
+}
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_navigation button {
+  color: #8F8E94;
+}
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_controls {
+  align-items: center;
+  display: flex;
+  gap: 10px;
 }
 
 body.path-mod-readaloud #page-content {
