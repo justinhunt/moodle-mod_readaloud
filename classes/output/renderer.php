@@ -1187,7 +1187,7 @@ break;
         return [
             'name'  => 'recordbutton',
             'label' => get_string('recordbutton', constants::M_COMPONENT),
-            'pressed' => $pressed,
+            'pressed' => $pressed ? 'true' : 'false',
         ];
     }
 
@@ -1299,7 +1299,7 @@ break;
         return (array)$activitydates->export_for_template($output);
     }
 
-     /**
+    /**
      * Return the activity‐dates context for use in templates.
      *
      * @param renderer_base $output

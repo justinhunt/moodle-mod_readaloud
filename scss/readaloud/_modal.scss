@@ -1,0 +1,32 @@
+#practicemodal {
+    .modal-dialog {
+        max-width: 325px;
+        .modal-body {
+            h5 {
+                font-weight: 600;
+            }
+            p {
+                color: $gray-700;
+            }
+            .icon {
+                color: $purple;
+                height: 24px;
+                width: 24px;
+            }
+        }
+        .modal-footer {
+            button {
+                flex: 1 1 0%;
+                &.btn-primary {
+                    @include readaloud-btn-variant($purple, $purple, $white)
+                }
+                &.btn-secondary {
+                    @include readaloud-btn-variant($purple6, $purple6, $purple)
+                }
+                &.btn-link {
+                    color: $purple;
+                }
+            }
+        }
+    }
+}
