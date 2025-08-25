@@ -87,7 +87,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   color: #FFFFFF;
   box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.15);
 }
-body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-pressed=true] .icon-play {
+body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-pressed=true] .icon-mic {
   display: none;
 }
 body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-pressed=true] .icon-stop {
@@ -324,8 +324,22 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   color: #513DEB;
 }
 
-#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_target_phrase {
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer {
   border-radius: 0.5rem;
+}
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer #mod_readaloud_practice_play {
+  background-color: #FFFFFF;
+  border-color: #00AE34;
+  color: #00AE34;
+  border-radius: 50%;
+  height: 24px;
+  padding: 0;
+  width: 24px;
+}
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer #mod_readaloud_practice_play .icon-play {
+  flex-shrink: 0;
+  height: 13.7px;
+  width: 13.7px;
 }
 #mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_navigation button {
   color: #8F8E94;
@@ -334,6 +348,20 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   align-items: center;
   display: flex;
   gap: 10px;
+}
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner .mod_readaloud_ttrec_waveButtonContainer {
+  margin: auto;
+  position: relative;
+  width: 181px;
+}
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner .mod_readaloud_ttrec_waveButtonContainer canvas.mod_readaloud_ttrec_waveForm {
+  background-color: transparent;
+  height: 46px;
+  width: 100%;
+}
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner .mod_readaloud_ttrec_waveButtonContainer button.mod_readaloud_ttrec_waveButton {
+  font-size: 24px;
+  position: absolute;
 }
 
 body.path-mod-readaloud #page-content {

@@ -554,9 +554,7 @@ class renderer extends \plugin_renderer_base {
         return $html;
     }
 
-    public function show_practice($moduleinstance, $token) {
-        // Recorder modal title.
-        $title = get_string('practicereading', constants::M_COMPONENT);
+    public function show_practice($moduleinstance, $token, bool $pressed = false) {
 
         // Recorder data.
         $data = [
@@ -572,6 +570,9 @@ class renderer extends \plugin_renderer_base {
                 constants::M_LANG_FAIR,
                 constants::M_LANG_HEIL,
             ]),
+            'name'  => 'recordbutton',
+            'label' => get_string('recordbutton', constants::M_COMPONENT),
+            'pressed' => $pressed ? 'true' : 'false',
         ];
 
         // Do we need a streaming token?
@@ -597,12 +598,12 @@ class renderer extends \plugin_renderer_base {
             }
         }
 
-        // Render content from listenandrepeat.mustache.
+        // Render the recorder.
         $practicerecorder = $this->render_from_template('mod_readaloud/quiz_ttrecorder', $data);
 
         return [
             'recorder' => $practicerecorder,
-            'rtl' => $data['rtl']
+            'rtl' => $data['rtl'],
         ];
     }
 
@@ -916,6 +917,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['quizresultscontainer'] = constants::M_QUIZ_FINISHED;
         $recopts['stopandplay'] = constants::M_STOPANDPLAY;
         $recopts['stopbutton'] = constants::M_STOP_BTN;
+        $recopts['recordbutton'] = constants::M_RECORD_BTN;
         $recopts['returnmenubutton'] = constants::M_RETURNMENU;
         $recopts['ttsvoice'] = $moduleinstance->ttsvoice;
 
@@ -1183,13 +1185,13 @@ break;
      *
      * @return array{name:string,label:string} Button context for Mustache.
      */
-    public function get_recordbutton(bool $pressed = false): array {
-        return [
-            'name'  => 'recordbutton',
-            'label' => get_string('recordbutton', constants::M_COMPONENT),
-            'pressed' => $pressed ? 'true' : 'false',
-        ];
-    }
+    // public function get_recordbutton(bool $pressed = false): array {
+    //     return [
+    //         'name'  => 'recordbutton',
+    //         'label' => get_string('recordbutton', constants::M_COMPONENT),
+    //         'pressed' => $pressed ? 'true' : 'false',
+    //     ];
+    // }
 
     /**
      * Return the pluginfile URL of the passage picture.
@@ -1695,7 +1697,6 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'passagepictureurl' => $passagepictureurl,
             'hasbody' => true, // TEMP.
             'playbutton' => $this->get_playbutton(),
-            'recordbutton' => $this->get_recordbutton(),
             'stepsdata' => $stepsdata,
         ], $this->get_all_constants());
     }

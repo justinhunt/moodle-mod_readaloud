@@ -26,9 +26,14 @@
 <div id="{{M_PRACTICE_CONTAINER_WRAP}}" class="{{M_PRACTICE_CONTAINER_WRAP}}">
     <div id="mod_readaloud_practice_inner">
 
-        <div id="mod_readaloud_practice_target_phrase" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}} d-flex border p-3"></div>
+        <div id="mod_readaloud_practice_phraseplayer" class="d-flex justify-content-between align-items-center border p-3">
+            <div id="mod_readaloud_practice_target_phrase" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}} d-flex"></div>
+            <button id="mod_readaloud_practice_play" class="btn d-flex justify-content-center align-items-center">
+                {{> mod_readaloud/play}}
+            </button>
+        </div>
 
-        <div id="mod_readaloud_practice_navigation" class="btn-group w-100" role="group" aria-label="Practice navigation">
+        <div id="mod_readaloud_practice_navigation" class="d-flex justify-content-between w-100" role="group" aria-label="Practice navigation">
             <button id="mod_readaloud_practice_skipback" class="btn btn-link text-start" type="button" >
                 <i class="fa-solid fa-chevron-left me-2" aria-hidden="true"></i>{{#str}} prev, mod_readaloud {{/str}}
             </button>
@@ -37,22 +42,7 @@
             </button>
         </div>
 
-        <button id="mod_readaloud_practice_play" class="btn btn-lg btn-secondary">
-            <i class="fa fa-volume-up"></i>
-        </button>
-        <button id="mod_readaloud_practice_playself" class="btn btn-lg btn-secondary">
-            <i class="fa fa-repeat"></i>
-        </button>
-
-        {{> mod_readaloud/recordbutton}}
-
-        <div id="mod_readaloud_practice_controls">
-            <div>
-                <input type="checkbox" id="mod_readaloud_practice_shadow" name="shadow" value="false">
-                <label for="shadow">&nbsp;+
-                    <i class="fa fa-microphone"></i>
-                </label>
-            </div>
+        <div id="mod_readaloud_practice_controls" class="controls d-flex flex-column align-items-center p-3 mt-4" role="group" aria-label="Practice controls">
             <div id="mod_readaloud_practice_recorder">
                 {{{practice.recorder}}}
             </div>
@@ -64,3 +54,13 @@
         <audio id='mod_readaloud_practice_hiddenselfplayer' class="mod_readaloud_practice_hiddenselfplayer nomediaplugin nopoodll"></audio>
     </div>
 </div>
+<!--<button id="mod_readaloud_practice_playself" class="btn btn-lg btn-secondary">
+            <i class="fa fa-repeat"></i>
+        </button>-->
+<!--<div>
+    <input type="checkbox" id="mod_readaloud_practice_shadow" name="shadow" value="false">
+    <label for="shadow">&nbsp;+
+        <i class="fa fa-microphone"></i>
+    </label>
+</div>-->
+
