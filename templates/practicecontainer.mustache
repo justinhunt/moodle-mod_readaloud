@@ -26,7 +26,18 @@
 <div id="{{M_PRACTICE_CONTAINER_WRAP}}" class="{{M_PRACTICE_CONTAINER_WRAP}}">
     <div id="mod_readaloud_practice_inner">
 
-        <div id="mod_readaloud_practice_target_phrase" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}} d-flex border p-3"></div>
+        <div class="ra_practice_targets d-flex border p-3 position-relative">
+            <div id="mod_readaloud_practice_target_phrase" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}} d-flex gap-1"></div>
+            <div class="mod_readaloud_practice_playbuttons position-absolute end-0 top-0 m-2">
+                <button id="mod_readaloud_practice_play" class="btn btn-lg btn-secondary">
+                    <i class="fa fa-volume-up"></i>
+                </button>
+                <button id="mod_readaloud_practice_playself" class="btn btn-lg btn-secondary">
+                    <i class="fa fa-repeat"></i>
+                </button>
+            </div>
+        </div>
+
 
         <div id="mod_readaloud_practice_navigation" class="btn-group w-100" role="group" aria-label="Practice navigation">
             <button id="mod_readaloud_practice_skipback" class="btn btn-link text-start" type="button" >
@@ -37,12 +48,6 @@
             </button>
         </div>
 
-        <button id="mod_readaloud_practice_play" class="btn btn-lg btn-secondary">
-            <i class="fa fa-volume-up"></i>
-        </button>
-        <button id="mod_readaloud_practice_playself" class="btn btn-lg btn-secondary">
-            <i class="fa fa-repeat"></i>
-        </button>
 
         {{> mod_readaloud/recordbutton}}
 
