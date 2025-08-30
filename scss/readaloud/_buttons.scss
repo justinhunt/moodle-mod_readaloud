@@ -47,7 +47,7 @@ body.path-mod-readaloud #page-content {
                 // When aria-pressed="true" swap them.
                 &[aria-pressed="true"] {
                     @include readaloud-control-btn-variant($red, $red, $white);
-                    .icon-play {
+                    .icon-mic {
                         display: none;
                     }
                     .icon-stop {

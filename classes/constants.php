@@ -381,6 +381,7 @@ class constants {
     const M_BACKTOTOP= 'mod_readaloud_button_backtotop';
     const M_STOP_BTN = 'mod_readaloud_button_stop';
     const M_PLAY_BTN = 'mod_readaloud_button_play';
+    const M_RECORD_BTN = 'mod_readaloud_button_record';
 
     const M_PUSH_NONE =0;
     const M_PUSH_PASSAGE =1;
