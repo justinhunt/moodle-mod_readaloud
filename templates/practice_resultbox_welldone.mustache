@@ -1,0 +1,19 @@
+<div id="practice-resultbox-welldone" class="d-flex justify-content-center align-items-center mb-4">
+    <div class="practice-resultbox-inner d-flex flex-column justify-content-center align-items-center gap-3 p-3">
+        <div class="d-flex flex-column align-items-center gap-3 pb-0">
+
+            {{> mod_readaloud/practice_results_text }}
+
+            <h5 class="mb-0">{{#str}} welldone, mod_readaloud {{/str}}</h5>
+            <p class="mb-0">{{#str}} welldone_desc, mod_readaloud {{/str}}</p>
+        </div>
+
+        {{> mod_readaloud/practice_results_stars }}
+
+        <div class="ra_practice_feedback_buttons d-flex gap-3 w-100">
+            <button type="button" class="btn btn-primary">
+                {{#str}} nextsentence, mod_readaloud {{/str}}
+            </button>
+        </div>
+    </div>
+</div>
