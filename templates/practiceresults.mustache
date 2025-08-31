@@ -1,0 +1,54 @@
+<div class="ra_practice_results text-center">
+    <div class="ra_practice_results_text  gap-1 m-3 p-2 border rounded d-flex justify-content-center">
+
+    </div>
+    <div class="ra_practice_results_audio">
+      <button class="ra_practice_results_play btn justify-content-center align-items-center border rounded-circle">
+        {{> mod_readaloud/play}}
+      </button>
+      <button class="ra_practice_results_playself btn justify-content-center align-items-center text-primary border rounded-circle">
+        {{> mod_readaloud/play}}
+      </button>
+    </div>
+    <div class="ra_practice_results_feedback p-5">
+       <div class="ra_practice_feedback_0stars">
+         <div class="ra_practice_stars_shortcomment h4">{{#str}} practiceshortcomment_0stars, mod_readaloud {{/str}}</div>
+         <div class="ra_practice_stars_longcomment">{{#str}} practicelongcomment_0stars, mod_readaloud {{/str}}</div>
+         <div class="ra_practice_stars h4 m-4">☆☆☆☆☆</div>
+       </div>
+      <div class="ra_practice_feedback_1stars">
+        <div class="ra_practice_stars_shortcomment h4">{{#str}} practiceshortcomment_1stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars_longcomment">{{#str}} practicelongcomment_1stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars h4 m-4  text-warning">★☆☆☆☆</div>
+      </div>
+      <div class="ra_practice_feedback_2stars">
+        <div class="ra_practice_stars_shortcomment h4">{{#str}} practiceshortcomment_2stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars_longcomment">{{#str}} practicelongcomment_2stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars h4 m-4  text-warning">★★☆☆☆</div>
+      </div>
+      <div class="ra_practice_feedback_3stars">
+        <div class="ra_practice_stars_shortcomment h4">{{#str}} practiceshortcomment_3stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars_longcomment">{{#str}} practicelongcomment_3stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars h4 m-4  text-warning">★★★☆☆</div>
+      </div>
+      <div class="ra_practice_feedback_4stars">
+        <div class="ra_practice_stars_shortcomment h4">{{#str}} practiceshortcomment_4stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars_longcomment">{{#str}} practicelongcomment_4stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars h4 m-4  text-warning">★★★★☆</div>
+      </div>
+      <div class="ra_practice_feedback_5stars">
+        <div class="ra_practice_stars_shortcomment h4">{{#str}} practiceshortcomment_5stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars_longcomment">{{#str}} practicelongcomment_5stars, mod_readaloud {{/str}}</div>
+        <div class="ra_practice_stars h4 m-4 text-warning">★★★★★</div>
+      </div>
+    </div>
+  <div class="ra_practice_feedback_buttons mt-5 mb-5">
+    <button class="ra_practice_retry btn btn-lg btn-secondary">
+        <i class="fa fa-rotate-left"></i> {{#str}} reattempt, mod_readaloud {{/str}}
+    </button>
+    <button class="ra_practice_next btn btn-lg btn-primary">
+        {{#str}} continue, mod_readaloud {{/str}}
+    </button>
+  </div>
+</div>
+

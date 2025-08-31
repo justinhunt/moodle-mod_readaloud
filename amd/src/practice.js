@@ -99,15 +99,36 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
     prepare_controls: function() {
       var self = this;
-      self.controls.container = $('#' + def.practicecontainer);
-      self.controls.hiddenplayer = $('#mod_readaloud_practice_hiddenplayer');
-      self.controls.hiddenselfplayer = $('#mod_readaloud_practice_hiddenselfplayer');
+
+        // Control references
+      self.controls.container = $('#mod_readaloud_practice_cont_wrap');
+      self.controls.mainstage = self.controls.container.find('#mod_readaloud_practice_inner');
+      self.controls.targetphrase = self.controls.container.find('#mod_readaloud_practice_target_phrase');
       self.controls.playbutton = $('#mod_readaloud_practice_play');
       self.controls.shadowplaycheckbox = $('#mod_readaloud_practice_shadow');
       self.controls.skipforwardbutton = $('#mod_readaloud_practice_skipforward');
       self.controls.skipbackbutton = $('#mod_readaloud_practice_skipback');
       self.controls.finishedbutton = $("#mod_readaloud_practice_finished");
       self.controls.playselfbutton = $("#mod_readaloud_practice_playself");
+
+
+      // Results Screen
+      self.controls.resultscontainer = self.controls.container.find('.ra_practice_results_container');
+      self.controls.results_text = self.controls.resultscontainer.find('.ra_practice_results_text');
+      self.controls.results_retrybutton = self.controls.resultscontainer.find('.ra_practice_retry');
+      self.controls.results_nextbutton = self.controls.resultscontainer.find('.ra_practice_next');
+      self.controls.results_playbutton = self.controls.resultscontainer.find('.ra_practice_results_play');
+      self.controls.results_playselfbutton = self.controls.resultscontainer.find('.ra_practice_results_playself');
+      self.controls.results_0stars = self.controls.resultscontainer.find('.ra_practice_feedback_0stars');
+      self.controls.results_1stars = self.controls.resultscontainer.find('.ra_practice_feedback_1stars');
+      self.controls.results_2stars = self.controls.resultscontainer.find('.ra_practice_feedback_2stars');
+      self.controls.results_3stars = self.controls.resultscontainer.find('.ra_practice_feedback_3stars');
+      self.controls.results_4stars = self.controls.resultscontainer.find('.ra_practice_feedback_4stars');
+      self.controls.results_5stars = self.controls.resultscontainer.find('.ra_practice_feedback_5stars');
+
+      // Audio players
+      self.controls.hiddenplayer = $('#mod_readaloud_practice_hiddenplayer');
+      self.controls.hiddenselfplayer = $('#mod_readaloud_practice_hiddenselfplayer');
       self.controls.hiddenplayer.attr('src', self.audiourl);
 
     },
@@ -229,7 +250,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
           self.pause_audio();
 
-          $("#mod_readaloud_practice_target_phrase").html(thesentence.split(/ /).map(function(e, i) {
+         self.controls.targetphrase.html(thesentence.split(/ /).map(function(e, i) {
             return '<div class="mod_readaloud_practice_target_word" data-index="' + i + '">' + e + '</div>';
           }));
 
@@ -250,15 +271,6 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         }else {
           aplayer.currentTime = self.breaks[self.currentbreak].audiostarttime;
           aplayer.play();
-        }
-      });
-
-      self.controls.playselfbutton.on('click',function(e){
-        if (!self.controls.hiddenselfplayer[0].paused) {
-          self.controls.hiddenselfplayer[0].pause();
-        }else {
-          self.controls.hiddenselfplayer.attr('src', self.ttr.audio.dataURI);
-          self.controls.hiddenselfplayer[0].play();
         }
       });
 
@@ -288,6 +300,31 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           }
       };
 
+      // Results screen events
+        self.controls.results_retrybutton.on('click', function() {
+            //hide the results container and show the practice main stage
+            self.controls.resultscontainer.hide();
+            self.controls.mainstage.show();
+            self.controls.container.find('.ra_practice_main_container').show();
+        });
+        self.controls.results_nextbutton.on('click', function() {
+            //hide the results container and show the practice main stage
+            self.controls.resultscontainer.hide();
+            self.controls.mainstage.show();
+            self.controls.skipforwardbutton.trigger('click');
+        });
+        self.controls.results_playbutton.on('click', function() {
+            self.controls.playbutton.trigger('click');
+        });
+        self.controls.results_playselfbutton.on('click', function() {
+            if (!self.controls.hiddenselfplayer[0].paused) {
+                self.controls.hiddenselfplayer[0].pause();
+            }else {
+                self.controls.hiddenselfplayer.attr('src', self.ttr.audio.dataURI);
+                self.controls.hiddenselfplayer[0].play();
+            }
+        });
+
     },
 
    // spliton: new RegExp('([,.!?:;" ])', 'g'),
@@ -309,12 +346,16 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
             thisClass = "mod_readaloud_practice_target_word_incorrect";
         }
         $(".mod_readaloud_practice_target_word[data-index='" + idx + "']").addClass(thisClass);
-        if(comparison.length == wordsmatched){
-            // TO DO Here we want to show flashy results page, but for now lets retails skip forward feature
-            setTimeout(function(){self.controls.skipforwardbutton.trigger('click');},600);
-        }
       });
+        if(comparison.length == wordsmatched){
 
+            self.show_results(5);
+            // Previously we auto proceeded to next break if all words matched
+            //setTimeout(function(){self.controls.skipforwardbutton.trigger('click');},600);
+        } else {
+            var stars = Math.round((wordsmatched / comparison.length) * 5);
+            self.show_results(stars);
+        }
     },
     getComparison: function(cmid, passage, transcript,passagephonetic, callback) {
       var self = this;
@@ -342,6 +383,49 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       }]);
 
     },
+
+      show_results: function(stars) {
+            log.debug('show results', stars);
+            var self = this;
+            //show the results container and hide the practice main stage
+            self.controls.mainstage.hide();
+            self.controls.resultscontainer.show();
+
+            //show the marked up text
+            self.controls.results_text.html(self.controls.targetphrase.html());
+
+            //hide all the star based feedback
+            self.controls.results_0stars.hide();
+            self.controls.results_1stars.hide();
+            self.controls.results_2stars.hide();
+            self.controls.results_3stars.hide();
+            self.controls.results_4stars.hide();
+            self.controls.results_5stars.hide();
+
+            //based on star count show the right feedback
+            switch (stars) {
+                case 0:
+                    self.controls.results_0stars.show();
+                    break;
+                case 1:
+                    self.controls.results_1stars.show();
+                    break;
+                case 2:
+                    self.controls.results_2stars.show();
+                    break;
+                case 3:
+                    self.controls.results_3stars.show();
+                    break;
+                case 4:
+                    self.controls.results_4stars.show();
+                    break;
+                case 5:
+                    self.controls.results_5stars.show();
+                    break;
+                default:
+                    self.controls.results_0stars.show();
+            }
+      },
 
       mobile_user: function() {
 

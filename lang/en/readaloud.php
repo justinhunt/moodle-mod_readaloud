@@ -959,3 +959,16 @@ $string['alternatestreaming'] = 'Enable alternate streaming';
 $string['alternatestreaming_details'] = 'Streams recorded audio for open transcription. Slightly slower then the default browser transcription and only works in English. On by default in mobile app.';
 $string['cloudpoodllserver'] = 'Cloud Poodll Server';
 $string['cloudpoodllserver_details'] = 'The server to use for Cloud Poodll. Only change this if Poodll has provided a different one.';
+
+$string['practiceshortcomment_0stars'] = 'Incorrect';
+$string['practicelongcomment_0stars'] = 'You did not say that correctly. Try again or continue?';
+$string['practiceshortcomment_1stars'] = 'Not quite';
+$string['practicelongcomment_1stars'] = 'You could say that better. Try again or continue?';
+$string['practiceshortcomment_2stars'] = 'OK';
+$string['practicelongcomment_2stars'] = 'You could say that better. Try again or continue?';
+$string['practiceshortcomment_3stars'] = 'Good';
+$string['practicelongcomment_3stars'] = 'Good but not perfect. Try again or continue?';
+$string['practiceshortcomment_4stars'] = 'Almost';
+$string['practicelongcomment_4stars'] = 'Pretty good but not perfect. Try again or continue?';
+$string['practiceshortcomment_5stars'] = 'Excellent';
+$string['practicelongcomment_5stars'] = 'Perfect. You read all words correctly.';

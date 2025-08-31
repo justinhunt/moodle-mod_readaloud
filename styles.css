@@ -1,3 +1,4 @@
+@charset "UTF-8";
 .path-mod-readaloud #page.drawers .activity-header {
   display: none;
 }
@@ -362,6 +363,29 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 #mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner .mod_readaloud_ttrec_waveButtonContainer button.mod_readaloud_ttrec_waveButton {
   font-size: 24px;
   position: absolute;
+}
+#mod_readaloud_practice_cont_wrap .ra_practice_results_container .mod_readaloud_practice_target_word {
+  position: relative; /* so the pseudo-element can be placed relative to each word */
+  margin: 0 4px;
+  padding: 0 2px;
+}
+#mod_readaloud_practice_cont_wrap .ra_practice_results_container .mod_readaloud_practice_target_word_correct::after {
+  content: "✔"; /* tick mark */
+  color: green;
+  position: absolute;
+  top: -1.2em; /* adjust vertical position */
+  left: 50%; /* center horizontally */
+  transform: translateX(-50%);
+  font-size: 0.8em;
+}
+#mod_readaloud_practice_cont_wrap .ra_practice_results_container .mod_readaloud_practice_target_word_incorrect::after {
+  content: "✘"; /* cross mark */
+  color: red;
+  position: absolute;
+  top: -1.2em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8em;
 }
 
 body.path-mod-readaloud #page-content {
