@@ -2,7 +2,7 @@
     #mod_readaloud_practice_inner {
         #mod_readaloud_practice_phraseplayer {
             border-radius: $border-radius-lg;
-            #mod_readaloud_practice_play {
+            #mod_readaloud_practice_play, #mod_readaloud_practice_playself {
                 @include readaloud-btn-variant($white, $green, $green);
                 border-radius: 50%;
                 height: 24px;

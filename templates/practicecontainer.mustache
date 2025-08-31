@@ -26,10 +26,15 @@
 <div id="{{M_PRACTICE_CONTAINER_WRAP}}" class="{{M_PRACTICE_CONTAINER_WRAP}}">
     <div id="mod_readaloud_practice_inner">
         <div id="mod_readaloud_practice_phraseplayer" class="d-flex justify-content-between align-items-center border p-3">
-            <div id="mod_readaloud_practice_target_phrase" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}} d-flex"></div>
-            <button id="mod_readaloud_practice_play" class="btn d-flex justify-content-center align-items-center">
-                {{> mod_readaloud/play}}
-            </button>
+            <div id="mod_readaloud_practice_target_phrase" class="{{#practice.rtl}}mod_readaloud_rtl{{/practice.rtl}} d-flex gap-1"></div>
+            <div class="mod_readaloud_practice_playbuttons d-flex">
+                <button id="mod_readaloud_practice_play" class="btn justify-content-center align-items-center">
+                    {{> mod_readaloud/play}}
+                </button>
+                <button id="mod_readaloud_practice_playself" class="btn justify-content-center align-items-center" style="display: none">
+                    {{> mod_readaloud/play}}
+                </button>
+            </div>
         </div>
 
         <div id="mod_readaloud_practice_navigation" class="d-flex justify-content-between w-100" role="group" aria-label="Practice navigation">
@@ -40,7 +45,7 @@
                 {{#str}} next, mod_readaloud {{/str}}<i class="fa-solid fa-chevron-right ms-2" aria-hidden="true"></i>
             </button>
         </div>
-        
+
         <div id="mod_readaloud_practice_controls" class="controls d-flex flex-column align-items-center p-3 mt-4" role="group" aria-label="Practice controls">
             <div id="mod_readaloud_practice_recorder">
                 {{{practice.recorder}}}

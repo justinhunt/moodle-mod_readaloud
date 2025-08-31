@@ -599,7 +599,7 @@ class renderer extends \plugin_renderer_base {
         }
 
         // Render the recorder.
-        $practicerecorder = $this->render_from_template('mod_readaloud/quiz_ttrecorder', $data);
+        $practicerecorder = $this->render_from_template('mod_readaloud/ttrecorder', $data);
 
         return [
             'recorder' => $practicerecorder,

@@ -310,7 +310,8 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         }
         $(".mod_readaloud_practice_target_word[data-index='" + idx + "']").addClass(thisClass);
         if(comparison.length == wordsmatched){
-            setTimeout(function(){self.controls.skipbutton.trigger('click');},600);
+            // TO DO Here we want to show flashy results page, but for now lets retails skip forward feature
+            setTimeout(function(){self.controls.skipforwardbutton.trigger('click');},600);
         }
       });
 

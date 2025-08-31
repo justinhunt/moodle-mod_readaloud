@@ -251,7 +251,7 @@ define(['jquery', 'core/log','core/notification', 'mod_readaloud/ttaudiohelper',
 
         prepare_html: function(){
             this.controls.recordercontainer =$('#ttrec_container_' + this.uniqueid);
-            this.controls.recorderbutton = $('#' + this.uniqueid + '_recorderdiv');
+            this.controls.recorderbutton = $('#' + this.uniqueid + '_recorderbutton');
             this.controls.waveform = $('#' + this.uniqueid + '_waveform');
             this.controls.timerstatus = $('.timerstatus_' + this.uniqueid);
             this.passagehash = this.controls.recorderbutton.data('passagehash');
@@ -263,6 +263,10 @@ define(['jquery', 'core/log','core/notification', 'mod_readaloud/ttaudiohelper',
             this.forcestreaming=this.controls.recorderbutton.data('forcestreaming');
             this.maxtime=this.controls.recorderbutton.data('maxtime');
             this.waveHeight=this.controls.recorderbutton.data('waveheight');
+            this.controls.icon_mic = this.controls.recorderbutton.find('.ra_recbutton_mic');
+            this.controls.icon_stop = this.controls.recorderbutton.find('.ra_recbutton_stop');
+            this.controls.icon_waiting = this.controls.recorderbutton.find('.ra_recbutton_waiting');
+            this.controls.icon_processing = this.controls.recorderbutton.find('.ra_recbutton_processing');
         },
 
         silence_detected: function(){
@@ -300,8 +304,8 @@ define(['jquery', 'core/log','core/notification', 'mod_readaloud/ttaudiohelper',
                 } else {
                     that.show_recorder_pointer('auto');
                 }
-                //the color
-                //we no longer swap out colors for waiting .. its too fast and a bit jarring
+                //the button color
+                /*
                 if(that.audio.isRecognizing || that.audio.isRecording || that.audio.isWaiting){
                     this.controls.recorderbutton.removeClass('ttrec_ready');
                     this.controls.recorderbutton.removeClass('ttrec_waiting');
@@ -319,8 +323,26 @@ define(['jquery', 'core/log','core/notification', 'mod_readaloud/ttaudiohelper',
                     this.controls.recorderbutton.addClass('ttrec_ready');
                 }
 
-                //the font awesome spinner/mic/square
-                that.controls.recorderbutton.html(that.recordBtnContent());
+                 */
+
+                //the button html
+                //hide them all and then show the correct one
+                this.controls.icon_mic.hide();
+                this.controls.icon_stop.hide();
+                this.controls.icon_waiting.hide();
+                this.controls.icon_processing.hide();
+
+                if(!this.audio.isRecognizing){
+                    if (this.audio.isRecording) {
+                        this.controls.icon_stop.show();
+                    } else if(this.audio.isWaiting) {
+                        this.controls.icon_waiting.show();
+                    } else {
+                        this.controls.icon_mic.show();
+                    }
+                } else {
+                    this.controls.icon_processing.show();
+                }
             };
 
         },
@@ -363,23 +385,6 @@ define(['jquery', 'core/log','core/notification', 'mod_readaloud/ttaudiohelper',
             return word.replace(/['!"#$%&\\'()\*+,\-\.\/:;<=>?@\[\\\]\^_`{|}~']/g,"").toLowerCase();
         },
 
-        recordBtnContent: function() {
-
-            if(!this.audio.isRecognizing){
-
-                if (this.audio.isRecording) {
-                    return '<i class="fa fa-stop">';
-
-                } else if(this.audio.isWaiting) {
-                    return '<i class="fa fa-solid fa-cog fa-spin">';
-
-                } else {
-                    return '<i class="fa fa-microphone">';
-                }
-            } else {
-                return '<i class="fa fa-spinner fa-spin">';
-            }
-        },
         toggleRecording: function() {
             var that =this;
 

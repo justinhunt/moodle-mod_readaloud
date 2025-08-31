@@ -1,9 +1,37 @@
-<div id="ttrec_container_{{data-id}}" class="mod_readaloud_ttrec_waveButtonContainer" tabindex="0"  style="display: none; height: {{waveheight}}px; margin-bottom:10px">
+<div id="ttrec_container_{{uniqueid}}" class="mod_readaloud_ttrec_waveButtonContainer d-flex flex-column align-items-center" tabindex="0">
 
-    <canvas id="{{data-id}}_waveform" class="mod_readaloud_ttrec_waveForm" style="height:100%;width:100%"></canvas>
+    <canvas id="{{uniqueid}}_waveform" class="mod_readaloud_ttrec_waveForm"></canvas>
 
-    <div id="ttrec_{{data-id}}_recorderdiv" style="pointer-events: auto; background: green" class="mod_readaloud_ttrec_waveButton" data-passagehash="{{passagehash}}" data-waveheight="{{waveheight}}"
-         data-region="{{data-region}}" data-lang="{{data-language}}" data-asrurl="{{{asrurl}}}" data-speechtoken="{{speechtoken}}" data-speechtokentype="{{speechtokentype}}" data-forcestreaming="{{forcestreaming}}" data-maxtime="{{{maxtime}}}">
-        <i class="fa fa-microphone"></i>
-    </div>
+    <button id="{{uniqueid}}_recorderbutton"
+         type="button"
+         class="mod_readaloud_ttrec_waveButton ttrec_ready control control--recordbutton"
+         data-passagehash="{{passagehash}}"
+         data-waveheight="{{waveheight}}"
+         data-region="{{region}}"
+         data-lang="{{language}}"
+         data-asrurl="{{{asrurl}}}"
+         data-speechtoken="{{speechtoken}}"
+         data-speechtokentype="{{speechtokentype}}"
+         data-forcestreaming="{{forcestreaming}}"
+         data-maxtime="{{{maxtime}}}"
+         data-control="{{name}}"
+         aria-label="{{label}}"
+         aria-pressed="{{pressed}}"
+         aria-describedby="recordbutton-desc">
+         <span class="ra_recbutton_mic">
+         {{> mod_readaloud/mic}}
+         </span>
+         <span class="ra_recbutton_stop" style="display: none">
+         {{> mod_readaloud/stop}}
+         </span>
+        <span class="ra_recbutton_waiting" style="display: none">
+            <i class="fa fa-solid fa-cog fa-spin"></i>
+         </span>
+        <span class="ra_recbutton_processing" style="display: none">
+            <i class="fa fa-spinner fa-spin"></i>
+         </span>
+    </button>
+    <span id="recordbutton-desc" class="control-label p-2">
+        {{#str}} taptospeak, mod_readaloud {{/str}}
+    </span>
 </div>

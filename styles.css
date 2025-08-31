@@ -327,7 +327,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 #mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer {
   border-radius: 0.5rem;
 }
-#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer #mod_readaloud_practice_play {
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer #mod_readaloud_practice_play, #mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer #mod_readaloud_practice_playself {
   background-color: #FFFFFF;
   border-color: #00AE34;
   color: #00AE34;
@@ -336,7 +336,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   padding: 0;
   width: 24px;
 }
-#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer #mod_readaloud_practice_play .icon-play {
+#mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer #mod_readaloud_practice_play .icon-play, #mod_readaloud_practice_cont_wrap #mod_readaloud_practice_inner #mod_readaloud_practice_phraseplayer #mod_readaloud_practice_playself .icon-play {
   flex-shrink: 0;
   height: 13.7px;
   width: 13.7px;
