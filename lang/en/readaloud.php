@@ -960,6 +960,22 @@ $string['alternatestreaming_details'] = 'Streams recorded audio for open transcr
 $string['cloudpoodllserver'] = 'Cloud Poodll Server';
 $string['cloudpoodllserver_details'] = 'The server to use for Cloud Poodll. Only change this if Poodll has provided a different one.';
 
+
+$string['almost'] = 'Almost...';
+$string['almost_desc'] = 'You mispronounced some words. Would you like to try again or continue?';
+$string['continue'] = 'Continue';
+$string['imready'] = "I'm Ready";
+$string['incorrect'] = 'Incorrect';
+$string['incorrect_desc'] = "You did not say that correctly. Would you like to try again or continue?";
+$string['keeppracticing'] = 'Keep Practicing';
+$string['nextsentence'] = 'Next Sentence';
+$string['practicecomplete'] = 'Superb you completed the practice session!';
+$string['practicecomplete_desc'] = 'It looks like you are ready to read the full passage.';
+$string['tryagain'] = 'Try Again';
+$string['welldone'] = 'Well Done!';
+$string['welldone_desc'] = 'You pronounced all of the words correctly!';
+
+
 $string['practiceshortcomment_0stars'] = 'Incorrect';
 $string['practicelongcomment_0stars'] = 'You did not say that correctly. Try again or continue?';
 $string['practiceshortcomment_1stars'] = 'Not quite';
@@ -972,3 +988,4 @@ $string['practiceshortcomment_4stars'] = 'Almost';
 $string['practicelongcomment_4stars'] = 'Pretty good but not perfect. Try again or continue?';
 $string['practiceshortcomment_5stars'] = 'Excellent';
 $string['practicelongcomment_5stars'] = 'Perfect. You read all words correctly.';
+
