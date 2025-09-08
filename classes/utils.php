@@ -2157,6 +2157,15 @@ class utils {
         return $options;
     }
 
+    public static function get_tts_voices_bylang ($lang){
+        $alllang = constants::ALL_VOICES;
+        if(array_key_exists($lang,$alllang)){
+            return $alllang[$lang];
+        }else{
+            return [];
+        }
+    }
+
     public static function fetch_ttsvoice_options($region='useast1'){
 
         switch($region){
