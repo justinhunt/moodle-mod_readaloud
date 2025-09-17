@@ -9,4 +9,8 @@
     .mod_readaloud_modelaudio_activesentence {
         background-color: $yellow30;
     }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
 }

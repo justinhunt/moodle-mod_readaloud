@@ -519,7 +519,7 @@ const M_QUIZ_CONTAINER_WRAP='mod_readaloud_quiz_cont_wrap';
 const M_PRACTICE_CONTAINER_WRAP='mod_readaloud_practice_cont_wrap';
 const M_QUIZ_ITEMS_CONTAINER='mod_readaloud_quiz_items_cont';
 const M_QUIZ_PLACEHOLDER='mod_readaloud_placeholder';
-const M_QUIZ_SKELETONBOX='mod_readaloud_skeleton_box';
+// const M_QUIZ_SKELETONBOX='mod_readaloud_skeleton_box';
 const M_QUIZ_FINISHED = "mod_readaloud_quiz_finished";
 const M_QUIZ_REATTEMPT = "mod_readaloud_quiz_reattempt";
 
