@@ -64,14 +64,14 @@ class renderer extends \plugin_renderer_base {
 
         $context = \context_module::instance($cm->id);
         // FIXME: Temp hide the tabs whilst building the new UI.
-        // if (has_capability('mod/readaloud:viewreports', $context) && $embed !== 2) {
-        //     if (!empty($currenttab)) {
-        //         ob_start();
-        //         include($CFG->dirroot . '/mod/readaloud/tabs.php');
-        //         $output .= ob_get_contents();
-        //         ob_end_clean();
-        //     }
-        // }
+        if (has_capability('mod/readaloud:viewreports', $context) && $embed !== 2) {
+            if (!empty($currenttab)) {
+                ob_start();
+                include($CFG->dirroot . '/mod/readaloud/tabs.php');
+                $output .= ob_get_contents();
+                ob_end_clean();
+            }
+        }
 
         return $output;
     }
@@ -1609,7 +1609,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'stepsopen'    => $stepsopen,
             'stepscomplete' => $stepscomplete,
         ];
-        $extraclasses = 'readmode hide'; // TODO: Should we add these directly to template?
+        $extraclasses = 'readmode'; // TODO: Should we add these directly to template?
         // For Japanese (and later other languages) we collapse spaces.
         $collapsespaces = false;
         if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {

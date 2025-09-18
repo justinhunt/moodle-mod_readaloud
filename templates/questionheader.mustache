@@ -1,21 +1,33 @@
-<div id="{{uniqueid}}_container" class="readaloud_questioncontainer" style="display: none">
-<h1>questionheader.mustache</h1>
-  {{> mod_readaloud/quiz_progress}}
-  <audio id="{{uniqueid}}_player"></audio>
-  <!-- @@CLOUDPOODLLTOKEN@@ -->
-  <!-- title + instructions -->
-    {{#title}}<div class="readaloud_questionheader"><b>{{{title}}}</b></div>{{/title}}
-    {{#iteminstructions}}<div class="mod_readaloud_iteminstructions">{{iteminstructions}}</div>{{/iteminstructions}}
-    {{#itemtext}}<div class="mod_readaloud_itemtext {{rtl}}">{{{itemtext}}}</div>{{/itemtext}}
-    {{#itemttsaudio}}<div class="mod_readaloud_itemttsaudio_cont">{{> mod_readaloud/ttsaudio}}</div>{{/itemttsaudio}}
-    {{#horizontal}}
-    <div class="row" style="margin-top: 20px;">
-    <div class="col-sm-6">
-    {{/horizontal}}
-    <!-- Content -->
-    {{> mod_readaloud/questioncontent}}
+<div id="{{uniqueid}}_container" class="readaloud_questioncontainer">
+    <h1>questionheader.mustache</h1>
+
+    {{> mod_readaloud/quiz_progress}}
+
+    <audio id="{{uniqueid}}_player"></audio>
+    <!-- @@CLOUDPOODLLTOKEN@@ -->
+    {{#title}}
+    <div class="readaloud_questionheader">
+        {{{title}}}
+    </div>
+    {{/title}}
+    {{#itemtext}}
+    <div class="mod_readaloud_itemtext h5 fw-semibold mb-4 {{rtl}}">
+        {{{itemtext}}}
+    </div>
+    {{/itemtext}}
+    {{#itemttsaudio}}
+    <div class="mod_readaloud_itemttsaudio_cont">
+        {{> mod_readaloud/ttsaudio}}
+    </div>
+    {{/itemttsaudio}}
 
     {{#horizontal}}
-    </div>
-    <div class="col-sm-6">
+    <div class="row mt-3">
+        <div class="col-sm-6">
+    {{/horizontal}}
+        <!-- Content -->
+        {{> mod_readaloud/questioncontent}}
+    {{#horizontal}}
+        </div>
+        <div class="col-sm-6">
     {{/horizontal}}
