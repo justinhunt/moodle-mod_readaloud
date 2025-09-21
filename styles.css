@@ -98,7 +98,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 .mod_readaloud_finalreport .mod_readaloud_attemptsummary .statbox .fs-1 {
   font-size: 2.125rem !important;
 }
-.mod_readaloud_finalreport .mod_readaloud_attemptsummary .statbox .stabox-item {
+.mod_readaloud_finalreport .mod_readaloud_attemptsummary .statbox .stat-label {
   color: #727276;
 }
 .mod_readaloud_finalreport .mod_readaloud_attemptsummary .statbox .statbox-icon img.icon {
