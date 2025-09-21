@@ -1,6 +1,9 @@
 #mod_readaloud_quiz_cont_wrap {
     // TODO: Remove temp show.
-    display: block !important; // Override inline style.
+    // display: block !important; // Override inline style.
+    // In multichoice.js self.next_question() auto moves user on.
+    // TODO: In multichoice.js - remove finalChoice > resultspanel code? Also see multichoice.mustache.
+    // TODO: Use questionheader.mustache.
 
     #mod_readaloud_quiz_items_cont {
         .readaloud_questioncontainer {
@@ -9,16 +12,35 @@
                     .readaloud_sentence {
                         color: $purple;
                     }
+                    .readaloud_mc_resultbox {
+                        .fa.fa-lg {
+                            &.fa-check.readaloud_mc_right {
+                                color: $green;
+                            }
+                            &.fa.fa-times.readaloud_mc_wrong {
+                                color: $red;
+                            }
+                        }
+                    }
                 }
                 .col-md-12:has(.readaloud_mc_selected) {
                     background: $purple6;
                     border-color: transparent !important; // Override inline style.
                     font-weight: bold;
                 }
+                .readaloud_mc_confirmchoice {
+                    @include readaloud-btn-variant($purple, $purple, $white);
+                    min-width: 110px;
+                }
             }
             .readaloud_nextbutton {
                 @include readaloud-btn-variant($purple, $purple, $white);
                 min-width: 110px;
+            }
+            .mod_readaloud-activity-progress-bar {
+                span {
+                    display: none;
+                }
             }
         }
     }
@@ -61,73 +83,74 @@
     }
 }
 
-// TODO: Sort these styles.
-.readaloud_mc_confirmchoice {
-    text-align: center;
-    background-color: blue;
-    color: white;
-    padding: 10px;
-    border: 1px solid black;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.33em;
-    overflow: auto;
-  }
+// TODO: Retain and sort these styles only if we retain numbered progress items.
+// .readaloud_mc_confirmchoice {
+//     text-align: center;
+//     background-color: blue;
+//     color: white;
+//     padding: 10px;
+//     border: 1px solid black;
+//     border-radius: 5px;
+//     cursor: pointer;
+//     font-size: 1.33em;
+//     overflow: auto;
+//   }
 
-.readaloud_quiz_progress {
-    border: 1px solid #000;
-    height: 50px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    position: relative;
-  }
   
-  .readaloud_quiz_progress_item {
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    background-color: gray;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    z-index: 1;
-  }
+//   .readaloud_quiz_progress_item {
+//     border-radius: 50%;
+//     width: 30px;
+//     height: 30px;
+//     background-color: gray;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     color: white;
+//     font-size: 20px;
+//     font-weight: bold;
+//     z-index: 1;
+//   }
   
-  .readaloud_quiz_progress_item_current {
-    background-color: green;
-    color: white;
-  }
+//   .readaloud_quiz_progress_item_current {
+//     background-color: green;
+//     color: white;
+//   }
   
-  .readaloud_quiz_progress_finalitem {
-    border-radius: 15%;
-    width: 30px;
-    height: 30px;
-    background-color: darkred;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    z-index: 1;
-  }
+//   .readaloud_quiz_progress_finalitem {
+//     border-radius: 15%;
+//     width: 30px;
+//     height: 30px;
+//     background-color: darkred;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     color: white;
+//     font-size: 20px;
+//     font-weight: bold;
+//     z-index: 1;
+//   }
   
-  .readaloud_quiz_progress_item_completed {
-    background-color: darkgrey;
-  }
+//   .readaloud_quiz_progress_item_completed {
+//     background-color: darkgrey;
+//   }
   
-  .readaloud_quiz_progress_line {
-    background-color: gray;
-    height: 10px;
-    position: absolute;
-    margin-top: auto;
-    margin-bottom: auto;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-  }
+//   .readaloud_quiz_progress {
+//     align-items: center;
+//     display: flex;
+//     height: 50px;
+//     justify-content: space-around;
+//     position: relative;
+
+//     .readaloud_quiz_progress_line {
+//         background-color: $gray-200;
+//         border-radius: 24px;
+//         bottom: 0;
+//         height: 10px;
+//         left: 0;
+//         margin-bottom: auto;
+//         margin-top: auto;
+//         position: absolute;
+//         right: 0;
+//         top: 0;
+//     }
+// }
