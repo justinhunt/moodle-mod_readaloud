@@ -1,0 +1,17 @@
+.mod_readaloud_finalreport {
+    .mod_readaloud_attemptsummary {
+        .statbox {
+            .fs-1 {
+                font-size: $font-size-base * 2.125 !important; // Override Bootstrap fs-1.
+            }
+            .stabox-item {
+                color: $gray-700;
+            }
+            .statbox-icon img.icon {
+                height: 32px;
+                max-height: 32px;
+                width: auto;
+            }
+        }
+    }
+}

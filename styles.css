@@ -95,6 +95,18 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   display: inline-block;
 }
 
+.mod_readaloud_finalreport .mod_readaloud_attemptsummary .statbox .fs-1 {
+  font-size: 2.125rem !important;
+}
+.mod_readaloud_finalreport .mod_readaloud_attemptsummary .statbox .stabox-item {
+  color: #727276;
+}
+.mod_readaloud_finalreport .mod_readaloud_attemptsummary .statbox .statbox-icon img.icon {
+  height: 32px;
+  max-height: 32px;
+  width: auto;
+}
+
 /* cyrillic-ext */
 @font-face {
   font-family: "Raleway";
