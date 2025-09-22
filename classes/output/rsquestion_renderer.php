@@ -186,15 +186,6 @@ class rsquestion_renderer extends \plugin_renderer_base {
             $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/' . $item->type, $item);
         }
 
-        // Determine container width based on passage presence or not.
-        // switch($moduleinstance->showquiz){
-        //     case constants::M_SHOWQUIZ_NOPASSAGE:
-        //         $containerwidth = 'compact';
-        //         break;
-        //     case constants::M_SHOWQUIZ_PASSAGE:
-        //     default:
-        //         $containerwidth = 'wide';
-        // }
         $quizattributes = ['id' => constants::M_QUIZ_ITEMS_CONTAINER];
         // Div style if we have a custom font use it. If quiz has results, items are by default hidden.
         $style = '';
@@ -212,7 +203,6 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $quizitemsclass = constants::M_QUIZ_ITEMS_CONTAINER;
         $quizitemsdiv = \html_writer::div(implode('', $itemshtml) , $quizitemsclass, $quizattributes);
 
-        // $ret = $placeholderdiv  . $quizitemsdiv . $finisheddiv;
         $ret = $quizitemsdiv . $finisheddiv;
         return $ret;
     }

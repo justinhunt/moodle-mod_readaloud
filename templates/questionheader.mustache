@@ -1,17 +1,16 @@
 <div id="{{uniqueid}}_container" class="readaloud_questioncontainer">
-    <h1>questionheader.mustache</h1>
 
     {{> mod_readaloud/quiz_progress}}
 
     <audio id="{{uniqueid}}_player"></audio>
     <!-- @@CLOUDPOODLLTOKEN@@ -->
     {{#title}}
-    <div class="readaloud_questionheader">
+    <div class="readaloud_questionheader mt-4">
         {{{title}}}
     </div>
     {{/title}}
     {{#itemtext}}
-    <div class="mod_readaloud_itemtext h5 fw-semibold mb-4 {{rtl}}">
+    <div class="mod_readaloud_itemtext h5 fw-semibold my-4 {{rtl}}">
         {{{itemtext}}}
     </div>
     {{/itemtext}}

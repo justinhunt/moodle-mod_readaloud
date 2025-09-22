@@ -1,11 +1,11 @@
  {{#sentences}}
      <div class="mcplayrow">
          <div class="col-md-12 mcaudiotranscript_{{index}} border rounded p-3 mb-4">
-             <div class="readaloud_mc_response {{rtl}}" data-index="{{indexplusone}}" id="{{uniqueid}}_option{{indexplusone}}" name="{{uniqueid}}_options" >
+             <div class="readaloud_mc_response {{rtl}} d-flex justify-content-between w-100" data-index="{{indexplusone}}" id="{{uniqueid}}_option{{indexplusone}}" name="{{uniqueid}}_options" >
                  <span class="readaloud_sentence">{{prompt}}</span>
                  <span class="readaloud_mc_resultbox">
-                 <i class="fa fa-check fa-lg readaloud_mc_right" style="display: none;"></i>
-                 <i class="fa fa-times fa-lg readaloud_mc_wrong" style="display: none;"></i>
+                    <i class="fa fa-check fa-lg readaloud_mc_right" style="display: none;"></i>
+                    <i class="fa fa-times fa-lg readaloud_mc_wrong" style="display: none;"></i>
                  </span>
              </div>
          </div>

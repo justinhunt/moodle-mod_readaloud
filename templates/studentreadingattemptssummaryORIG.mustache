@@ -1,0 +1,40 @@
+<div class="mod_readaloud_attemptsummary">
+    <div class="mod_readaloud_center">
+        <h5>{{#str}}myattemptssummary, mod_readaloud, {{summary.totalattempts}} {{/str}}</h5>
+    </div>
+    <div class="mod_readaloud_center">
+        {{#str}}summaryexplainer, mod_readaloud{{/str}}
+    </div>
+    <div class="mod_readaloud_attemptsummarytable table-responsive">
+        <table id="uniqid" class ="generaltable mod_readaloud_table">
+            <thead>
+                <tr>
+                    <th class="header c0"></th>
+                    <th class="header c1">{{#str}}wpm, mod_readaloud{{/str}}</th>
+                    <th class="header c2">{{#str}}accuracy_p, mod_readaloud{{/str}}</th>
+                    {{#attemptshowgrades}}
+                        <th class="header c3">{{#str}}grade_p, mod_readaloud{{/str}}</th>
+                    {{/attemptshowgrades}}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="cell c0">{{#str}}averages, mod_readaloud{{/str}}
+                    <td class="cell c1">{{attemptssummary.av_wpm}}</td>
+                    <td class="cell c2">{{attemptssummary.av_accuracy}}</td>
+                    {{#attemptshowgrades}}
+                        <td class="cell c3">{{attemptssummary.av_sessionscore}}</td>
+                    {{/attemptshowgrades}}
+                </tr>
+                <tr>
+                    <td class="cell c0">{{#str}}highest, mod_readaloud{{/str}}
+                    <td class="cell c1">{{attemptssummary.h_wpm}}</td>
+                    <td class="cell c2">{{attemptssummary.h_accuracy}}</td>
+                    {{#attemptshowgrades}}
+                        <td class="cell c3">{{attemptssummary.h_sessionscore}}</td>
+                    {{/attemptshowgrades}}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+<div>

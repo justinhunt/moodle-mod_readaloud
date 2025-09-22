@@ -1,0 +1,23 @@
+<div id="{{fullreportcontainer}}" class='mod_readaloud_finalreport {{fullreportcontainer}}'>
+
+    <!--For more than 1 event we have a summary -->
+    {{>mod_readaloud/studentreadingattemptssummary}}
+    {{>mod_readaloud/studentquizattemptssummary}}
+    {{>mod_readaloud/studentreadingattemptschart}}
+    {{#hasattemptssummary}}
+
+    {{/hasattemptssummary}}
+
+    <!--General Feedback -->
+    <div class="{{M_FEEDBACK_CONTAINER}} {{constants::M_POSTATTEMPT}}" id="{{M_FEEDBACK_CONTAINER}}">
+        <div class="box py-3 generalbox">
+            <div class="mod_readaloud_center">
+            {{generalfeedback}}
+            </div>
+        </div>
+    </div>
+
+    <!--The marked up passage -->
+    {{>mod_readaloud/studentreadingpassage}}
+
+</div>
