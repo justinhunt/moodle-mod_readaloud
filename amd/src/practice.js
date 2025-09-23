@@ -117,6 +117,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.controls.results_text = self.controls.resultscontainer.find('.ra_practice_results_text');
       self.controls.results_retrybutton = self.controls.resultscontainer.find('.ra_practice_retry');
       self.controls.results_nextbutton = self.controls.resultscontainer.find('.ra_practice_next');
+      self.controls.results_finishbutton = self.controls.resultscontainer.find('.ra_practice_finish');
       self.controls.results_playbutton = self.controls.resultscontainer.find('.ra_practice_results_play');
       self.controls.results_playselfbutton = self.controls.resultscontainer.find('.ra_practice_results_playself');
       self.controls.results_0stars = self.controls.resultscontainer.find('.ra_practice_feedback_0stars');
@@ -125,6 +126,11 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.controls.results_3stars = self.controls.resultscontainer.find('.ra_practice_feedback_3stars');
       self.controls.results_4stars = self.controls.resultscontainer.find('.ra_practice_feedback_4stars');
       self.controls.results_5stars = self.controls.resultscontainer.find('.ra_practice_feedback_5stars');
+      self.controls.results_boxes = self.controls.resultscontainer.find('.practice-resultbox');
+      self.controls.results_box_incorrect = self.controls.resultscontainer.find('#practice-resultbox-incorrect');
+      self.controls.results_box_almost = self.controls.resultscontainer.find('#practice-resultbox-almost');
+      self.controls.results_box_welldone = self.controls.resultscontainer.find('#practice-resultbox-welldone');
+      self.controls.results_box_complete = self.controls.resultscontainer.find('#practice-resultbox-complete');
 
       // Audio players
       self.controls.hiddenplayer = $('#mod_readaloud_practice_hiddenplayer');
@@ -191,6 +197,15 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       return this.controls.hiddenplayer.attr('src');
     },
 
+    is_last_break: function() {
+      var self = this;
+      if (self.currentbreak === self.breaks.length - 1) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    
      move_break:  function(increment) {
        var self = this;
        //quick sanity check
@@ -290,6 +305,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       self.controls.finishedbutton.on('click', function() {
        // self.controls.container.modal('hide');
         aplayer.currentTime = 0;
+        self.on_complete();
       });
 
 
@@ -308,11 +324,27 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
             self.controls.container.find('.ra_practice_main_container').show();
         });
         self.controls.results_nextbutton.on('click', function() {
+          if (self.is_last_break()) {
+            //hide the results levels (incorrect / almost / well done)
+            self.d_hide(self.controls.results_boxes);
+            self.d_show(self.controls.results_box_complete);
+          } else {
+              //hide the results container and show the practice main stage
+              self.controls.resultscontainer.hide();
+              self.controls.mainstage.show();
+              self.controls.skipforwardbutton.trigger('click');
+          }
+        });
+
+        self.controls.results_finishbutton.on('click', function() {
             //hide the results container and show the practice main stage
             self.controls.resultscontainer.hide();
             self.controls.mainstage.show();
-            self.controls.skipforwardbutton.trigger('click');
+            self.controls.finishedbutton.trigger('click');
+            
+            
         });
+
         self.controls.results_playbutton.on('click', function() {
             self.controls.playbutton.trigger('click');
         });
@@ -384,47 +416,93 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
     },
 
-      show_results: function(stars) {
-            log.debug('show results', stars);
-            var self = this;
-            //show the results container and hide the practice main stage
-            self.controls.mainstage.hide();
-            self.controls.resultscontainer.show();
+    show_results: function(stars) {
+          log.debug('show results', stars);
+          var self = this;
+          //show the results container and hide the practice main stage
+          self.controls.mainstage.hide();
+          self.controls.resultscontainer.show();
 
-            //show the marked up text
-            self.controls.results_text.html(self.controls.targetphrase.html());
+          //show the marked up text
+          self.controls.results_text.html(self.controls.targetphrase.html());
 
-            //hide all the star based feedback
-            self.controls.results_0stars.hide();
-            self.controls.results_1stars.hide();
-            self.controls.results_2stars.hide();
-            self.controls.results_3stars.hide();
-            self.controls.results_4stars.hide();
-            self.controls.results_5stars.hide();
+          //hide all the star based feedback
+          self.controls.results_0stars.hide();
+          self.controls.results_1stars.hide();
+          self.controls.results_2stars.hide();
+          self.controls.results_3stars.hide();
+          self.controls.results_4stars.hide();
+          self.controls.results_5stars.hide();
 
-            //based on star count show the right feedback
-            switch (stars) {
-                case 0:
-                    self.controls.results_0stars.show();
-                    break;
-                case 1:
-                    self.controls.results_1stars.show();
-                    break;
-                case 2:
-                    self.controls.results_2stars.show();
-                    break;
-                case 3:
-                    self.controls.results_3stars.show();
-                    break;
-                case 4:
-                    self.controls.results_4stars.show();
-                    break;
-                case 5:
-                    self.controls.results_5stars.show();
-                    break;
-                default:
-                    self.controls.results_0stars.show();
-            }
+          //hide the results levels (incorrect / almost / well done)
+          self.d_hide(self.controls.results_boxes);
+
+          //based on star count show the right feedback
+          switch (stars) {
+              case 0:
+                  self.controls.results_0stars.show();
+                  self.d_show(self.controls.results_box_incorrect);
+                  break;
+              case 1:
+                  self.controls.results_1stars.show();
+                  self.d_show(self.controls.results_box_almost);
+                  break;
+              case 2:
+                  self.controls.results_2stars.show();
+                  self.d_show(self.controls.results_box_almost);
+                  break;
+              case 3:
+                  self.controls.results_3stars.show();
+                  self.d_show(self.controls.results_box_almost);
+                  break;
+              case 4:
+                  self.controls.results_4stars.show();
+                  self.d_show(self.controls.results_box_almost);
+                  break;
+              case 5:
+                  self.controls.results_5stars.show();
+                  self.d_show(self.controls.results_box_welldone);
+                  break;
+              default:
+                  self.controls.results_0stars.show();
+                  self.d_show(self.controls.results_box_incorrect);
+          }
+      },
+
+      d_show: function(els) {
+        //If el is a jquery object get the first element
+        if(!els instanceof jQuery){
+            els=[els];
+        }
+
+        for(var i=0;i<els.length;i++){
+            var el=els[i];
+          
+          if (el.classList.contains('d-none')) {
+              el.classList.remove('d-none');
+              el.classList.add('d-flex');
+          }else{
+            $(el).show();
+          }
+        }
+    },
+
+      d_hide: function(els) {
+        //If el is a jquery object get the first element
+        if(!els instanceof jQuery){
+            els=[els];
+        }
+
+        for(var i=0;i<els.length;i++){
+          var el=els[i];
+          
+          if (el.classList.contains('d-flex')) {
+            el.classList.remove('d-flex');
+            el.classList.add('d-none');
+          }else{
+            $(el).hide();
+          }
+        }
       },
 
       mobile_user: function() {

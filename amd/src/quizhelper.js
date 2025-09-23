@@ -190,28 +190,28 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
           theoldquestion.hide();
             //show the question
             $("#" + nextitem.uniqueid + "_container").show();
-          //any per question type init that needs to occur can go here
-          switch (nextitem.type) {
-              case def.qtype_speechcards:
-                  //speechcards.init(nextindex, nextitem, dd);
-                  break;
-              case def.qtype_dictation:
-              case def.qtype_dictationchat:
-              case def.qtype_multichoice:
-              case def.qtype_multiaudio:
-              case def.qtype_listenrepeat:
-              case def.qtype_smartframe:
-              case def.qtype_shortanswer:
-              case def.qtype_spacegame:
-              case def.qtype_fluency:
-              case def.qtype_freespeaking:
-              case def.qtype_freewriting:
-              case def.qtype_passagereading:
-              case def.qtype_buttonquiz:
-              case def.qtype_conversation:
-              case def.qtype_compquiz:
-              default:
-          }//end of nextitem switch
+            //any per question type init that needs to occur can go here
+            switch (nextitem.type) {
+                case def.qtype_speechcards:
+                    //speechcards.init(nextindex, nextitem, dd);
+                    break;
+                case def.qtype_dictation:
+                case def.qtype_dictationchat:
+                case def.qtype_multichoice:
+                case def.qtype_multiaudio:
+                case def.qtype_listenrepeat:
+                case def.qtype_smartframe:
+                case def.qtype_shortanswer:
+                case def.qtype_spacegame:
+                case def.qtype_fluency:
+                case def.qtype_freespeaking:
+                case def.qtype_freewriting:
+                case def.qtype_passagereading:
+                case def.qtype_buttonquiz:
+                case def.qtype_conversation:
+                case def.qtype_compquiz:
+                default:
+            }//end of nextitem switch
 
             //autoplay audio if we need to
             var ttsquestionplayer = $("#" + nextitem.uniqueid + "_container audio.mod_readaloud_itemttsaudio");

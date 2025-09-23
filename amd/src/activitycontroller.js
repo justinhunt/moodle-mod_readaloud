@@ -147,6 +147,7 @@ define(['jquery', 'core/log', "core/str",'mod_readaloud/definitions',
             practice.on_complete = function(){
                 // Complete the current step (update server and ui)
                 dd.update_activity_step(dd.activitydata.steps.step_practice);
+                dd.domenulayout();
             }
         },
 
