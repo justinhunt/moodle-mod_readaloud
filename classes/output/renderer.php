@@ -916,6 +916,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['startquizbutton'] = constants::M_STARTQUIZ;
         $recopts['quizresultscontainer'] = constants::M_QUIZ_FINISHED;
         $recopts['stopandplay'] = constants::M_STOPANDPLAY;
+        $recopts['quitlisteningbutton'] = constants::M_QUITLISTENING;
         $recopts['stopbutton'] = constants::M_STOP_BTN;
         $recopts['recordbutton'] = constants::M_RECORD_BTN;
         $recopts['returnmenubutton'] = constants::M_RETURNMENU;

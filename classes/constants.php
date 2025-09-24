@@ -378,6 +378,7 @@ class constants {
     const M_FULLREPORT = 'mod_readaloud_button_fullreport';
     const M_RETURNMENU= 'mod_readaloud_button_returnmenu';
     const M_STOPANDPLAY= 'mod_readaloud_button_stopandplay';
+    const M_QUITLISTENING= 'mod_readaloud_button_quitlistening';
     const M_BACKTOTOP= 'mod_readaloud_button_backtotop';
     const M_STOP_BTN = 'mod_readaloud_button_stop';
     const M_PLAY_BTN = 'mod_readaloud_button_play';

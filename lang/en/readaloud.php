@@ -981,3 +981,4 @@ $string['viewfinalreport'] = 'View Final Report';
 $string['viewfinalreportintro'] = 'Your complete results and progress summary.';
 $string['welldone'] = 'Well Done!';
 $string['welldone_desc'] = 'You pronounced all of the words correctly!';
+$string['quitlistening'] = 'Quit Listening';
