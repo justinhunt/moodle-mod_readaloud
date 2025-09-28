@@ -1,11 +1,10 @@
 <div id="{{fullreportcontainer}}" class='mod_readaloud_finalreport {{fullreportcontainer}}'>
 
     <!--For more than 1 event we have a summary -->
-    {{>mod_readaloud/studentreadingattemptssummary}}
-    {{>mod_readaloud/studentquizattemptssummary}}
-    {{>mod_readaloud/studentreadingattemptschart}}
     {{#hasattemptssummary}}
-
+        {{>mod_readaloud/studentreadingattemptssummary}}
+        {{>mod_readaloud/studentquizattemptssummary}}
+        {{>mod_readaloud/studentreadingattemptschart}}
     {{/hasattemptssummary}}
 
     <!--General Feedback -->
@@ -19,5 +18,4 @@
 
     <!--The marked up passage -->
     {{>mod_readaloud/studentreadingpassage}}
-
 </div>
