@@ -1,0 +1,10 @@
+.progress,
+.progress-stacked {
+    height: 10px;
+    background-color: $gray-200;
+    border-radius: 1rem;
+
+    .progress-bar {
+        background-color: $yellow;
+    }
+}

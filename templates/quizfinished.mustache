@@ -1,85 +1,48 @@
-<p class="h3">{{#str}}totalscore, mod_readaloud{{/str}} {{total}}%</p>
-<div class="quizrating">
-    {{#yellowstars}}
-        <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/star-yellow.svg"/></span>
-    {{/yellowstars}}
-    {{#graystars}}
-        <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/star-grey.svg"/></span>
-    {{/graystars}}
-</div>
-{{#canreattemptquiz}}
-<p>
-<a class="btn btn-secondary mod_readaloud_reattemptquiz_button" href="#" role="button">
-    {{#str}}reattemptquiz, mod_readaloud{{/str}}
-</a>
-</p>
-{{/canreattemptquiz}}
-{{#showfullresults}}
-<p>
-    <a class="btn btn-primary itemscoresbutton" data-toggle="collapse" href="#itemscores" role="button" aria-expanded="false" aria-controls="itemscores">
-        {{#str}}showquestionscores, mod_readaloud{{/str}}
-    </a>
-</p>
-{{/showfullresults}}
-<div class="collapse" id="itemscores">
-{{#results}}
-<div class="mod_readaloud_quizresult_div">
-    <div class="panel-group" id="accordion">
-        <div class="btn-primary mod_readaloud_quizresult_index">{{index}}</div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4 class="panel-title"> <a class="accordion-toggle mod_readaloud_quizresult_title collapsed" data-toggle="collapse" data-parent="#accordion" href="#accordion{{index}}">  {{title}}</a> </h4>
-            </div>
-            <div id="accordion{{index}}" class="panel-collapse collapse in">
-                <div class="panel-body">
-                    <ul class="readaloud_quiz_result">
-                        <li><div class="mod_readaloud_question_text"><b>{{#str}}questiontext, mod_readaloud{{/str}}: </b><br/>{{{questext}}}</div></li>
-                        <li><div class="mod_readaloud_quizresult_score"><b>{{#str}}questionscore, mod_readaloud{{/str}}: </b><br/>{{correctitems}}/{{totalitems}}</div></li>
-                        <li><div class="mod_readaloud_quizresult_grade"><b>{{#str}}grade, mod_readaloud{{/str}}: </b><br/>{{grade}}%</div></li>
-                        {{#hascorrectanswer}}
-                            <li>
-                                <div class="mod_readaloud_quizresult_correctanswer"><b>{{#str}}correctanswer, mod_readaloud{{/str}}</b><br/>
-                                    {{#correctans}}<span class="mod_readaloud_finishedanswer">{{{sentence}}}</span>{{/correctans}}
-                                </div>
-                            </li>
-                        {{/hascorrectanswer}}
-                        {{#hasincorrectanswer}}
-                            <li><div class="mod_readaloud_quizresult_incorrectanswer"><b>{{#str}}incorrectanswer, mod_readaloud{{/str}} </b><br/>
-                                {{#incorrectans}}<span class="mod_readaloud_finishedanswer">{{{sentence}}}</span>{{/incorrectans}}
-                            </div>
-                            </li>
-                        {{/hasincorrectanswer}}
-                        {{#hasanswerdetails}}
-                        <li>
-                            <div class="mod_readaloud_quizresult_answerdetails"><b>{{#str}}answerdetails, mod_readaloud{{/str}}</b><br/>
-                                <a class="mod_readaloud_finishedanswerdetailslink" data-target="ra_answerdetails_container_{{index}}" data-resultstemplate="{{resultstemplate}}" data-resultsdata="{{resultsdatajson}}" href="#">{{#str}}seeanswerdetails, mod_readaloud{{/str}}</a>
-                            </div>
-                        </li>
-                        {{/hasanswerdetails}}
-                        <li><div class="mod_readaloud_quizresult_rating">
-                            {{#yellowstars}}
-                                <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/star-yellow.svg"/></span>
-                            {{/yellowstars}}
-                            {{#graystars}}
-                                <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/star-grey.svg"/></span>
-                            {{/graystars}}
-                        </div>
-                        </li>
-                    </ul>
-                    <div id="ra_answerdetails_container_{{index}}" class="ra_qf_itemresults" style="display: none"></div>
-                </div>
-            </div>
-        </div>
+<div class="quizrating d-flex align-items-center justify-content-between no-wrap mb-4">
+    <h6 class="fw-semibold mb-0">{{#str}}quizresults, mod_readaloud{{/str}}</h6>
+    <div class="mod_readaloud_quizresult_rating">
+        {{#yellowstars}}
+            <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/star-yellow.svg"/></span>
+        {{/yellowstars}}
+        {{#graystars}}
+            <span><img src="{{{ config.wwwroot }}}/mod/readaloud/pix/star-grey.svg"/></span>
+        {{/graystars}}
     </div>
 </div>
-{{/results}}
+
+<div class="mod_readaloud_quizfinalscore d-flex align-items-center justify-content-between no-wrap border rounded mb-4 p-5">
+    <span class="text-uppercase">{{#str}}totalscore, mod_readaloud{{/str}}</span>
+    <div class="d-flex flex-column">
+        <p class="h3 font-weight-bold">{{total}}%</p>
+    </div>
 </div>
-{{#reattempturl}}
-<div class="readaloud_actionbutton">
-<a class="btn btn-secondary btn_finished_attempt center" href="{{{reattempturl}}}" data-href="{{{reattempturl}}}" data-action="reattempt">
-    {{#str}}reattempt, mod_readaloud{{/str}}</a>
+
+{{#canreattemptquiz}}
+<div class="mod_readaloud_quizfinalscore d-flex align-items-center justify-content-between no-wrap my-4 m-3">
+    <span>Want to try to improve your score?</span>
+    <button class="mod_readaloud_reattemptquiz_button btn btn-primary">
+    {{#str}}reattempt, mod_readaloud{{/str}}</button>
 </div>
-{{/reattempturl}}
+{{/canreattemptquiz}}
+
+{{#showfullresults}}
+<div id="mod_readaloud_quizitemscores" class="mod_readaloud_quizitemscores">
+    <h6 class="fw-semibold mb-4">{{#str}}questions, mod_readaloud{{/str}}</h6>
+    {{> mod_readaloud/quizresult}}
+</div>
+{{/showfullresults}}
+
+<div id="mod_readaloud_quizviewreport_container" class="d-flex justify-content-between p-3 my-4 rounded">
+    <div id="quizviewreport_title_container" class="d-flex flex-column justify-content-between">
+        <div id="quizviewreport_title" class="d-flex">
+            {{> mod_readaloud/report}}
+            <h5 class="fw-semibold ms-2 mb-3">{{#str}}viewfinalreport, mod_readaloud{{/str}}</h5>
+        </div>
+        <p class="mb-0 mr-3">{{#str}}viewfinalreportintro, mod_readaloud{{/str}}</p>
+    </div>
+    <button class="mod_readaloud_quizviewreport_button btn btn-primary align-self-center" data-action="quizviewreport">{{#str}}viewreports, mod_readaloud{{/str}}</button>
+</div>
+
 {{^element.frozen}}
 {{#js}}
     require(['jquery', 'mod_readaloud/quizfinished'], function($, quizfinished) {
@@ -87,3 +50,11 @@
     });
 {{/js}}
 {{/element.frozen}}
+
+
+<!--{{#reattempturl}}
+<div class="readaloud_actionbutton">
+<a class="btn btn-secondary btn_finished_attempt center" href="{{{reattempturl}}}" data-href="{{{reattempturl}}}" data-action="reattempt">
+    {{#str}}reattempt, mod_readaloud{{/str}}</a>
+</div>
+{{/reattempturl}}-->

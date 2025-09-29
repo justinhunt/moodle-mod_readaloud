@@ -1,40 +1,46 @@
-<div class="mod_readaloud_attemptsummary">
-    <div class="mod_readaloud_center">
-        <h5>{{#str}}myattemptssummary, mod_readaloud, {{summary.totalattempts}} {{/str}}</h5>
+<section class="mod_readaloud_attemptsummary mb-5">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <h6 class="mb-0 fw-semibold">{{#str}} readaloudresults, mod_readaloud {{/str}}</h6>
+        <div class="mod_readaloud_stars">
+            {{{ attemptssummary.stars }}}
+        </div>
     </div>
-    <div class="mod_readaloud_center">
-        {{#str}}summaryexplainer, mod_readaloud{{/str}}
+
+    <div class="row g-3">
+        <div class="col-12 col-md-4">
+            <div class="statbox h-100 d-flex justify-content-between align-items-center p-5 rounded border">
+                <div class="statbox-item">
+                    <div class="stat-label text-uppercase small fw-semibold">{{#str}} wpm, mod_readaloud {{/str}}</div>
+                    <div class="fw-bold fs-1">20{{attemptssummary.av_wpm}}</div>
+                </div>
+                <span class="statbox-icon">
+                    {{#pix}} bolt, mod_readaloud {{/pix}}
+                </span>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="statbox h-100 d-flex justify-content-between align-items-center p-5 rounded border">
+                <div class="statbox-item">
+                    <div class="stat-label text-uppercase small fw-semibold">{{#str}} accuracy, mod_readaloud {{/str}}</div>
+                    <div class="fw-bold fs-1">40%{{attemptssummary.av_accuracy}}</div>
+                </div>
+                <span class="statbox-icon">
+                    {{#pix}} percent, mod_readaloud {{/pix}}
+                </span>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="statbox h-100 d-flex justify-content-between align-items-center p-5 rounded border">
+                <div class="statbox-item">
+                    <div class="stat-label text-uppercase small fw-semibold">{{#str}} totalwords, mod_readaloud {{/str}}</div>
+                    <div class="fw-bold fs-1">10{{attemptssummary.total_words}}</div>
+                </div>
+                <span class="statbox-icon">
+                    {{#pix}} checkcircle, mod_readaloud {{/pix}}
+                </span>
+            </div>
+        </div>
     </div>
-    <div class="mod_readaloud_attemptsummarytable table-responsive">
-        <table id="uniqid" class ="generaltable mod_readaloud_table">
-            <thead>
-                <tr>
-                    <th class="header c0"></th>
-                    <th class="header c1">{{#str}}wpm, mod_readaloud{{/str}}</th>
-                    <th class="header c2">{{#str}}accuracy_p, mod_readaloud{{/str}}</th>
-                    {{#attemptshowgrades}}
-                        <th class="header c3">{{#str}}grade_p, mod_readaloud{{/str}}</th>
-                    {{/attemptshowgrades}}
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="cell c0">{{#str}}averages, mod_readaloud{{/str}}
-                    <td class="cell c1">{{attemptssummary.av_wpm}}</td>
-                    <td class="cell c2">{{attemptssummary.av_accuracy}}</td>
-                    {{#attemptshowgrades}}
-                        <td class="cell c3">{{attemptssummary.av_sessionscore}}</td>
-                    {{/attemptshowgrades}}
-                </tr>
-                <tr>
-                    <td class="cell c0">{{#str}}highest, mod_readaloud{{/str}}
-                    <td class="cell c1">{{attemptssummary.h_wpm}}</td>
-                    <td class="cell c2">{{attemptssummary.h_accuracy}}</td>
-                    {{#attemptshowgrades}}
-                        <td class="cell c3">{{attemptssummary.h_sessionscore}}</td>
-                    {{/attemptshowgrades}}
-                </tr>
-            </tbody>
-        </table>
-    </div>
-<div>
+</section>
