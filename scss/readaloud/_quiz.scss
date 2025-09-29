@@ -1,9 +1,7 @@
 #mod_readaloud_quiz_cont_wrap {
     // TODO: Remove temp show.
-    // display: block !important; // Override inline style.
-    // In multichoice.js self.next_question() auto moves user on.
+    display: block !important; // Override inline style.
     // TODO: In multichoice.js - remove finalChoice > resultspanel code? Also see multichoice.mustache.
-    // TODO: Use questionheader.mustache.
 
     #mod_readaloud_quiz_items_cont {
         .readaloud_questioncontainer {

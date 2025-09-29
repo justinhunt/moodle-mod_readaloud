@@ -5,15 +5,15 @@
                 <span class="icon" aria-hidden="true">
                     {{> mod_readaloud/practice }}
                 </span>
-                <h5 class="mb-0">Time to practice</h5>
-                <p class="mb-0">You can continue listening or start practicing.</p>
+                <h5 class="mb-0">{{#str}} timetopractice, mod_readaloud {{/str}}</h5>
+                <p class="mb-0">{{#str}} listenorpractice, mod_readaloud {{/str}}</p>
             </div>
             <div class="modal-footer border-top-0 d-flex flex-column p-3">
                 <div id="practice-actions" class="d-flex gap-3 w-100">
-                    <button type="button" class="btn btn-secondary">Keep listening</button>
-                    <button type="button" class="btn btn-primary">Practice</button>
+                    <button type="button" class="btn btn-secondary">{{#str}} keeplistening, mod_readaloud {{/str}}</button>
+                    <button type="button" class="btn btn-primary">{{#str}} practice, mod_readaloud {{/str}}</button>
                 </div>
-                <button type="button" class="btn btn-link" data-bs-dismiss="modal">Don't show this again</button>
+                <button type="button" class="btn btn-link" data-bs-dismiss="modal">{{#str}} dontshowagain, mod_readaloud {{/str}}</button>
             </div>
         </div>
     </div>
