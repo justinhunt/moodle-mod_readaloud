@@ -4,7 +4,7 @@
     color: $gray-900;
     font-size: $font-size-base * 1.125;
     line-height: 210%;
-    padding: 2rem;
+    padding: 1rem;
 
     .mod_readaloud_modelaudio_activesentence {
         background-color: $yellow30;
@@ -12,5 +12,11 @@
 
     p:last-child {
         margin-bottom: 0;
+    }
+}
+
+@media (min-width: 576px) {
+    .mod_readaloud_passage_cont {
+        padding: 2rem;
     }
 }
