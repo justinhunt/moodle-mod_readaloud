@@ -4,8 +4,8 @@
         {{> mod_readaloud/playbutton}}
     {{/playbutton}}
     <!-- Button trigger modal -->
-    <button type="button" id="mod_readaloud_button_quitlistening" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#practicemodal">
-     {{#str}}quitlistening , mod_readaloud {{/str}}
+    <button type="button" id="mod_readaloud_hidelistenquitmodal" class="btn" data-bs-toggle="modal" data-bs-target="#mod_readaloud_listenquitmodal" style="display: none;">
+     hide quit listening modal
     </button>
-    {{> mod_readaloud/practice_modal}}
+    {{> mod_readaloud/listenquit_modal}}
 </div>
