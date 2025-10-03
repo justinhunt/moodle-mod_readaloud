@@ -134,8 +134,14 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
             },
 
             setupmodelaudio: function () {
+                var dd = this;
                 var karaoke_opts = { breaks: this.activitydata.breaks, audioplayerclass: this.activitydata.audioplayerclass };
                 modelaudiokaraoke.init(karaoke_opts);
+                modelaudiokaraoke.on_complete = function () {
+                    // Complete the current step (update server and ui)
+                    dd.update_activity_step(dd.activitydata.steps.step_listen);
+                    dd.domenulayout();
+                }
             },
 
             setuppractice: function () {
@@ -451,21 +457,6 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 });
                 dd.controls.homebutton.click(function (e) {
                     dd.domenulayout();
-                });
-
-                dd.controls.stopandplay.on('click', 'button.control--playbutton', function () {
-                    var $btn = $(this);
-                    var pressed = $btn.attr('aria-pressed') === 'true';
-                    $btn.attr('aria-pressed', pressed ? 'false' : 'true');
-                });
-
-                dd.controls.stopandplay.on('keypress', 'button.control--playbutton', function (e) {
-                    if (e.which == 32 || e.which == 13) { // Space or Enter
-                        var $btn = $(this);
-                        var pressed = $btn.attr('aria-pressed') === 'true';
-                        $btn.attr('aria-pressed', pressed ? 'false' : 'true');
-                        e.preventDefault();
-                    }
                 });
             },
 

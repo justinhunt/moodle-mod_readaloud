@@ -12,7 +12,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
     endwordnumber: 0,
     currentstartbreak: false,
     modeling: false,
-    thelistenquitmodal: false,
+    thelistenquitmodal: true,
 
     //class definitions
     cd: {
@@ -27,6 +27,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
       playbutton: 'mod_readaloud_button_play',
       listenquitmodal: 'mod_readaloud_listenquitmodal',
       hidelistenquitmodal: 'mod_readaloud_hidelistenquitmodal'
+
     },
 
     //init the module
@@ -104,6 +105,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
       this.controls.hidelistenquitmodal = $('#' + this.cd.hidelistenquitmodal);
       this.controls.lqm_quitbutton = this.controls.listenquitmodal.find('.lqm_quit');
       this.controls.lqm_continuebutton = this.controls.listenquitmodal.find('.lqm_continue');
+      this.controls.lqm_forgetbutton = this.controls.listenquitmodal.find('.lqm_forget');
+      this.controls.stopandplay = this.controls.playbutton.closest('.control--playbutton');
     },
 
     //attach the various event handlers we need
@@ -113,17 +116,30 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
       // Get the audio element
       var aplayer = this.controls.audioplayer[0];
 
-      this.controls.playbutton.on('click', function() {
-        aplayer.play();
+      this.controls.stopandplay.on('keypress', function (e) {
+        if (e.which === 32 || e.which === 13) { // Space or Enter
+          var $btn = that.controls.stopandplay
+          var shouldplay = $btn.attr('aria-pressed') === 'true';
+          if (shouldplay) {
+            that.do_audio_play();
+          } else {
+            that.do_audio_stop();
+          }
+          e.stopPropagation();
+        }
       });
 
-      this.controls.stopbutton.on('click', function() {
-        aplayer.pause();
-        // If after halfway allow them to stop listening and practice
-        var afterhalfway = aplayer.currentTime > (aplayer.duration / 2);
-        if(afterhalfway){
-          that.show_listenquitmodal();
-        }
+      // Only the icon handles the click properly, the red/green halo stopandplay does not.
+      // So we need to rely on the aria-pressed state to determine what to do.
+      this.controls.stopandplay.on('click', function(e) {
+          var $btn = that.controls.stopandplay
+          var shouldplay = $btn.attr('aria-pressed') === 'false';
+          if (shouldplay) {
+            that.do_audio_play();
+          } else {
+            that.do_audio_stop();
+          }
+          e.stopPropagation();
       });
 
       this.controls.lqm_quitbutton.on('click', function() {
@@ -131,17 +147,29 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
         that.hide_listenquitmodal();
         aplayer.pause();
         aplayer.currentTime = 0;
-
+        that.on_complete();
+        //re-enable the listenquit modal and forget button (if it was hidden)
+        that.thelistenquitmodal=true;
+        that.controls.lqm_forgetbutton.removeClass('d-none');
       });
 
       this.controls.lqm_continuebutton.on('click', function() {
         //stop the audio and reset to start
         that.hide_listenquitmodal();
-        var finishedplaying = that.currentstartbreak && that.currentstartbreak.wordnumber === that.endwordnumber;
+        var finishedplaying = aplayer.ended || aplayer.currentTime === aplayer.duration;
         if(finishedplaying) {
           aplayer.currentTime = 0;
+          //re-enable the listenquit modal and forget button (if it was hidden)
+          that.controls.lqm_forgetbutton.removeClass('d-none');
+          that.thelistenquitmodal=true;
         }
-        that.controls.playbutton.click();
+        that.do_audio_play();
+      });
+
+      this.controls.lqm_forgetbutton.on('click', function() {
+        $(this).addClass('d-none');
+        that.thelistenquitmodal=false;
+        that.controls.lqm_continuebutton.click();
       });
 
       //if we are not modeling we want to jump to the clicked location
@@ -164,6 +192,9 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
             aplayer.pause();
             aplayer.currentTime = nearest_start_break.audiotime;
             aplayer.play();
+            // we want to ensure the button state stays in sync with the play state
+            that.controls.stopandplay.attr('aria-pressed', 'true');
+
           }
         } //end of if not modeling
       }); //end of eachwordorspace
@@ -218,6 +249,9 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
           //If it is the last break, show our Modal
           if(islastbreak) {
             that.show_listenquitmodal();
+            // ensure the button state stays in sync with the play state
+            // audio has ended so show the stop button
+            that.controls.stopandplay.attr('aria-pressed', 'false');
           }
 
           log.debug('Current start break:');
@@ -240,16 +274,37 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
       aplayer.ontimeupdate = timeupdate;
     }, //end of register events
 
+
+    do_audio_play: function() {
+      var that = this;
+      that.controls.stopandplay.attr('aria-pressed',  'true');
+      var aplayer = this.controls.audioplayer[0];
+      aplayer.play();
+    },
+
+    do_audio_stop: function() {
+      var that = this;
+      that.controls.stopandplay.attr('aria-pressed',  'false');
+      var aplayer = that.controls.audioplayer[0];
+      aplayer.pause();
+
+      // If after halfway allow them to stop listening and practice
+      var afterhalfway = aplayer.currentTime > (aplayer.duration / 2);
+
+      // Should we show the modal?
+      afterhalfway = true; //for now lets not restrict it to halfway
+      var shouldshow = afterhalfway && that.thelistenquitmodal;
+      if(shouldshow) {
+        that.show_listenquitmodal();
+      }
+    },
+
+    // Callback for when the listen mode is complete, overridden by activity controller.
+    on_complete: function() {},
+
     show_listenquitmodal: function() {
       var that = this;
       that.controls.hidelistenquitmodal.click();
-        /*
-          if(!this.thelistenquitmodal) {
-              this.thelistenquitmodal = new bootstrap.Modal(this.controls.listenquitmodal[0]);
-          }
-          this.thelistenquitmodal.show();
-          */
-
     },
 
     hide_listenquitmodal: function() {

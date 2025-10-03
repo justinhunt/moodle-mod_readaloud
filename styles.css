@@ -294,34 +294,34 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   color: #8F8E94;
 }
 
-#practicemodal .modal-dialog {
+#mod_readaloud_listenquitmodal .modal-dialog {
   max-width: 325px;
 }
-#practicemodal .modal-dialog .modal-body h5 {
+#mod_readaloud_listenquitmodal .modal-dialog .modal-body h5 {
   font-weight: 600;
 }
-#practicemodal .modal-dialog .modal-body p {
+#mod_readaloud_listenquitmodal .modal-dialog .modal-body p {
   color: #727276;
 }
-#practicemodal .modal-dialog .modal-body .icon {
+#mod_readaloud_listenquitmodal .modal-dialog .modal-body .icon {
   color: #513DEB;
   height: 24px;
   width: 24px;
 }
-#practicemodal .modal-dialog .modal-footer button {
+#mod_readaloud_listenquitmodal .modal-dialog .modal-footer button {
   flex: 1 1 0%;
 }
-#practicemodal .modal-dialog .modal-footer button.btn-primary {
+#mod_readaloud_listenquitmodal .modal-dialog .modal-footer button.btn-primary {
   background-color: #513DEB;
   border-color: #513DEB;
   color: #FFFFFF;
 }
-#practicemodal .modal-dialog .modal-footer button.btn-secondary {
+#mod_readaloud_listenquitmodal .modal-dialog .modal-footer button.btn-secondary {
   background-color: rgba(81, 61, 235, 0.06);
   border-color: rgba(81, 61, 235, 0.06);
   color: #513DEB;
 }
-#practicemodal .modal-dialog .modal-footer button.btn-link {
+#mod_readaloud_listenquitmodal .modal-dialog .modal-footer button.btn-link {
   color: #513DEB;
 }
 
