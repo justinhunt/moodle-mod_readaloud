@@ -2731,6 +2731,61 @@ class utils {
 
     }
 
+    public static function is_complete($rule, $moduleinstance, $cm, $userid)
+    {
+        global $DB;
+
+        switch ($rule) {
+            // In this version there is really only one step, but soon we will track each step 
+            case constants::COMPLETION_ALLSTEPS:
+                $attempts = self::fetch_user_attempts($moduleinstance);
+                if($attempts){
+                    return true;
+                } else {
+                    return false;
+                }
+            case constants::COMPLETION_MINGRADE:
+                $attempts = self::fetch_user_attempts($moduleinstance);
+                if(!$attempts){return false;}
+                
+                $cantranscribe = utils::can_transcribe($moduleinstance);
+                $params = ['userid' => $userid, 'moduleid' => $moduleinstance->id];
+                if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID && $cantranscribe) {
+                    //choose greater or  ai or human score
+                    $sql = "SELECT  GREATEST(MAX(ai.sessionscore), MAX(a.sessionscore)) AS grade
+                                FROM {" . constants::M_AITABLE . "} ai
+                                INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
+                                WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
+
+                } elseif ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe) {
+
+                    //choose AI grades only
+                    $sql = "SELECT  MAX(ai.sessionscore) AS grade
+                                FROM {" . constants::M_AITABLE . "} ai
+                                INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
+                                WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
+
+                } else {
+                    //choose human grades only
+                    $sql = "SELECT  MAX( sessionscore  ) AS grade
+                                FROM {" . constants::M_USERTABLE . "}
+                                WHERE userid = :userid AND " . constants::M_MODNAME . "id = :moduleid";
+                }
+
+                $result = $DB->get_field_sql($sql, $params);
+                if ($result === false) {
+                    return false;
+                }
+
+                //check completion reqs against satisfied conditions
+                $success = $result >= $moduleinstance->mingrade;
+                return $success;
+
+            default:
+                return false;
+        }
+    }
+
     public static function super_trim($str){
         if($str==null){
             return '';

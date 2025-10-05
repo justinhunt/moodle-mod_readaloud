@@ -382,7 +382,8 @@ class constants {
     const M_PUSH_CANEXITEARLY = 9;
 
     const M_USE_DATATABLES=true;
-
+    const COMPLETION_ALLSTEPS = 'completionallsteps';
+    const COMPLETION_MINGRADE = 'mingrade';
     const M_STANDARD_FONTS = ["Arial", "Arial Black", "Verdana", "Tahoma", "Trebuchet MS", "Impact",
         "Times New Roman", "Didot", "Georgia", "American Typewriter", "Andalé Mono", "Courier",
         "Lucida Console", "Monaco", "Bradley Hand", "Brush Script MT", "Luminari", "Comic Sans MS"];

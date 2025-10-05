@@ -45,7 +45,8 @@ use \mod_readaloud\utils;
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
  */
-function readaloud_supports($feature) {
+function readaloud_supports($feature)
+{
     switch ($feature) {
         case FEATURE_MOD_INTRO:
             return true;
@@ -63,13 +64,22 @@ function readaloud_supports($feature) {
             return true;
         case FEATURE_BACKUP_MOODLE2:
             return true;
-        default:
-            //cute hack to work on M4.0 and above
-            if(defined('FEATURE_MOD_PURPOSE') && defined('MOD_PURPOSE_ASSESSMENT') && $feature=='mod_purpose'){
+        // FEATURE_MOD_PURPOSE  - wont be defined for < 4.0. so we hard code it.
+        case "mod_purpose":
+            if (defined('MOD_PURPOSE_INTERACTIVECONTENT')) {
+                return "interactivecontent";
+            } else if (defined('MOD_PURPOSE_ASSESSMENT')) {
                 return "assessment";
-            }else{
+            } else {
                 return null;
             }
+        // FEATURE_MOD_OTHERPURPOSE  - wont be defined for < 5.1. so we hard code it. 
+        // If it is defined then interactivecontent  and assessment will also be  defined.   
+        case "mod_otherpurpose":
+            return "assessment";
+
+        default:
+            return null;
     }
 }
 
@@ -79,7 +89,8 @@ function readaloud_supports($feature) {
  *
  * @param $mform form passed by reference
  */
-function readaloud_reset_course_form_definition(&$mform) {
+function readaloud_reset_course_form_definition(&$mform)
+{
     $mform->addElement('header', constants::M_MODNAME . 'header', get_string('modulenameplural', constants::M_COMPONENT));
     $mform->addElement('advcheckbox', 'reset_' . constants::M_MODNAME, get_string('deletealluserdata', constants::M_COMPONENT));
 }
@@ -90,22 +101,35 @@ function readaloud_reset_course_form_definition(&$mform) {
  * @param object $course
  * @return array
  */
-function readaloud_reset_course_form_defaults($course) {
+function readaloud_reset_course_form_defaults($course)
+{
     return array('reset_' . constants::M_MODNAME => 1);
 }
 
-function readaloud_editor_with_files_options($context) {
-    return array('maxfiles' => EDITOR_UNLIMITED_FILES,
-            'noclean' => true, 'context' => $context, 'subdirs' => true);
+function readaloud_editor_with_files_options($context)
+{
+    return array(
+        'maxfiles' => EDITOR_UNLIMITED_FILES,
+        'noclean' => true,
+        'context' => $context,
+        'subdirs' => true
+    );
 }
 
-function readaloud_editor_no_files_options($context) {
+function readaloud_editor_no_files_options($context)
+{
     return array('maxfiles' => 0, 'noclean' => true, 'context' => $context);
 }
 
-function readaloud_picturefile_options($context){
-    return array('maxfiles' => EDITOR_UNLIMITED_FILES,
-        'noclean' => true, 'context' => $context, 'subdirs' => true, 'accepted_types' => array('image'));
+function readaloud_picturefile_options($context)
+{
+    return array(
+        'maxfiles' => EDITOR_UNLIMITED_FILES,
+        'noclean' => true,
+        'context' => $context,
+        'subdirs' => true,
+        'accepted_types' => array('image')
+    );
 }
 
 /**
@@ -116,7 +140,8 @@ function readaloud_picturefile_options($context){
  * @param int $courseid
  * @param string optional type
  */
-function readaloud_reset_gradebook($courseid, $type = '') {
+function readaloud_reset_gradebook($courseid, $type = '')
+{
     global $CFG, $DB;
 
     $sql = "SELECT l.*, cm.idnumber as cmidnumber, l.course as courseid
@@ -139,7 +164,8 @@ function readaloud_reset_gradebook($courseid, $type = '') {
  * @param object $data the data submitted from the reset course.
  * @return array status array
  */
-function readaloud_reset_userdata($data) {
+function readaloud_reset_userdata($data)
+{
     global $CFG, $DB;
 
     $componentstr = get_string('modulenameplural', constants::M_COMPONENT);
@@ -160,8 +186,11 @@ function readaloud_reset_userdata($data) {
             readaloud_reset_gradebook($data->courseid);
         }
 
-        $status[] = array('component' => $componentstr, 'item' => get_string('deletealluserdata', constants::M_COMPONENT),
-                'error' => false);
+        $status[] = array(
+            'component' => $componentstr,
+            'item' => get_string('deletealluserdata', constants::M_COMPONENT),
+            'error' => false
+        );
     }
 
     /// updating dates - shift may be negative too
@@ -183,13 +212,14 @@ function readaloud_reset_userdata($data) {
  * @param array|object $grades optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok, error code otherwise
  */
-function readaloud_grade_item_update($moduleinstance, $grades = null) {
+function readaloud_grade_item_update($moduleinstance, $grades = null)
+{
     global $CFG;
     if (!function_exists('grade_update')) { //workaround for buggy PHP versions
         require_once($CFG->libdir . '/gradelib.php');
     }
 
-    if (array_key_exists('cmidnumber', (array)$moduleinstance)) { //it may not be always present
+    if (array_key_exists('cmidnumber', (array) $moduleinstance)) { //it may not be always present
         $params = array('itemname' => $moduleinstance->name, 'idnumber' => $moduleinstance->cmidnumber);
     } else {
         $params = array('itemname' => $moduleinstance->name);
@@ -197,8 +227,10 @@ function readaloud_grade_item_update($moduleinstance, $grades = null) {
 
     //if we are machine grading we need to fetch the error estimate
     //hard coded to no error estimate since we turned off the feature
-    if (false && $moduleinstance->machgrademethod = constants::MACHINEGRADE_HYBRID &&
-                    utils::can_transcribe($moduleinstance) && $moduleinstance->accadjustmethod != constants::ACCMETHOD_NONE) {
+    if (
+        false && $moduleinstance->machgrademethod = constants::MACHINEGRADE_HYBRID &&
+        utils::can_transcribe($moduleinstance) && $moduleinstance->accadjustmethod != constants::ACCMETHOD_NONE
+    ) {
         $errorestimate = \mod_readaloud\utils::estimate_errors($moduleinstance->id);
     } else {
         $errorestimate = 0;
@@ -224,8 +256,13 @@ function readaloud_grade_item_update($moduleinstance, $grades = null) {
 
         // When converting a score to a scale, use scale's grade maximum to calculate it.
         if (!empty($currentgrade) && $currentgrade->rawgrade !== null) {
-            $grade = grade_get_grades($moduleinstance->course, 'mod', constants::M_MODNAME, $moduleinstance->id,
-                    $currentgrade->userid);
+            $grade = grade_get_grades(
+                $moduleinstance->course,
+                'mod',
+                constants::M_MODNAME,
+                $moduleinstance->id,
+                $currentgrade->userid
+            );
             $params['grademax'] = reset($grade->items)->grademax;
         }
     } else {
@@ -256,8 +293,16 @@ function readaloud_grade_item_update($moduleinstance, $grades = null) {
         }
     }
 
-    return grade_update('mod/' . constants::M_MODNAME, $moduleinstance->course, 'mod', constants::M_MODNAME, $moduleinstance->id, 0,
-            $grades, $params);
+    return grade_update(
+        'mod/' . constants::M_MODNAME,
+        $moduleinstance->course,
+        'mod',
+        constants::M_MODNAME,
+        $moduleinstance->id,
+        0,
+        $grades,
+        $params
+    );
 }
 
 /**
@@ -268,7 +313,8 @@ function readaloud_grade_item_update($moduleinstance, $grades = null) {
  * @param int $userid specific user only, 0 means all
  * @param bool $nullifnone
  */
-function readaloud_update_grades($moduleinstance, $userid = 0, $nullifnone = true) {
+function readaloud_update_grades($moduleinstance, $userid = 0, $nullifnone = true)
+{
     global $CFG, $DB;
     require_once($CFG->libdir . '/gradelib.php');
 
@@ -279,14 +325,18 @@ function readaloud_update_grades($moduleinstance, $userid = 0, $nullifnone = tru
         if (class_exists('\core_completion\api')) {
             require_once("{$CFG->libdir}/completionlib.php");
             $completionexpected = (empty($moduleinstance->completionexpected) ? null : $moduleinstance->completionexpected);
-            if(isset($moduleinstance->coursemodule)){
+            if (isset($moduleinstance->coursemodule)) {
                 $cmid = $moduleinstance->coursemodule;
-            }else{
+            } else {
                 $cm = get_coursemodule_from_instance('readaloud', $moduleinstance->id, $moduleinstance->course, false, MUST_EXIST);
-                $cmid =$cm->id;
+                $cmid = $cm->id;
             }
-            \core_completion\api::update_completion_date_event($cmid, 'readaloud', $moduleinstance->id,
-                $completionexpected);
+            \core_completion\api::update_completion_date_event(
+                $cmid,
+                'readaloud',
+                $moduleinstance->id,
+                $completionexpected
+            );
         }
         readaloud_grade_item_update($moduleinstance, $grades);
 
@@ -310,7 +360,8 @@ function readaloud_update_grades($moduleinstance, $userid = 0, $nullifnone = tru
  * @param int $userid optional user id, 0 means all users
  * @return array array of grades, false if none
  */
-function readaloud_get_user_grades($moduleinstance, $userid = 0) {
+function readaloud_get_user_grades($moduleinstance, $userid = 0)
+{
     global $CFG, $DB;
 
     $params = array("moduleid" => $moduleinstance->id);
@@ -355,7 +406,7 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
                         }
                     }
                 }
-            } elseif($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe){
+            } elseif ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe) {
                 $results = $DB->get_records_sql($ai_sql, $params);
 
             } else {
@@ -400,7 +451,7 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
                     }
                 }
 
-            } elseif($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe){
+            } elseif ($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe) {
                 $results = $DB->get_records_sql($ai_sql, $params);
 
             } else {
@@ -412,57 +463,51 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
     return $results;
 }
 
-function readaloud_get_completion_state($course, $cm, $userid, $type) {
+function readaloud_get_completion_state($course, $cm, $userid, $type)
+{
     return readaloud_is_complete($course, $cm, $userid, $type);
 }
 
 //this is called internally only
-function readaloud_is_complete($course, $cm, $userid, $type) {
+function readaloud_is_complete($course, $cm, $userid, $type)
+{
     global $CFG, $DB;
 
-    // Get module object
-    if (!($moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance)))) {
+     // Get module object.
+    if (!($moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance]))) {
         throw new Exception("Can't find module with cmid: {$cm->instance}");
     }
 
-    if (!($moduleinstance->mingrade > 0)) {
+    // Check if conditional completion is enabled.
+    // completion all steps is not enabled yet TODO 20251005
+    $onallstepscomplete = false; // !empty($moduleinstance->completionallsteps);
+    $onmingrade = !empty($moduleinstance->mingrade);
+    $completionenabled = $onallstepscomplete || $onmingrade;
+    if (!$completionenabled) {
         return $type;
     }
 
-    $cantranscribe = utils::can_transcribe($moduleinstance);
-    $params = array('userid' => $userid, 'moduleid' => $moduleinstance->id);
-    if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID && $cantranscribe) {
-        //choose greater or  ai or human score
-        $sql = "SELECT  GREATEST(MAX(ai.sessionscore), MAX(a.sessionscore)) AS grade
-                      FROM {" . constants::M_AITABLE . "} ai
-                      INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
-                     WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
+    // Check completion reqs against satisfied conditions.
+    switch ($type) {
+        case COMPLETION_AND:
+            if ($onallstepscomplete && $onmingrade) {
+                return utils::is_complete(constants::COMPLETION_ALLSTEPS, $moduleinstance, $cm,  $userid) &&
+                    utils::is_complete(constants::COMPLETION_MINGRADE, $moduleinstance, $cm, $userid);
+            } else if ($onallstepscomplete) {
+                return utils::is_complete(constants::COMPLETION_ALLSTEPS, $moduleinstance, $cm, $userid);
+            } else if ($onmingrade) {
+                return utils::is_complete(constants::COMPLETION_MINGRADE, $moduleinstance, $cm, $userid);
+            }
+            break;
 
-    } elseif($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe) {
-
-        //choose AI grades only
-        $sql = "SELECT  MAX(ai.sessionscore) AS grade
-                      FROM {" . constants::M_AITABLE . "} ai
-                      INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
-                     WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
-
-    } else {
-        //choose human grades only
-        $sql = "SELECT  MAX( sessionscore  ) AS grade
-                      FROM {" . constants::M_USERTABLE . "}
-                     WHERE userid = :userid AND " . constants::M_MODNAME . "id = :moduleid";
+        case COMPLETION_OR:
+            if ($onallstepscomplete || $onmingrade) {
+                return utils::is_complete(constants::COMPLETION_ALLSTEPS, $moduleinstance, $cm, $userid) ||
+                    utils::is_complete(constants::COMPLETION_MINGRADE, $moduleinstance, $cm, $userid);
+            }
     }
-
-    $result = $DB->get_field_sql($sql, $params);
-    if ($result === false) {
-        return false;
-    }
-
-    //check completion reqs against satisfied conditions
-    $success = $result >= $moduleinstance->mingrade;
-
-    //return our success flag
-    return $success;
+    // Completion option is not enabled, we must return $type.
+    return $type;
 }
 
 /**
@@ -471,16 +516,19 @@ function readaloud_is_complete($course, $cm, $userid, $type) {
  * @param progress_trace trace object
  *
  */
-function readaloud_dotask(progress_trace $trace) {
+function readaloud_dotask(progress_trace $trace)
+{
     $trace->output('executing dotask');
 }
 
-function readaloud_get_editornames() {
+function readaloud_get_editornames()
+{
     //we removed "passage" to force plain text 30/10/2021
     return array('welcome', 'feedback');
 }
 
-function readaloud_process_editors(stdClass $readaloud,?mod_readaloud_mod_form $mform = null) {
+function readaloud_process_editors(stdClass $readaloud, ?mod_readaloud_mod_form $mform = null)
+{
     global $DB;
     $cmid = $readaloud->coursemodule;
     $context = context_module::instance($cmid);
@@ -488,11 +536,18 @@ function readaloud_process_editors(stdClass $readaloud,?mod_readaloud_mod_form $
     $itemid = 0;
     $edoptions = readaloud_editor_no_files_options($context);
     foreach ($editors as $editor) {
-        $readaloud = file_postupdate_standard_editor($readaloud, $editor, $edoptions, $context, constants::M_COMPONENT, $editor,
-            $itemid);
+        $readaloud = file_postupdate_standard_editor(
+            $readaloud,
+            $editor,
+            $edoptions,
+            $context,
+            constants::M_COMPONENT,
+            $editor,
+            $itemid
+        );
     }
     //do the passage picture field
-    $ppoptions=readaloud_picturefile_options($context);
+    $ppoptions = readaloud_picturefile_options($context);
     file_save_draft_area_files($readaloud->{constants::PASSAGEPICTURE}, $context->id, constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, 0, $ppoptions);
 
     return $readaloud;
@@ -510,7 +565,8 @@ function readaloud_process_editors(stdClass $readaloud,?mod_readaloud_mod_form $
  * @param mod_readaloud_mod_form $mform
  * @return int The id of the newly inserted readaloud record
  */
-function readaloud_add_instance(stdClass $readaloud,?mod_readaloud_mod_form $mform = null) {
+function readaloud_add_instance(stdClass $readaloud, ?mod_readaloud_mod_form $mform = null)
+{
     global $DB;
 
     $readaloud->timecreated = time();
@@ -520,41 +576,46 @@ function readaloud_add_instance(stdClass $readaloud,?mod_readaloud_mod_form $mfo
     $readaloud->passage = utils::remove_accents_and_poormatchchars($readaloud);
 
     //do phonetics
-    list($thephonetic,$thepassagesegments) = utils::update_create_phonetic_segments($readaloud,false);
+    list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($readaloud, false);
     $readaloud->phonetic = $thephonetic;
     $readaloud->passagesegments = $thepassagesegments;
 
 
 
     //we want to process the hashcode and lang model if it makes sense
-    if(utils::needs_lang_model($readaloud)){
-        $passagehash = utils::fetch_passagehash($readaloud->passage,$readaloud->ttslanguage);
-        if($passagehash){
-            $readaloud->passagehash =$passagehash;
+    if (utils::needs_lang_model($readaloud)) {
+        $passagehash = utils::fetch_passagehash($readaloud->passage, $readaloud->ttslanguage);
+        if ($passagehash) {
+            $readaloud->passagehash = $passagehash;
             //build a lang model
             $ret = utils::fetch_lang_model($readaloud->passage, $readaloud->ttslanguage, $readaloud->region);
-            if ($ret && isset($ret->success) && $ret->success){
-                $readaloud->passagehash =$readaloud->region . '|'  .$passagehash;
-            }else{
-                $readaloud->passagehash =null;
+            if ($ret && isset($ret->success) && $ret->success) {
+                $readaloud->passagehash = $readaloud->region . '|' . $passagehash;
+            } else {
+                $readaloud->passagehash = null;
             }
-        }else{
-            $readaloud->passagehash =null;
+        } else {
+            $readaloud->passagehash = null;
         }
     }
 
     //we want to create a polly record and speechmarks, if we have a passage
-    if(!empty($readaloud->passage)) {
+    if (!empty($readaloud->passage)) {
         $config = get_config(constants::M_COMPONENT);
-        $token = utils::fetch_token($config->apiuser,$config->apisecret);
+        $token = utils::fetch_token($config->apiuser, $config->apisecret);
         $havettsvoice = $readaloud->ttsvoice != constants::TTS_NONE;
-        if($token && $havettsvoice) {
+        if ($token && $havettsvoice) {
             $slowpassage = utils::fetch_speech_ssml($readaloud->passage, $readaloud->ttsspeed);
-            $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
-                    $slowpassage, 'ssml', $readaloud->ttsvoice);
-            if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($readaloud->passagesegments,$speechmarks,$readaloud->ttslanguage);
-                $breaks = utils::guess_modelaudio_breaks($readaloud->passagesegments, $matches,$readaloud->ttslanguage);
+            $speechmarks = utils::fetch_polly_speechmarks(
+                $token,
+                $readaloud->region,
+                $slowpassage,
+                'ssml',
+                $readaloud->ttsvoice
+            );
+            if ($speechmarks) {
+                $matches = utils::speechmarks_to_matches($readaloud->passagesegments, $speechmarks, $readaloud->ttslanguage);
+                $breaks = utils::guess_modelaudio_breaks($readaloud->passagesegments, $matches, $readaloud->ttslanguage);
                 $readaloud->modelaudiomatches = json_encode($matches);
                 $readaloud->modelaudiobreaks = json_encode($breaks);
             }//end of if speechmarks
@@ -567,8 +628,12 @@ function readaloud_add_instance(stdClass $readaloud,?mod_readaloud_mod_form $mfo
     readaloud_grade_item_update($readaloud);
     if (class_exists('\core_completion\api')) {
         $completionexpected = (empty($readaloud->completionexpected) ? null : $readaloud->completionexpected);
-        \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id,
-                $completionexpected);
+        \core_completion\api::update_completion_date_event(
+            $readaloud->coursemodule,
+            'readaloud',
+            $readaloud->id,
+            $completionexpected
+        );
     }
 
     return $readaloud->id;
@@ -585,7 +650,8 @@ function readaloud_add_instance(stdClass $readaloud,?mod_readaloud_mod_form $mfo
  * @param mod_readaloud_mod_form $mform
  * @return boolean Success/Fail
  */
-function readaloud_update_instance(stdClass $readaloud,?mod_readaloud_mod_form $mform = null) {
+function readaloud_update_instance(stdClass $readaloud, ?mod_readaloud_mod_form $mform = null)
+{
     global $DB;
 
     $params = array('id' => $readaloud->instance);
@@ -599,22 +665,22 @@ function readaloud_update_instance(stdClass $readaloud,?mod_readaloud_mod_form $
     $readaloud->passage = utils::remove_accents_and_poormatchchars($readaloud);
 
     //we want to process the hashcode and lang model if it makes sense
-    $oldrecord = $DB->get_record(constants::M_TABLE,array('id'=>$readaloud->id));
+    $oldrecord = $DB->get_record(constants::M_TABLE, array('id' => $readaloud->id));
 
     //update the phonetic if it has changed
-    list($thephonetic,$thepassagesegments) = utils::update_create_phonetic_segments($readaloud,$oldrecord);
+    list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($readaloud, $oldrecord);
     $readaloud->phonetic = $thephonetic;
     $readaloud->passagesegments = $thepassagesegments;
 
     $readaloud->passagehash = $oldrecord->passagehash;
-    $newpassagehash = utils::fetch_passagehash($readaloud->passage,$readaloud->ttslanguage);
-    if($newpassagehash){
+    $newpassagehash = utils::fetch_passagehash($readaloud->passage, $readaloud->ttslanguage);
+    if ($newpassagehash) {
         //check if it has changed, if not do not waste time processing it
-        if($oldrecord->passagehash!= ($readaloud->region . '|' . $newpassagehash)) {
+        if ($oldrecord->passagehash != ($readaloud->region . '|' . $newpassagehash)) {
             //build a lang model
-            if(utils::needs_lang_model($readaloud)) {
+            if (utils::needs_lang_model($readaloud)) {
                 $ret = utils::fetch_lang_model($readaloud->passage, $readaloud->ttslanguage, $readaloud->region);
-                if ($ret && isset($ret->success) && $ret->success)  {
+                if ($ret && isset($ret->success) && $ret->success) {
                     $readaloud->passagehash = $readaloud->region . '|' . $newpassagehash;
                 }//end of if successful
             }//end of if lang model
@@ -622,33 +688,39 @@ function readaloud_update_instance(stdClass $readaloud,?mod_readaloud_mod_form $
     }//end of if newpassagehash
 
     //we want to create a polly record and speechmarks, if (!human_modelaudio && passage) && (passage change || voice change || speed change)
-    $needspeechmarks =false;
+    $needspeechmarks = false;
     $havettsvoice = $readaloud->ttsvoice != constants::TTS_NONE;
-    if(empty($readaloud->modelaudiourl) && !empty($readaloud->passage && $havettsvoice) && $newpassagehash){
+    if (empty($readaloud->modelaudiourl) && !empty($readaloud->passage && $havettsvoice) && $newpassagehash) {
         //if it has changed OR voice has changed we need to do some work
-        if($oldrecord->passagehash!= ($readaloud->region . '|' . $newpassagehash) ||
+        if (
+            $oldrecord->passagehash != ($readaloud->region . '|' . $newpassagehash) ||
             $oldrecord->ttsvoice != $readaloud->ttsvoice ||
-                $oldrecord->ttsspeed != $readaloud->ttsspeed
+            $oldrecord->ttsspeed != $readaloud->ttsspeed
         ) {
             $needspeechmarks = true;
         }
     }
 
     //We create the marked up speechmarks. We do not save the modelurl, we only save that in the case of human model audio
-    if($needspeechmarks) {
+    if ($needspeechmarks) {
         $config = get_config(constants::M_COMPONENT);
-        $token = utils::fetch_token($config->apiuser,$config->apisecret);
-        if($token) {
+        $token = utils::fetch_token($config->apiuser, $config->apisecret);
+        if ($token) {
             $slowpassage = utils::fetch_speech_ssml($readaloud->passage, $readaloud->ttsspeed);
-            $speechmarks = utils::fetch_polly_speechmarks($token, $readaloud->region,
-                    $slowpassage, 'ssml', $readaloud->ttsvoice);
-            if($speechmarks) {
-                $matches = utils::speechmarks_to_matches($readaloud->passagesegments,$speechmarks,$readaloud->ttslanguage);
-                if(false && !empty($oldrecord->modelaudiobreaks) && strlen($oldrecord->modelaudiobreaks)>5){
+            $speechmarks = utils::fetch_polly_speechmarks(
+                $token,
+                $readaloud->region,
+                $slowpassage,
+                'ssml',
+                $readaloud->ttsvoice
+            );
+            if ($speechmarks) {
+                $matches = utils::speechmarks_to_matches($readaloud->passagesegments, $speechmarks, $readaloud->ttslanguage);
+                if (false && !empty($oldrecord->modelaudiobreaks) && strlen($oldrecord->modelaudiobreaks) > 5) {
                     //we no longer sync. It just is not the correct behaviour if the passage/speech has changed
-                    $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks,true),$matches);
-                }else {
-                    $breaks = utils::guess_modelaudio_breaks($readaloud->passagesegments, $matches,$readaloud->ttslanguage);
+                    $breaks = utils::sync_modelaudio_breaks(json_decode($oldrecord->modelaudiobreaks, true), $matches);
+                } else {
+                    $breaks = utils::guess_modelaudio_breaks($readaloud->passagesegments, $matches, $readaloud->ttslanguage);
                 }
                 $readaloud->modelaudiomatches = json_encode($matches);
                 $readaloud->modelaudiobreaks = json_encode($breaks);
@@ -659,16 +731,18 @@ function readaloud_update_instance(stdClass $readaloud,?mod_readaloud_mod_form $
     $success = $DB->update_record(constants::M_TABLE, $readaloud);
 
     //if the region has changed we might need a new corpushash
-    if($readaloud->region != $oldrecord->region && $readaloud->usecorpus==constants::GUIDEDTRANS_CORPUS){
-        if(utils::needs_lang_model($readaloud)) {
+    if ($readaloud->region != $oldrecord->region && $readaloud->usecorpus == constants::GUIDEDTRANS_CORPUS) {
+        if (utils::needs_lang_model($readaloud)) {
             $currenthash = $oldrecord->corpushash;
             $allpassages = utils::fetch_current_corpus($readaloud, $readaloud->corpusrange);
             $temphash = utils::fetch_passagehash($allpassages, $readaloud->ttslanguage);
-            if($currenthash != ($readaloud->region . '|' . $temphash)) {
+            if ($currenthash != ($readaloud->region . '|' . $temphash)) {
                 utils::push_corpus($readaloud, $readaloud->corpusrange);
-            }else{
-                $DB->update_record(constants::M_TABLE,
-                    array('id'=>$readaloud->id, 'corpushash'=>$currenthash));
+            } else {
+                $DB->update_record(
+                    constants::M_TABLE,
+                    array('id' => $readaloud->id, 'corpushash' => $currenthash)
+                );
             }
         }
     }
@@ -676,8 +750,12 @@ function readaloud_update_instance(stdClass $readaloud,?mod_readaloud_mod_form $
     readaloud_grade_item_update($readaloud);
     if (class_exists('\core_completion\api')) {
         $completionexpected = (empty($readaloud->completionexpected) ? null : $readaloud->completionexpected);
-        \core_completion\api::update_completion_date_event($readaloud->coursemodule, 'readaloud', $readaloud->id,
-                $completionexpected);
+        \core_completion\api::update_completion_date_event(
+            $readaloud->coursemodule,
+            'readaloud',
+            $readaloud->id,
+            $completionexpected
+        );
     }
 
     $update_grades = ($readaloud->grade === $oldgradefield ? false : true);
@@ -698,7 +776,8 @@ function readaloud_update_instance(stdClass $readaloud,?mod_readaloud_mod_form $
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
  */
-function readaloud_delete_instance($id) {
+function readaloud_delete_instance($id)
+{
     global $DB;
 
     if (!$readaloud = $DB->get_record(constants::M_TABLE, array('id' => $id))) {
@@ -721,7 +800,8 @@ function readaloud_delete_instance($id) {
  *
  * @return stdClass|null
  */
-function readaloud_user_outline($course, $user, $mod, $readaloud) {
+function readaloud_user_outline($course, $user, $mod, $readaloud)
+{
 
     $return = new stdClass();
     $return->time = 0;
@@ -739,7 +819,8 @@ function readaloud_user_outline($course, $user, $mod, $readaloud) {
  * @param stdClass $readaloud the module instance record
  * @return void, is supposed to echp directly
  */
-function readaloud_user_complete($course, $user, $mod, $readaloud) {
+function readaloud_user_complete($course, $user, $mod, $readaloud)
+{
 }
 
 /**
@@ -749,7 +830,8 @@ function readaloud_user_complete($course, $user, $mod, $readaloud) {
  *
  * @return boolean
  */
-function readaloud_print_recent_activity($course, $viewfullnames, $timestart) {
+function readaloud_print_recent_activity($course, $viewfullnames, $timestart)
+{
     return false;  //  True if anything was printed, otherwise false
 }
 
@@ -769,7 +851,8 @@ function readaloud_print_recent_activity($course, $viewfullnames, $timestart) {
  * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
  * @return void adds items into $activities and increases $index
  */
-function readaloud_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0) {
+function readaloud_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0)
+{
 }
 
 /**
@@ -777,7 +860,8 @@ function readaloud_get_recent_mod_activity(&$activities, &$index, $timestart, $c
  *
  * @return void
  */
-function readaloud_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
+function readaloud_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames)
+{
 }
 
 /**
@@ -788,7 +872,8 @@ function readaloud_print_recent_mod_activity($activity, $courseid, $detail, $mod
  * @return boolean
  * @todo Finish documenting this function
  **/
-function readaloud_cron() {
+function readaloud_cron()
+{
     return true;
 }
 
@@ -798,7 +883,8 @@ function readaloud_cron() {
  * @example return array('moodle/site:accessallgroups');
  * @return array
  */
-function readaloud_get_extra_capabilities() {
+function readaloud_get_extra_capabilities()
+{
     return array();
 }
 
@@ -808,7 +894,8 @@ function readaloud_get_extra_capabilities() {
  *
  * @return bool True if the activity is branded, false otherwise.
  */
-function readaloud_is_branded(){
+function readaloud_is_branded()
+{
     return true;
 }
 
@@ -827,7 +914,8 @@ function readaloud_is_branded(){
  * @param int $readaloudid ID of an instance of this module
  * @return bool true if the scale is used by the given readaloud instance
  */
-function readaloud_scale_used($readaloudid, $scaleid) {
+function readaloud_scale_used($readaloudid, $scaleid)
+{
     global $DB;
 
     /** @example */
@@ -846,7 +934,8 @@ function readaloud_scale_used($readaloudid, $scaleid) {
  * @param $scaleid int
  * @return boolean true if the scale is used by any readaloud instance
  */
-function readaloud_scale_used_anywhere($scaleid) {
+function readaloud_scale_used_anywhere($scaleid)
+{
     global $DB;
 
     /** @example */
@@ -872,7 +961,8 @@ function readaloud_scale_used_anywhere($scaleid) {
  * @param stdClass $context
  * @return array of [(string)filearea] => (string)description
  */
-function readaloud_get_file_areas($course, $cm, $context) {
+function readaloud_get_file_areas($course, $cm, $context)
+{
     return readaloud_get_editornames();
 }
 
@@ -893,7 +983,8 @@ function readaloud_get_file_areas($course, $cm, $context) {
  * @param string $filename
  * @return file_info instance or null if not found
  */
-function readaloud_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+function readaloud_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename)
+{
     return null;
 }
 
@@ -911,7 +1002,8 @@ function readaloud_get_file_info($browser, $areas, $course, $cm, $context, $file
  * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
  */
-function readaloud_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array()) {
+function readaloud_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = array())
+{
     global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -954,7 +1046,8 @@ function readaloud_pluginfile($course, $cm, $context, $filearea, array $args, $f
  * @param stdClass $module
  * @param cm_info $cm
  */
-function readaloud_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm) {
+function readaloud_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm)
+{
 }
 
 /**
@@ -966,20 +1059,23 @@ function readaloud_extend_navigation(navigation_node $navref, stdclass $course, 
  * @param settings_navigation $settingsnav {@link settings_navigation}
  * @param navigation_node $readaloudnode {@link navigation_node}
  */
-function readaloud_extend_settings_navigation(settings_navigation $settingsnav,?navigation_node $readaloudnode = null) {
+function readaloud_extend_settings_navigation(settings_navigation $settingsnav, ?navigation_node $readaloudnode = null)
+{
 }
-function mod_readaloud_cm_info_dynamic(cm_info $cm) {
-        global $USER,$DB;
-        $moduleinstance= $DB->get_record('readaloud', array('id' => $cm->instance), '*', MUST_EXIST);
-        if(method_exists($cm,'override_customdata')) {
-            $cm->override_customdata('duedate', $moduleinstance->viewend);
-            $cm->override_customdata('allowsubmissionsfromdate', $moduleinstance->viewstart);
-        }
-    
+function mod_readaloud_cm_info_dynamic(cm_info $cm)
+{
+    global $USER, $DB;
+    $moduleinstance = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST);
+    if (method_exists($cm, 'override_customdata')) {
+        $cm->override_customdata('duedate', $moduleinstance->viewend);
+        $cm->override_customdata('allowsubmissionsfromdate', $moduleinstance->viewstart);
+    }
+
 }
-function readaloud_get_coursemodule_info($coursemodule) {
+function readaloud_get_coursemodule_info($coursemodule)
+{
     global $DB;
-    if(!$moduleinstance= $DB->get_record('readaloud', array('id' => $coursemodule->instance), '*')){
+    if (!$moduleinstance = $DB->get_record('readaloud', ['id' => $coursemodule->instance], '*')) {
         return false;
     }
     $result = new cached_cm_info();
@@ -988,6 +1084,18 @@ function readaloud_get_coursemodule_info($coursemodule) {
             $result->content = format_module_intro('readaloud', $moduleinstance, $coursemodule->id, false);
         }
     }
+
+    // Populate the custom completion rules as key => value pairs, but only if the completion mode is 'automatic'.
+    if ($coursemodule->completion == COMPLETION_TRACKING_AUTOMATIC) {
+        // completion all steps is not enabled yet TODO 20251005
+        /*
+        $result->customdata['customcompletionrules'][constants::COMPLETION_ALLSTEPS] =
+            $moduleinstance->completionallsteps;
+        */
+        $result->customdata['customcompletionrules'][constants::COMPLETION_MINGRADE] =
+            $moduleinstance->mingrade;
+    }
+
     $result->name = $moduleinstance->name;
     $result->customdata['duedate'] = $moduleinstance->viewend;
     $result->customdata['allowsubmissionsfromdate'] = $moduleinstance->viewstart;

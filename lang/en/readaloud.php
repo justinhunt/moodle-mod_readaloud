@@ -16,7 +16,15 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'Poodll ReadAloud';
 $string['modulenameplural'] = 'Poodll ReadAlouds';
 $string['modulename_help'] =
-        'ReadAloud is an activity designed to assist teachers in evaluating their students reading fluency. Students read a passage, set by the teacher, into a microphone. Later the teacher can mark words as incorrect and get the student WCPM(Words Correct Per Minute) scores.';
+        'ReadAloud gives students practice and feedback reading passages aloud. It can be entirely automatically graded and helps teachers assess and understand their students second language reading ability. The process is as follows:
+        
+1. Students LISTEN to a passage, set by the teacher.
+        
+2. Students PRACTICE reading line by line using their microphone.
+        
+3. Students READ the entire passage aloud.
+        
+4. Students and teachers can see the FEEDBACK and RESULTS.';
 $string['readaloudfieldset'] = 'Custom example fieldset';
 $string['readaloudname'] = 'Poodll ReadAloud';
 $string['readaloudname_help'] =
@@ -81,7 +89,7 @@ $string['gradeoptions'] = 'Grade Options';
 $string['gradeoptions_help'] =
         'When there are multiple attempts by a user on a reading, this setting determines which attempt to use when grading';
 $string['gradeoptions_details'] =
-    'NB This determines the gradebook entry. The ReadAloud grading page is not affected and will display the latest attempt.';
+        'NB This determines the gradebook entry. The ReadAloud grading page is not affected and will display the latest attempt.';
 $string['gradenone'] = 'No grade';
 $string['gradelowest'] = 'lowest scoring attempt';
 $string['gradehighest'] = 'highest scoring attempt';
@@ -284,7 +292,7 @@ $string['vi-vn'] = 'Vietnamese'; // Vietnamese
 
 $string['awsregion'] = 'AWS Region';
 $string['region'] = 'AWS Region';
-$string['awsregion_details']='Choose the region closest to you. Your data will stay within that region. Capetown region only supports English and German.';
+$string['awsregion_details'] = 'Choose the region closest to you. Your data will stay within that region. Capetown region only supports English and German.';
 $string['expiredays'] = 'Days to keep file';
 $string['aigradenow'] = 'AI Grade';
 
@@ -383,7 +391,7 @@ $string['privacy:metadata:accuracy'] = 'The accuracy score for the attempt';
 $string['privacy:metadata:sessionscore'] = 'The session score for the attempt';
 $string['privacy:metadata:sessiontime'] = 'The session time(recording time) for the attempt';
 $string['privacy:metadata:sessionerrors']
-    = 'The reading errors for the attempt';
+        = 'The reading errors for the attempt';
 $string['privacy:metadata:sessionendword'] = 'The position of last word for the attempt';
 $string['privacy:metadata:errorcount'] = 'The reading error count for the attempt';
 $string['privacy:metadata:timemodified'] = 'The last time attempt was modified for the attempt';
@@ -467,39 +475,39 @@ $string['quizhelp'] = "Read the passage silently. Then answer the questions abou
 $string['playbutton'] = "Play";
 $string['stopbutton'] = "Stop";
 
-$string['returntomenu']="Return to Menu";
+$string['returntomenu'] = "Return to Menu";
 $string['fullreport'] = "View Full Report";
 $string['fullreportnoeval'] = "View Passage";
 
 $string['nocourseid'] = 'You must specify a course_module ID or an instance ID. Probably your session expired.';
 
-$string['secs_till_check']='Checking for results in: ';
-$string['checking']=' ... checking ... ';
+$string['secs_till_check'] = 'Checking for results in: ';
+$string['checking'] = ' ... checking ... ';
 
-$string['recorder']='Audio recorder type';
-$string['recorder_help']='Choose the audio recorder type that best suits your students and situation.';
-$string['defaultrecorder']='Default recorder';
-$string['defaultrecorder_details']='Choose the default recorder to be shown to students. ';
-$string['rec_readaloud']='Mic-test then start';
-$string['rec_once']='Just start';
-$string['rec_upload']='Upload (for devs/admins)';
+$string['recorder'] = 'Audio recorder type';
+$string['recorder_help'] = 'Choose the audio recorder type that best suits your students and situation.';
+$string['defaultrecorder'] = 'Default recorder';
+$string['defaultrecorder_details'] = 'Choose the default recorder to be shown to students. ';
+$string['rec_readaloud'] = 'Mic-test then start';
+$string['rec_once'] = 'Just start';
+$string['rec_upload'] = 'Upload (for devs/admins)';
 
-$string['transcriber_warning']='You have selected instant transcription. Note that this will <strong>only work if passage language and region are correct</strong>.';
+$string['transcriber_warning'] = 'You have selected instant transcription. Note that this will <strong>only work if passage language and region are correct</strong>.';
 
-$string['close']='Close';
-$string['modelaudiowarning']="Model audio not marked up.";
-$string['modelaudiobreaksclear']=' Clear model audio markup';
-$string['savemodelaudiomarkup']=' Save model audio markup';
-$string['enablesetuptab']="Enable setup tab";
-$string['enablesetuptab_details']="Show a tab containing the activity instance settings to admins. Not super useful in most cases.";
-$string['setup']="Setup";
+$string['close'] = 'Close';
+$string['modelaudiowarning'] = "Model audio not marked up.";
+$string['modelaudiobreaksclear'] = ' Clear model audio markup';
+$string['savemodelaudiomarkup'] = ' Save model audio markup';
+$string['enablesetuptab'] = "Enable setup tab";
+$string['enablesetuptab_details'] = "Show a tab containing the activity instance settings to admins. Not super useful in most cases.";
+$string['setup'] = "Setup";
 //$string['failedttsmarkup']='Unable to mark up speech..';
-$string['manualbreaktiming']=' Manual break timing';
+$string['manualbreaktiming'] = ' Manual break timing';
 
-$string['nopassage']="No Reading Passage";
-$string['addpassage']="Setup Activity";
-$string['waitforpassage']="There is no reading passage set yet for this activity. You will not be able to do the activity until your teacher adds one";
-$string['letsaddpassage']="There is no reading passage set yet for this activity. Lets add one.";
+$string['nopassage'] = "No Reading Passage";
+$string['addpassage'] = "Setup Activity";
+$string['waitforpassage'] = "There is no reading passage set yet for this activity. You will not be able to do the activity until your teacher adds one";
+$string['letsaddpassage'] = "There is no reading passage set yet for this activity. Lets add one.";
 
 $string['readaloud:itemview'] = 'View questions';
 $string['readaloud:itemedit'] = 'Edit questions';
@@ -508,20 +516,20 @@ $string['readaloud:itemedit'] = 'Edit questions';
 //$string['durationgradesettings'] = 'Grade Settings ';
 //$string['durationboundary']='{$a}: Completion time less than (seconds)';
 //$string['boundarygrade']='{$a}: points ';
-$string['numeric']='Must be numeric ';
-$string['iteminuse']= 'This item is part of users attempt history. It cannot be deleted.';
-$string['moveitemup']='Up';
-$string['moveitemdown']='Down';
+$string['numeric'] = 'Must be numeric ';
+$string['iteminuse'] = 'This item is part of users attempt history. It cannot be deleted.';
+$string['moveitemup'] = 'Up';
+$string['moveitemdown'] = 'Down';
 
 //questions
-$string['rsquestions'] ='Questions';
-$string['managersquestions'] ='Manage Questions';
-$string['correctanswer'] ='Correct answer';
+$string['rsquestions'] = 'Questions';
+$string['managersquestions'] = 'Manage Questions';
+$string['correctanswer'] = 'Correct answer';
 $string['whatdonow'] = 'What would you like to do?';
 $string['addnewitem'] = 'Add a New question';
 $string['addingitem'] = 'Adding a New question';
 $string['editingitem'] = 'Editing a question';
-$string['addtextpromptshortitem']='Add item';
+$string['addtextpromptshortitem'] = 'Add item';
 $string['createaitem'] = 'Create a question';
 $string['edit'] = 'Edit';
 $string['item'] = 'Item';
@@ -555,56 +563,56 @@ $string['avgcorrect'] = 'Av. Correct';
 $string['avgtotaltime'] = 'Av. Duration';
 $string['nodataavailable'] = 'No data available';
 $string['quiz'] = 'Quiz';
-$string['waiting']='-- waiting --';
+$string['waiting'] = '-- waiting --';
 $string['waitingforteacher'] = 'Your teacher will check your reading soon.';
 $string['quizcompletedwarning'] = "Quiz completed. Tap to review.";
 
 
-$string['notmasterinstance']='You can not push settings from this ReadAloud activity unless master instance is checked in activity settings.';
-$string['push']='Push';
-$string['pushpage']='Push Page';
-$string['pushalternatives']='Push Alternatives';
-$string['pushalternatives_desc']='Push alternatives field to all clone instances.';
-$string['pushalternatives_done']='Alternatives have been pushed';
+$string['notmasterinstance'] = 'You can not push settings from this ReadAloud activity unless master instance is checked in activity settings.';
+$string['push'] = 'Push';
+$string['pushpage'] = 'Push Page';
+$string['pushalternatives'] = 'Push Alternatives';
+$string['pushalternatives_desc'] = 'Push alternatives field to all clone instances.';
+$string['pushalternatives_done'] = 'Alternatives have been pushed';
 
-$string['pushpassage']='Push Passage (and related settings)';
-$string['pushpassage_desc']='Push passage and phonetics and segments and other elements that are unique to the passage, to clones. ';
-$string['pushpassage_done']='Passage has been pushed';
+$string['pushpassage'] = 'Push Passage (and related settings)';
+$string['pushpassage_desc'] = 'Push passage and phonetics and segments and other elements that are unique to the passage, to clones. ';
+$string['pushpassage_done'] = 'Passage has been pushed';
 
-$string['pushquestions']='Push Questions';
-$string['pushquestions_desc']='You could push comprehension questions from here if there were any. They will be implemented soon.';
-$string['pushquestions_done']='Questions have been pushed';
+$string['pushquestions'] = 'Push Questions';
+$string['pushquestions_desc'] = 'You could push comprehension questions from here if there were any. They will be implemented soon.';
+$string['pushquestions_done'] = 'Questions have been pushed';
 
-$string['pushtargetwpm']='Target WPM';
-$string['pushtargetwpm_desc']='Push the Target WPM setting to all clone instances.';
-$string['pushtargetwpm_done']='Target WPM has been pushed';
+$string['pushtargetwpm'] = 'Target WPM';
+$string['pushtargetwpm_desc'] = 'Push the Target WPM setting to all clone instances.';
+$string['pushtargetwpm_done'] = 'Target WPM has been pushed';
 
-$string['pushtimelimit']='Time Limit';
-$string['pushtimelimit_desc']='Push the Time Limit setting to all clone instances.';
-$string['pushtimelimit_done']='Time limit has been pushed';
+$string['pushtimelimit'] = 'Time Limit';
+$string['pushtimelimit_desc'] = 'Push the Time Limit setting to all clone instances.';
+$string['pushtimelimit_done'] = 'Time limit has been pushed';
 
-$string['pushcanexitearly']='Can Exit Early';
-$string['pushcanexitearly_desc']='Push the \'Can Exit Early\' setting to all clone instances. This setting allows users to exit the activity before the time limit is reached.';
-$string['pushcanexitearly_done']='Can Exit Early has been pushed';
+$string['pushcanexitearly'] = 'Can Exit Early';
+$string['pushcanexitearly_desc'] = 'Push the \'Can Exit Early\' setting to all clone instances. This setting allows users to exit the activity before the time limit is reached.';
+$string['pushcanexitearly_done'] = 'Can Exit Early has been pushed';
 
-$string['pushmodes']='Modes';
-$string['pushmodes_desc']='Push the optional activity mode settings (preview, listen and repeat and shadow) from this instance to clone instances.';
-$string['pushmodes_done']='Modes have been pushed';
+$string['pushmodes'] = 'Modes';
+$string['pushmodes_desc'] = 'Push the optional activity mode settings (preview, listen and repeat and shadow) from this instance to clone instances.';
+$string['pushmodes_done'] = 'Modes have been pushed';
 
-$string['pushgradesettings']='Grade Settings';
-$string['pushgradesettings_desc']='Push some of grade settings (completion cond. min grade, grade calculation, human/machine grading, highest/latest attempt) from this instance to clone instances. This wont update the max grade or other settings that affect the gradebook setup nor will it force a regrade of existing attempts. It is best to only use this on not yet attempted clones.';
-$string['pushgradesettings_done']='Grade Settings have been pushed';
+$string['pushgradesettings'] = 'Grade Settings';
+$string['pushgradesettings_desc'] = 'Push some of grade settings (completion cond. min grade, grade calculation, human/machine grading, highest/latest attempt) from this instance to clone instances. This wont update the max grade or other settings that affect the gradebook setup nor will it force a regrade of existing attempts. It is best to only use this on not yet attempted clones.';
+$string['pushgradesettings_done'] = 'Grade Settings have been pushed';
 
-$string['pushttsmodelaudio']='Push TTS and Model Audio';
-$string['pushttsmodelaudio_desc']='Push TTS and Model Audio related settings, this will not push any uploaded/recorded audio. It will push TTS audio and meta data including audio breaks.';
-$string['pushttsmodelaudio_done']='TTS and Model Audio have been pushed';
+$string['pushttsmodelaudio'] = 'Push TTS and Model Audio';
+$string['pushttsmodelaudio_desc'] = 'Push TTS and Model Audio related settings, this will not push any uploaded/recorded audio. It will push TTS audio and meta data including audio breaks.';
+$string['pushttsmodelaudio_done'] = 'TTS and Model Audio have been pushed';
 
-$string['masterinstance']='Master Instance';
-$string['masterinstance_details']='Master instance allows the author to push the individual settings of one ReadAloud to existing copies of the same activity. They must have exactly the same name.';
+$string['masterinstance'] = 'Master Instance';
+$string['masterinstance_details'] = 'Master instance allows the author to push the individual settings of one ReadAloud to existing copies of the same activity. They must have exactly the same name.';
 
-$string['pushpage_explanation']= "Use the buttons on this page to push settings from this ReadAloud instance to clones of it (ie activities with the same name). Be careful there is no going back so be sure of your intention before using.";
-$string['pushpage_clonecount']= 'This activity has {$a} clones. <br><br>';
-$string['pushpage_noclones']= 'This activity IS a master instance, but there are no other activities with the same name (ie clones). So there is nothing to push settings to. Check that this is the right activity. If you are just testing, duplicate this activity and rename the duplicate the same as this one.<br><br>';
+$string['pushpage_explanation'] = "Use the buttons on this page to push settings from this ReadAloud instance to clones of it (ie activities with the same name). Be careful there is no going back so be sure of your intention before using.";
+$string['pushpage_clonecount'] = 'This activity has {$a} clones. <br><br>';
+$string['pushpage_noclones'] = 'This activity IS a master instance, but there are no other activities with the same name (ie clones). So there is nothing to push settings to. Check that this is the right activity. If you are just testing, duplicate this activity and rename the duplicate the same as this one.<br><br>';
 
 
 $string['disableshadowgrading'] = "Disable Shadow Mode Grading";
@@ -616,115 +624,121 @@ $string['freetrial'] = "Get Cloud Poodll API Credentials and a Free Trial";
 $string['freetrial_desc'] = "A dialog should appear that allows you to register for a free trial with Poodll. After registering you should login to the members dashboard to get your API user and secret. And to register your site URL.";
 //$string['memberdashboard'] = "Member Dashboard";
 //$string['memberdashboard_desc'] = "";
-$string['fillcredentials']="Set API user and secret with existing credentials";
-$string['viewstart']="Activity open";
-$string['viewend']="Activity close";
-$string['viewstart_help']="If set, prevents a student from entering the activity before the start date/time.";
-$string['viewend_help']="If set, prevents a student from entering the activity after the closing date/time.";
+$string['fillcredentials'] = "Set API user and secret with existing credentials";
+$string['viewstart'] = "Activity open";
+$string['viewend'] = "Activity close";
+$string['viewstart_help'] = "If set, prevents a student from entering the activity before the start date/time.";
+$string['viewend_help'] = "If set, prevents a student from entering the activity after the closing date/time.";
 $string['activitydate:submissionsdue'] = 'Due:';
 $string['activitydate:submissionsopen'] = 'Opens:';
 $string['activitydate:submissionsopened'] = 'Opened:';
-$string['activityisnotopenyet']="This activity is not open yet.";
-$string['activityisclosed']="This activity is closed.";
-$string['open']="Open: ";
-$string['until']="Until: ";
-$string['activityopenscloses']="Activity open/close dates";
-$string['nottsvoice']="No TTS Voice";
+$string['activityisnotopenyet'] = "This activity is not open yet.";
+$string['activityisclosed'] = "This activity is closed.";
+$string['open'] = "Open: ";
+$string['until'] = "Until: ";
+$string['activityopenscloses'] = "Activity open/close dates";
+$string['nottsvoice'] = "No TTS Voice";
 
-$string['guidedtranscriptionadmin']= "Guided Transcription Admin";
+$string['guidedtranscriptionadmin'] = "Guided Transcription Admin";
 //$string['show_guidedtranscriptionadmin']= "Guided Transcription Admin";
-$string['guidedtrans_corpus']="Use corpus texts";
-$string['usecorpus']="Guided Transcription Type";
-$string['usecorpuschanged']="Guided Transcription Type Changed";
+$string['guidedtrans_corpus'] = "Use corpus texts";
+$string['usecorpus'] = "Guided Transcription Type";
+$string['usecorpuschanged'] = "Guided Transcription Type Changed";
 
-$string['applysettingsrange']="Apply setting to:";
-$string['apply_activity']="this activity";
-$string['apply_course']="this course activities";
-$string['apply_site']="this site activities";
+$string['applysettingsrange'] = "Apply setting to:";
+$string['apply_activity'] = "this activity";
+$string['apply_course'] = "this course activities";
+$string['apply_site'] = "this site activities";
 
-$string['corpusrange']="Corpus range";
-$string['corpusrange_course']="This course";
-$string['corpusrange_site']="This site";
-$string['guidedtrans_corpus']="Use corpus (all ReadAloud passages)";
-$string['guidedtrans_passage']="Use this activity passage";
-$string['guidedtransinstructions']="When using guided transcription the transcriber will steer the transcript towards the guide, i.e the words/phrases in this activity's passage, or the words/phrases in the full corpus of ReadAloud passages. Using the full corpus of ReadAloud passages will pick up more reading errors.";
-$string['pushcorpus_details']="The course/site corpus will be updated automatically, but you can use the button below to update and push the corpus if you need to. This will generate a guide from the corpus range, and it will set all ReadAloud activities(using guided transcription) within the range to use the guide.";
-$string['pushcorpus_button']="Update and push corpus guide";
-$string['corpuspushed']="Corpus guide pushed";
+$string['corpusrange'] = "Corpus range";
+$string['corpusrange_course'] = "This course";
+$string['corpusrange_site'] = "This site";
+$string['guidedtrans_corpus'] = "Use corpus (all ReadAloud passages)";
+$string['guidedtrans_passage'] = "Use this activity passage";
+$string['guidedtransinstructions'] = "When using guided transcription the transcriber will steer the transcript towards the guide, i.e the words/phrases in this activity's passage, or the words/phrases in the full corpus of ReadAloud passages. Using the full corpus of ReadAloud passages will pick up more reading errors.";
+$string['pushcorpus_details'] = "The course/site corpus will be updated automatically, but you can use the button below to update and push the corpus if you need to. This will generate a guide from the corpus range, and it will set all ReadAloud activities(using guided transcription) within the range to use the guide.";
+$string['pushcorpus_button'] = "Update and push corpus guide";
+$string['corpuspushed'] = "Corpus guide pushed";
 $string['passagekey'] = 'Passage Key';
 $string['passagekey_details'] =
-    'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier. It is fine to leave it empty.';
+        'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier. It is fine to leave it empty.';
 $string['passagekey_help'] =
-    'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier.';
+        'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier.';
 
 $string['courseattemptsreport'] = 'Course Attempts Report';
 $string['courseattemptsheading'] = 'Course Attempts Report';
-$string['studentid']="St. No.";
-$string['studentname']="Student Name";
-$string['activityname']="RA. Name.";
-$string['errorcount']="No. errors";
-$string['activitywords']="No. Words in Passage";
-$string['readingtime']="Read Time (secs)";
-$string['oralreadingscore']="Oral Reading Score";
+$string['studentid'] = "St. No.";
+$string['studentname'] = "Student Name";
+$string['activityname'] = "RA. Name.";
+$string['errorcount'] = "No. errors";
+$string['activitywords'] = "No. Words in Passage";
+$string['readingtime'] = "Read Time (secs)";
+$string['oralreadingscore'] = "Oral Reading Score";
 $string['oralreadingscore_p'] = 'Oral Reading Score(%)';
-$string['reportsmenutoptext']="Review attempts on ReadAloud activities using the reports below.";
-$string['courseattempts_explanation']="All the attempts on ReadAloud activities within this course";
-$string['attemptssummary_explanation']="A summary of ReadAloud attempts per user in this activity.";
+$string['reportsmenutoptext'] = "Review attempts on ReadAloud activities using the reports below.";
+$string['courseattempts_explanation'] = "All the attempts on ReadAloud activities within this course";
+$string['attemptssummary_explanation'] = "A summary of ReadAloud attempts per user in this activity.";
 
-$string['customfont']="Custom font";
-$string['customfont_help']="A font name that will override site default for this passage when displayed. Must be exact in spelling and case. eg Andika or Comic Sans MS";
-$string['advancedheader']="Advanced";
+$string['customfont'] = "Custom font";
+$string['customfont_help'] = "A font name that will override site default for this passage when displayed. Must be exact in spelling and case. eg Andika or Comic Sans MS";
+$string['advancedheader'] = "Advanced";
 
-$string['missedwords']="Missed Words";
-$string['missedwordsheading']="Missed Words";
-$string['missedwordsreport']="Missed Words";
-$string['missedwords_explanation']="The top error words in the most recent attempts";
+$string['missedwords'] = "Missed Words";
+$string['missedwordsheading'] = "Missed Words";
+$string['missedwordsreport'] = "Missed Words";
+$string['missedwords_explanation'] = "The top error words in the most recent attempts";
 $string['missed_count'] = "Missed Count";
 $string['rank'] = "Rank";
 
-$string['unit_wpm']="words/min";
-$string['unit_percent']="percent";
-$string['unit_words']="words";
+$string['unit_wpm'] = "words/min";
+$string['unit_percent'] = "percent";
+$string['unit_words'] = "words";
 
-$string['totalwords']="Total Words";
+$string['totalwords'] = "Total Words";
 
-$string['confirm_cancel_recording']="Cancel recording and quit this attempt?";
-$string['aitextutilsshow']="Show AI Text Utils (Beta)";
-$string['aitextutilshide']="Hide AI Text Utils (Beta)";
-$string['textgenerator_instructions']="Enter a short non fiction topic description and press the button to generate a passage. It will often not be factually accurate. Please be careful be using it with students.";
-$string['textsimplifier_instructions']="Choose the simplification level and press the button to simplify the passage. The passage will be simplified to the approximate level you choose. ";
-$string['article-topic-here']="e.g Pros and cons of social media";
-$string['generate-text']="Generate Passage";
-$string['simplify-text']="Simplify Passage";
-$string['entersomething']="Please enter a topic in order to generate a passage";
-$string['text-too-long-100']="Your topic should be no more than 100 characters. Simply describe the topic, don't write a full sentence, or give additional instructions.";
-$string['textoverwriteconfirm']="Overwrite Confirmation";
-$string['reallyoverwritepassage']="Overwrite the current passage?";
-$string['overwrite']="Overwrite";
-$string['cancel']="Cancel";
-$string['datatables_info']="Showing _START_ to _END_ of _TOTAL_ entries";
-$string['datatables_infoempty']="Showing 0 to 0 of 0 entries";
-$string['datatables_infofiltered']="(filtered from _MAX_ total entries)";
-$string['datatables_infothousands']=",";
-$string['datatables_lengthmenu']="Show _MENU_ entries";
-$string['datatables_search']="Search:";
-$string['datatables_zerorecords']="No matching records found";
-$string['datatables_paginate_first']="First";
-$string['datatables_paginate_last']="Last";
-$string['datatables_paginate_next']="Next";
-$string['datatables_paginate_previous']="Previous";
-$string['datatables_emptytable']="No data available in table";
-$string['datatables_aria_sortascending']="activate to sort column ascending";
-$string['datatables_aria_sortdescending']="activate to sort column descending";
-$string['one_simplest']="one (simplest)";
-$string['two']="two";
-$string['three']="three";
-$string['four']="four";
-$string['five']="five";
-$string['passagepicture']='Passage picture';
-$string['passagepicture_descr']='*The passage picture is not used yet. It is part of an upcoming feature*';
-$string['stdashboardid']='Student Dashboard ID';
-$string['stdashboardid_details']='If the student dashboard block is installed, put the id of the block here.';
+$string['confirm_cancel_recording'] = "Cancel recording and quit this attempt?";
+$string['aitextutilsshow'] = "Show AI Text Utils (Beta)";
+$string['aitextutilshide'] = "Hide AI Text Utils (Beta)";
+$string['textgenerator_instructions'] = "Enter a short non fiction topic description and press the button to generate a passage. It will often not be factually accurate. Please be careful be using it with students.";
+$string['textsimplifier_instructions'] = "Choose the simplification level and press the button to simplify the passage. The passage will be simplified to the approximate level you choose. ";
+$string['article-topic-here'] = "e.g Pros and cons of social media";
+$string['generate-text'] = "Generate Passage";
+$string['simplify-text'] = "Simplify Passage";
+$string['entersomething'] = "Please enter a topic in order to generate a passage";
+$string['text-too-long-100'] = "Your topic should be no more than 100 characters. Simply describe the topic, don't write a full sentence, or give additional instructions.";
+$string['textoverwriteconfirm'] = "Overwrite Confirmation";
+$string['reallyoverwritepassage'] = "Overwrite the current passage?";
+$string['overwrite'] = "Overwrite";
+$string['cancel'] = "Cancel";
+$string['datatables_info'] = "Showing _START_ to _END_ of _TOTAL_ entries";
+$string['datatables_infoempty'] = "Showing 0 to 0 of 0 entries";
+$string['datatables_infofiltered'] = "(filtered from _MAX_ total entries)";
+$string['datatables_infothousands'] = ",";
+$string['datatables_lengthmenu'] = "Show _MENU_ entries";
+$string['datatables_search'] = "Search:";
+$string['datatables_zerorecords'] = "No matching records found";
+$string['datatables_paginate_first'] = "First";
+$string['datatables_paginate_last'] = "Last";
+$string['datatables_paginate_next'] = "Next";
+$string['datatables_paginate_previous'] = "Previous";
+$string['datatables_emptytable'] = "No data available in table";
+$string['datatables_aria_sortascending'] = "activate to sort column ascending";
+$string['datatables_aria_sortdescending'] = "activate to sort column descending";
+$string['one_simplest'] = "one (simplest)";
+$string['two'] = "two";
+$string['three'] = "three";
+$string['four'] = "four";
+$string['five'] = "five";
+$string['passagepicture'] = 'Passage picture';
+$string['passagepicture_descr'] = '*The passage picture is not used yet. It is part of an upcoming feature*';
+$string['stdashboardid'] = 'Student Dashboard ID';
+$string['stdashboardid_details'] = 'If the student dashboard block is installed, put the id of the block here.';
 $string['eventreadaloudattemptsubmitted'] = 'ReadAloud attempt submitted';
 $string['cloudpoodllserver'] = 'Cloud Poodll Server';
 $string['cloudpoodllserver_details'] = 'The server to use for Cloud Poodll. Only change this if Poodll has provided a different one.';
+$string['completedsteps'] = 'Steps Complete';
+$string['completionallsteps'] = 'Complete when all steps completed';
+$string['completiondetail:allsteps'] = 'Complete all steps in the activity';
+$string['completionallsteps_help'] = 'Complete when all steps completed';
+$string['completiondetail:mingrade'] = 'Complete when minimum grade is reached';
+$string['mingrade_help'] = 'Complete when minimum grade is reached';

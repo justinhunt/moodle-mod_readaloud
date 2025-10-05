@@ -1,3 +1,7 @@
+2.1.25 (Build 2025031503)
+- Improvements for new activity chooser (Moodle 5.1)
+- Fix for poor completion impl. of mingrade
+
 2.1.24 (Build 2024122003)
 - limited list of TTS voices for Ningxia region
 - support for lang server in Ningxia

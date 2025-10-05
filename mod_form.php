@@ -30,21 +30,23 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
-use \mod_readaloud\constants;
-use \mod_readaloud\utils;
+use mod_readaloud\constants;
+use mod_readaloud\utils;
 
 /**
  * Module instance settings form
  */
-class mod_readaloud_mod_form extends moodleform_mod {
+class mod_readaloud_mod_form extends moodleform_mod
+{
 
-    public function __construct($current, $section, $cm, $course, $ajaxformdata=null,$customdata=null) {
+    public function __construct($current, $section, $cm, $course, $ajaxformdata = null, $customdata = null)
+    {
         global $CFG;
-        $this->current   = $current;
+        $this->current = $current;
         $this->_instance = $current->instance;
-        $this->_section  = $section;
-        $this->_cm       = $cm;
-        $this->_course   = $course;
+        $this->_section = $section;
+        $this->_cm = $cm;
+        $this->_course = $course;
         if ($this->_cm) {
             $this->context = context_module::instance($this->_cm->id);
         } else {
@@ -70,7 +72,8 @@ class mod_readaloud_mod_form extends moodleform_mod {
     /**
      * Defines forms elements
      */
-    public function definition() {
+    public function definition()
+    {
         global $CFG, $COURSE;
 
         $mform = $this->_form;
@@ -79,18 +82,22 @@ class mod_readaloud_mod_form extends moodleform_mod {
         //We want to do this procedurally because in setup tabs we want to show a subset of this form
         // with just the activity specific fields,and we use a custom form and the same elements
         $cmid = isset($this->_cm->id) ? $this->_cm->id : false;
-        utils::add_mform_elements($mform,$this->context, $cmid);
+        utils::add_mform_elements($mform, $this->context, $cmid);
 
         // Grade.
         $this->standard_grading_coursemodule_elements();
 
         //grade options for how to grade with multiple attempts.
-        $gradeoptions = \mod_readaloud\utils::get_grade_options();
+        $gradeoptions = mod_readaloud\utils::get_grade_options();
         $mform->addElement('select', 'gradeoptions', get_string('gradeoptions', constants::M_COMPONENT), $gradeoptions);
         $mform->setDefault('gradeoptions', constants::M_GRADELATEST);
         $mform->addHelpButton('gradeoptions', 'gradeoptions', constants::M_COMPONENT);
-        $mform->addElement('static', 'gradeoptions_details', '',
-            get_string('gradeoptions_details', constants::M_COMPONENT));
+        $mform->addElement(
+            'static',
+            'gradeoptions_details',
+            '',
+            get_string('gradeoptions_details', constants::M_COMPONENT)
+        );
 
         // add standard elements, common to all modules
         $this->standard_coursemodule_elements();
@@ -103,40 +110,81 @@ class mod_readaloud_mod_form extends moodleform_mod {
      * This adds completion rules
      * See lib.php readaloud_get_completion_state()
      */
-    function add_completion_rules() {
-        $mform =& $this->_form;
-        $config = get_config(constants::M_COMPONENT);
+    function add_completion_rules()
+    {
+        $mform = $this->_form;
+        $suffixedfields = [];
+        // Field options.
+         // completion all steps is not enabled yet TODO 20251005
+        /*
+        $allstepsfield = $this->get_suffixed_name(constants::COMPLETION_ALLSTEPS);
+        $mform->addElement('advcheckbox', $allstepsfield, '', get_string('completionallsteps', constants::M_COMPONENT));
+        $mform->addHelpButton($allstepsfield, constants::COMPLETION_ALLSTEPS, constants::M_COMPONENT);
+        $suffixedfields[] = $allstepsfield;
+        */
 
-        //minimum grade
-        $mingradeoptions = array(0 => get_string('none'), 20 => '20%', 30 => '30%', 40 => '40%', 50 => '50%', 60 => '60%', 70 => '70%',
-                80 => '80%', 90 => '90%', 100 => '40%');
-        $mform->addElement('select', 'mingrade', get_string('mingrade', constants::M_COMPONENT), $mingradeoptions);
+         // Min Grade Field
+        $mingradefield = $this->get_suffixed_name('mingrade');
+        $mingradeoptions = [
+            0 => get_string('none'),
+            20 => '20%',
+            30 => '30%',
+            40 => '40%',
+            50 => '50%',
+            60 => '60%',
+            70 => '70%',
+            80 => '80%',
+            90 => '90%',
+            100 => '100%',
+        ];
+        $mform->addElement('select', $mingradefield ,
+            get_string('mingrade', constants::M_COMPONENT),
+            $mingradeoptions
+        );
+        $mform->addHelpButton($mingradefield , constants::COMPLETION_MINGRADE, constants::M_COMPONENT);
+        $suffixedfields[] = $mingradefield;
 
-        return array('mingrade');
+        return $suffixedfields;
     }
 
-    function completion_rule_enabled($data) {
-        return ($data['mingrade'] > 0);
+    function completion_rule_enabled($data)
+    {
+        
+        //$completionfields = [constants::COMPLETION_ALLSTEPS, constants::COMPLETION_MINGRADE];
+        $completionfields = [constants::COMPLETION_MINGRADE];
+        foreach ($completionfields as $field) {
+            if (!empty($data[$this->get_suffixed_name($field)])) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public function data_preprocessing(&$form_data) {
+    public function data_preprocessing(&$formdata)
+    {
         if ($this->current->instance) {
-            $form_data = utils::prepare_file_and_json_stuff($form_data,$this->context);
+            $formdata = utils::prepare_file_and_json_stuff($formdata, $this->context);
         }
     }
 
 
-public function validation($data, $files) {
+    public function validation($data, $files)
+    {
         $errors = parent::validation($data, $files);
-        
-          if (!empty($data['viewend'])) {
+
+        if (!empty($data['viewend'])) {
             if ($data['viewend'] < $data['viewstart']) {
                 $errors['viewend'] = "End date should be after Start Date";
             }
         }
-
-
-
         return $errors;
+    }
+
+     private function get_suffixed_name($completionfieldname)
+    {
+        global $CFG;
+        $m43 = $CFG->version >= 2023100900;
+        $suffix = $m43 ? $this->get_suffix() : '';
+        return $suffix . $completionfieldname;
     }
 }
