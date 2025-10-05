@@ -1664,41 +1664,42 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
 
         return array_merge([
             'activityamddata' => $activityamddata,
+            'activityheader' => $activityheader,
             'attempts' => $attempts,
+            'backurl' => new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]),
             'canattempt' => $modevisibility['canattempt'],
             'canshadowattempt' => $modevisibility['canshadowattempt'],
-            'enablenoshadow' => $modevisibility['enablenoshadow'],
-            'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'embed' => $embed,
-            'steps' => constants::STEPS,
-            'stepsenabled' => $stepsenabled,
-            'stepsopen' => $stepsopen,
-            'stepscomplete'  => $stepscomplete,
+            'enablenoshadow' => $modevisibility['enablenoshadow'],
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
-            'practice' => $practice,
+            'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
+            'hasbody' => true, // TEMP.
+            'headercontent' => $headercontent,
             'instructions' => $instructions,
+            'modelaudiohtml' => $modelaudiohtml,
             'mode' => null,
             'modequiz' => $modequiz,
             'moduleinstance' => $moduleinstance,
             'passagehtml' => isset($passagehtml) ? $passagehtml : null,
+            'passagepictureurl' => $passagepictureurl,
+            'playbutton' => $this->get_playbutton(),
+            'practice' => $practice,
+            'problembox' => $problembox,
             'progress' => true, // TEMP.
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => isset($quizhtml) ? $quizhtml : null,
             'recorder' => $recorder,
             'smallreport' => $smallreport,
+            'steps' => constants::STEPS,
+            'stepscomplete' => $stepscomplete,
+            'stepsdata' => $stepsdata,
+            'stepsenabled' => $stepsenabled,
+            'stepsopen' => $stepsopen,
             'stopandplay' => true, // TEMP.
+            'token' => $token,
             'welcomemessage' => $welcomemessage,
             'wheretonext' => $wheretonext,
-            'problembox'     => $problembox,
-            'token'          => $token,
-            'modelaudiohtml' => $modelaudiohtml,
-            'activityheader' => $activityheader,
-            'headercontent' => $headercontent,
-            'passagepictureurl' => $passagepictureurl,
-            'hasbody' => true, // TEMP.
-            'playbutton' => $this->get_playbutton(),
-            'stepsdata' => $stepsdata,
         ], $this->get_all_constants());
     }
 }
