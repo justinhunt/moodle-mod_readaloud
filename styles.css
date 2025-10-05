@@ -50,6 +50,7 @@ body.path-mod-readaloud #page-content button.control.control--playbutton {
   background-color: #00AE34;
   border-color: #00AE34;
   color: #FFFFFF;
+  margin: 0.25rem;
   box-shadow: 0 0 0 6px rgba(0, 174, 52, 0.15);
 }
 body.path-mod-readaloud #page-content button.control.control--playbutton .icon-play {
@@ -62,6 +63,7 @@ body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pr
   background-color: #FF0000;
   border-color: #FF0000;
   color: #FFFFFF;
+  margin: 0.25rem;
   box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.15);
 }
 body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true] .icon-play {
@@ -74,6 +76,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton {
   background-color: #513DEB;
   border-color: #513DEB;
   color: #FFFFFF;
+  margin: 0.25rem;
   box-shadow: 0 0 0 6px rgba(81, 61, 235, 0.15);
 }
 body.path-mod-readaloud #page-content button.control.control--recordbutton .icon-mic {
@@ -86,6 +89,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #FF0000;
   border-color: #FF0000;
   color: #FFFFFF;
+  margin: 0.25rem;
   box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.15);
 }
 body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-pressed=true] .icon-mic {
@@ -315,11 +319,13 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #513DEB;
   border-color: #513DEB;
   color: #FFFFFF;
+  margin: 0.25rem;
 }
 #mod_readaloud_listenquitmodal .modal-dialog .modal-footer button.btn-secondary {
   background-color: rgba(81, 61, 235, 0.06);
   border-color: rgba(81, 61, 235, 0.06);
   color: #513DEB;
+  margin: 0.25rem;
 }
 #mod_readaloud_listenquitmodal .modal-dialog .modal-footer button.btn-link {
   color: #513DEB;
@@ -352,6 +358,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #FFFFFF;
   border-color: #00AE34;
   color: #00AE34;
+  margin: 0.25rem;
   border-radius: 50%;
   height: 24px;
   padding: 0;
@@ -450,11 +457,13 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #727276;
   border-color: #727276;
   color: #FFFFFF;
+  margin: 0.25rem;
 }
 #practice-resultbox-incorrect button.btn-secondary {
   background-color: #E3E3E4;
   border-color: #E3E3E4;
   color: #727276;
+  margin: 0.25rem;
 }
 
 #practice-resultbox-almost {
@@ -467,11 +476,13 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #FF0000;
   border-color: #FF0000;
   color: #FFFFFF;
+  margin: 0.25rem;
 }
 #practice-resultbox-almost button.btn-secondary {
   background-color: #FFFFFF;
   border-color: #FFFFFF;
   color: #FF0000;
+  margin: 0.25rem;
 }
 
 #practice-resultbox-welldone {
@@ -484,6 +495,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #00AE34;
   border-color: #00AE34;
   color: #FFFFFF;
+  margin: 0.25rem;
 }
 
 #practice-resultbox-complete {
@@ -496,11 +508,13 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #513DEB;
   border-color: #513DEB;
   color: #FFFFFF;
+  margin: 0.25rem;
 }
 #practice-resultbox-complete button.btn-secondary {
   background-color: rgba(81, 61, 235, 0.06);
   border-color: rgba(81, 61, 235, 0.06);
   color: #513DEB;
+  margin: 0.25rem;
 }
 
 .progress,
@@ -535,12 +549,14 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #513DEB;
   border-color: #513DEB;
   color: #FFFFFF;
+  margin: 0.25rem;
   min-width: 110px;
 }
 #mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_items_cont .readaloud_questioncontainer .readaloud_nextbutton {
   background-color: #513DEB;
   border-color: #513DEB;
   color: #FFFFFF;
+  margin: 0.25rem;
   min-width: 110px;
 }
 #mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_items_cont .readaloud_questioncontainer .mod_readaloud-activity-progress-bar span {
@@ -560,6 +576,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #FFFFFF;
   border-color: #FFFFFF;
   color: #513DEB;
+  margin: 0.25rem;
   min-width: 110px;
   white-space: nowrap;
 }
@@ -567,6 +584,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #513DEB;
   border-color: #513DEB;
   color: #FFFFFF;
+  margin: 0.25rem;
   min-width: 110px;
 }
 #mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_finished #mod_readaloud_quizresult_div .qa-row.border-bottom {
