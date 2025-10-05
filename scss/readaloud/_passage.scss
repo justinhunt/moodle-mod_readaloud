@@ -7,7 +7,7 @@
     padding: 1rem;
 
     .mod_readaloud_modelaudio_activesentence {
-        background-color: $yellow30;
+        @include word-highlight($yellow30);
     }
 
     p:last-child {
@@ -15,7 +15,7 @@
     }
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
     .mod_readaloud_passage_cont {
         padding: 2rem;
     }

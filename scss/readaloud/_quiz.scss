@@ -63,6 +63,7 @@
             @include readaloud-btn-variant($purple, $purple, $white);
             min-width: 110px;
         }
+
         #mod_readaloud_quizresult_div {
             .qa-row {
                 &.border-bottom {
@@ -77,6 +78,12 @@
                     }
                 }
             }
+        }
+    }
+
+    .mod_readaloud_studentreportpassage {
+        .mod_readaloud_grading_unreadword {
+            @include word-highlight($gray-200);
         }
     }
 }

@@ -341,12 +341,14 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 }
 .mod_readaloud_passage_cont .mod_readaloud_modelaudio_activesentence {
   background-color: rgba(255, 218, 32, 0.3);
+  border-radius: 4px;
+  padding: 0.2rem;
 }
 .mod_readaloud_passage_cont p:last-child {
   margin-bottom: 0;
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
   .mod_readaloud_passage_cont {
     padding: 2rem;
   }
@@ -597,6 +599,11 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 #mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_finished #mod_readaloud_quizresult_div .qa-row .qa-col--icon {
   flex: 0 0 24px;
   width: 24px;
+}
+#mod_readaloud_quiz_cont_wrap .mod_readaloud_studentreportpassage .mod_readaloud_grading_unreadword {
+  background-color: #E3E3E4;
+  border-radius: 4px;
+  padding: 0.2rem;
 }
 
 body.path-mod-readaloud #page-content {

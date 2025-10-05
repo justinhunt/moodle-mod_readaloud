@@ -29,3 +29,9 @@
     height: $size;
     width: $size;
 }
+
+@mixin word-highlight($background) {
+    background-color: $background;
+    border-radius: 4px;
+    padding: 0.2rem;
+}
