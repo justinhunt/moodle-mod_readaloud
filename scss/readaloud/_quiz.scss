@@ -35,9 +35,38 @@
                 @include readaloud-btn-variant($purple, $purple, $white);
                 min-width: 110px;
             }
-            .mod_readaloud-activity-progress-bar {
-                span {
-                    display: none;
+
+            // The numbered progress bar.
+            .readaloud_quiz_progress {
+                align-items: center;
+                display: flex;
+                height: 50px;
+                justify-content: space-around;
+                position: relative;
+
+                .readaloud_quiz_progress_line {
+                    background-color: $gray-200;
+                    border-radius: 24px;
+                    bottom: 0;
+                    height: 10px;
+                    left: 0;
+                    margin: auto;
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                }
+
+                &_item {
+                    @include quiz-progress-item($gray-600);
+                    &_current {
+                        background-color: $green;
+                    }
+                    &_completed {
+                        background-color: $gray-800;
+                    }
+                }
+                &_finalitem {
+                    @include quiz-progress-item($red);
                 }
             }
         }
@@ -87,75 +116,3 @@
         }
     }
 }
-
-// TODO: Retain and sort these styles only if we retain numbered progress items.
-// .readaloud_mc_confirmchoice {
-//     text-align: center;
-//     background-color: blue;
-//     color: white;
-//     padding: 10px;
-//     border: 1px solid black;
-//     border-radius: 5px;
-//     cursor: pointer;
-//     font-size: 1.33em;
-//     overflow: auto;
-//   }
-
-  
-//   .readaloud_quiz_progress_item {
-//     border-radius: 50%;
-//     width: 30px;
-//     height: 30px;
-//     background-color: gray;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     color: white;
-//     font-size: 20px;
-//     font-weight: bold;
-//     z-index: 1;
-//   }
-  
-//   .readaloud_quiz_progress_item_current {
-//     background-color: green;
-//     color: white;
-//   }
-  
-//   .readaloud_quiz_progress_finalitem {
-//     border-radius: 15%;
-//     width: 30px;
-//     height: 30px;
-//     background-color: darkred;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     color: white;
-//     font-size: 20px;
-//     font-weight: bold;
-//     z-index: 1;
-//   }
-  
-//   .readaloud_quiz_progress_item_completed {
-//     background-color: darkgrey;
-//   }
-  
-//   .readaloud_quiz_progress {
-//     align-items: center;
-//     display: flex;
-//     height: 50px;
-//     justify-content: space-around;
-//     position: relative;
-
-//     .readaloud_quiz_progress_line {
-//         background-color: $gray-200;
-//         border-radius: 24px;
-//         bottom: 0;
-//         height: 10px;
-//         left: 0;
-//         margin-bottom: auto;
-//         margin-top: auto;
-//         position: absolute;
-//         right: 0;
-//         top: 0;
-//     }
-// }
