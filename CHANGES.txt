@@ -1,3 +1,7 @@
+2.1.26 (Build 2025031504)
+- Bug fixes - missing completion class in previous release
+- stray script tags in mustache for audio player could cause console errors
+
 2.1.25 (Build 2025031503)
 - Improvements for new activity chooser (Moodle 5.1)
 - Fix for poor completion impl. of mingrade
