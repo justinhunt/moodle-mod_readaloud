@@ -530,9 +530,6 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #FFDA20;
 }
 
-#mod_readaloud_quiz_cont_wrap {
-  display: block !important;
-}
 #mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_items_cont .readaloud_questioncontainer .mcplayrow .readaloud_mc_response .readaloud_sentence {
   color: #513DEB;
 }
