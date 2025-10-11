@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_readaloud/activity_header
+    @template mod_readaloud/activity_header_inpage
 
     Activity header for the Read Aloud activity.
 
@@ -35,9 +35,9 @@
 <div class="mod_readaloud-activity-header-inpage d-flex flex-column gap-4 mb-4">
     <div class="mod_readaloud-activity-header-main rounded d-flex flex-wrap align-items-center p-3 gap-3"
         data-for="page-activity-header">
-        <span class="backarrow">
+        <a href="{{backurl}}" class="backarrow d-inline-flex align-items-center">
             {{> mod_readaloud/backarrow}}
-        </span>
+        </a>
         {{#passagepictureurl}}
         <div class="mod_readaloud-activity-picture">
             <img src="{{passagepictureurl}}" alt="">

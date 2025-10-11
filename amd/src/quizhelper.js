@@ -134,7 +134,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
 
         if(total<6) {
             var slice = array.slice(0, 5);
-            var linestyles = "width: " + (100 - 100 / slice.length) + "%; margin-left: auto; margin-right: auto";
+            var linestyles = "width: " + (100 - 100 / slice.length) + "%;";
             var html = "<div class='readaloud_quiz_progress_line' style='" + linestyles + "'></div>";
 
             slice.forEach(function (i) {
@@ -149,7 +149,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
 
               //if first item is visible then no line trailing left of item 1
               if(current==0){
-                  var linestyles = "width: 80%; margin-left: auto; margin-right: auto";
+                  var linestyles = "width: 80%;";
               }else {
                   var linestyles = "width: " + (100 - 100 / (2 *slice.length)) + "%; margin-left: 0";
               }

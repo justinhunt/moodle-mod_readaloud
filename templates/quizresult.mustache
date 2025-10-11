@@ -26,30 +26,34 @@
 
 <div id="mod_readaloud_quizresult_div" class="mod_readaloud_quizresult_div">
     <div class="card p-3 p-md-5">
-        <div class="qa-row d-none d-md-flex align-items-start fw-semibold mb-2">
+        <div class="qa-row d-flex align-items-start fw-semibold mb-2">
             <div class="qa-col">{{#str}}question, mod_readaloud{{/str}}</div>
             <div class="qa-col">{{#str}}correctanswer, mod_readaloud{{/str}}</div>
             <div class="qa-col--icon" aria-hidden="true"></div>
         </div>
 
         {{#results}}
-        <div class="qa-row d-flex flex-column flex-md-row align-items-start py-3 border-bottom">
-            <div class="qa-col mod_readaloud_question_text">{{{questext}}}</div>
-            <div class="qa-col">
-                {{#correctans}}<span class="mod_readaloud_finishedanswer">{{{sentence}}}</span>{{/correctans}}
+        <div class="qa-row d-flex align-items-start justify-content-between gap-3 py-3 border-top">
+            <div class="qa-col flex-grow-1 text-break mod_readaloud_question_text">
+                {{{questext}}}
             </div>
-            <div class="qa-col--icon text-end">
+            <div class="qa-col flex-grow-1 text-break">
+                {{#correctans}}
+                <span class="mod_readaloud_finishedanswer">{{{sentence}}}</span>
+                {{/correctans}}
+            </div>
+            <div class="qa-col--icon flex-shrink-0 text-end">
                 <i class="fa-solid fa-circle-check text-success" aria-hidden="true"></i>
                 <span class="visually-hidden">{{#str}}correct, mod_readaloud{{/str}}</span>
             </div>
         </div>
         {{/results}}
+
         {{^results}}
         <div class="py-3">{{#str}}noquestions, mod_readaloud{{/str}}</div>
         {{/results}}
     </div>
-
-    
 </div>
+
 
 
