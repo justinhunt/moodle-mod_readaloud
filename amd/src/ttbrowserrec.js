@@ -88,8 +88,10 @@ define(['jquery', 'core/log'], function ($, log) {
         },
 
         prepare_html: function(){
+            // Just get the canvas reference during init
+            // Canvas context will be initialized when recording starts (in start method)
             this.canvas =$('#' + this.uniqueid + "_waveform");
-            this.canvasCtx = this.canvas[0].getContext("2d");
+            this.canvasCtx = null;
         },
 
         set_grammar: function (grammar) {
@@ -108,6 +110,17 @@ define(['jquery', 'core/log'], function ($, log) {
             if (this.recognizing) {
                 return;
             }
+
+            // Initialize canvas context now that we're sure the element exists
+            // (User has clicked the record button, so the template is definitely rendered)
+            this.canvas = $('#' + this.uniqueid + "_waveform");
+            if (this.canvas.length > 0) {
+                this.canvasCtx = this.canvas[0].getContext("2d");
+            } else {
+                log.debug("TT Browser Rec: Canvas element not found for " + this.uniqueid);
+                return;
+            }
+
             this.recognizing = true;
             this.final_transcript = '';
             this.interim_transcript = '';

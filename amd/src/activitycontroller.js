@@ -2,10 +2,10 @@
 define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
     'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
     'core/ajax', 'core/notification', 'mod_readaloud/smallreporthelper',
-    'mod_readaloud/practice', 'mod_readaloud/quizhelper', 'mod_readaloud/clicktohear'
+    'mod_readaloud/practice', 'mod_readaloud/quizhelper', 'mod_readaloud/clicktohear',  'core/templates',
 ],
     function ($, log, str, def, recorderhelper, modelaudiokaraoke,
-        Ajax, notification, smallreporthelper, practice, quizhelper, clicktohear) {
+        Ajax, notification, smallreporthelper, practice, quizhelper, clicktohear, Templates) {
 
         "use strict"; // jshint ;_;
 
@@ -25,6 +25,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
             recorderid: null,
             playerid: null,
             sorryboxid: null,
+            modeviewid: null,
             controls: null,
             ra_recorder: null,
             rec_time_start: 0,
@@ -81,11 +82,10 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     return;
                 }
 
-                // Set up steps - enabled and open
-                //TO DO make these usable in JS (here) and not just in mustache
-                dd.steps_enabled = dd.activitydata.stepsenabled; // this is not passed through to JS (only mustache)
-                dd.steps_open = dd.activitydata.stepsopen;// this is not passed through to JS (only mustache)
-                dd.steps_complete = dd.activitydata.stepscomplete;// this is not passed through to JS (only mustache)
+                // Set up steps - enabled, open and complete (passed from PHP)
+                dd.steps_enabled = dd.activitydata.stepsenabled;
+                dd.steps_open = dd.activitydata.stepsopen;
+                dd.steps_complete = dd.activitydata.stepscomplete;
 
                 // Set up model audio.
                 dd.setupmodelaudio();
@@ -110,12 +110,17 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 smallreporthelper.init(dd.activitydata);
 
                 // Set initial mode.
-                // We used to check the settings but now we just show the non-options greyed out
-                if (dd.stepshadow_enabled || dd.steplisten_enabled || true) {
-                    dd.domenulayout();
+                var initialMode = dd.getModeFromUrl();
+                if (initialMode) {
+                    dd.replaceModeInUrl(initialMode);
+                    dd.renderMode(initialMode);
                 } else {
-                    dd.doreadinglayout();
+                    dd.domenulayout(); // default to home/menu
                 }
+
+                // Enable browser navigation from home to view.
+                window.addEventListener('popstate', dd.onPopState.bind(dd));
+
             },
 
             setup_strings: function () {
@@ -146,11 +151,12 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
             setuppractice: function () {
                 var dd = this;
-                var practice_opts = {
+                // Store practice options for later use when template is rendered
+                // Don't call practice.init() here - it will be called in renderMode() when template exists
+                dd.practice_opts = {
                     modelaudiokaraoke: modelaudiokaraoke, cmid: this.cmid, language: this.activitydata.language,
                     region: this.activitydata.region, phonetics: this.activitydata.phonetics, stt_guided: this.activitydata.stt_guided
                 };
-                practice.init(practice_opts);
                 //set the callback function to complete the activity
                 practice.on_complete = function () {
                     // Complete the current step (update server and ui)
@@ -190,7 +196,6 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 var controls = {
                     hider: $('.' + opts['hider']),
                     introbox: $('.' + 'mod_intro_box'),
-                    progresscontainer: $('.' + opts['progresscontainer']),
                     feedbackcontainer: $('.' + opts['feedbackcontainer']),
                     errorcontainer: $('.' + opts['errorcontainer']),
                     passagecontainer: $('.mod_readaloud_readingcontainer ' + '.' + opts['passagecontainer']),
@@ -207,7 +212,6 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     recinstructionscontainerright: $('.' + opts['recinstructionscontainerright']),
                     recinstructionscontainerleft: $('.' + opts['recinstructionscontainerleft']),
                     allowearlyexit: $('.' + opts['allowearlyexit']),
-                    wheretonextcontainer: $('.' + opts['wheretonextcontainer']),
                     modelaudioplayer: $('#' + opts['modelaudioplayer']),
                     homebutton: $('#' + opts['homebutton']),
                     startlistenbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_listen + '"]'),
@@ -230,6 +234,8 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     quizplaceholder: $('.' + opts['quizplaceholder']),
                     quizresultscontainer: $("." + opts['quizresultscontainer']),
                     homecontainer: $('.' + opts['homecontainer']),
+                    modeview: $('#' + opts['modeview']),
+                    activityheader: $('.mod_readaloud-activity-header'),
                 };
                 this.controls = controls;
             },
@@ -333,6 +339,12 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 $('.mode-chooser.no-click').each(function () {
                     this.addEventListener('click', disableClick, true);
                     this.addEventListener('keypress', disableClick, true);
+                });
+
+                // Intercept navigation that would cause page reload - use SPA navigation instead
+                $(document).on('click', '.secondary-navigation [data-key="modulepage"] a, .backarrow[data-action="back-to-home"]', function(e) {
+                    e.preventDefault();
+                    dd.domenulayout();
                 });
 
                 dd.controls.startlistenbutton.click(function (e) {
@@ -483,9 +495,11 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                                         continue;
                                     }
                                 }
-                                that.updateModeStatuses();
-                                that.updateBigButtonMenuModeStatus();
+                                // Open next step first (this updates stepsopen in activitydata)
                                 that.open_next_step(step);
+                                // Then update the UI based on the new stepsopen state
+                                that.updateBigButtonMenuModeStatus();
+                                // that.updateModeStatuses();
 
                                 break;
                             case false:
@@ -522,8 +536,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                             }
 
                             // Record the newly opened step as 'open' for client side use
-                            //TO DO-  get this working
-                            // that.steps_open[key] = true;
+                            that.activitydata.stepsopen[key] = thestep;
                             break;
                         }
                     }
@@ -561,11 +574,11 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 }]);
                 /*
                             return;
-                
+
                             //set up our ajax request
                             var xhr = new XMLHttpRequest();
                             var that = this;
-                
+
                             //set up our handler for the response
                             xhr.onreadystatechange = function (e) {
                                 if (this.readyState === 4) {
@@ -578,9 +591,9 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                                             switch (payloadobject.success) {
                                                 case true:
                                                     log.debug('attempted submission accepted');
-                
+
                                                     break;
-                
+
                                                 case false:
                                                 default:
                                                     log.debug('attempted item evaluation failure');
@@ -594,7 +607,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                                     }
                                 }
                             };
-                
+
                             //to get through mod_security environments
                             filename = filename.replace(/^https:\/\//i, 'https___');
                             var params = "cmid=" + that.cmid + "&filename=" + encodeURIComponent(filename) + "&rectime=" + rectime;
@@ -605,140 +618,102 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 */
             },
 
-            domenulayout: function () {
-                var m = this;
+            // domenulayout: function () {
+            //     var m = this;
 
-                // Hide.
-                m.controls.activityinstructionscontainer.hide();
-                m.controls.feedbackcontainer.hide();
-                m.controls.hider.hide();
-                m.controls.practiceinstructionscontainer.hide();
-                m.controls.practicecontainerwrap.hide();
-                m.controls.modelaudioplayer.hide();
-                m.controls.previewinstructionscontainer.hide();
-                m.controls.progresscontainer.hide();
-                m.controls.passagecontainer.hide();
-                m.controls.quizcontainerwrap.hide();
-                m.controls.recordingcontainer.hide();
-                m.controls.returnmenubutton.hide();
-                m.controls.smallreportcontainer.hide();
-                m.controls.wheretonextcontainer.hide();
+            //     // Hide.
+            //     m.controls.activityinstructionscontainer.hide();
+            //     m.controls.feedbackcontainer.hide();
+            //     m.controls.hider.hide();
+            //     m.controls.practiceinstructionscontainer.hide();
+            //     m.controls.practicecontainerwrap.hide();
+            //     m.controls.modelaudioplayer.hide();
+            //     m.controls.previewinstructionscontainer.hide();
+            //     m.controls.passagecontainer.hide();
+            //     m.controls.quizcontainerwrap.hide();
+            //     m.controls.recordingcontainer.hide();
+            //     m.controls.returnmenubutton.hide();
+            //     m.controls.smallreportcontainer.hide();
 
-                // Show.
-                m.controls.homecontainer.show();
-                m.controls.introbox.show();
-                m.controls.menuinstructionscontainer.show();
-                m.controls.menubuttonscontainer.show();
+            //     // Show.
+            //     m.controls.homecontainer.show();
+            //     m.controls.introbox.show();
+            //     m.controls.menuinstructionscontainer.show();
+            //     m.controls.menubuttonscontainer.show();
 
-                m.d_hide(m.controls.stopandplay);
-                m.d_hide(m.controls.quitlisteningbutton);
-                m.controls.readingcontainer.removeClass(def.containerfillscreen);
-                m.controls.modeimagecontainer.removeClass('d-block');
-                m.controls.modeimagecontainer.addClass('d-none');
+            //     m.d_hide(m.controls.stopandplay);
+            //     m.d_hide(m.controls.quitlisteningbutton);
+            //     m.controls.readingcontainer.removeClass(def.containerfillscreen);
+            //     m.controls.modeimagecontainer.removeClass('d-block');
+            //     m.controls.modeimagecontainer.addClass('d-none');
 
-                modelaudiokaraoke.modeling = true;
+            //     modelaudiokaraoke.modeling = true;
 
-                // Update the mode statuses (completed, in-progress, upcoming).
-                m.updateModeStatuses();
-            },
+            //     // Update the mode statuses (completed, in-progress, upcoming).
+            //     m.updateModeStatuses();
+            // },
 
-            doreadinglayout: function () {
-                var m = this;
+            // doreadinglayout: function () {
+            //     var m = this;
 
-                // Hide.
-                m.controls.feedbackcontainer.hide();
-                m.controls.homecontainer.hide();
-                m.controls.introbox.hide();
-                m.controls.menuinstructionscontainer.hide();
-                m.controls.passagecontainer.hide();
-                m.controls.progresscontainer.hide();
-                m.controls.quizcontainerwrap.hide();
-                m.controls.smallreportcontainer.hide();
-                m.controls.wheretonextcontainer.hide();
-                m.controls.passagecontainer.removeClass(m.passagefinished);
+            //     // Hide.
+            //     m.controls.feedbackcontainer.hide();
+            //     m.controls.homecontainer.hide();
+            //     m.controls.introbox.hide();
+            //     m.controls.menuinstructionscontainer.hide();
+            //     m.controls.passagecontainer.hide();
+            //     m.controls.quizcontainerwrap.hide();
+            //     m.controls.smallreportcontainer.hide();
+            //     m.controls.passagecontainer.removeClass(m.passagefinished);
 
-                // Show.
-                m.controls.recordingcontainer.show();
-                m.controls.returnmenubutton.show();
-                m.controls.hider.fadeOut('fast');
-                m.controls.activityinstructionscontainer.show();
+            //     // Show.
+            //     m.controls.recordingcontainer.show();
+            //     m.controls.returnmenubutton.show();
+            //     m.controls.hider.fadeOut('fast');
+            //     m.controls.activityinstructionscontainer.show();
 
-                m.controls.passagecontainer.removeClass('previewmode shadowmode reviewmode nothingmode');
-                m.controls.passagecontainer.addClass('readmode');
-                m.d_hide(m.controls.stopandplay);
-                m.d_hide(m.controls.quitlisteningbutton);
-                m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple');
-                m.controls.modeimagecontainer.addClass('fa-book-open-reader d-block');
+            //     m.controls.passagecontainer.removeClass('previewmode shadowmode reviewmode nothingmode');
+            //     m.controls.passagecontainer.addClass('readmode');
+            //     m.d_hide(m.controls.stopandplay);
+            //     m.d_hide(m.controls.quitlisteningbutton);
+            //     m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple');
+            //     m.controls.modeimagecontainer.addClass('fa-book-open-reader d-block');
 
-                modelaudiokaraoke.modeling = true;
-            },
+            //     modelaudiokaraoke.modeling = true;
+            // },
 
-            dopreviewlayout: function () {
-                var m = this;
+            // dopreviewlayout: function () {
+            //     var m = this;
 
-                // Hide.
-                m.controls.activityinstructionscontainer.hide();
-                m.controls.feedbackcontainer.hide();
-                m.controls.hider.hide();
-                m.controls.homecontainer.hide();
-                m.controls.introbox.hide();
-                m.controls.practiceinstructionscontainer.hide();
-                m.controls.practicecontainerwrap.hide();
-                m.controls.menuinstructionscontainer.hide();
-                m.controls.modelaudioplayer.hide();
-                m.controls.progresscontainer.hide();
-                m.controls.quizcontainerwrap.hide();
-                m.controls.recordingcontainer.hide();
-                m.controls.smallreportcontainer.hide();
-                m.controls.wheretonextcontainer.hide();
+            //     // Hide.
+            //     m.controls.activityinstructionscontainer.hide();
+            //     m.controls.feedbackcontainer.hide();
+            //     m.controls.hider.hide();
+            //     m.controls.homecontainer.hide();
+            //     m.controls.introbox.hide();
+            //     m.controls.practiceinstructionscontainer.hide();
+            //     m.controls.practicecontainerwrap.hide();
+            //     m.controls.menuinstructionscontainer.hide();
+            //     m.controls.modelaudioplayer.hide();
+            //     m.controls.quizcontainerwrap.hide();
+            //     m.controls.recordingcontainer.hide();
+            //     m.controls.smallreportcontainer.hide();
 
-                // Show.
-                m.controls.menubuttonscontainer.show();
-                m.controls.passagecontainer.show();
-                m.controls.previewinstructionscontainer.show();
-                m.controls.returnmenubutton.show();
+            //     // Show.
+            //     m.controls.menubuttonscontainer.show();
+            //     m.controls.passagecontainer.show();
+            //     m.controls.previewinstructionscontainer.show();
+            //     m.controls.returnmenubutton.show();
 
-                m.controls.passagecontainer.removeClass('readmode shadowmode reviewmode nothingmode');
-                m.controls.passagecontainer.addClass('previewmode');
-                m.d_show(m.controls.stopandplay);
-                m.d_show(m.controls.quitlisteningbutton);
-                m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
-                m.controls.modeimagecontainer.addClass('fa-headphones d-block');
+            //     m.controls.passagecontainer.removeClass('readmode shadowmode reviewmode nothingmode');
+            //     m.controls.passagecontainer.addClass('previewmode');
+            //     m.d_show(m.controls.stopandplay);
+            //     m.d_show(m.controls.quitlisteningbutton);
+            //     m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
+            //     m.controls.modeimagecontainer.addClass('fa-headphones d-block');
 
-                modelaudiokaraoke.modeling = false;
-            },
-
-            dopracticelayout: function () {
-                var m = this;
-
-                // Hide.
-                m.controls.activityinstructionscontainer.hide();
-                m.controls.feedbackcontainer.hide();
-                m.controls.homecontainer.hide();
-                m.controls.hider.hide();
-                m.controls.introbox.hide();
-                m.controls.modelaudioplayer.hide();
-                m.controls.passagecontainer.hide();
-                m.controls.previewinstructionscontainer.hide();
-                m.controls.progresscontainer.hide();
-
-                m.controls.quizcontainerwrap.hide();
-                m.controls.recordingcontainer.hide();
-                m.controls.smallreportcontainer.hide();
-                m.controls.wheretonextcontainer.hide();
-                m.d_hide(m.controls.stopandplay);
-                m.d_hide(m.controls.quitlisteningbutton);
-
-                // Show.
-                m.controls.returnmenubutton.show();
-                m.controls.menubuttonscontainer.show();
-                m.controls.practiceinstructionscontainer.show();
-                m.controls.practicecontainerwrap.show();
-
-                m.controls.modeimagecontainer.removeClass('fa-headphones fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
-                m.controls.modeimagecontainer.addClass('fa-comment d-block');
-                modelaudiokaraoke.modeling = false;
-            },
+            //     modelaudiokaraoke.modeling = false;
+            // },
 
             dopassagelayout: function () {
                 var m = this;
@@ -754,7 +729,6 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
                 m.controls.passagecontainer.addClass(m.passagefinished);
                 m.controls.hider.fadeIn('fast');
-                m.controls.progresscontainer.fadeIn('fast');
             },
 
 
@@ -772,12 +746,10 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 // Show.
                 m.controls.menubuttonscontainer.show();
                 m.controls.feedbackcontainer.show();
-                m.controls.wheretonextcontainer.show();
 
                 m.controls.readingcontainer.removeClass(def.containerfillscreen);
 
                 m.controls.hider.fadeOut('fast');
-                m.controls.progresscontainer.fadeOut('fast');
 
             },
             doerrorlayout: function () {
@@ -791,66 +763,215 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 // Show.
                 m.controls.menubuttonscontainer.show();
                 m.controls.errorcontainer.show();
-                m.controls.wheretonextcontainer.show();
 
                 m.controls.readingcontainer.removeClass(def.containerfillscreen);
 
                 m.controls.hider.fadeOut('fast');
-                m.controls.progresscontainer.fadeOut('fast');
             },
-            doreportlayout: function () {
-                var m = this;
+            // doreportlayout: function () {
+            //     var m = this;
 
-                // Hide.
-                m.controls.activityinstructionscontainer.hide();
-                m.controls.homecontainer.hide();
-                m.controls.practiceinstructionscontainer.hide();
-                m.controls.practicecontainerwrap.hide();
-                m.controls.passagecontainer.hide();
-                m.controls.previewinstructionscontainer.hide();
-                m.controls.menuinstructionscontainer.hide();
-                m.controls.quizcontainerwrap.hide();
-                m.controls.recordingcontainer.hide();
-                m.d_hide(m.controls.stopandplay);
-                m.d_hide(m.controls.quitlisteningbutton);
+            //     // Hide.
+            //     m.controls.activityinstructionscontainer.hide();
+            //     m.controls.homecontainer.hide();
+            //     m.controls.practiceinstructionscontainer.hide();
+            //     m.controls.practicecontainerwrap.hide();
+            //     m.controls.passagecontainer.hide();
+            //     m.controls.previewinstructionscontainer.hide();
+            //     m.controls.menuinstructionscontainer.hide();
+            //     m.controls.quizcontainerwrap.hide();
+            //     m.controls.recordingcontainer.hide();
+            //     m.d_hide(m.controls.stopandplay);
+            //     m.d_hide(m.controls.quitlisteningbutton);
 
-                //clean up upload layout
-                m.controls.readingcontainer.removeClass(def.containerfillscreen);
-                m.controls.hider.fadeOut('fast');
-                m.controls.progresscontainer.fadeOut('fast');
+            //     //clean up upload layout
+            //     m.controls.readingcontainer.removeClass(def.containerfillscreen);
+            //     m.controls.hider.fadeOut('fast');
 
-                // Show.
-                m.controls.menubuttonscontainer.show();
-                m.controls.returnmenubutton.show();
-                m.controls.smallreportcontainer.show();
+            //     // Show.
+            //     m.controls.menubuttonscontainer.show();
+            //     m.controls.returnmenubutton.show();
+            //     m.controls.smallreportcontainer.show();
 
-                m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-circle-question');
-                m.controls.modeimagecontainer.addClass('fa-chart-simple d-block');
-            },
-            doquizlayout: function () {
-                var m = this;
+            //     m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-circle-question');
+            //     m.controls.modeimagecontainer.addClass('fa-chart-simple d-block');
+            // },
+            // doquizlayout: function () {
+            //     var m = this;
 
-                // Hide.
-                m.controls.activityinstructionscontainer.hide();
-                m.controls.homecontainer.hide();
-                m.controls.practiceinstructionscontainer.hide();
-                m.controls.practicecontainerwrap.hide();
-                m.controls.passagecontainer.hide();
-                m.controls.previewinstructionscontainer.hide();
-                m.controls.quizplaceholder.hide();
-                m.controls.recordingcontainer.hide();
-                m.controls.smallreportcontainer.hide();
+            //     // Hide.
+            //     m.controls.activityinstructionscontainer.hide();
+            //     m.controls.homecontainer.hide();
+            //     m.controls.practiceinstructionscontainer.hide();
+            //     m.controls.practicecontainerwrap.hide();
+            //     m.controls.passagecontainer.hide();
+            //     m.controls.previewinstructionscontainer.hide();
+            //     m.controls.quizplaceholder.hide();
+            //     m.controls.recordingcontainer.hide();
+            //     m.controls.smallreportcontainer.hide();
 
-                // Show.
-                m.controls.quizcontainerwrap.show();
+            //     // Show.
+            //     m.controls.quizcontainerwrap.show();
 
-                m.d_hide(m.controls.stopandplay);
-                m.d_hide(m.controls.quitlisteningbutton);
-                m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple');
-                m.controls.modeimagecontainer.addClass('fa-circle-question d-block');
-            },
+            //     m.d_hide(m.controls.stopandplay);
+            //     m.d_hide(m.controls.quitlisteningbutton);
+            //     m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple');
+            //     m.controls.modeimagecontainer.addClass('fa-circle-question d-block');
+            // },
 
-            // Shared helper for bigbuttonmenu and modejourney.
+// Home (menu).
+domenulayout: function () {
+    var m = this;
+    m.showHome();
+    if (typeof m.updateBigButtonMenuModeStatus === 'function') m.updateBigButtonMenuModeStatus();
+    modelaudiokaraoke.modeling = true;
+},
+
+// Listen mode (preview).
+dopreviewlayout: function () {
+    var m = this;
+    modelaudiokaraoke.modeling = false;
+    m.renderMode('listen');
+},
+
+// Practice mode.
+dopracticelayout: function () {
+    var m = this;
+    modelaudiokaraoke.modeling = false;
+    m.renderMode('practice');
+},
+
+// Read mode (read / shadow).
+doreadinglayout: function () {
+    var m = this;
+    modelaudiokaraoke.modeling = true;
+    var mode = m.letsshadow ? 'shadow' : 'read';
+    m.renderMode(mode, { letsshadow: m.letsshadow });
+},
+
+// Report mode.
+doreportlayout: function () {
+    this.renderMode('report');
+},
+
+// Quiz mode.
+doquizlayout: function () {
+    this.renderMode('quiz');
+},
+
+    getModeFromUrl: function () {
+        var params = new URLSearchParams(window.location.search);
+        var mode = params.get('mode');
+        var allowed = ['listen', 'practice', 'read', 'shadow', 'quiz', 'report'];
+        return allowed.indexOf(mode) >= 0 ? mode : null;
+    },
+
+    pushModeToUrl: function (mode) {
+        var url = new URL(window.location.href);
+        if (mode) {
+            url.searchParams.set('mode', mode);
+        } else {
+            url.searchParams.delete('mode');
+        }
+        window.history.pushState({mode: mode}, '', url.toString());
+    },
+
+    replaceModeInUrl: function (mode) {
+        var url = new URL(window.location.href);
+        if (mode) {
+            url.searchParams.set('mode', mode);
+        } else {
+            url.searchParams.delete('mode');
+        }
+        window.history.replaceState({
+            mode: mode
+        }, '', url.toString());
+    },
+
+    // Map the modes to their corresponding mustache templates.
+    getTemplateForMode: function (mode) {
+        switch (mode) {
+            case 'listen':   return 'mod_readaloud/listen';
+            case 'practice': return 'mod_readaloud/practice';
+            case 'read':     return 'mod_readaloud/read';
+            case 'shadow':   return 'mod_readaloud/listen'; // TEMP: reuse listen for shadow
+            case 'quiz':     return 'mod_readaloud/quizcontainer';
+            case 'report':   return 'mod_readaloud/finalreport';
+            default:         return null;
+        }
+    },
+
+// Hide home, render mode template into modeview.
+renderMode: function (mode, extraContext) {
+    var dd = this;
+    var template = dd.getTemplateForMode(mode);
+    if (!template) {
+        dd.domenulayout();
+        return;
+    }
+
+    // Use the template context from PHP which includes all template variables (playbutton, passagehtml, etc.)
+    var templatecontext = $.extend(true, {}, dd.activitydata.templatecontext || {}, { mode: mode }, extraContext || {});
+    var $home = dd.controls.homecontainer;
+    var $view = dd.controls.modeview;
+
+    Templates.renderForPromise(template, templatecontext).then(function (out) {
+        $view.html(out.html);
+        Templates.runTemplateJS(out.js);
+
+        // Show view, then hide home - prevents footer jump.
+        $view.removeClass('d-none').attr('hidden', false);
+        $home.addClass('d-none').attr('hidden', true);
+        dd.controls.activityheader.addClass('d-none').attr('hidden', true);
+        // Re-grab dynamic selectors inside the freshly rendered view.
+        dd.process_html(dd.activitydata);
+
+        // Re-initialise components that depend on DOM elements after template render.
+        modelaudiokaraoke.register_controls();
+        modelaudiokaraoke.register_events();
+
+        setTimeout(function() {
+            if (typeof dd.updateBigButtonMenuModeStatus === 'function') dd.updateBigButtonMenuModeStatus();
+        }, 0);
+
+        if (mode === 'practice') {
+            // Now call practice.init() with the template DOM elements available.
+            practice.init(dd.practice_opts);
+        }
+        if (mode === 'quiz') { /* quizhelper already init'd in setupquiz; it draws into quizcontainer */ }
+
+        // Scroll/focus like a full page.
+        $view.attr('tabindex', '-1')[0].focus({preventScroll: true});
+        window.scrollTo({top: 0, behavior: 'instant'});
+
+        // Update URL.
+        dd.pushModeToUrl(mode);
+    }).catch(notification.exception);
+},
+
+    showHome: function () {
+        var dd = this;
+        var $home = dd.controls.homecontainer;
+        var $view = dd.controls.modeview;
+
+        $view.addClass('d-none').attr('hidden', true).empty();
+        $home.removeClass('d-none').attr('hidden', false);
+        dd.controls.activityheader.removeClass('d-none').attr('hidden', false);
+
+        dd.pushModeToUrl(null);
+    },
+
+    onPopState: function () {
+        var dd = this;
+        var mode = dd.getModeFromUrl();
+        if (mode) {
+            dd.renderMode(mode);
+        } else {
+            dd.showHome();
+        }
+    },
+
+            // Helper for bigbuttonmenu.
             // Updates each step element based on its enabled/completed state.
             // Assumes "stepsOrder" is fixed and that both templates output numeric data-step values.
             // Marks report as complete if either of step_read or step_quiz is completed.
@@ -923,15 +1044,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                             status = 'upcoming';
                         }
                     }
-                    console.log('Step:', stepKey, 'status:', status);
                     renderCallback($elem, status, stepKey);
-                });
-            },
-
-            updateModeStatuses: function () {
-                var dd = this;
-                dd.updateStepsStatus(dd.controls.modejourneycontainer, '.mode', function ($elem, status, stepKey) {
-                    $elem.removeClass('completed in-progress upcoming').addClass(status);
                 });
             },
 
@@ -983,15 +1096,36 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
             updateBigButtonMenuModeStatus: function () {
                 var dd = this;
+                var stepsOpen = dd.activitydata.stepsopen || {};
                 dd.updateStepsStatus(dd.controls.menubuttonscontainer, 'li.mode-chooser', function ($elem, status, stepKey) {
-                    var $iconSpan = $elem.find('.nav-completion-icon');
-                    if ($iconSpan.length) {
+                    var $iconImg = $elem.find('.nav-status-icon');
+                    if ($iconImg.length) {
+                        var iconName, altText;
+                        var isOpen = stepsOpen[stepKey] !== undefined && stepsOpen[stepKey] !== false;
+
                         if (status === 'completed') {
-                            $iconSpan.html('<i class="fa-solid fa-circle-check text-success" title="Complete"></i>');
-                        } else if (status === 'in-progress') {
-                            $iconSpan.html('<i class="fa-regular fa-circle text-warning" title="In progress"></i>');
-                        } else { // Upcoming.
-                            $iconSpan.html('<i class="fa-solid fa-lock text-secondary" title="Locked"></i>');
+                            iconName = 'checked';
+                            altText = 'Complete';
+                        } else if (isOpen) {
+                            // If step is open but not complete, show current icon
+                            iconName = 'current';
+                            altText = 'In progress';
+                        } else {
+                            // Step is not open yet, show locked
+                            iconName = 'locked';
+                            altText = 'Locked';
+                        }
+                        var iconUrl = M.util.image_url(iconName, 'mod_readaloud');
+                        $iconImg.attr('src', iconUrl);
+                        $iconImg.attr('alt', altText);
+
+                        // Update CSS classes on the li element to match the icon state
+                        if (status === 'completed') {
+                            $elem.removeClass('locked current').addClass('completed');
+                        } else if (isOpen) {
+                            $elem.removeClass('locked completed').addClass('current');
+                        } else {
+                            $elem.removeClass('current completed').addClass('locked');
                         }
                     }
                 });

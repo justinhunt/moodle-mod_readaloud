@@ -68,13 +68,25 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder', 'mod_readaloud/ttstr
 
 
         prepare_html: function(){
+            // Just get the canvas reference during init
+            // Canvas context will be initialized when recording starts (in start method)
             this.canvas =$('#' + this.uniqueid + "_waveform");
-            this.canvasCtx = this.canvas[0].getContext("2d");
+            this.canvasCtx = null;
         },
 
         start: function() {
 
             var that =this;
+
+            // Initialize canvas context now that we're sure the element exists
+            // (User has clicked the record button, so the template is definitely rendered)
+            this.canvas = $('#' + this.uniqueid + "_waveform");
+            if (this.canvas.length > 0) {
+                this.canvasCtx = this.canvas[0].getContext("2d");
+            } else {
+                log.debug("TT Audio Helper: Canvas element not found for " + this.uniqueid);
+                return;
+            }
 
             // Audio context
             this.audioContext = new AudioContext(

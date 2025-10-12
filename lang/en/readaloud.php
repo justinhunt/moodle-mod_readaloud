@@ -969,6 +969,7 @@ $string['incorrect'] = 'Incorrect';
 $string['incorrect_desc'] = "You did not say that correctly. Would you like to try again or continue?";
 $string['keeplistening'] = 'Keep Listening';
 $string['keeppracticing'] = 'Keep Practicing';
+$string['listen'] = 'Listen';
 $string['listenorpractice'] = 'You can continue listening or start practicing.';
 $string['nextsentence'] = 'Next Sentence';
 $string['noquestions'] = 'There are no questions to show.';

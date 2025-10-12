@@ -17,25 +17,22 @@
 {{!
     @template mod_readaloud/activity_header_inpage
 
-    Activity header for the Read Aloud activity.
-
-    Context variables required for this template:
-    * title - The title of the activity module
-    * description - The intro for the module
-    * completion - The completion info if available for the the module as acquired via the activity_information method
-    * additional_items - Any additional URL select navigation that needs to show up in the header
+    Inpage activity header for the Read Aloud activity.
 
     Example context (json):
-    {}
+    {
+        "backurl": "/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "activityname": "Read Aloud activity",
+        "M_PREVIEWINSTRUCTIONS_CONTAINER": "mod_readaloud_previewinstructions_cont",
+        "M_PREVIEWINSTRUCTIONS": "mod_readaloud_previewinstructions"
+    }
 }}
 
-<span id="maincontent"></span>
-
-{{#activityheader}}
 <div class="mod_readaloud-activity-header-inpage d-flex flex-column gap-4 mb-4">
     <div class="mod_readaloud-activity-header-main rounded d-flex flex-wrap align-items-center p-3 gap-3"
         data-for="page-activity-header">
-        <a href="{{backurl}}" class="backarrow d-inline-flex align-items-center">
+        <a href="{{backurl}}" class="backarrow d-inline-flex align-items-center" data-action="back-to-home">
             {{> mod_readaloud/backarrow}}
         </a>
         {{#passagepictureurl}}
@@ -53,4 +50,3 @@
         </div>
     </div>
 </div>
-{{/activityheader}}
