@@ -116,6 +116,13 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
       // Get the audio element
       var aplayer = this.controls.audioplayer[0];
 
+      // Unbind existing events to prevent duplicates when re-registering
+      this.controls.stopandplay.off('keypress click');
+      this.controls.lqm_quitbutton.off('click');
+      this.controls.lqm_continuebutton.off('click');
+      this.controls.lqm_forgetbutton.off('click');
+      this.controls.eachwordorspace.off('click');
+
       this.controls.stopandplay.on('keypress', function (e) {
         if (e.which === 32 || e.which === 13) { // Space or Enter
           var $btn = that.controls.stopandplay

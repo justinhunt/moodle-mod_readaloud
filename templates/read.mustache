@@ -1,0 +1,75 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/read
+
+    The Read Aloud read view (recording mode).
+
+    Example context (json):
+    {
+    }
+}}
+
+<section id="mod_readaloud_readmode" class="read-mode" role="region" aria-labelledby="read-title">
+    <h2 id="read-title" class="visually-hidden">{{#str}}mode_read, mod_readaloud{{/str}}</h2>
+
+    {{> mod_readaloud/activity_header_inpage}}
+
+    {{! Activity instructions if present }}
+    {{#instructions}}
+    <div class="activity-instructions p-3 mb-3">
+        {{{instructions}}}
+    </div>
+    {{/instructions}}
+
+    {{! The recorder - remove d-none class so it's visible }}
+    {{#recorder}}
+    <div class="{{M_RECORDING_CONTAINER}}">
+        <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}} {{M_CLASS_CENTER}}">
+            <div id="{{M_RECORDERID}}" class="{{M_CLASS_CENTER}}"
+                data-id="{{M_RECORDERID}}"
+                data-parent="{{wwwroot}}"
+                data-localloading="auto"
+                data-localloader="/mod/readaloud/poodlllocalloader.php"
+                data-cloudpoodllurl="{{cloudpoodllurl}}"
+                data-media="audio"
+                data-appid="{{M_COMPONENT}}"
+                data-owner="{{owner}}"
+                data-type="{{recorder_type}}"
+                data-width="{{recorder_width}}"
+                data-height="{{recorder_height}}"
+                data-updatecontrol="{{M_UPDATE_CONTROL}}"
+                data-timelimit="{{timelimit}}"
+                data-transcode="1"
+                data-transcribe="{{transcribe}}"
+                data-language="{{language}}"
+                data-expiredays="{{expiredays}}"
+                data-region="{{region}}"
+                data-fallback="warning"
+                data-speechevents="{{speechevents}}"
+                data-hints="{{hints}}"
+                data-token="{{token}}"
+                data-transcribevocab="{{transcribevocab}}">
+            </div>
+        </div>
+    </div>
+    {{/recorder}}
+
+    {{! The passage that user will read - initially hidden, shown when recording starts }}
+    {{> mod_readaloud/passagecontainer}}
+
+</section>

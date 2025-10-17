@@ -337,12 +337,10 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         });
 
         self.controls.results_finishbutton.on('click', function() {
-            //hide the results container and show the practice main stage
+            // Hide the results container and show the practice main stage.
             self.controls.resultscontainer.hide();
             self.controls.mainstage.show();
             self.controls.finishedbutton.trigger('click');
-            
-            
         });
 
         self.controls.results_playbutton.on('click', function() {
