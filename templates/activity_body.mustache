@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_readaloud/activity_header
+    @template mod_readaloud/activity_body
 
     The Read Aloud activity body.
 
@@ -24,14 +24,10 @@
     }
 }}
 
-{{> mod_readaloud/activity_header_inpage}}
+<!--{{> mod_readaloud/activity_header_inpage}}-->
 
 <div class="py-3">
     {{> mod_readaloud/home}}
-    {{> mod_readaloud/listen}}
-    {{> mod_readaloud/practicecontainer}}
-    {{> mod_readaloud/quizcontainer}}
-    {{> mod_readaloud/finalreport}}
     {{> mod_readaloud/footernav}}
 
     <!-- Hidden input for update control -->
@@ -44,40 +40,9 @@
         {{> mod_readaloud/recorder}}
     {{/recorder}}
 
-    {{#progress}}
-    <div id="{{M_HIDER}}" class="{{M_HIDER}}"></div>
-    <div id="{{M_PROGRESS_CONTAINER}}" class="{{M_PROGRESS_CONTAINER}}">
-        <h4>{{#str}} processing, mod_readaloud {{/str}}</h4>
-        <i class="fa fa-spinner fa-5x fa-spin"></i>
-    </div>
-    {{/progress}}
-
-    {{#wheretonext}}
-    <div class="{{M_WHERETONEXT_CONTAINER}} text-center">
-        {{#backtotop}}
-        <a class="{{M_CLASS}}_center btn btn-secondary {{M_BACKTOTOP}}"
-            id="{{M_BACKTOTOP}}"
-            href="{{backtotop_url}}">
-            {{#str}} backtotop, mod_readaloud {{/str}}
-        </a>
-        {{/backtotop}}
-
-        {{#nextactivity}}
-        <a class="{{M_CLASS}}_center btn btn-primary {{M_NEXTACTIVITY}}"
-            href="{{nextactivity_url}}">
-            {{nextactivity_label}}
-        </a>
-        {{/nextactivity}}
-    </div>
-    {{/wheretonext}}
-
     {{#landr}}
         {{>mod_readaloud/modalcontainer}}
     {{/landr}}
-
-    {{#smallreport}}
-        {{>mod_readaloud/smallreport}}
-    {{/smallreport}}
 
     {{>mod_readaloud/hiddenaudioplayer}}
 

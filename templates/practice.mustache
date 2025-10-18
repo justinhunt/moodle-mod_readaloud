@@ -1,3 +1,82 @@
-<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M4.58649 10.1469C4.31144 12.2525 4.14754 14.3711 4.09549 16.4939C6.97429 17.6964 9.73067 19.1732 12.3265 20.9039C14.9226 19.1732 17.6793 17.6964 20.5585 16.4939C20.5064 14.3711 20.3425 12.2525 20.0675 10.1469M20.0675 10.1469C20.9425 9.85292 21.8295 9.58092 22.7255 9.33292C19.4621 7.04517 15.9785 5.08881 12.3265 3.49292C8.67448 5.08914 5.19089 7.04584 1.92749 9.33392C2.82076 9.58055 3.7071 9.85165 4.58549 10.1469C7.25411 11.0441 9.84339 12.162 12.3265 13.4889C14.8092 12.162 17.3992 11.0441 20.0675 10.1469ZM7.07649 14.9999C7.2754 14.9999 7.46617 14.9209 7.60682 14.7802C7.74747 14.6396 7.82649 14.4488 7.82649 14.2499C7.82649 14.051 7.74747 13.8602 7.60682 13.7196C7.46617 13.5789 7.2754 13.4999 7.07649 13.4999C6.87758 13.4999 6.68681 13.5789 6.54616 13.7196C6.40551 13.8602 6.32649 14.051 6.32649 14.2499C6.32649 14.4488 6.40551 14.6396 6.54616 14.7802C6.68681 14.9209 6.87758 14.9999 7.07649 14.9999ZM7.07649 14.9999V11.3249C8.77322 10.2703 10.5258 9.30818 12.3265 8.44292M5.31949 19.9929C5.87746 19.4363 6.31993 18.7749 6.62145 18.0468C6.92298 17.3186 7.07762 16.538 7.07649 15.7499V14.2499" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/practice
+
+    The Read Aloud practice view.
+
+    Example context (json):
+    {
+    }
+}}
+
+<section id="mod_readaloud_practicemode" class="practice-mode" role="region" aria-labelledby="practice-title">
+    <h2 id="practice-title" class="visually-hidden">{{#str}} practice, mod_readaloud {{/str}}</h2>
+
+    {{> mod_readaloud/activity_header_inpage}}
+
+    <div id="{{M_PRACTICE_CONTAINER_WRAP}}" class="{{M_PRACTICE_CONTAINER_WRAP}}">
+        <div id="mod_readaloud_practice_inner">
+            <div id="mod_readaloud_practice_phraseplayer" class="d-flex justify-content-between align-items-center border p-3">
+                <div id="mod_readaloud_practice_target_phrase" class="{{#practice_rtl}}mod_readaloud_rtl{{/practice_rtl}} d-flex gap-1"></div>
+                <button id="mod_readaloud_practice_play" class="btn justify-content-center d-flex align-items-center">
+                    {{> mod_readaloud/play}}
+                </button>
+            </div>
+
+            <div id="mod_readaloud_practice_navigation" class="d-flex justify-content-between w-100" role="group" aria-label="Practice navigation">
+                <button id="mod_readaloud_practice_skipback" class="btn btn-link text-start" type="button" >
+                    <i class="fa-solid fa-chevron-left me-2" aria-hidden="true"></i>{{#str}} prev, mod_readaloud {{/str}}
+                </button>
+                <button id="mod_readaloud_practice_skipforward" class="btn btn-link text-end" type="button" >
+                    {{#str}} next, mod_readaloud {{/str}}<i class="fa-solid fa-chevron-right ms-2" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div id="mod_readaloud_practice_controls" class="controls d-flex flex-column align-items-center p-3 mt-4" role="group" aria-label="Practice controls">
+                <div id="mod_readaloud_practice_recorder">
+                    {{#practice}}
+                    {{> mod_readaloud/ttrecorder}}
+                    {{/practice}}
+                </div>
+                <button id="mod_readaloud_practice_finished" class="btn btn-lg btn-secondary d-none">
+                    <i class="fa fa-check"></i>
+                </button>
+            </div>
+            <audio id='mod_readaloud_practice_hiddenplayer' class="mod_readaloud_practice_hiddenplayer nomediaplugin nopoodll"></audio>
+            <audio id='mod_readaloud_practice_hiddenselfplayer' class="mod_readaloud_practice_hiddenselfplayer nomediaplugin nopoodll"></audio>
+        </div>
+        <div class="ra_practice_results_container" style="display: none">
+            {{> mod_readaloud/practiceresults}}
+        </div>
+    </div>
+    {{! Hidden passage - practice.js reads word elements from DOM to build sentences }}
+    <div class="d-none">
+        {{> mod_readaloud/passagecontainer}}
+    </div>
+</section>
+<!-- TEMP POSITION -->
+<!--<button id="mod_readaloud_practice_playself" class="btn btn-lg btn-secondary">
+            <i class="fa fa-repeat"></i>
+        </button>-->
+<!--<div>
+    <input type="checkbox" id="mod_readaloud_practice_shadow" name="shadow" value="false">
+    <label for="shadow">&nbsp;+
+        <i class="fa fa-microphone"></i>
+    </label>
+</div>-->
+

@@ -28,9 +28,9 @@
         <div id="quizquestion" class="quizquestion">
             {{{quizhtml}}}
         </div>
-        <div id="quizpassage" class="quizpassage mb-4 pt-4">
-            <p class="h6 fw-semibold mb-4">{{#str}} readingpassage, mod_readaloud {{/str}}</p>
-            {{{passagehtml}}}
-        </div>
+
+        {{#smallreport.thepassage}}
+            {{>mod_readaloud/studentreadingpassage}}
+        {{/smallreport.thepassage}}
     </div>
 </div>

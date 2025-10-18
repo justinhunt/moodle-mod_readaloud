@@ -1,11 +1,87 @@
-{{> mod_readaloud/passagecontainer}}
-<div class="controls d-flex flex-column align-items-center p-3 mt-4" role="group" aria-label="Audio controls">
-    {{#playbutton}}
-        {{> mod_readaloud/playbutton}}
-    {{/playbutton}}
-    <!-- Button trigger modal -->
-    <button type="button" id="mod_readaloud_hidelistenquitmodal" class="btn" data-bs-toggle="modal" data-bs-target="#mod_readaloud_listenquitmodal" style="display: none;">
-     hide quit listening modal
-    </button>
-    {{> mod_readaloud/listenquit_modal}}
-</div>
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/listen
+
+    The Read Aloud listen view.
+
+    Example context (json):
+    {
+        "activity_header_inpage": {
+            "backurl": "/mod/readaloud/view.php?id=42",
+            "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+            "activityname": "Read Aloud activity",
+            "M_PREVIEWINSTRUCTIONS_CONTAINER": "mod_readaloud_previewinstructions_cont",
+            "M_PREVIEWINSTRUCTIONS": "mod_readaloud_previewinstructions"
+        },
+        "passagecontainer": {
+            "passagesegments": [
+                {"text": "This is the first sentence.", "id": 1},
+                {"text": "This is the second sentence.", "id": 2}
+            ]
+        },
+        "playbutton": {
+            "name": "playbutton",
+            "label": "Play",
+            "pressed": "false"
+        },
+        "listenquit_modal": {
+            "id": "mod_readaloud_listenquitmodal",
+            "title": "Quit Listening?",
+            "body": "Are you sure you want to stop listening?",
+            "confirmbutton": {
+                "label": "Yes",
+                "action": "quitListening()"
+            },
+            "cancelbutton": {
+                "label": "Cancel",
+                "action": "closeModal()"
+            }
+        }
+    }
+}}
+
+<section id="mod_readaloud_listenmode" class="listen-mode" role="region" aria-labelledby="listen-title">
+    <h2 id="listen-title" class="visually-hidden">{{#str}} listen, mod_readaloud {{/str}}</h2>
+
+    {{> mod_readaloud/activity_header_inpage}}
+
+    {{> mod_readaloud/passagecontainer}}
+
+    <div class="controls d-flex flex-column align-items-center p-3 mt-4" role="group" aria-label="Audio controls">
+        {{#playbutton}}
+            {{> mod_readaloud/playbutton}}
+        {{/playbutton}}
+
+        <!-- Button trigger modal -->
+        <button
+            type="button"
+            id="mod_readaloud_hidelistenquitmodal"
+            class="btn"
+            data-bs-toggle="modal"
+            data-bs-target="#mod_readaloud_listenquitmodal"
+            style="display: none;"
+            aria-hidden="true"
+            tabindex="-1"
+            aria-controls="mod_readaloud_listenquitmodal"
+        >
+            hide quit listening modal
+        </button>
+
+        {{> mod_readaloud/listenquit_modal}}
+    </div>
+</section>

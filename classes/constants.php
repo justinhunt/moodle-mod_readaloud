@@ -221,7 +221,6 @@ class constants {
     const M_START_BUTTON = 'mod_readaloud_start_button';
     const M_UPDATE_CONTROL = 'mod_readaloud_update_control';
     const M_DRAFT_CONTROL = 'mod_readaloud_draft_control';
-    const M_PROGRESS_CONTAINER = 'mod_readaloud_progress_cont';
     const M_HIDER = 'mod_readaloud_hider';
     const M_STOP_BUTTON = 'mod_readaloud_stop_button';
     const M_WHERETONEXT_CONTAINER = 'mod_readaloud_wheretonext_cont';
@@ -383,6 +382,7 @@ class constants {
     const M_STOP_BTN = 'mod_readaloud_button_stop';
     const M_PLAY_BTN = 'mod_readaloud_button_play';
     const M_RECORD_BTN = 'mod_readaloud_button_record';
+    const M_MODE_VIEW = 'activityamddata.modeview';
 
     const M_PUSH_NONE =0;
     const M_PUSH_PASSAGE =1;

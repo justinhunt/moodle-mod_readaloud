@@ -244,7 +244,6 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $recopts['hider'] = constants::M_HIDER;
         $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
         $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
-        $recopts['progresscontainer'] = constants::M_PROGRESS_CONTAINER;
         $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
         $recopts['quizplaceholder'] = constants::M_QUIZ_PLACEHOLDER;
         $recopts['quizitemscontainer'] = constants::M_QUIZ_ITEMS_CONTAINER;
@@ -252,7 +251,6 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
         $recopts['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;
         $recopts['startquizbutton'] = constants::M_STARTQUIZ;
-        $recopts['wheretonextcontainer'] = constants::M_WHERETONEXT_CONTAINER;
 
         // First confirm we are authorised before we try to get the token.
         $config = get_config(constants::M_COMPONENT);
