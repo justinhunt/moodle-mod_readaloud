@@ -332,9 +332,13 @@ define(['jquery', 'core/log','core/notification', 'mod_readaloud/ttaudiohelper',
                 this.controls.icon_waiting.hide();
                 this.controls.icon_processing.hide();
 
+                //reset aria pressed
+                this.controls.recorderbutton.attr('aria-pressed','false');
+
                 if(!this.audio.isRecognizing){
                     if (this.audio.isRecording) {
                         this.controls.icon_stop.show();
+                        this.controls.recorderbutton.attr('aria-pressed','true');
                     } else if(this.audio.isWaiting) {
                         this.controls.icon_waiting.show();
                     } else {

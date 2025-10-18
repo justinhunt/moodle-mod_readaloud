@@ -179,11 +179,25 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
     pause_audio: function() {
       this.controls.hiddenplayer[0].pause();
+      this.controls.playbutton.attr('aria-pressed','false');
     },
 
     play_audio: function() {
       this.controls.hiddenplayer[0].play();
+      this.controls.playbutton.attr('aria-pressed','true');
     },
+
+    pause_selfaudio: function() {
+      this.controls.hiddenselfplayer[0].pause();
+      this.controls.playselfbutton.attr('aria-pressed','false');
+    },
+
+    play_selfaudio: function() {
+        this.controls.hiddenselfplayer[0].play();
+        this.controls.playselfbutton.attr('aria-pressed','true');
+    },
+
+
 
     get_audio_time: function() {
       return this.controls.hiddenplayer[0].currentTime;
@@ -262,8 +276,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
          //hide the self model player because when we show page again we dont want it enabled
          self.controls.playselfbutton.hide();
 
-
-          self.pause_audio();
+         self.pause_audio();
 
          self.controls.targetphrase.html(thesentence.split(/ /).map(function(e, i) {
             return '<div class="mod_readaloud_practice_target_word" data-index="' + i + '">' + e + '</div>';
@@ -282,10 +295,10 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       self.controls.playbutton.on('click', function(e) {
         if (!aplayer.paused) {
-          aplayer.pause();
+          self.pause_audio();
         }else {
           aplayer.currentTime = self.breaks[self.currentbreak].audiostarttime;
-          aplayer.play();
+          self.play_audio();
         }
       });
 
@@ -312,7 +325,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       aplayer.ontimeupdate = function() {
           var currentbreak = self.breaks[self.currentbreak];
           if (aplayer.currentTime >= currentbreak.audiotime) {
-              aplayer.pause();
+              self.pause_audio();
           }
       };
 
@@ -346,12 +359,13 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         self.controls.results_playbutton.on('click', function() {
             self.controls.playbutton.trigger('click');
         });
+
         self.controls.results_playselfbutton.on('click', function() {
             if (!self.controls.hiddenselfplayer[0].paused) {
-                self.controls.hiddenselfplayer[0].pause();
+                self.pause_selfaudio();
             }else {
                 self.controls.hiddenselfplayer.attr('src', self.ttr.audio.dataURI);
-                self.controls.hiddenselfplayer[0].play();
+                self.play_selfaudio();
             }
         });
 
