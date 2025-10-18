@@ -16,7 +16,12 @@ defined('MOODLE_INTERNAL') || die();
 $string['modulename'] = 'Poodll ReadAloud';
 $string['modulenameplural'] = 'Poodll ReadAlouds';
 $string['modulename_help'] =
-        'ReadAloud is an activity designed to assist teachers in evaluating their students reading fluency. Students read a passage, set by the teacher, into a microphone. Later the teacher can mark words as incorrect and get the student WCPM(Words Correct Per Minute) scores.';
+    'ReadAloud gives students practice and feedback reading passages aloud. It can be entirely automatically graded and helps teachers assess and understand their students second language reading ability. The process is as follows:
+1. Students LISTEN to a passage, set by the teacher.
+2. Students PRACTICE reading line by line using their microphone.
+3. Students READ the entire passage aloud.
+4. Students CHECK COMPREHENSION with a quiz (optional).
+5. Students and teachers can see the FEEDBACK and RESULTS.';
 $string['readaloudfieldset'] = 'Custom example fieldset';
 $string['readaloudname'] = 'Poodll ReadAloud';
 $string['readaloudname_help'] =
