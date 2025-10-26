@@ -32,20 +32,27 @@
         "backurl": "/mod/readaloud/view.php?id=42",
         "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
         "modeinstructions": "Read the passage aloud clearly and at a natural pace.",
+        "M_RECORDERID": "therecorderid",
+        "M_RECORDING_CONTAINER": "mod_readaloud_recording_cont",
+        "M_RECORDER_CONTAINER": "mod_readaloud_recorder_cont",
+        "M_UPDATE_CONTROL": "mod_readaloud_update_control",
+        "M_COMPONENT": "mod_readaloud",
         "recorder": {
-            "M_RECORDERID": "mod_readaloud_recorder",
-            "M_RECORDING_CONTAINER": "mod_readaloud_recording_cont",
-            "M_RECORDER_CONTAINER": "mod_readaloud_recorder_cont",
-            "M_CLASS_CENTER": "mod_readaloud_center",
-            "M_UPDATE_CONTROL": "mod_readaloud_update_control",
-            "M_COMPONENT": "mod_readaloud",
-            "recorder_type": "standard",
-            "recorder_width": "400",
-            "recorder_height": "300",
+            "wwwroot": "http://localhost:8001",
+            "cloudpoodllurl": "https://cloud.poodll.com",
+            "owner": "21232f297a57a5a743894a0e4a801fc3",
+            "recorder_type": "readaloud",
+            "recorder_width": "210",
+            "recorder_height": "150",
             "timelimit": "60",
             "transcribe": "1",
-            "language": "en-US",
-            "token": "abc123"
+            "language": "en-GB",
+            "expiredays": "365",
+            "region": "useast1",
+            "speechevents": "0",
+            "hints": "eyJhbGxvd2Vhcmx5ZXhpdCI6dHJ1ZSwianVzdHN0YXJ0IjoxLCJzaGFkb3dpbmciOjB9",
+            "token": "4e6032ccecc197cdf855c3335a97992d",
+            "transcribevocab": "6055f17554aa70e1574c8b46b88457329f425087"
         },
         "passagesegments": [
             {"text": "This is the first sentence.", "id": 1},
@@ -59,40 +66,41 @@
 
     {{> mod_readaloud/activity_header_inpage}}
 
-    {{! The recorder - remove d-none class so it's visible }}
-    {{#recorder}}
-    <div class="{{M_RECORDING_CONTAINER}}">
-        <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}} {{M_CLASS_CENTER}}">
-            <div id="{{M_RECORDERID}}" class="{{M_CLASS_CENTER}}"
-                data-id="{{M_RECORDERID}}"
-                data-parent="{{wwwroot}}"
-                data-localloading="auto"
-                data-localloader="/mod/readaloud/poodlllocalloader.php"
-                data-cloudpoodllurl="{{cloudpoodllurl}}"
-                data-media="audio"
-                data-appid="{{M_COMPONENT}}"
-                data-owner="{{owner}}"
-                data-type="{{recorder_type}}"
-                data-width="{{recorder_width}}"
-                data-height="{{recorder_height}}"
-                data-updatecontrol="{{M_UPDATE_CONTROL}}"
-                data-timelimit="{{timelimit}}"
-                data-transcode="1"
-                data-transcribe="{{transcribe}}"
-                data-language="{{language}}"
-                data-expiredays="{{expiredays}}"
-                data-region="{{region}}"
-                data-fallback="warning"
-                data-speechevents="{{speechevents}}"
-                data-hints="{{hints}}"
-                data-token="{{token}}"
-                data-transcribevocab="{{transcribevocab}}">
+    <div id="mod_readaloud_read_cont_wrap" class="mod_readaloud_read_cont_wrap">
+        <div id="mod_readaloud_read_inner">
+            {{! The passage that user will read - initially hidden, shown when recording starts }}
+            {{> mod_readaloud/passagecontainer}}
+            {{#recorder}}
+            <div class="{{M_RECORDING_CONTAINER}}">
+                <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}}">
+                    <div id="{{M_RECORDERID}}"
+                        data-id="{{M_RECORDERID}}"
+                        data-parent="{{wwwroot}}"
+                        data-localloading="auto"
+                        data-localloader="/mod/readaloud/poodlllocalloader.php"
+                        data-cloudpoodllurl="{{cloudpoodllurl}}"
+                        data-media="audio"
+                        data-appid="{{M_COMPONENT}}"
+                        data-owner="{{owner}}"
+                        data-type="{{recorder_type}}"
+                        data-width="{{recorder_width}}"
+                        data-height="{{recorder_height}}"
+                        data-updatecontrol="{{M_UPDATE_CONTROL}}"
+                        data-timelimit="{{timelimit}}"
+                        data-transcode="1"
+                        data-transcribe="{{transcribe}}"
+                        data-language="{{language}}"
+                        data-expiredays="{{expiredays}}"
+                        data-region="{{region}}"
+                        data-fallback="warning"
+                        data-speechevents="{{speechevents}}"
+                        data-hints="{{hints}}"
+                        data-token="{{token}}"
+                        data-transcribevocab="{{transcribevocab}}">
+                    </div>
+                </div>
             </div>
+            {{/recorder}}
         </div>
     </div>
-    {{/recorder}}
-
-    {{! The passage that user will read - initially hidden, shown when recording starts }}
-    {{> mod_readaloud/passagecontainer}}
-
 </section>

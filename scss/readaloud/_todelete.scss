@@ -38,14 +38,6 @@
     display: inline-block;
   }
   
-  .mod_readaloud_recording_cont {
-    margin: auto;
-    text-align: center;
-    width: 100%;
-    background-image: url([[pix:mod_readaloud|loader]]);
-    background-repeat: no-repeat;
-    background-position: center center;
-  }
   
   .mod_readaloud_recorder_instr_right,
   .mod_readaloud_recorder_instr_left {
@@ -153,38 +145,8 @@
   .mod_readaloud_instructions_cont {
     display: block;
   }
-  
-  .mod_readaloud_menuinstructions_const {
-    display: none;
-  }
-  
-  .mod_readaloud_activityinstructions_const {
-    display: none;
-  }
-  
-  .mod_readaloud_recording_cont {
-    display: none;
-  }
-  
-  .mod_readaloud_feedback_cont {
-    display: none;
-  }
-  
-  .mod_readaloud_wheretonext_cont {
-    display: none;
-  }
-  
-  .mod_readaloud_startmenu_cont {
-    display: none;
-  }
-  
-  .mod_readaloud_previewinstructions_cont {
-    display: none;
-  }
-  
-  .mod_readaloud_landrinstructions_cont {
-    display: none;
-  }
+ 
+
   
   div.mod_readaloud_feedback_cont.mod_readaloud_postattempt {
     display: block;
@@ -194,9 +156,7 @@
     display: block;
   }
   
-  .mod_readaloud_error_cont {
-    display: none;
-  }
+
   
   .mod_readaloud_error_cont h3 {
     color: red;
@@ -227,10 +187,7 @@
   .mod_readaloud_scorestable .table tr td {
     font-size: 1.2em;
   }
-  
-  .mod_readaloud_hidden_player {
-    display: none;
-  }
+
   
   .mod_readaloud_hidden_player_button {
     color: white;
@@ -472,26 +429,7 @@
     align-items: center;
     transition: none;
   }
-  /* .nav-label {
-    display: inline-block;
-    transition: transform 0.3s ease;
-    transform-origin: center;
-  } */
-  /* .nav-link:hover .nav-label,
-  .nav-link:focus .nav-label,
-  .nav-link:active .nav-label {
-    transform: scale(1.1);
-  } */
 
-  /* #mod_readaloud_button_stopandplay {
-    height: 40px;
-    border: 1px solid transparent;
-    display: none;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 20px;
-  } */
   
   .mod_readaloud_modal_target_word {
     margin-right: 10px;
@@ -529,13 +467,7 @@
   .mod_readaloud_grading_passageword {
     cursor: pointer;
   }
-  #mod_readaloud_landr_modalfinished {
-    display: none;
-  }
-  
-  #mod_readaloud_landr_modalplayself {
-    display: none;
-  }
+
   
   #mod_readaloud_modal_inner{
     text-align:center;
@@ -545,66 +477,6 @@
     height:64px;
   }
   
-  /*TT Recorder Styles */
-  // .mod_readaloud_ttrec_waveButtonContainer {
-  //   position: relative;
-  //   margin: auto;
-  //   border: 2px solid darkgray;
-  //   border-radius: 10px;
-  //   width: 200px;
-  // }
-  
-  // .mod_readaloud_ttrec_waveForm {
-  //   position: absolute;
-  //   left: 0;
-  //   right: 0;
-  //   top: 0;
-  //   bottom: 0;
-  //   background-color: white;
-  //   border-radius: 10px;
-  // }
-  
-  // .mod_readaloud_ttrec_waveButton {
-  //   width: 50px;
-  //   height: 50px;
-  //   border-radius: 50%;
-  //   box-shadow: inset 0px 1px 3px #ffccbd, inset 0px -1px 3px #9c282e;
-  //   color: #000;
-  //   font-size: 26px;
-  //   text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.3);
-  //   -webkit-appearance: none;
-  //   -moz-appearance: none;
-  //   position: absolute;
-  //   left: 0;
-  //   right: 0;
-  //   bottom: 0;
-  //   top: 0;
-  //   margin: auto;
-  //   color: white;
-  //   border: none;
-  //   outline: none;
-  //   display: flex;
-  //   align-items: center;
-  //   justify-content: center;
-  //   cursor: pointer;
-  //   background-color: red;
-  // }
-  
-  // .mod_readaloud_ttrec_waveButtonContainer .ttrec_ready {
-  //   background: green;
-  // }
-  
-  // .mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_waveButton.ttrec_waiting {
-  //   background: grey;
-  //   box-shadow: none;
-  // }
-  // .mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_waveForm.ttrec_waiting {
-  //   display: none;
-  // }
-  
-  // .mod_readaloud_ttrec_waveButtonContainer .ttrec_engaged {
-  //   background: #e52;
-  // }
   
   .mod_intro_box.mod_readaloud_center {
     max-width: 920px;
@@ -934,15 +806,6 @@
     margin: 5px;
   }
   
-  /* QUIZ styles from here */
-  .mod_readaloud_quiz_cont {
-    display: none;
-    margin: auto;
-  }
-  
-  // .mod_readaloud_quiz_cont.mod_readaloud_compact {
-  //   max-width: 750px;
-  // }
   
   #mod_readaloud_progress_cont {
     display: none;
@@ -2704,9 +2567,9 @@
       width: 70px;
       left: 0;
   }
-  #mod_readaloud_menubuttons_cont.closed .nav-text-group {
-      display: none;
-  }
+  // #mod_readaloud_menubuttons_cont.closed .nav-text-group {
+  //     display: none;
+  // }
   #mod_readaloud_menubuttons_cont.closed .nav-link:hover .nav-text-group {
       align-items: center;
       background-color: #FFF;
@@ -2731,7 +2594,7 @@
       width: 100%;
   }
   
-  #mod_readaloud_menubuttons_cont:not(.closed) a.nav-link::before {
-      display: none;
-  }
+  // #mod_readaloud_menubuttons_cont:not(.closed) a.nav-link::before {
+  //     display: none;
+  // }
  

@@ -94,7 +94,8 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 dd.setuppractice();
 
                 // Init recorder and html and events.
-                dd.setup_recorder();
+                // NOTE: setup_recorder() is now called dynamically when read/shadow template is loaded
+                // dd.setup_recorder();
                 dd.process_html(dd.activitydata);
 
                 dd.register_events();
@@ -946,6 +947,11 @@ renderMode: function (mode, extraContext) {
         if (mode === 'practice') {
             // Now call practice.init() with the template DOM elements available.
             practice.init(dd.practice_opts);
+        }
+        if (mode === 'read' || mode === 'shadow') {
+            // Initialise the Cloud Poodll recorder after the template is rendered.
+            // The recorder div is now in the DOM, so we can initialise it.
+            dd.setup_recorder();
         }
         if (mode === 'quiz') { /* quizhelper already init'd in setupquiz; it draws into quizcontainer */ }
 
