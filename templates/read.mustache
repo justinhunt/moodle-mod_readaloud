@@ -70,15 +70,16 @@
 
     <div id="mod_readaloud_read_cont_wrap" class="mod_readaloud_read_cont_wrap">
         <div id="mod_readaloud_read_inner">
-            {{! The passage that user will read - initially hidden, shown when recording starts }}
+
             {{> mod_readaloud/passagecontainer}}
+
             {{#recorder}}
             <div class="{{M_RECORDING_CONTAINER}}">
-                <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}}">
+                <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}} d-flex justify-content-center align-items-center">
                     <div id="{{M_RECORDERID}}"
                         data-id="{{M_RECORDERID}}"
                         data-parent="{{wwwroot}}"
-                        data-localloading="auto"
+                        data-localloading="true"
                         data-localloader="/mod/readaloud/poodlllocalloader.php"
                         data-cloudpoodllurl="{{cloudpoodllurl}}"
                         data-media="audio"
