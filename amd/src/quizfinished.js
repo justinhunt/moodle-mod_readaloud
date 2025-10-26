@@ -27,32 +27,38 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
     },
 
     register_controls: function(){
-        this.controls.quizfinishedcontainer = $('.mod_readaloud_quiz_finished');
-        this.controls.quizitemscontainer = $('.mod_readaloud_quiz_items_cont');
+        this.controls.quizfinishedcontainer = $('#mod_readaloud_quiz_finished');
+        this.controls.quizitemscontainer = $('#mod_readaloud_quiz_items_cont');
+        this.controls.togglemodalbutton = $('#mod_readaloud_showquiztryagainmodal');
     },
 
     register_events: function(){
         var that = this;
-        $('body').on('click','.mod_readaloud_reattemptquiz_button',function(e) {
+
+        $('body').on('click','.mod_readaloud_quiztryagainmodal .mrq_doreattempt',function(e) {
 
             e.preventDefault();
+            log.debug('Re-attempting quiz');
+            that.controls.quizfinishedcontainer.hide();
+            that.controls.quizitemscontainer.show();
+            // Hide the modal by simulating a click on the toggle button
+            var togglemodalbutton = $('#mod_readaloud_showquiztryagainmodal');
+            togglemodalbutton.click();
 
-            //if its a reattempt, confirm and proceed
-            ModalFactory.create({
-                type: ModalFactory.types.SAVE_CANCEL,
-                title: that.strings.reattempttitle,
-                body: that.strings.reattemptbody
-            })
-            .then(function(modal) {
-                modal.setSaveButtonText(that.strings.reattempt);
-                var root = modal.getRoot();
-                root.on(ModalEvents.save, function() {
-                    that.controls.quizfinishedcontainer.hide();
-                    that.controls.quizitemscontainer.show();
-                });
-                modal.show();
-            });
-      });
+
+        });
+
+        $('body').on('click','.mod_readaloud_quiztryagainmodal .mrq_docancelreattempt',function(e) {
+
+            e.preventDefault();
+            log.debug('Not Re-attempting quiz');
+            // Do nothing.. just close the modal by simulating an esc keypress.
+            // Hide the modal by simulating a click on the toggle button
+            // Hide the modal by simulating a click on the toggle button
+            var togglemodalbutton = $('#mod_readaloud_showquiztryagainmodal');
+            togglemodalbutton.click();
+
+        });
 
 
       $('body').on('click','.mod_readaloud_finishedanswerdetailslink',function(e) {

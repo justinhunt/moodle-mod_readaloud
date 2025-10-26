@@ -843,39 +843,6 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
-     * Return the pluginfile URL of the passage picture.
-     *
-     * @param stdClass $moduleinstance
-     * @return string
-     */
-    public function get_passage_picture($moduleinstance, $modulecontext) {
-        $fs = get_file_storage();
-        $files = $fs->get_area_files(
-            $modulecontext->id,
-            'mod_readaloud',
-            'passagepicture',
-            $moduleinstance->id,
-            'timemodified',
-            false
-        );
-        if (empty($files)) {
-            return '';
-        }
-        /** @var \stored_file $file */
-        $file = reset($files);
-
-        // Build and return the pluginfile URL.
-        return moodle_url::make_pluginfile_url(
-            $modulecontext->id,
-            'mod_readaloud',
-            'passagepicture',
-            $moduleinstance->id,
-            $file->get_filepath(),
-            $file->get_filename()
-        )->out(false);
-    }
-
-    /**
      * Get all constants defined in the constants class.
      *
      * @return array Associative array of constant names and their values
@@ -1117,7 +1084,7 @@ class renderer extends \plugin_renderer_base {
         $header = $this->page->activityheader;
         $corecourserenderer = $this->page->get_renderer('core_course');
         $headercontent = $header->export_for_template($corecourserenderer);
-        $passagepictureurl = $this->get_passage_picture($moduleinstance, $modulecontext);
+        $passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
         $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
 
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
@@ -1307,6 +1274,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         // Build the full template context FIRST (before fetching AMD data).
         $templatecontext = array_merge([
             'activityheader' => $activityheader,
+            'activityname' => $moduleinstance->name,
             'attempts' => $attempts,
             'backurl' => (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false),
             'canattempt' => $modevisibility['canattempt'],

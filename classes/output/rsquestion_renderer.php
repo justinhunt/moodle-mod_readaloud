@@ -164,6 +164,10 @@ class rsquestion_renderer extends \plugin_renderer_base {
             $finisheddata->canreattemptquiz = true;
             // TO DO implement this  .. this field not exist
             //$moduleinstance->canreattemptquiz ? true : false;
+            $modulecontext = \context_module::instance($cm->id);
+            $finisheddata->activityname = format_string($moduleinstance->name);
+            $finisheddata->backurl = (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false);
+            $finisheddata->passagepictureurl = utils::get_passage_picture($moduleinstance,  $modulecontext);
             $finishedcontents = $this->render_from_template(constants::M_COMPONENT . '/quizfinished', $finisheddata);
         } else {
             $finishedcontents = '';

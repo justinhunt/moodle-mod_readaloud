@@ -406,7 +406,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   font-size: 0.8em;
   left: 50%;
   position: absolute;
-  top: -1.2em;
+  top: -0.9em;
   transform: translateX(-50%);
 }
 #mod_readaloud_practice_cont_wrap .ra_practice_results_container .mod_readaloud_practice_target_word_correct::after {

@@ -37,14 +37,14 @@
         </a>
         {{#passagepictureurl}}
         <div class="mod_readaloud-activity-picture">
-            <img src="{{passagepictureurl}}" alt="">
+            <img src="{{passagepictureurl}}" alt=""></img>
         </div>
         {{/passagepictureurl}}
         <h2 class="activity-name h3 mb-0">{{activityname}}</h2>
         <div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
             <div class="box">
                 <div class="{{M_PREVIEWINSTRUCTIONS}}">
-                    {{#str}} previewhelp, mod_readaloud {{/str}}
+                    {{$instructions}} ** default instructions ** {{/instructions}}
                 </div>
             </div>
         </div>

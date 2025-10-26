@@ -58,7 +58,9 @@
 <section id="mod_readaloud_listenmode" class="listen-mode" role="region" aria-labelledby="listen-title">
     <h2 id="listen-title" class="visually-hidden">{{#str}} listen, mod_readaloud {{/str}}</h2>
 
-    {{> mod_readaloud/activity_header_inpage}}
+    {{< mod_readaloud/activity_header_inpage}}
+     {{$instructions}}{{#str}} previewhelp, mod_readaloud {{/str}}{{/instructions}}
+    {{/ mod_readaloud/activity_header_inpage}}
 
     {{> mod_readaloud/passagecontainer}}
 

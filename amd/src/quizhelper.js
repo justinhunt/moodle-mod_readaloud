@@ -48,6 +48,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         this.wwwroot = activitydata.wwwroot;
         this.useanimatecss  = activitydata.useanimatecss;
         this.showqreview  = activitydata.showqreview;
+        this.backurl = activitydata.backurl;
+        this.passagepictureurl = activitydata.passagepictureurl;
+        this.activityname = activitydata.activityname;
         
   
 
@@ -237,6 +240,12 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
             //load the results into the quiz finished container
             resultpromise.then(function(jsonresults){
                 var results = JSON.parse(jsonresults);
+
+                //add the activity name and picture url and back url
+                results.backurl = dd.backurl;
+                results.passagepictureurl = dd.passagepictureurl;
+                results.activityname = dd.activityname;
+
                 log.debug(results);
                 templates.render('mod_readaloud/quizfinished', results).then(
                   function(html,js){

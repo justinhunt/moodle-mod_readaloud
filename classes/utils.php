@@ -3849,6 +3849,39 @@ class utils {
         }
     }
 
+    /**
+     * Return the pluginfile URL of the passage picture.
+     *
+     * @param stdClass $moduleinstance
+     * @return string
+     */
+    public static function get_passage_picture($moduleinstance, $modulecontext) {
+        $fs = get_file_storage();
+        $files = $fs->get_area_files(
+            $modulecontext->id,
+            'mod_readaloud',
+            'passagepicture',
+            $moduleinstance->id,
+            'timemodified',
+            false
+        );
+        if (empty($files)) {
+            return '';
+        }
+        /** @var \stored_file $file */
+        $file = reset($files);
+
+        // Build and return the pluginfile URL.
+        return \moodle_url::make_pluginfile_url(
+            $modulecontext->id,
+            'mod_readaloud',
+            'passagepicture',
+            $moduleinstance->id,
+            $file->get_filepath(),
+            $file->get_filename()
+        )->out(false);
+    }
+
 
     public static function do_mb_str_split($string, $splitlength = 1, $encoding = null) {
         // for greater than PHP 7.4

@@ -1,3 +1,7 @@
+{{< mod_readaloud/activity_header_inpage}}
+        {{$instructions}}{{#str}} quizfinishedhelp, mod_readaloud {{/str}}{{/instructions}}
+{{/ mod_readaloud/activity_header_inpage}}
+
 <div class="quizrating d-flex align-items-center justify-content-between no-wrap mb-4">
     <h6 class="fw-semibold mb-0">{{#str}}quizresults, mod_readaloud{{/str}}</h6>
     <div class="mod_readaloud_quizresult_rating">
@@ -19,9 +23,20 @@
 
 {{#canreattemptquiz}}
 <div class="mod_readaloud_quizfinalscore d-flex align-items-center justify-content-between no-wrap my-4 m-3">
-    <span>Want to try to improve your score?</span>
-    <button class="mod_readaloud_reattemptquiz_button btn btn-primary">
-    {{#str}}reattempt, mod_readaloud{{/str}}</button>
+    <span>{{#str}}improveyourscore, mod_readaloud{{/str}}</span>
+    <!-- Button trigger modal -->
+    <button
+            type="button"
+            id="mod_readaloud_showquiztryagainmodal"
+            class="mod_readaloud_reattemptquiz_button btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#mod_readaloud_quiztryagainmodal"
+            aria-controls="mod_readaloud_quiztryagainmodal"
+    >
+        {{#str}}reattempt, mod_readaloud{{/str}}
+    </button>
+
+    {{> mod_readaloud/quiztryagain_modal}}
 </div>
 {{/canreattemptquiz}}
 

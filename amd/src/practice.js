@@ -183,8 +183,11 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
     },
 
     play_audio: function() {
-      this.controls.hiddenplayer[0].play();
-      this.controls.playbutton.attr('aria-pressed','true');
+      var self = this;
+      var aplayer = self.controls.hiddenplayer[0];
+      aplayer.currentTime = self.breaks[self.currentbreak].audiostarttime;
+      aplayer.play();
+      self.controls.playbutton.attr('aria-pressed','true');
     },
 
     pause_selfaudio: function() {
@@ -297,7 +300,6 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         if (!aplayer.paused) {
           self.pause_audio();
         }else {
-          aplayer.currentTime = self.breaks[self.currentbreak].audiostarttime;
           self.play_audio();
         }
       });
@@ -308,6 +310,10 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
       self.controls.skipforwardbutton.on('click', function(e) {
             self.move_break(1);
+            // Automatically play audio after 0.3s.
+            setTimeout(function() {
+                  self.play_audio();
+            }, 300);
       });
 
       self.controls.skipbackbutton.on('click', function(e) {

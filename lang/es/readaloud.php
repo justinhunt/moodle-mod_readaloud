@@ -16,4 +16,4 @@ defined('MOODLE_INTERNAL') || die();
 $string['previewhelp'] = "Escucha atentamente la lectura. No es necesario leer en voz alta.";
 $string['normalhelp'] = "Leer el texto en voz alta, leer a una velocidad natural y cómoda.";
 $string['shadowhelp'] = "Leer el texto en voz alta junto con el tutor, se recomienda utilizar audífonos.";
-$string['landrhelp'] = "Escuchar atentamente la lectura. Después repite cada oración con el propósito de verificar la pronunciación.";
+$string['practicehelp'] = "Escuchar atentamente la lectura. Después repite cada oración con el propósito de verificar la pronunciación.";

@@ -27,7 +27,9 @@
 <section id="mod_readaloud_practicemode" class="practice-mode" role="region" aria-labelledby="practice-title">
     <h2 id="practice-title" class="visually-hidden">{{#str}} practice, mod_readaloud {{/str}}</h2>
 
-    {{> mod_readaloud/activity_header_inpage}}
+    {{< mod_readaloud/activity_header_inpage}}
+        {{$instructions}}{{#str}} practicehelp, mod_readaloud {{/str}}{{/instructions}}
+    {{/ mod_readaloud/activity_header_inpage}}
 
     <div id="{{M_PRACTICE_CONTAINER_WRAP}}" class="{{M_PRACTICE_CONTAINER_WRAP}}">
         <div id="mod_readaloud_practice_inner">
