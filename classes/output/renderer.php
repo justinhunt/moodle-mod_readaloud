@@ -1307,6 +1307,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         // Build the full template context FIRST (before fetching AMD data).
         $templatecontext = array_merge([
             'activityheader' => $activityheader,
+            'activityname' => $moduleinstance->name,
             'attempts' => $attempts,
             'backurl' => (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false),
             'canattempt' => $modevisibility['canattempt'],
@@ -1319,6 +1320,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'hasbody' => true, // TEMP.
             'headercontent' => $headercontent,
             'instructions' => $instructions,
+            'landrhelp' => get_string('landrhelp', constants::M_COMPONENT),
             'modelaudiohtml' => $modelaudiohtml,
             'mode' => null,
             'modequiz' => $modequiz,
@@ -1326,6 +1328,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'passagehtml' => isset($passagehtml) ? $passagehtml : null,
             'passagepictureurl' => $passagepictureurl,
             'playbutton' => $this->get_playbutton(),
+            'previewhelp' => get_string('previewhelp', constants::M_COMPONENT),
             'problembox' => $problembox,
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => isset($quizhtml) ? $quizhtml : null,

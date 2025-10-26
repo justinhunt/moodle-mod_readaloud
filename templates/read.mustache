@@ -18,9 +18,39 @@
     @template mod_readaloud/read
 
     The Read Aloud read view (recording mode).
+    Displays the activity header with custom activity instructions and full passage recording interface.
+
+    Context variables required for this template:
+    * backurl - URL to return to home/menu
+    * passagepictureurl - URL to passage picture (optional)
+    * modeinstructions - Custom activity instructions (from welcome field)
+    * recorder - Recorder component with all configuration
+    * passagesegments - Array of passage text segments
 
     Example context (json):
     {
+        "backurl": "/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "modeinstructions": "Read the passage aloud clearly and at a natural pace.",
+        "recorder": {
+            "M_RECORDERID": "mod_readaloud_recorder",
+            "M_RECORDING_CONTAINER": "mod_readaloud_recording_cont",
+            "M_RECORDER_CONTAINER": "mod_readaloud_recorder_cont",
+            "M_CLASS_CENTER": "mod_readaloud_center",
+            "M_UPDATE_CONTROL": "mod_readaloud_update_control",
+            "M_COMPONENT": "mod_readaloud",
+            "recorder_type": "standard",
+            "recorder_width": "400",
+            "recorder_height": "300",
+            "timelimit": "60",
+            "transcribe": "1",
+            "language": "en-US",
+            "token": "abc123"
+        },
+        "passagesegments": [
+            {"text": "This is the first sentence.", "id": 1},
+            {"text": "This is the second sentence.", "id": 2}
+        ]
     }
 }}
 
@@ -28,13 +58,6 @@
     <h2 id="read-title" class="visually-hidden">{{#str}}mode_read, mod_readaloud{{/str}}</h2>
 
     {{> mod_readaloud/activity_header_inpage}}
-
-    {{! Activity instructions if present }}
-    {{#instructions}}
-    <div class="activity-instructions p-3 mb-3">
-        {{{instructions}}}
-    </div>
-    {{/instructions}}
 
     {{! The recorder - remove d-none class so it's visible }}
     {{#recorder}}

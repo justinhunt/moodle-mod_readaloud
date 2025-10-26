@@ -18,13 +18,29 @@
     @template mod_readaloud/activity_body
 
     The Read Aloud activity body.
+    Contains the home/menu navigation, hidden inputs for JS configuration,
+    recorder components, and dynamic mode view container.
+
+    Context variables required for this template:
+    * M_UPDATE_CONTROL - CSS class/ID for update control input
+    * activityamddata - AMD/JS configuration data including widgetid and jsonstring
+    * recorder - Recorder component data (optional)
+    * landr - Listen and repeat modal container flag (optional)
 
     Example context (json):
     {
+        "M_UPDATE_CONTROL": "mod_readaloud_update_control",
+        "activityamddata": {
+            "widgetid": "12345",
+            "jsonstring": "{\"templatecontext\":{...},\"recorderid\":\"...\"}"
+        },
+        "recorder": {
+            "recorderid": "mod_readaloud_recorder",
+            "skin": "standard"
+        },
+        "landr": true
     }
 }}
-
-<!--{{> mod_readaloud/activity_header_inpage}}-->
 
 <div class="py-3">
     {{> mod_readaloud/home}}
@@ -46,31 +62,7 @@
 
     {{>mod_readaloud/hiddenaudioplayer}}
 
-    <!--<div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
-        <div class="box">
-            <div class="{{M_CLASS}}_center {{M_PREVIEWINSTRUCTIONS}}">
-                {{#str}} previewhelp, mod_readaloud {{/str}}
-            </div>
-        </div>
-    </div>
-
-    <div id="{{M_LANDRINSTRUCTIONS_CONTAINER}}" class="{{M_LANDRINSTRUCTIONS_CONTAINER}}">
-        <div class="box">
-            <div class="{{M_CLASS}}_center {{M_LANDRINSTRUCTIONS}}">
-                {{#str}} landrhelp, mod_readaloud {{/str}}
-            </div>
-        </div>
-    </div>
-
-    {{#instructions}}
-    <div id="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}" class="{{M_ACTIVITYINSTRUCTIONS_CONTAINER}}">
-        <div class="box py-3 generalbox">
-            <div class="{{M_CLASS}}_center {{M_INSTRUCTIONS}}">
-                {{{instructions}}}
-            </div>
-        </div>
-    </div>
-    {{/instructions}}
+    <!--
 
     {{#feedback}}
     <div id="{{M_FEEDBACK_CONTAINER}}" class="{{M_FEEDBACK_CONTAINER}}">

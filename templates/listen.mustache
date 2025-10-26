@@ -17,23 +17,25 @@
 {{!
     @template mod_readaloud/listen
 
-    The Read Aloud listen view.
+    The Read Aloud listen view (preview mode).
+    Displays the activity header with preview instructions and allows listening to model audio.
+
+    Context variables required for this template:
+    * backurl - URL to return to home/menu
+    * passagepictureurl - URL to passage picture (optional)
+    * modeinstructions - Preview/listen mode instructions text
+    * playbutton - Play button configuration
+    * passagesegments - Array of passage text segments
 
     Example context (json):
     {
-        "activity_header_inpage": {
-            "backurl": "/mod/readaloud/view.php?id=42",
-            "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
-            "activityname": "Read Aloud activity",
-            "M_PREVIEWINSTRUCTIONS_CONTAINER": "mod_readaloud_previewinstructions_cont",
-            "M_PREVIEWINSTRUCTIONS": "mod_readaloud_previewinstructions"
-        },
-        "passagecontainer": {
-            "passagesegments": [
-                {"text": "This is the first sentence.", "id": 1},
-                {"text": "This is the second sentence.", "id": 2}
-            ]
-        },
+        "backurl": "/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "modeinstructions": "Listen to a speaker read the passage aloud. You do not need to read aloud.",
+        "passagesegments": [
+            {"text": "This is the first sentence.", "id": 1},
+            {"text": "This is the second sentence.", "id": 2}
+        ],
         "playbutton": {
             "name": "playbutton",
             "label": "Play",
