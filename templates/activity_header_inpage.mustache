@@ -18,19 +18,18 @@
     @template mod_readaloud/activity_header_inpage
 
     Inpage activity header for the Read Aloud activity.
+    Note: Activity name is NOT shown here as it's already in the page header.
 
     Example context (json):
     {
         "backurl": "/mod/readaloud/view.php?id=42",
         "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
-        "activityname": "Read Aloud activity",
-        "M_PREVIEWINSTRUCTIONS_CONTAINER": "mod_readaloud_previewinstructions_cont",
-        "M_PREVIEWINSTRUCTIONS": "mod_readaloud_previewinstructions"
+        "modeinstructions": "Listen to a speaker read the passage aloud..."
     }
 }}
 
 <div class="mod_readaloud-activity-header-inpage d-flex flex-column gap-4 mb-4">
-    <div class="mod_readaloud-activity-header-main rounded d-flex flex-wrap align-items-center p-3 gap-3"
+    <div class="mod_readaloud-activity-header-main rounded d-flex flex-nowrap align-items-center p-3 gap-3"
         data-for="page-activity-header">
         <a href="{{backurl}}" class="backarrow d-inline-flex align-items-center" data-action="back-to-home">
             {{> mod_readaloud/backarrow}}
@@ -40,13 +39,9 @@
             <img src="{{passagepictureurl}}" alt=""></img>
         </div>
         {{/passagepictureurl}}
-        <h2 class="activity-name h3 mb-0">{{activityname}}</h2>
-        <div id="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}" class="{{M_PREVIEWINSTRUCTIONS_CONTAINER}}">
-            <div class="box">
-                <div class="{{M_PREVIEWINSTRUCTIONS}}">
-                    {{$instructions}} ** default instructions ** {{/instructions}}
-                </div>
-            </div>
+
+        <div class="mod_readaloud_instructions">
+            {{$instructions}} ** default instructions ** {{/instructions}}
         </div>
     </div>
 </div>

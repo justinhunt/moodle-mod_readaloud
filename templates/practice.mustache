@@ -17,10 +17,33 @@
 {{!
     @template mod_readaloud/practice
 
-    The Read Aloud practice view.
+    The Read Aloud practice view (listen and repeat mode).
+    Displays the activity header with practice instructions and phrase-by-phrase recording interface.
+
+    Context variables required for this template:
+    * backurl - URL to return to home/menu
+    * passagepictureurl - URL to passage picture (optional)
+    * modeinstructions - Practice/listen and repeat mode instructions text
+    * M_PRACTICE_CONTAINER_WRAP - CSS class for practice container
+    * practice - Practice recorder configuration
+    * practice_rtl - RTL flag for right-to-left languages
+    * passagesegments - Array of passage text segments
 
     Example context (json):
     {
+        "backurl": "/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "modeinstructions": "Listen to the speaker. Repeat after each sentence and check your pronunciation.",
+        "M_PRACTICE_CONTAINER_WRAP": "mod_readaloud_practice_cont_wrap",
+        "practice": {
+            "recorderid": "mod_readaloud_practice_recorder",
+            "skin": "bmr"
+        },
+        "practice_rtl": false,
+        "passagesegments": [
+            {"text": "This is the first sentence.", "id": 1},
+            {"text": "This is the second sentence.", "id": 2}
+        ]
     }
 }}
 

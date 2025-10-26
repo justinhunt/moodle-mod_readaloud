@@ -914,6 +914,15 @@ renderMode: function (mode, extraContext) {
     var templatecontext = $.extend(true, {}, dd.activitydata.templatecontext || {}, { mode: mode }, extraContext || {});
     var $home = dd.controls.homecontainer;
     var $view = dd.controls.modeview;
+    var modeInstructions = {
+        'listen': templatecontext.previewhelp,
+        'practice': templatecontext.landrhelp,
+        'read': templatecontext.instructions,
+        'shadow': templatecontext.instructions,
+        'quiz': null,
+        'report': null
+    };
+    templatecontext.modeinstructions = modeInstructions[mode] || null;
 
     Templates.renderForPromise(template, templatecontext).then(function (out) {
         $view.html(out.html);
