@@ -57,7 +57,9 @@
 <section id="mod_readaloud_readmode" class="read-mode" role="region" aria-labelledby="read-title">
     <h2 id="read-title" class="visually-hidden">{{#str}}mode_read, mod_readaloud{{/str}}</h2>
 
-    {{> mod_readaloud/activity_header_inpage}}
+    {{< mod_readaloud/activity_header_inpage}}
+        {{$instructions}}{{#str}} readhelp, mod_readaloud {{/str}}{{/instructions}}
+    {{/ mod_readaloud/activity_header_inpage}}
 
     {{! The recorder - remove d-none class so it's visible }}
     {{#recorder}}

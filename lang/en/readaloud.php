@@ -469,7 +469,7 @@ $string['progresschart'] = 'Progress Chart';
 $string['chartexplainer'] = 'The chart below shows your progress over time in reading this passage.';
 
 $string['previewhelp'] = "Listen to a speaker read the passage aloud. You do not need to read aloud.";
-$string['normalhelp'] = "Read the passage aloud. Speak at a speed that is natural for you.";
+$string['readhelp'] = "Read the passage aloud. Speak at a speed that is natural for you.";
 $string['shadowhelp'] = "Read the passage aloud, along with the teacher. You should wear headphones.";
 $string['practicehelp'] = "Listen to the speaker. Repeat after each sentence and check your pronunciation.";
 $string['quizhelp'] = "Read the passage silently. Then answer the questions about the passage.";
