@@ -656,6 +656,42 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   padding: 0.2rem;
 }
 
+#mod_readaloud_readreport #mod_readaloud_quiztime_container {
+  background: #513DEB;
+}
+#mod_readaloud_readreport #mod_readaloud_quiztime_container #quiztime_title_container {
+  color: #FFFFFF;
+}
+#mod_readaloud_readreport #mod_readaloud_quiztime_container #quiztime_title_container h5 {
+  color: inherit;
+  font-weight: 600;
+}
+#mod_readaloud_readreport #mod_readaloud_quiztime_container button.mod_readaloud_takequiz_button,
+#mod_readaloud_readreport #mod_readaloud_quiztime_container button.mod_readaloud_quizviewreport_button {
+  background-color: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #513DEB;
+  margin: 0.25rem;
+  min-width: 110px;
+  white-space: nowrap;
+}
+#mod_readaloud_readreport .mod_readaloud_readingpassage_section button[data-action=readagain] {
+  background-color: #513DEB;
+  border-color: #513DEB;
+  color: #FFFFFF;
+  margin: 0.25rem;
+  min-width: 110px;
+  white-space: nowrap;
+}
+#mod_readaloud_readreport button.mod_readaloud_takequiz_button {
+  background-color: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #513DEB;
+  margin: 0.25rem;
+  min-width: 110px;
+  white-space: nowrap;
+}
+
 body.path-mod-readaloud #page-content {
   font-family: "Raleway", -apple-system, BlinkMacSystemFont, Helvetica, Arial, Lucida, sans-serif;
   font-size: 0.875rem;
