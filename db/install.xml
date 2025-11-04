@@ -105,6 +105,10 @@
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
+            <INDEXES>
+                <INDEX NAME="userid_idx" UNIQUE="false" FIELDS="userid"/>
+                <INDEX NAME="readaloudid_idx" UNIQUE="false" FIELDS="readaloudid"/>
+            </INDEXES>
         </TABLE>
         <TABLE NAME="readaloud_ai_result" COMMENT="ai scoring data for readaloud">
             <FIELDS>
@@ -130,6 +134,11 @@
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
             </KEYS>
+            <INDEXES>
+                <INDEX NAME="attemptid_idx" UNIQUE="true" FIELDS="attemptid"/>
+                <INDEX NAME="readaloudid_idx" UNIQUE="false" FIELDS="readaloudid"/>
+                <INDEX NAME="courseid_idx" UNIQUE="false" FIELDS="courseid"/>                -->
+            </INDEXES>
         </TABLE>
         <TABLE NAME="readaloud_rsquestions" COMMENT="readaloud questions table">
             <FIELDS>
