@@ -817,6 +817,21 @@ function xmldb_readaloud_upgrade($oldversion)
     if ($oldversion < 2025110400) {
         $dbman = $DB->get_manager();
 
+        // Search for duplicates.
+        $sql = "SELECT DISTINCT t1.id
+                  FROM {".constants::M_AITABLE."} t1
+                  JOIN {". constants::M_AITABLE ."} t2
+                    ON t1.attemptid = t2.attemptid
+                   AND t1.id < t2.id";
+        $duplicates = $DB->get_records_sql($sql);
+
+        // Remove duplicates.
+        if ($duplicates && !empty($duplicates)) {
+            $ids = array_keys($duplicates);
+            list($insql, $params) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+            $DB->delete_records_select(constants::M_AITABLE, "id $insql", $params);
+        }
+
         // Readaloud_ai_result indexes.
         $aitable = new xmldb_table(constants::M_AITABLE);
 
