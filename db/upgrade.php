@@ -814,32 +814,48 @@ function xmldb_readaloud_upgrade($oldversion)
     }
 
 
-    if ($oldversion < 2025110400) {
-        $dbman = $DB->get_manager();
+    if ($oldversion < 2025110401) {
 
         // Search for duplicates.
-        $sql = "SELECT DISTINCT t1.id
-                  FROM {".constants::M_AITABLE."} t1
-                  JOIN {". constants::M_AITABLE ."} t2
-                    ON t1.attemptid = t2.attemptid
-                   AND t1.id < t2.id";
-        $duplicates = $DB->get_records_sql($sql);
-
-        // Remove duplicates.
-        if ($duplicates && !empty($duplicates)) {
-            $ids = array_keys($duplicates);
-            list($insql, $params) = $DB->get_in_or_equal($ids, SQL_PARAMS_NAMED);
+        // Stream duplicate ids to avoid loading all into memory.
+        $rs = $DB->get_recordset_sql("
+            SELECT t1.id
+            FROM {" . constants::M_AITABLE . "} t1
+            JOIN {" . constants::M_AITABLE . "} t2
+              ON t1.attemptid = t2.attemptid
+             AND t1.id < t2.id
+            WHERE t1.attemptid > 0
+        ");
+        $batch = [];
+        foreach ($rs as $rec) {
+            $batch[] = $rec->id;
+            if (count($batch) >= 1000) {
+                list($insql, $params) = $DB->get_in_or_equal($batch, SQL_PARAMS_NAMED);
+                $DB->delete_records_select(constants::M_AITABLE, "id $insql", $params);
+                $batch = [];
+            }
+        }
+        $rs->close();
+        if (!empty($batch)) {
+            list($insql, $params) = $DB->get_in_or_equal($batch, SQL_PARAMS_NAMED);
             $DB->delete_records_select(constants::M_AITABLE, "id $insql", $params);
         }
 
         // Readaloud_ai_result indexes.
         $aitable = new xmldb_table(constants::M_AITABLE);
 
-        // Exactly one AI row per attempt.
-        $index = new xmldb_index('attemptid_uk', XMLDB_INDEX_UNIQUE, ['attemptid']);
-        // $index = new xmldb_index('attemptid_idx', XMLDB_INDEX_NOTUNIQUE, ['attemptid']);
-        if (!$dbman->index_exists($aitable, $index)) {
-            $dbman->add_index($aitable, $index);
+        // Add UNIQUE(attemptid); fall back to non-unique if it fails.
+        try {
+            $uix = new xmldb_index('attemptid_idx', XMLDB_INDEX_UNIQUE, ['attemptid']);
+            if (!$dbman->index_exists($aitable, $uix)) {
+                $dbman->add_index($aitable, $uix);
+            }
+        } catch (Throwable $e) {
+            mtrace('readaloud: UNIQUE(attemptid) failed: ' . $e->getMessage());
+            $nix = new xmldb_index('attemptid_idx', XMLDB_INDEX_NOTUNIQUE, ['attemptid']);
+            if (!$dbman->index_exists($aitable, $nix)) {
+                $dbman->add_index($aitable, $nix);
+            }
         }
 
         $index = new xmldb_index('readaloudid_idx', XMLDB_INDEX_NOTUNIQUE, ['readaloudid']);
@@ -865,7 +881,7 @@ function xmldb_readaloud_upgrade($oldversion)
             $dbman->add_index($usertable, $index);
         }
 
-        upgrade_mod_savepoint(true, 2025110400, 'readaloud');
+        upgrade_mod_savepoint(true, 2025110401, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.

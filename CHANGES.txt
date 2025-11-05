@@ -1,4 +1,4 @@
-2.1.27 (Build 2025110400)
+2.1.27 (Build 2025110401)
 - Added indexes on DB tables to improve performance for large installs
 
 2.1.26 (Build 2025031504)
