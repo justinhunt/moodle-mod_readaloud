@@ -460,16 +460,16 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
                 dd.controls.startshadowbutton.click(function (e) {
                     // Practice shadowing.
-                    // Dd.dopracticelayout();
-                    // Practice.shadow=true.
+                    // dd.dopracticelayout();
+                    // practice.shadow=true.
 
                     dd.letsshadow = true;
                     dd.doreadinglayout();
                 });
                 dd.controls.startshadowbutton.keypress(function (e) {
                     if (e.which == 32 || e.which == 13) {
-                        // Dd.dopracticelayout();
-                        // Practice.shadow=true.
+                        // dd.dopracticelayout();
+                        // practice.shadow=true.
 
                         dd.letsshadow = true;
                         dd.doreadinglayout();
