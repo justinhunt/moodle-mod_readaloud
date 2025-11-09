@@ -697,9 +697,7 @@ $string['missedwords_explanation']="The top error words in the most recent attem
 $string['missed_count'] = "Missed Count";
 $string['rank'] = "Rank";
 
-$string['unit_wpm']="words/min";
-$string['unit_percent']="percent";
-$string['unit_words']="words";
+$string['unit_percent']="%";
 
 $string['totalwords'] = 'Total Words';
 $string['sentences'] = 'Sentences';

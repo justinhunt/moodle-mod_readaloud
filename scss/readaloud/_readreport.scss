@@ -1,4 +1,20 @@
 #mod_readaloud_readreport {
+    .mod_readaloud_readreport_cards {
+        .mod_readaloud_smallreport_card {
+            .fs-1 {
+                font-size: $font-size-base * 2.125 !important; // Override Bootstrap fs-1.
+            }
+            .stat-label {
+                color: $gray-700;
+                line-height: 1.2;
+            }
+            .statbox-icon img.icon {
+                height: 32px;
+                max-height: 32px;
+                width: auto;
+            }
+        }
+    }
     #mod_readaloud_quiztime_container {
         background: $purple;
 

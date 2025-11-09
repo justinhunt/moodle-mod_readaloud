@@ -656,6 +656,18 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   padding: 0.2rem;
 }
 
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .fs-1 {
+  font-size: 2.125rem !important;
+}
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .stat-label {
+  color: #727276;
+  line-height: 1.2;
+}
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .statbox-icon img.icon {
+  height: 32px;
+  max-height: 32px;
+  width: auto;
+}
 #mod_readaloud_readreport #mod_readaloud_quiztime_container {
   background: #513DEB;
 }
@@ -679,14 +691,6 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #513DEB;
   border-color: #513DEB;
   color: #FFFFFF;
-  margin: 0.25rem;
-  min-width: 110px;
-  white-space: nowrap;
-}
-#mod_readaloud_readreport button.mod_readaloud_takequiz_button {
-  background-color: #FFFFFF;
-  border-color: #FFFFFF;
-  color: #513DEB;
   margin: 0.25rem;
   min-width: 110px;
   white-space: nowrap;
