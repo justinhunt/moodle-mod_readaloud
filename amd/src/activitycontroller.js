@@ -1,3 +1,29 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Activity controller for mod_readaloud module.
+ *
+ * Handles initialisation, mode rendering, navigation, and student progression
+ * for the ReadAloud activity learning journey.
+ *
+ * @module     mod_readaloud/activitycontroller
+ * @copyright  2025 Justin Hunt (Poodll)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 /* jshint ignore:start */
 define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
     'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
@@ -36,15 +62,15 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
             strings: {},
 
 
-            //CSS in this file
+            // CSS in this file.
             passagefinished: def.passagefinished,
 
-            //for making multiple instances
+            // For making multiple instances.
             clone: function () {
                 return $.extend(true, {}, this);
             },
 
-            //pass in config, the jquery video/audio object, and a function to be called when conversion has finshed
+            // Pass in config, the jquery video/audio object, and a function to be called when conversion has finished.
             init: function (props) {
                 var dd = this.clone();
 
@@ -57,14 +83,14 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 log.debug(props, 'props:');
 
 
-                //pick up opts from html
+                // Pick up opts from html.
                 var theid = '#amdopts_' + props.widgetid;
                 var configcontrol = $(theid).get(0);
                 if (configcontrol) {
                     dd.activitydata = JSON.parse(configcontrol.value);
                     $(theid).remove();
                 } else {
-                    //if there is no config we might as well give up
+                    // If there is no config we might as well give up.
                     log.debug('Read Aloud Test Controller: No config found on page. Giving up.');
                     return;
                 }
@@ -75,8 +101,8 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 dd.playerid = props.widgetid + '_player';
                 dd.sorryboxid = props.widgetid + '_sorrybox';
 
-                //if the browser doesn't support html5 recording.
-                //then warn and do not go any further
+                // If the browser doesn't support html5 recording,
+                // then warn and do not go any further.
                 if (!dd.is_browser_ok()) {
                     $('#' + dd.sorryboxid).show();
                     return;
@@ -94,7 +120,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 dd.setuppractice();
 
                 // Init recorder and html and events.
-                // NOTE: setup_recorder() is now called dynamically when read/shadow template is loaded
+                // NOTE: setup_recorder() is now called dynamically when read/shadow template is loaded.
                 // dd.setup_recorder();
                 dd.process_html(dd.activitydata);
 
@@ -104,10 +130,10 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 // Set up quiz.
                 dd.setupquiz();
 
-                //Set up click to hear
+                // Set up click to hear.
                 dd.setupclicktohear();
 
-                //Set up small report helper
+                // Set up small report helper.
                 smallreporthelper.init(dd.activitydata);
 
                 // Set initial mode.
@@ -126,16 +152,16 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
             setup_strings: function () {
                 var dd = this;
-                // Set up strings
+                // Set up strings.
                 str.get_strings([
                     { "key": "confirm_cancel_recording", "component": def.component },
                     { "key": "confirm_read_again", "component": def.component },
-                    //more strings here
+                    // More strings here.
                 ]).done(function (s) {
                     var i = 0;
                     dd.strings.confirm_cancel_recording = s[i++];
                     dd.strings.confirm_read_again = s[i++];
-                    //more strings here
+                    // More strings here.
                 });
             },
 
@@ -144,7 +170,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 var karaoke_opts = { breaks: this.activitydata.breaks, audioplayerclass: this.activitydata.audioplayerclass };
                 modelaudiokaraoke.init(karaoke_opts);
                 modelaudiokaraoke.on_complete = function () {
-                    // Complete the current step (update server and ui)
+                    // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_listen);
                     dd.domenulayout();
                 }
@@ -153,14 +179,14 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
             setuppractice: function () {
                 var dd = this;
                 // Store practice options for later use when template is rendered
-                // Don't call practice.init() here - it will be called in renderMode() when template exists
+                // Don't call practice.init() here - it will be called in renderMode() when template exists.
                 dd.practice_opts = {
                     modelaudiokaraoke: modelaudiokaraoke, cmid: this.cmid, language: this.activitydata.language,
                     region: this.activitydata.region, phonetics: this.activitydata.phonetics, stt_guided: this.activitydata.stt_guided
                 };
-                //set the callback function to complete the activity
+                // Set the callback function to complete the activity.
                 practice.on_complete = function () {
-                    // Complete the current step (update server and ui)
+                    // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_practice);
                     dd.domenulayout();
                 }
@@ -177,23 +203,23 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
             setupquiz: function () {
                 var dd = this;
-                //hack TO DO - get the real attempt id
+                // Hack TO DO - get the real attempt id.
                 dd.attemptid = 1;
 
                 quizhelper.init(dd.activitydata,
                     dd.cmid,
                     dd.attemptid);
 
-                //set the callback function to complete the quiz
+                // Set the callback function to complete the quiz.
                 quizhelper.on_complete = function () {
-                    // Complete the current step (update server and ui)
+                    // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_quiz);
                 }
             },
 
             process_html: function (opts) {
-                //these css classes/ids are all passed in from php in
-                //renderer.php::fetch_activity_amd should maybe just simplify and declare them in definitions.js
+                // These css classes/ids are all passed in from php in
+                // renderer.php::fetch_activity_amd should maybe just simplify and declare them in definitions.js.
                 var controls = {
                     hider: $('.' + opts['hider']),
                     introbox: $('.' + 'mod_intro_box'),
@@ -256,7 +282,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
             setup_recorder: function () {
                 var dd = this;
 
-                //after the recorder reports that it has (really) started this functuon is called.
+                // After the recorder reports that it has (really) started, this function is called.
                 var beginall = function () {
                     dd.passagerecorded = true;
                     if (dd.stepshadow_enabled && dd.letsshadow) {
@@ -269,9 +295,9 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     var speechresults = eventdata.speechresults;
                 };
 
-                //originates from the recording:started event
-                //contains no meaningful data
-                //See https://api.poodll.com
+                // Originates from the recording:started event.
+                // Contains no meaningful data.
+                // See https://api.poodll.com.
                 var on_recording_start = function (eventdata) {
                     dd.rec_time_start = new Date().getTime();
                     dd.dopassagelayout();
@@ -289,28 +315,28 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
                 };
 
-                //originates from the recording:ended event
-                //contains no meaningful data
-                //See https://api.poodll.com
+                // Originates from the recording:ended event.
+                // Contains no meaningful data.
+                // See https://api.poodll.com.
                 var on_recording_end = function (eventdata) {
-                    //its a bit hacky but the rec end event can arrive immed. somehow probably when the mic test ends
+                    // Its a bit hacky but the rec end event can arrive immed. somehow probably when the mic test ends.
                     var now = new Date().getTime();
                     if ((now - dd.rec_time_start) < 3000) {
                         return;
                     }
                     dd.douploadlayout();
-                    //if we are shadowing we should stop the audio player.
+                    // If we are shadowing we should stop the audio player.
                     if (dd.stepshadow_enabled && dd.letsshadow) {
                         dd.controls.modelaudioplayer[0].currentTime = 0;
                         dd.controls.modelaudioplayer[0].pause();
                     }
                 };
 
-                //data sent here originates from the awaiting_processing event
-                //See https://api.poodll.com
+                // Data sent here originates from the awaiting_processing event.
+                // See https://api.poodll.com.
                 var on_audio_processing = function (eventdata) {
-                    //at this point we know the submission has been uploaded and we know the fileURL
-                    //so we send the submission
+                    // At this point we know the submission has been uploaded and we know the fileURL.
+                    // So we send the submission.
                     var now = new Date().getTime();
                     var rectime = now - dd.rec_time_start;
                     if (rectime > 0) {
@@ -319,21 +345,22 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
                     dd.send_submission(eventdata.mediaurl, rectime);
 
-                    // Complete the current step (update server and ui)
+                    // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_read);
 
-                    // Send user to the finished report immediately
+                    // Send user to the finished report immediately.
                     smallreporthelper.update_filename(eventdata.mediaurl);
                     smallreporthelper.start_check_for_results();
                     dd.doreadreportlayout();
                 };
 
-                //init the recorder
+                // Init the recorder.
                 recorderhelper.init(dd.activitydata,
                     on_recording_start,
                     on_recording_end,
                     on_audio_processing,
-                    on_speech);
+                    on_speech,
+                );
             },
 
             register_events: function () {
@@ -413,11 +440,11 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
                 dd.controls.readagainbutton.click(function (e) {
                     var result = confirm(dd.strings.confirm_read_again);
-                    //exit if they dont want to
+                    // Exit if they dont want to.
                     if (!result) {
                         return;
                     }
-                    //reset the recorder and start again
+                    // Reset the recorder and start again.
                     dd.reset_recorder();
                     dd.letsshadow = false;
                     dd.doreadinglayout();
@@ -432,17 +459,17 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 });
 
                 dd.controls.startshadowbutton.click(function (e) {
-                    //practice shadowing
-                    //dd.dopracticelayout();
-                    // practice.shadow=true;
+                    // Practice shadowing.
+                    // Dd.dopracticelayout();
+                    // Practice.shadow=true.
 
                     dd.letsshadow = true;
                     dd.doreadinglayout();
                 });
                 dd.controls.startshadowbutton.keypress(function (e) {
                     if (e.which == 32 || e.which == 13) {
-                        //dd.dopracticelayout();
-                        //practice.shadow=true;
+                        // Dd.dopracticelayout();
+                        // Practice.shadow=true.
 
                         dd.letsshadow = true;
                         dd.doreadinglayout();
@@ -450,15 +477,15 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     }
                 });
                 dd.controls.returnmenubutton.click(function (e) {
-                    //in most cases ajax hide show is ok, but L&R stuffs up android for normal readaloud so we reload
+                    // In most cases ajax hide show is ok, but L&R stuffs up android for normal readaloud so we reload.
                     if (dd.isandroid() && dd.controls.practiceinstructionscontainer.is(":visible")) {
                         location.reload();
                     } else if (dd.controls.readingcontainer.is(":visible")
                         && dd.controls.passagecontainer.hasClass('readmode')
                         && dd.controls.passagecontainer.is(":visible")) {
-                        // Display a confirmation dialog
+                        // Display a confirmation dialog.
                         var result = confirm(dd.strings.confirm_cancel_recording);
-                        //there is no way to stop the recorder early, so just reload the page, brutal
+                        // There is no way to stop the recorder early, so just reload the page, brutal.
                         if (result) {
                             location.reload();
                         }
@@ -492,7 +519,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 });
             },
 
-            // when a step is completed, we update the activity completion on the server
+            // When a step is completed, we update the activity completion on the server
             // and open the next step
             update_activity_step: function (step) {
                 var that = this;
@@ -515,11 +542,10 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                                         continue;
                                     }
                                 }
-                                // Open next step first (this updates stepsopen in activitydata)
+                                // Open next step first (this updates stepsopen in activitydata).
                                 that.open_next_step(step);
                                 // Then update the UI based on the new stepsopen state
                                 that.updateBigButtonMenuModeStatus();
-                                // that.updateModeStatuses();
 
                                 break;
                             case false:
@@ -535,27 +561,27 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
             open_next_step: function (oldstep) {
                 var that = this;
                 var adata = this.activitydata;
-                //loop through adata.steps array
-                //this looks like['step_listen': 1, 'step_practice': 2, 'step_shadow': 4, 'step_read': 8, 'step_quiz': 16]
+                // Loop through adata.steps array.
+                // This looks like['step_listen': 1, 'step_practice': 2, 'step_shadow': 4, 'step_read': 8, 'step_quiz': 16].
                 for (var key in adata.steps) {
                     var thestep = adata.steps[key];
-                    //if the looped step is less than or equal to the old step, skip
+                    // If the looped step is less than or equal to the old step, skip.
                     if (thestep <= oldstep) {
                         continue;
                     } else {
-                        //if the looped step is enabled (present on page), open it
+                        // If the looped step is enabled (present on page), open it.
                         var step_chooser = $('#' + adata['menubuttonscontainer'] + ' .mode-chooser[data-step="' + thestep + '"]');
                         log.debug(step_chooser);
                         if (step_chooser.length) {
                             step_chooser.removeClass('no-click');
                             step_chooser[0].removeEventListener('click', disableClick, true);
 
-                            // (Hacky) show report if read step was done
+                            // (Hacky) show report if read step was done.
                             if (oldstep == adata.steps.step_read) {
                                 that.controls.startreportbutton.removeClass('no-click');
                             }
 
-                            // Record the newly opened step as 'open' for client side use
+                            // Record the newly opened step as 'open' for client side use.
                             that.activitydata.stepsopen[key] = thestep;
                             break;
                         }
@@ -570,7 +596,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     methodname: 'mod_readaloud_submit_regular_attempt',
                     args: {
                         cmid: that.cmid,
-                        filename: filename,//encodeURIComponent(filename),
+                        filename: filename,// encodeURIComponent(filename),
                         rectime: rectime,
                         shadowing: shadowing
                     },
@@ -592,148 +618,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     },
                     fail: notification.exception
                 }]);
-                /*
-                            return;
-
-                            //set up our ajax request
-                            var xhr = new XMLHttpRequest();
-                            var that = this;
-
-                            //set up our handler for the response
-                            xhr.onreadystatechange = function (e) {
-                                if (this.readyState === 4) {
-                                    if (xhr.status === 200) {
-                                        log.debug('ok we got an attempt submission response');
-                                        //get a yes or forgetit or tryagain
-                                        var payload = xhr.responseText;
-                                        var payloadobject = JSON.parse(payload);
-                                        if (payloadobject) {
-                                            switch (payloadobject.success) {
-                                                case true:
-                                                    log.debug('attempted submission accepted');
-
-                                                    break;
-
-                                                case false:
-                                                default:
-                                                    log.debug('attempted item evaluation failure');
-                                                    if (payloadobject.message) {
-                                                        log.debug('message: ' + payloadobject.message);
-                                                    }
-                                            }
-                                        }
-                                    } else {
-                                        log.debug('Not 200 response:' + xhr.status);
-                                    }
-                                }
-                            };
-
-                            //to get through mod_security environments
-                            filename = filename.replace(/^https:\/\//i, 'https___');
-                            var params = "cmid=" + that.cmid + "&filename=" + encodeURIComponent(filename) + "&rectime=" + rectime;
-                            xhr.open("POST", M.cfg.wwwroot + '/mod/readaloud/ajaxhelper.php', true);
-                            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                            xhr.setRequestHeader("Cache-Control", "no-cache");
-                            xhr.send(params);
-                */
             },
-
-            // domenulayout: function () {
-            //     var m = this;
-
-            //     // Hide.
-            //     m.controls.activityinstructionscontainer.hide();
-            //     m.controls.feedbackcontainer.hide();
-            //     m.controls.hider.hide();
-            //     m.controls.practiceinstructionscontainer.hide();
-            //     m.controls.practicecontainerwrap.hide();
-            //     m.controls.modelaudioplayer.hide();
-            //     m.controls.previewinstructionscontainer.hide();
-            //     m.controls.passagecontainer.hide();
-            //     m.controls.quizcontainerwrap.hide();
-            //     m.controls.recordingcontainer.hide();
-            //     m.controls.returnmenubutton.hide();
-            //     m.controls.smallreportcontainer.hide();
-
-            //     // Show.
-            //     m.controls.homecontainer.show();
-            //     m.controls.introbox.show();
-            //     m.controls.menuinstructionscontainer.show();
-            //     m.controls.menubuttonscontainer.show();
-
-            //     m.d_hide(m.controls.stopandplay);
-            //     m.d_hide(m.controls.quitlisteningbutton);
-            //     m.controls.readingcontainer.removeClass(def.containerfillscreen);
-            //     m.controls.modeimagecontainer.removeClass('d-block');
-            //     m.controls.modeimagecontainer.addClass('d-none');
-
-            //     modelaudiokaraoke.modeling = true;
-
-            //     // Update the mode statuses (completed, in-progress, upcoming).
-            //     m.updateModeStatuses();
-            // },
-
-            // doreadinglayout: function () {
-            //     var m = this;
-
-            //     // Hide.
-            //     m.controls.feedbackcontainer.hide();
-            //     m.controls.homecontainer.hide();
-            //     m.controls.introbox.hide();
-            //     m.controls.menuinstructionscontainer.hide();
-            //     m.controls.passagecontainer.hide();
-            //     m.controls.quizcontainerwrap.hide();
-            //     m.controls.smallreportcontainer.hide();
-            //     m.controls.passagecontainer.removeClass(m.passagefinished);
-
-            //     // Show.
-            //     m.controls.recordingcontainer.show();
-            //     m.controls.returnmenubutton.show();
-            //     m.controls.hider.fadeOut('fast');
-            //     m.controls.activityinstructionscontainer.show();
-
-            //     m.controls.passagecontainer.removeClass('previewmode shadowmode reviewmode nothingmode');
-            //     m.controls.passagecontainer.addClass('readmode');
-            //     m.d_hide(m.controls.stopandplay);
-            //     m.d_hide(m.controls.quitlisteningbutton);
-            //     m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-headphones fa-circle-question fa-chart-simple');
-            //     m.controls.modeimagecontainer.addClass('fa-book-open-reader d-block');
-
-            //     modelaudiokaraoke.modeling = true;
-            // },
-
-            // dopreviewlayout: function () {
-            //     var m = this;
-
-            //     // Hide.
-            //     m.controls.activityinstructionscontainer.hide();
-            //     m.controls.feedbackcontainer.hide();
-            //     m.controls.hider.hide();
-            //     m.controls.homecontainer.hide();
-            //     m.controls.introbox.hide();
-            //     m.controls.practiceinstructionscontainer.hide();
-            //     m.controls.practicecontainerwrap.hide();
-            //     m.controls.menuinstructionscontainer.hide();
-            //     m.controls.modelaudioplayer.hide();
-            //     m.controls.quizcontainerwrap.hide();
-            //     m.controls.recordingcontainer.hide();
-            //     m.controls.smallreportcontainer.hide();
-
-            //     // Show.
-            //     m.controls.menubuttonscontainer.show();
-            //     m.controls.passagecontainer.show();
-            //     m.controls.previewinstructionscontainer.show();
-            //     m.controls.returnmenubutton.show();
-
-            //     m.controls.passagecontainer.removeClass('readmode shadowmode reviewmode nothingmode');
-            //     m.controls.passagecontainer.addClass('previewmode');
-            //     m.d_show(m.controls.stopandplay);
-            //     m.d_show(m.controls.quitlisteningbutton);
-            //     m.controls.modeimagecontainer.removeClass('fa-comment fa-comments fa-book-open-reader fa-circle-question fa-chart-simple');
-            //     m.controls.modeimagecontainer.addClass('fa-headphones d-block');
-
-            //     modelaudiokaraoke.modeling = false;
-            // },
 
             dopassagelayout: function () {
                 var m = this;
@@ -751,300 +636,240 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 m.controls.hider.fadeIn('fast');
             },
 
-
-            dofinishedlayout: function () {
-                var m = this;
-
-                // Hide.
-                m.controls.activityinstructionscontainer.hide();
-                m.controls.passagecontainer.hide();
-                m.controls.quizcontainerwrap.hide();
-                m.controls.recordingcontainer.hide();
-                m.controls.returnmenubutton.hide();
-                m.controls.smallreportcontainer.hide();
-
-                // Show.
-                m.controls.menubuttonscontainer.show();
-                m.controls.feedbackcontainer.show();
-
-                m.controls.readingcontainer.removeClass(def.containerfillscreen);
-
-                m.controls.hider.fadeOut('fast');
-
-            },
-            doerrorlayout: function () {
-                var m = this;
-
-                // Hide.
-                m.controls.passagecontainer.hide();
-                m.controls.quizcontainerwrap.hide();
-                m.controls.recordingcontainer.hide();
-
-                // Show.
-                m.controls.menubuttonscontainer.show();
-                m.controls.errorcontainer.show();
-
-                m.controls.readingcontainer.removeClass(def.containerfillscreen);
-
-                m.controls.hider.fadeOut('fast');
-            },
-            // doreportlayout: function () {
+            // TODO: These appear to be unused. Let's trial removal.
+            // dofinishedlayout: function () {
             //     var m = this;
 
             //     // Hide.
             //     m.controls.activityinstructionscontainer.hide();
-            //     m.controls.homecontainer.hide();
-            //     m.controls.practiceinstructionscontainer.hide();
-            //     m.controls.practicecontainerwrap.hide();
             //     m.controls.passagecontainer.hide();
-            //     m.controls.previewinstructionscontainer.hide();
-            //     m.controls.menuinstructionscontainer.hide();
             //     m.controls.quizcontainerwrap.hide();
             //     m.controls.recordingcontainer.hide();
-            //     m.d_hide(m.controls.stopandplay);
-            //     m.d_hide(m.controls.quitlisteningbutton);
-
-            //     //clean up upload layout
-            //     m.controls.readingcontainer.removeClass(def.containerfillscreen);
-            //     m.controls.hider.fadeOut('fast');
-
-            //     // Show.
-            //     m.controls.menubuttonscontainer.show();
-            //     m.controls.returnmenubutton.show();
-            //     m.controls.smallreportcontainer.show();
-
-            //     m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-circle-question');
-            //     m.controls.modeimagecontainer.addClass('fa-chart-simple d-block');
-            // },
-            // doquizlayout: function () {
-            //     var m = this;
-
-            //     // Hide.
-            //     m.controls.activityinstructionscontainer.hide();
-            //     m.controls.homecontainer.hide();
-            //     m.controls.practiceinstructionscontainer.hide();
-            //     m.controls.practicecontainerwrap.hide();
-            //     m.controls.passagecontainer.hide();
-            //     m.controls.previewinstructionscontainer.hide();
-            //     m.controls.quizplaceholder.hide();
-            //     m.controls.recordingcontainer.hide();
+            //     m.controls.returnmenubutton.hide();
             //     m.controls.smallreportcontainer.hide();
 
             //     // Show.
-            //     m.controls.quizcontainerwrap.show();
+            //     m.controls.menubuttonscontainer.show();
+            //     m.controls.feedbackcontainer.show();
 
-            //     m.d_hide(m.controls.stopandplay);
-            //     m.d_hide(m.controls.quitlisteningbutton);
-            //     m.controls.modeimagecontainer.removeClass('fa-headphones fa-comment fa-comments fa-book-open-reader fa-chart-simple');
-            //     m.controls.modeimagecontainer.addClass('fa-circle-question d-block');
+            //     m.controls.readingcontainer.removeClass(def.containerfillscreen);
+
+            //     m.controls.hider.fadeOut('fast');
+
+            // },
+            // doerrorlayout: function () {
+            //     var m = this;
+
+            //     // Hide.
+            //     m.controls.passagecontainer.hide();
+            //     m.controls.quizcontainerwrap.hide();
+            //     m.controls.recordingcontainer.hide();
+
+            //     // Show.
+            //     m.controls.menubuttonscontainer.show();
+            //     m.controls.errorcontainer.show();
+
+            //     m.controls.readingcontainer.removeClass(def.containerfillscreen);
+
+            //     m.controls.hider.fadeOut('fast');
             // },
 
-// Home (menu).
-domenulayout: function () {
-    var m = this;
-    m.showHome();
-    if (typeof m.updateBigButtonMenuModeStatus === 'function') m.updateBigButtonMenuModeStatus();
-    modelaudiokaraoke.modeling = true;
-},
+            // Home (menu).
+            domenulayout: function () {
+                var m = this;
+                m.showHome();
+                if (typeof m.updateBigButtonMenuModeStatus === 'function') m.updateBigButtonMenuModeStatus();
+                modelaudiokaraoke.modeling = true;
+            },
 
-// Listen mode (preview).
-dopreviewlayout: function () {
-    var m = this;
-    modelaudiokaraoke.modeling = false;
-    m.renderMode('listen', null, true);
-},
+            // Listen mode (preview).
+            dopreviewlayout: function () {
+                var m = this;
+                modelaudiokaraoke.modeling = false;
+                m.renderMode('listen', null, true);
+            },
 
-// Practice mode.
-dopracticelayout: function () {
-    var m = this;
-    modelaudiokaraoke.modeling = false;
-    m.renderMode('practice', null, true);
-},
+            // Practice mode.
+            dopracticelayout: function () {
+                var m = this;
+                modelaudiokaraoke.modeling = false;
+                m.renderMode('practice', null, true);
+            },
 
-// Read mode (read / shadow).
-doreadinglayout: function () {
-    var m = this;
-    modelaudiokaraoke.modeling = true;
-    var mode = m.letsshadow ? 'shadow' : 'read';
-    m.renderMode(mode, { letsshadow: m.letsshadow }, true);
-},
+            // Read mode (read / shadow).
+            doreadinglayout: function () {
+                var m = this;
+                modelaudiokaraoke.modeling = true;
+                var mode = m.letsshadow ? 'shadow' : 'read';
+                m.renderMode(mode, { letsshadow: m.letsshadow }, true);
+            },
 
-// Report mode.
-doreportlayout: function () {
-    this.renderMode('report', null, true);
-},
+            // Quiz mode.
+            doquizlayout: function () {
+                this.renderMode('quiz', null, true);
+            },
 
-// Read report.
-doreadreportlayout: function () {
-    this.renderMode('readreport', null, true);
-},
+            // Report mode.
+            doreportlayout: function () {
+                this.renderMode('report', null, true);
+            },
 
-// Quiz mode.
-doquizlayout: function () {
-    this.renderMode('quiz', null, true);
-},
+            // Read report.
+            doreadreportlayout: function () {
+                this.renderMode('readreport', null, true);
+            },
 
-    getModeFromUrl: function () {
-        var params = new URLSearchParams(window.location.search);
-        var mode = params.get('mode');
-        var allowed = ['listen', 'practice', 'read', 'shadow', 'quiz', 'report', 'readreport', 'quizreport'];
-        return allowed.indexOf(mode) >= 0 ? mode : null;
-    },
+            getModeFromUrl: function () {
+                var params = new URLSearchParams(window.location.search);
+                var mode = params.get('mode');
+                var allowed = ['listen', 'practice', 'read', 'shadow', 'quiz', 'report', 'readreport', 'quizreport'];
+                return allowed.indexOf(mode) >= 0 ? mode : null;
+            },
 
-    canAccessMode: function(mode) {
-        var dd = this;
+            canAccessMode: function(mode) {
+                var dd = this;
 
-        // Map modes to their required step.
-        var modeStepMap = {
-            'listen': 'step_listen',
-            'practice': 'step_practice',
-            'read': 'step_read',
-            'shadow': 'step_shadow',
-            'quiz': 'step_quiz',
-            'report': 'step_report',
-            'readreport': 'step_read', // Requires read completion.
-            'quizreport': 'step_quiz', // Requires quiz completion.
-        }
+                // Map modes to their required step.
+                var modeStepMap = {
+                    'listen': 'step_listen',
+                    'practice': 'step_practice',
+                    'read': 'step_read',
+                    'shadow': 'step_shadow',
+                    'quiz': 'step_quiz',
+                    'report': 'step_report',
+                    'readreport': 'step_read', // Requires read completion.
+                    'quizreport': 'step_quiz', // Requires quiz completion.
+                }
 
-        var requiredStep = modeStepMap[mode];
-        if (!requiredStep) {
-            return true; // Unknown mode, allow access.
-        }
+                var requiredStep = modeStepMap[mode];
+                if (!requiredStep) {
+                    return true; // Unknown mode, allow access.
+                }
 
-        // Check if the step is open (user has access).
-        return dd.activitydata.stepsopen[requiredStep] !== undefined;
-    },
+                // Check if the step is open (user has access).
+                return dd.activitydata.stepsopen[requiredStep] !== undefined;
+            },
 
-    pushModeToUrl: function (mode) {
-        var url = new URL(window.location.href);
-        if (mode) {
-            url.searchParams.set('mode', mode);
-        } else {
-            url.searchParams.delete('mode');
-        }
-        window.history.pushState({mode: mode}, '', url.toString());
-    },
+            pushModeToUrl: function (mode) {
+                var url = new URL(window.location.href);
+                if (mode) {
+                    url.searchParams.set('mode', mode);
+                } else {
+                    url.searchParams.delete('mode');
+                }
+                window.history.pushState({mode: mode}, '', url.toString());
+            },
 
-    replaceModeInUrl: function (mode) {
-        var url = new URL(window.location.href);
-        if (mode) {
-            url.searchParams.set('mode', mode);
-        } else {
-            url.searchParams.delete('mode');
-        }
-        window.history.replaceState({
-            mode: mode
-        }, '', url.toString());
-    },
+            replaceModeInUrl: function (mode) {
+                var url = new URL(window.location.href);
+                if (mode) {
+                    url.searchParams.set('mode', mode);
+                } else {
+                    url.searchParams.delete('mode');
+                }
+                window.history.replaceState({
+                    mode: mode
+                }, '', url.toString());
+            },
 
-    // Map the modes to their corresponding mustache templates.
-    getTemplateForMode: function (mode) {
-        switch (mode) {
-            case 'listen':   return 'mod_readaloud/listen';
-            case 'practice': return 'mod_readaloud/practice';
-            case 'read':     return 'mod_readaloud/read';
-            case 'shadow':   return 'mod_readaloud/listen'; // TEMP: reuse listen for shadow
-            case 'quiz':     return 'mod_readaloud/quizcontainer';
-            case 'report':   return 'mod_readaloud/finalreport';
-            case 'readreport': return 'mod_readaloud/readreport';
-            default:         return null;
-        }
-    },
+            // Map the modes to their corresponding mustache templates.
+            getTemplateForMode: function (mode) {
+                switch (mode) {
+                    case 'listen':   return 'mod_readaloud/listen';
+                    case 'practice': return 'mod_readaloud/practice';
+                    case 'read':     return 'mod_readaloud/read';
+                    case 'shadow':   return 'mod_readaloud/listen'; // TEMP: reuse listen for shadow
+                    case 'quiz':     return 'mod_readaloud/quizcontainer';
+                    case 'report':   return 'mod_readaloud/finalreport';
+                    case 'readreport': return 'mod_readaloud/readreport';
+                    default:         return null;
+                }
+            },
 
-// Hide home, render mode template into modeview.
-renderMode: function (mode, extraContext, isTrustedNavigation) {
-    var dd = this;
+            // Hide home, render mode template into modeview.
+            renderMode: function (mode, extraContext, isTrustedNavigation) {
+                var dd = this;
 
-    // Validate access if this is not trusted nvigation (i.e. from url)
-    // Trusted navigation means the user has clicked a button we provided.
-    if(!isTrustedNavigation && !dd.canAccessMode(mode)) {
-        log.debug('Access denied to mode: ' + mode);
-        dd.domenulayout(); // Redirect to home.
-        return;
-    }
+                // Validate access if this is not trusted nvigation (i.e. from url).
+                // Trusted navigation means the user has clicked a button we provided.
+                if(!isTrustedNavigation && !dd.canAccessMode(mode)) {
+                    log.debug('Access denied to mode: ' + mode);
+                    dd.domenulayout(); // Redirect to home.
+                    return;
+                }
 
-    var template = dd.getTemplateForMode(mode);
-    if (!template) {
-        dd.domenulayout();
-        return;
-    }
+                var template = dd.getTemplateForMode(mode);
+                if (!template) {
+                    dd.domenulayout();
+                    return;
+                }
 
-    // Use the template context from PHP which includes all template variables (playbutton, passagehtml, etc.)
-    var templatecontext = $.extend(true, {}, dd.activitydata.templatecontext || {}, { mode: mode }, extraContext || {});
-    var $home = dd.controls.homecontainer;
-    var $view = dd.controls.modeview;
-    /*
-    var modeInstructions = {
-        'listen': templatecontext.previewhelp,
-        'practice': templatecontext.landrhelp,
-        'read': templatecontext.instructions,
-        'shadow': templatecontext.instructions,
-        'quiz': null,
-        'report': null
-    };
-    templatecontext.modeinstructions = modeInstructions[mode] || null;
-     */
+                // Use the template context from PHP which includes all template variables (playbutton, passagehtml, etc.)
+                var templatecontext = $.extend(true, {}, dd.activitydata.templatecontext || {}, { mode: mode }, extraContext || {});
+                var $home = dd.controls.homecontainer;
+                var $view = dd.controls.modeview;
 
-    Templates.renderForPromise(template, templatecontext).then(function (out) {
-        $view.html(out.html);
-        Templates.runTemplateJS(out.js);
+                Templates.renderForPromise(template, templatecontext).then(function (out) {
+                    $view.html(out.html);
+                    Templates.runTemplateJS(out.js);
 
-        // Show view, then hide home - prevents footer jump.
-        $view.removeClass('d-none').attr('hidden', false);
-        $home.addClass('d-none').attr('hidden', true);
-        dd.controls.activityheader.addClass('d-none').attr('hidden', true);
-        // Re-grab dynamic selectors inside the freshly rendered view.
-        dd.process_html(dd.activitydata);
+                    // Show view, then hide home - prevents footer jump.
+                    $view.removeClass('d-none').attr('hidden', false);
+                    $home.addClass('d-none').attr('hidden', true);
+                    dd.controls.activityheader.addClass('d-none').attr('hidden', true);
+                    // Re-grab dynamic selectors inside the freshly rendered view.
+                    dd.process_html(dd.activitydata);
 
-        // Re-initialise components that depend on DOM elements after template render.
-        modelaudiokaraoke.register_controls();
-        modelaudiokaraoke.register_events();
+                    // Re-initialise components that depend on DOM elements after template render.
+                    modelaudiokaraoke.register_controls();
+                    modelaudiokaraoke.register_events();
 
-        setTimeout(function() {
-            if (typeof dd.updateBigButtonMenuModeStatus === 'function') dd.updateBigButtonMenuModeStatus();
-        }, 0);
+                    setTimeout(function() {
+                        if (typeof dd.updateBigButtonMenuModeStatus === 'function') dd.updateBigButtonMenuModeStatus();
+                    }, 0);
 
-        if (mode === 'practice') {
-            // Now call practice.init() with the template DOM elements available.
-            practice.init(dd.practice_opts);
-        }
-        if (mode === 'read' || mode === 'shadow') {
-            // Initialise the Cloud Poodll recorder after the template is rendered.
-            // The recorder div is now in the DOM, so we can initialise it.
-            dd.setup_recorder();
-        }
-        if (mode === 'quiz') { /* quizhelper already init'd in setupquiz; it draws into quizcontainer */ }
+                    if (mode === 'practice') {
+                        // Now call practice.init() with the template DOM elements available.
+                        practice.init(dd.practice_opts);
+                    }
+                    if (mode === 'read' || mode === 'shadow') {
+                        // Initialise the Cloud Poodll recorder after the template is rendered.
+                        // The recorder div is now in the DOM, so we can initialise it.
+                        dd.setup_recorder();
+                    }
+                    if (mode === 'quiz') { /* quizhelper already init'd in setupquiz; it draws into quizcontainer */ }
 
-        // Scroll/focus like a full page.
-        $view.attr('tabindex', '-1')[0].focus({preventScroll: true});
-        window.scrollTo({top: 0, behavior: 'instant'});
+                    // Scroll/focus like a full page.
+                    $view.attr('tabindex', '-1')[0].focus({preventScroll: true});
+                    window.scrollTo({top: 0, behavior: 'instant'});
 
-        // Update URL.
-        dd.pushModeToUrl(mode);
-    }).catch(notification.exception);
-},
+                    // Update URL.
+                    dd.pushModeToUrl(mode);
+                }).catch(notification.exception);
+            },
 
-    showHome: function () {
-        var dd = this;
-        var $home = dd.controls.homecontainer;
-        var $view = dd.controls.modeview;
+            showHome: function () {
+                var dd = this;
+                var $home = dd.controls.homecontainer;
+                var $view = dd.controls.modeview;
 
-        $view.addClass('d-none').attr('hidden', true).empty();
-        $home.removeClass('d-none').attr('hidden', false);
-        dd.controls.activityheader.removeClass('d-none').attr('hidden', false);
+                $view.addClass('d-none').attr('hidden', true).empty();
+                $home.removeClass('d-none').attr('hidden', false);
+                dd.controls.activityheader.removeClass('d-none').attr('hidden', false);
 
-        dd.pushModeToUrl(null);
-    },
+                dd.pushModeToUrl(null);
+            },
 
-    onPopState: function () {
-        var dd = this;
-        var mode = dd.getModeFromUrl();
-        if (mode) {
-            dd.renderMode(mode, null, false); // Validate browser back/forward navigation.
-        } else {
-            dd.showHome();
-        }
-    },
+            // Gets the mode from the URL and renders the appropriate view.
+            onPopState: function () {
+                var dd = this;
+                var mode = dd.getModeFromUrl();
+                if (mode) {
+                    dd.renderMode(mode, null, false); // Validate browser back/forward. navigation.
+                } else {
+                    dd.showHome();
+                }
+            },
 
             // Helper for bigbuttonmenu.
             // Updates each step element based on its enabled/completed state.
@@ -1124,7 +949,7 @@ renderMode: function (mode, extraContext, isTrustedNavigation) {
             },
 
             d_show: function (els) {
-                //If el is a jquery object get the first element
+                // If el is a jquery object get the first element.
                 if (!els instanceof jQuery) {
                     els = [els];
                 }
@@ -1147,7 +972,7 @@ renderMode: function (mode, extraContext, isTrustedNavigation) {
             },
 
             d_hide: function (els) {
-                //If el is a jquery object get the first element
+                // If el is a jquery object get the first element.
                 if (!els instanceof jQuery) {
                     els = [els];
                 }
@@ -1182,11 +1007,11 @@ renderMode: function (mode, extraContext, isTrustedNavigation) {
                             iconName = 'checked';
                             altText = 'Complete';
                         } else if (isOpen) {
-                            // If step is open but not complete, show current icon
+                            // If step is open but not complete, show current icon.
                             iconName = 'current';
                             altText = 'In progress';
                         } else {
-                            // Step is not open yet, show locked
+                            // Step is not open yet, show locked.
                             iconName = 'locked';
                             altText = 'Locked';
                         }
@@ -1194,7 +1019,7 @@ renderMode: function (mode, extraContext, isTrustedNavigation) {
                         $iconImg.attr('src', iconUrl);
                         $iconImg.attr('alt', altText);
 
-                        // Update CSS classes on the li element to match the icon state
+                        // Update CSS classes on the li element to match the icon state.
                         if (status === 'completed') {
                             $elem.removeClass('locked current').addClass('completed');
                         } else if (isOpen) {
@@ -1213,5 +1038,5 @@ renderMode: function (mode, extraContext, isTrustedNavigation) {
                     return false;
                 }
             }
-        };//end of returned object
-    });//total end
+        };// End of returned object.
+    });// Total end.
