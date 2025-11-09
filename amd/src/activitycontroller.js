@@ -114,9 +114,9 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 var initialMode = dd.getModeFromUrl();
                 if (initialMode) {
                     dd.replaceModeInUrl(initialMode);
-                    dd.renderMode(initialMode);
+                    dd.renderMode(initialMode, null, false); // Validate URL based navigation.
                 } else {
-                    dd.domenulayout(); // default to home/menu
+                    dd.domenulayout(); // Default to home/menu.
                 }
 
                 // Enable browser navigation from home to view.
@@ -237,6 +237,8 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     homecontainer: $('.' + opts['homecontainer']),
                     modeview: $('#' + opts['modeview']),
                     activityheader: $('.mod_readaloud-activity-header'),
+                    takequizbutton: $('.mod_readaloud_takequiz_button'),
+                    quizviewreportbutton: $('.mod_readaloud_quizviewreport_button'),
                 };
                 this.controls = controls;
             },
@@ -323,7 +325,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     // Send user to the finished report immediately
                     smallreporthelper.update_filename(eventdata.mediaurl);
                     smallreporthelper.start_check_for_results();
-                    dd.doreportlayout();
+                    dd.doreadreportlayout();
                 };
 
                 //init the recorder
@@ -343,9 +345,26 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 });
 
                 // Intercept navigation that would cause page reload - use SPA navigation instead
-                $(document).on('click', '.secondary-navigation [data-key="modulepage"] a, .backarrow[data-action="back-to-home"]', function(e) {
+                $(document).on('click', '.secondary-navigation [data-key="modulepage"] a, .backarrow[data-action="back-to-home"], [data-action="readagain"], [data-action="takequiz"], [data-action="quizviewreport"]', function(e) {
                     e.preventDefault();
-                    dd.domenulayout();
+                    var action = $(this).data('action');
+                    if (action === 'readagain') {
+                        var result = confirm(dd.strings.confirm_read_again);
+                        if (!result) {
+                            return;
+                        }
+                        dd.reset_recorder();
+                        dd.letsshadow = false;
+                        dd.doreadinglayout();
+                        return;
+                    } else if (action === 'takequiz') {
+                        dd.doquizlayout();
+                        return;
+                    } else if (action === 'quizviewreport') {
+                        dd.doreportlayout();
+                        return;
+                    }
+                    dd.domenulayout(); // Only call domenulayout for navigation actions.
                 });
 
                 dd.controls.startlistenbutton.click(function (e) {
@@ -374,7 +393,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 });
                 dd.controls.startreadbutton.click(function (e) {
                     if (dd.steps_complete.step_read) {
-                        dd.doreportlayout();
+                        dd.doreadreportlayout();
                     } else {
                         dd.letsshadow = false;
                         dd.doreadinglayout();
@@ -383,7 +402,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 dd.controls.startreadbutton.keypress(function (e) {
                     if (e.which == 32 || e.which == 13) {
                         if (dd.steps_complete.step_read) {
-                            dd.doreportlayout();
+                            dd.doreadreportlayout();
                         } else {
                             dd.letsshadow = false;
                             dd.doreadinglayout();
@@ -832,14 +851,14 @@ domenulayout: function () {
 dopreviewlayout: function () {
     var m = this;
     modelaudiokaraoke.modeling = false;
-    m.renderMode('listen');
+    m.renderMode('listen', null, true);
 },
 
 // Practice mode.
 dopracticelayout: function () {
     var m = this;
     modelaudiokaraoke.modeling = false;
-    m.renderMode('practice');
+    m.renderMode('practice', null, true);
 },
 
 // Read mode (read / shadow).
@@ -847,24 +866,53 @@ doreadinglayout: function () {
     var m = this;
     modelaudiokaraoke.modeling = true;
     var mode = m.letsshadow ? 'shadow' : 'read';
-    m.renderMode(mode, { letsshadow: m.letsshadow });
+    m.renderMode(mode, { letsshadow: m.letsshadow }, true);
 },
 
 // Report mode.
 doreportlayout: function () {
-    this.renderMode('report');
+    this.renderMode('report', null, true);
+},
+
+// Read report.
+doreadreportlayout: function () {
+    this.renderMode('readreport', null, true);
 },
 
 // Quiz mode.
 doquizlayout: function () {
-    this.renderMode('quiz');
+    this.renderMode('quiz', null, true);
 },
 
     getModeFromUrl: function () {
         var params = new URLSearchParams(window.location.search);
         var mode = params.get('mode');
-        var allowed = ['listen', 'practice', 'read', 'shadow', 'quiz', 'report'];
+        var allowed = ['listen', 'practice', 'read', 'shadow', 'quiz', 'report', 'readreport', 'quizreport'];
         return allowed.indexOf(mode) >= 0 ? mode : null;
+    },
+
+    canAccessMode: function(mode) {
+        var dd = this;
+
+        // Map modes to their required step.
+        var modeStepMap = {
+            'listen': 'step_listen',
+            'practice': 'step_practice',
+            'read': 'step_read',
+            'shadow': 'step_shadow',
+            'quiz': 'step_quiz',
+            'report': 'step_report',
+            'readreport': 'step_read', // Requires read completion.
+            'quizreport': 'step_quiz', // Requires quiz completion.
+        }
+
+        var requiredStep = modeStepMap[mode];
+        if (!requiredStep) {
+            return true; // Unknown mode, allow access.
+        }
+
+        // Check if the step is open (user has access).
+        return dd.activitydata.stepsopen[requiredStep] !== undefined;
     },
 
     pushModeToUrl: function (mode) {
@@ -898,13 +946,23 @@ doquizlayout: function () {
             case 'shadow':   return 'mod_readaloud/listen'; // TEMP: reuse listen for shadow
             case 'quiz':     return 'mod_readaloud/quizcontainer';
             case 'report':   return 'mod_readaloud/finalreport';
+            case 'readreport': return 'mod_readaloud/readreport';
             default:         return null;
         }
     },
 
 // Hide home, render mode template into modeview.
-renderMode: function (mode, extraContext) {
+renderMode: function (mode, extraContext, isTrustedNavigation) {
     var dd = this;
+
+    // Validate access if this is not trusted nvigation (i.e. from url)
+    // Trusted navigation means the user has clicked a button we provided.
+    if(!isTrustedNavigation && !dd.canAccessMode(mode)) {
+        log.debug('Access denied to mode: ' + mode);
+        dd.domenulayout(); // Redirect to home.
+        return;
+    }
+
     var template = dd.getTemplateForMode(mode);
     if (!template) {
         dd.domenulayout();
@@ -982,7 +1040,7 @@ renderMode: function (mode, extraContext) {
         var dd = this;
         var mode = dd.getModeFromUrl();
         if (mode) {
-            dd.renderMode(mode);
+            dd.renderMode(mode, null, false); // Validate browser back/forward navigation.
         } else {
             dd.showHome();
         }

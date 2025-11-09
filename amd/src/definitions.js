@@ -91,6 +91,16 @@ define(['jquery', 'core/log'], function ($, log) {
         smallreportheading: 'mod_readaloud_smallreport_heading',
         fullreportbutton: 'mod_readaloud_smallreport_fullreportbutton',
 
+        // Read report.
+        readreportcontainer: 'mod_readaloud_readreport_cont',
+        readreportrating: 'mod_readaloud_readreport_rating',
+        readreportstars: 'mod_readaloud_readreport_stars',
+        readreportcards: 'mod_readaloud_readreport_cards',
+        readreportplayer: 'mod_readaloud_readreport_player',
+        readreportdummyplayer: 'mod_readaloud_readreport_dummyplayer',
+        readreportstatus: 'mod_readaloud_readreport_status',
+        readreportheading: 'mod_readaloud_readreport_heading',
+
         //Practice container
         practicecontainer: 'mod_readaloud_practice_container',
 

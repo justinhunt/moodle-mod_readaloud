@@ -1254,6 +1254,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         // Quiz html.
         $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
         $quizhelper = new quizhelper($cm);
+        $hasquizquestions = $quizhelper->fetch_item_count() > 0;
         $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm);
 
         $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
@@ -1285,6 +1286,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'feedback' => $feedback,
             'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'hasbody' => true, // TEMP.
+            'hasquizquestions' => $hasquizquestions,
             'headercontent' => $headercontent,
             'instructions' => $instructions,
             'modelaudiohtml' => $modelaudiohtml,

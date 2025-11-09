@@ -102,13 +102,13 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
 
         //load all the controls so we do not have to do it later
         register_controls: function(){
-            this.controls.heading = $('.' + def.smallreportheading);
+            this.controls.heading = $('.' + def.readreportheading);
             this.controls.fullreportcontainer = $('.' + def.fullreportcontainer);
-            this.controls.player = $('.' + def.smallreportplayer);
-            this.controls.dummyplayer = $('.' + def.smallreportdummyplayer);
-            this.controls.stars = $('.' + def.smallreportstars);
-            this.controls.cards = $('.' + def.smallreportcards);
-            this.controls.status = $('.' + def.smallreportstatus);
+            this.controls.player = $('.' + def.readreportplayer);
+            this.controls.dummyplayer = $('.' + def.readreportdummyplayer);
+            this.controls.stars = $('.' + def.readreportstars);
+            this.controls.cards = $('.' + def.readreportcards);
+            this.controls.status = $('.' + def.readreportstatus);
         },
 
         //attach the various event handlers we need
