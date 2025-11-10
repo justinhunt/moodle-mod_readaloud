@@ -56,6 +56,7 @@
             </div>
         </div>
 
+        <!-- Stats cards -->
         {{#showstats}}
             <div class="mod_readaloud_readreport_cards row g-3 mb-4">
                 {{> mod_readaloud/smallreportcards}}
@@ -88,13 +89,14 @@
     </div>
     {{/hasquizquestions}}
 
+    <!--The audio player-->
+    {{#smallreport}}
     <div class="mod_readaloud_audioplayer_section mb-4">
-        {{#smallreport}}
         <div class="mod_readaloud_readreport_player">
             {{> mod_readaloud/smallreportplayer}}
         </div>
-        {{/smallreport}}
     </div>
+    {{/smallreport}}
 
     <!--The reading passage with read again button-->
     <div class="mod_readaloud_readingpassage_section mb-4">

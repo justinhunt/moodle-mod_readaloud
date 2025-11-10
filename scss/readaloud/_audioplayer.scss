@@ -1,0 +1,59 @@
+.mod_readaloud_audioplayer {
+    background: $white;
+    border: $border-width solid $border-color;
+    max-width: 100%;
+
+    // Progress bar.
+    .mod_readaloud_audioplayer_bar {
+        border-radius: 4px;
+        height: 8px;
+        overflow: hidden;
+
+        .mod_readaloud_audioplayer_bar_behind {
+            background-color: $gray-300;
+            border-radius: 4px;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        .mod_readaloud_audioplayer_bar_front {
+            background-color: $green;
+            border-radius: 4px;
+            height: 100%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            transition: width 0.1s ease;
+            width: 0%;
+        }
+        // TODO: Can we create a progress bar mixin.
+    }
+
+    // Skip buttons.
+    .mod_readaloud_audioplayer_skip_button_back,
+    .mod_readaloud_audioplayer_skip_button_forward {
+        background-color: $gray-100;
+        border-color: $border-color;
+        color: $gray-700;
+        font-size: 0.875rem;
+        min-width: 60px;
+
+        &:active {
+            background-color: $gray-300;
+        }
+
+        &:hover {
+            background-color: $gray-200;
+            border-color: $gray-400;
+        }
+    }
+
+    // Time display.
+    .mod_readaloud_audioplayer_time {
+        color: $gray-700;
+        font-size: 0.875rem;
+    }
+}
