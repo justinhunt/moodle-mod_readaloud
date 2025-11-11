@@ -697,9 +697,7 @@ $string['missedwords_explanation']="The top error words in the most recent attem
 $string['missed_count'] = "Missed Count";
 $string['rank'] = "Rank";
 
-$string['unit_wpm']="words/min";
-$string['unit_percent']="percent";
-$string['unit_words']="words";
+$string['unit_percent']="%";
 
 $string['totalwords'] = 'Total Words';
 $string['sentences'] = 'Sentences';
@@ -985,8 +983,12 @@ $string['practicecomplete_desc'] = 'It looks like you are ready to read the full
 $string['question'] = 'Question?';
 $string['questions'] = 'Questions';
 $string['quizresults'] = 'Quiz Results';
+$string['quiztime'] = 'Quiz Time';
+$string['quiztimehelp'] = 'Take the quiz to test your reading skill further.';
 $string['readaloudresults'] = 'Read Aloud Results';
 $string['readingpassage'] = 'Reading Passage';
+$string['readreporthelp'] = "Check your results. How well did you understand the passage?";
+$string['takethequiz'] = 'Take the Quiz';
 $string['timetopractice'] = 'Finished Listening?';
 $string['tryagain'] = 'Try Again';
 $string['viewfinalreport'] = 'View Final Report';

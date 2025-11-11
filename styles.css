@@ -30,6 +30,57 @@
   background: rgba(81, 61, 235, 0.06);
 }
 
+.mod_readaloud_audioplayer {
+  background: #FFFFFF;
+  border: 1px solid #E3E3E4;
+  max-width: 100%;
+}
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_bar {
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_bar .mod_readaloud_audioplayer_bar_behind {
+  background-color: #CFCED1;
+  border-radius: 4px;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_bar .mod_readaloud_audioplayer_bar_front {
+  background-color: #00AE34;
+  border-radius: 4px;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: width 0.1s ease;
+  width: 0%;
+}
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_back,
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_forward {
+  background-color: #F9F9FA;
+  border-color: #E3E3E4;
+  color: #727276;
+  font-size: 0.875rem;
+  min-width: 60px;
+}
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_back:active,
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_forward:active {
+  background-color: #CFCED1;
+}
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_back:hover,
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_skip_button_forward:hover {
+  background-color: #E3E3E4;
+  border-color: #BAB9BD;
+}
+.mod_readaloud_audioplayer .mod_readaloud_audioplayer_time {
+  color: #727276;
+  font-size: 0.875rem;
+}
+
 body.path-mod-readaloud #page-content .btn {
   --bs-btn-padding-y: 0.75rem;
   --bs-btn-padding-x: 0.75rem;
@@ -59,17 +110,17 @@ body.path-mod-readaloud #page-content button.control.control--playbutton .icon-p
 body.path-mod-readaloud #page-content button.control.control--playbutton .icon-stop {
   display: none;
 }
-body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true] {
+body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true], body.path-mod-readaloud #page-content button.control.control--playbutton[data-state=playing] {
   background-color: #FF0000;
   border-color: #FF0000;
   color: #FFFFFF;
   margin: 0.25rem;
   box-shadow: 0 0 0 6px rgba(255, 0, 0, 0.15);
 }
-body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true] .icon-play {
+body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true] .icon-play, body.path-mod-readaloud #page-content button.control.control--playbutton[data-state=playing] .icon-play {
   display: none;
 }
-body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true] .icon-stop {
+body.path-mod-readaloud #page-content button.control.control--playbutton[aria-pressed=true] .icon-stop, body.path-mod-readaloud #page-content button.control.control--playbutton[data-state=playing] .icon-stop {
   display: inline-block;
 }
 body.path-mod-readaloud #page-content button.control.control--recordbutton {
@@ -296,6 +347,12 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 #mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.mode-chooser.no-click a .step-icon svg,
 #mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.mode-chooser.no-click a .nav-label {
   color: #8F8E94;
+}
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.mode-chooser:has(> .nav-link:focus) {
+  border: 1px solid #1D1C1E;
+}
+#mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.mode-chooser:has(> .nav-link:focus) .nav-link:focus {
+  box-shadow: none;
 }
 
 #mod_readaloud_listenquitmodal .modal-dialog {
@@ -648,6 +705,46 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   background-color: #E3E3E4;
   border-radius: 4px;
   padding: 0.2rem;
+}
+
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .fs-1 {
+  font-size: 2.125rem !important;
+}
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .stat-label {
+  color: #727276;
+  line-height: 1.2;
+}
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .statbox-icon img.icon {
+  height: 32px;
+  max-height: 32px;
+  width: auto;
+}
+#mod_readaloud_readreport #mod_readaloud_quiztime_container {
+  background: #513DEB;
+}
+#mod_readaloud_readreport #mod_readaloud_quiztime_container #quiztime_title_container {
+  color: #FFFFFF;
+}
+#mod_readaloud_readreport #mod_readaloud_quiztime_container #quiztime_title_container h5 {
+  color: inherit;
+  font-weight: 600;
+}
+#mod_readaloud_readreport #mod_readaloud_quiztime_container button.mod_readaloud_takequiz_button,
+#mod_readaloud_readreport #mod_readaloud_quiztime_container button.mod_readaloud_quizviewreport_button {
+  background-color: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #513DEB;
+  margin: 0.25rem;
+  min-width: 110px;
+  white-space: nowrap;
+}
+#mod_readaloud_readreport .mod_readaloud_readingpassage_section button[data-action=readagain] {
+  background-color: #513DEB;
+  border-color: #513DEB;
+  color: #FFFFFF;
+  margin: 0.25rem;
+  min-width: 110px;
+  white-space: nowrap;
 }
 
 body.path-mod-readaloud #page-content {

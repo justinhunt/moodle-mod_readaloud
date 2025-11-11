@@ -29,8 +29,15 @@
                         color: $gray-600;
                     }
                 }
+
+                &:has(> .nav-link:focus) {
+                    border: $border-width solid $gray-900;
+
+                    .nav-link:focus {
+                        box-shadow: none;
+                    }
+                }
             }
         }
     }
 }
-

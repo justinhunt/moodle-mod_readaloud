@@ -15,7 +15,7 @@ body.path-mod-readaloud #page-content {
         &.control {
             &--playbutton {
                 @include readaloud-control-btn-variant($green, $green, $white);
-                // Show “play” by default.
+                // Show "play" by default.
                 .icon-play {
                     display: inline-block;
                 }
@@ -23,8 +23,9 @@ body.path-mod-readaloud #page-content {
                     display: none;
                 }
 
-                // When aria-pressed="true" swap them.
-                &[aria-pressed="true"] {
+                // When aria-pressed="true" or data-state="playing" swap them.
+                &[aria-pressed="true"],
+                &[data-state="playing"] {
                     @include readaloud-control-btn-variant($red, $red, $white);
                     .icon-play {
                         display: none;
