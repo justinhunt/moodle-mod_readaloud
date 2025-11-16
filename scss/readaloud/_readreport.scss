@@ -4,10 +4,12 @@
             .fs-1 {
                 font-size: $font-size-base * 2.125 !important; // Override Bootstrap fs-1.
             }
+
             .stat-label {
                 color: $gray-700;
                 line-height: 1.2;
             }
+
             .statbox-icon img.icon {
                 height: 32px;
                 max-height: 32px;
@@ -15,6 +17,7 @@
             }
         }
     }
+
     #mod_readaloud_quiztime_container {
         background: $purple;
 
