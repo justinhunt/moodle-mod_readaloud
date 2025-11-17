@@ -837,7 +837,12 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         // The recorder div is now in the DOM, so we can initialise it.
                         dd.setup_recorder();
                     }
-                    if (mode === 'quiz') { /* quizhelper already init'd in setupquiz; it draws into quizcontainer */ }
+                    if (mode === 'quiz') {
+                        /* quizhelper already init'd in setupquiz; it draws into quizcontainer */
+                        // Maybe not .. when activitycontroller init calls setupquiz the quiz html is not there yet.
+                        // So lets try here.
+                        dd.setupquiz();
+                    }
 
                     // Scroll/focus like a full page.
                     $view.attr('tabindex', '-1')[0].focus({preventScroll: true});
