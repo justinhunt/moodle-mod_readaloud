@@ -1083,7 +1083,7 @@ class renderer extends \plugin_renderer_base {
         // The activity header.
         $header = $this->page->activityheader;
         $corecourserenderer = $this->page->get_renderer('core_course');
-        $headercontent = $header->export_for_template($corecourserenderer);
+        $headercontent = (array) $header->export_for_template($corecourserenderer);
         $passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
         $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
         $hasheadercontent = !empty($passagepictureurl) || !empty($headercontent['description']);
