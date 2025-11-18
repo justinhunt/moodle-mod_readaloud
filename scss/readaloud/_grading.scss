@@ -113,12 +113,12 @@
 
 .mod_readaloud_postattempt {
     .mod_readaloud_grading_unreadword {
-        background-color: lightgrey;
+        background-color: $gray-200;
         text-decoration: none;
     }
 
     .mod_readaloud_grading_unreadspace {
-        background-color: lightgrey;
+        background-color: $gray-200;
         padding: 0px 2px;
     }
 }
