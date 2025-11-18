@@ -326,6 +326,154 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   color: #8F8E94;
 }
 
+.mod_readaloud_grading_player_cont {
+  color: #513DEB;
+  margin: 2rem 0;
+}
+
+.mod_readaloud_scorestable {
+  margin: 2rem 0;
+  text-align: center;
+}
+.mod_readaloud_scorestable .table thead th {
+  background: #513DEB;
+  color: #FFFFFF;
+}
+.mod_readaloud_scorestable .table thead th,
+.mod_readaloud_scorestable .table tr td {
+  font-size: 1.2em;
+}
+
+.mod_readaloud_passage_cont .mod_readaloud_grading_passageword {
+  border-radius: 0.375rem;
+  cursor: pointer;
+  margin: 2rem 0;
+  padding: 0.2rem;
+}
+.mod_readaloud_passage_cont .mod_readaloud_grading_passageword:hover {
+  background-color: #E3E3E4;
+}
+.mod_readaloud_passage_cont .mod_readaloud_grading_passageword.mod_readaloud_grading_badword {
+  background-color: rgba(255, 0, 0, 0.06);
+  border-radius: 0.375rem;
+  color: #FF0000;
+  padding: 0.2rem;
+  position: relative;
+}
+.mod_readaloud_passage_cont .mod_readaloud_grading_passagespace.mod_readaloud_grading_endspace {
+  background-color: rgba(81, 61, 235, 0.06);
+  border-radius: 0.375rem;
+  color: #513DEB;
+  padding: 0.2rem;
+  position: relative;
+}
+.mod_readaloud_passage_cont .mod_readaloud_grading_passageword.mod_readaloud_spotcheckmode,
+.mod_readaloud_passage_cont .mod_readaloud_grading_passagespace.mod_readaloud_spotcheckmode {
+  background-color: rgba(0, 174, 52, 0.06);
+}
+.mod_readaloud_passage_cont .mod_readaloud_grading_passageword.mod_readaloud_aiunmatched,
+.mod_readaloud_passage_cont .mod_readaloud_grading_passagespace.mod_readaloud_aiunmatched {
+  background-color: #E3E3E4;
+}
+
+.mod_readaloud_grading_passageactions {
+  margin: 2rem 0;
+}
+.mod_readaloud_grading_passageactions > button {
+  margin: 5px;
+}
+
+.mod_readaloud_grading_passagespace,
+.mod_readaloud_grading_correctionsspace {
+  padding: 0.2rem;
+}
+
+.mod_readaloud_grading_unreadword {
+  font-style: italic;
+  text-decoration: line-through;
+}
+
+.mod_readaloud_passage_finished {
+  background-color: #E3E3E4;
+  padding: 0.2rem;
+}
+
+.btn.mod_readaloud_quickgrade_ok {
+  --bs-btn-padding-y: 0.75rem;
+  --bs-btn-padding-x: 0.75rem;
+  --bs-btn-font-size: 0.875rem;
+  --bs-btn-border-radius: 0.5rem;
+  line-height: normal;
+  background-color: #513DEB;
+  border-color: #513DEB;
+  color: #FFFFFF;
+  margin: 0.25rem;
+}
+.btn.mod_readaloud_quickgrade_ok:hover {
+  background-color: #4232BF;
+}
+.btn.mod_readaloud_quickgrade_ng {
+  --bs-btn-padding-y: 0.75rem;
+  --bs-btn-padding-x: 0.75rem;
+  --bs-btn-font-size: 0.875rem;
+  --bs-btn-border-radius: 0.5rem;
+  line-height: normal;
+  background-color: darkgrey;
+  border-color: darkgrey;
+  color: #FFFFFF;
+  margin: 0.25rem;
+}
+.btn.mod_readaloud_quickgrade_ng:hover {
+  background-color: #E3E3E4;
+}
+
+.collapsespaces .mod_readaloud_grading_passagespace:not(.mod_readaloud_grading_endspace) {
+  display: none;
+}
+.collapsespaces .mod_readaloud_grading_passageword {
+  padding: 0.2rem;
+}
+
+.mod_readaloud_postattempt .mod_readaloud_grading_unreadword {
+  background-color: lightgrey;
+  text-decoration: none;
+}
+.mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
+  background-color: lightgrey;
+  padding: 0px 2px;
+}
+
+.mod_readaloud_grading_action_cont {
+  align-items: center;
+  margin-top: 1rem;
+  padding: 3px;
+}
+
+#mod_readaloud_grading_player {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.mod_readaloud_quiz_cont .mod_readaloud_postattempt .mod_readaloud_grading_unreadword {
+  background-color: lightgrey;
+  color: #FF0000;
+  font-weight: 700;
+  text-decoration: none;
+}
+.mod_readaloud_quiz_cont .mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
+  background-color: lightgrey;
+  padding: 0px 2px;
+}
+
+.mod_readaloud_debug .mod_readaloud_grading_passageword::after,
+.mod_readaloud_debug_transcriptword::after {
+  border: 1px solid #513DEB;
+  border-radius: 0.375rem;
+  content: attr(data-wordnumber);
+  font-size: 0.625rem;
+  padding: 0.2rem;
+}
+
 #mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li {
   border: 1px solid #E3E3E4;
 }
@@ -353,6 +501,13 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 }
 #mod_readaloud_home_cont #mod_readaloud_menubuttons_cont .main-nav li.mode-chooser:has(> .nav-link:focus) .nav-link:focus {
   box-shadow: none;
+}
+
+body.path-mod-readaloud #topofscroll.main-inner {
+  max-width: 830px;
+  margin: 0 auto;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 #mod_readaloud_listenquitmodal .modal-dialog {
@@ -398,7 +553,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 }
 .mod_readaloud_passage_cont .mod_readaloud_modelaudio_activesentence {
   background-color: rgba(255, 218, 32, 0.3);
-  border-radius: 4px;
+  border-radius: 0.375rem;
   padding: 0.2rem;
 }
 .mod_readaloud_passage_cont p:last-child {
@@ -703,7 +858,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 }
 #mod_readaloud_quiz_cont_wrap .mod_readaloud_studentreportpassage .mod_readaloud_grading_unreadword {
   background-color: #E3E3E4;
-  border-radius: 4px;
+  border-radius: 0.375rem;
   padding: 0.2rem;
 }
 

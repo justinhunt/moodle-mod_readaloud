@@ -1083,9 +1083,10 @@ class renderer extends \plugin_renderer_base {
         // The activity header.
         $header = $this->page->activityheader;
         $corecourserenderer = $this->page->get_renderer('core_course');
-        $headercontent = $header->export_for_template($corecourserenderer);
+        $headercontent = (array) $header->export_for_template($corecourserenderer);
         $passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
         $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
+        $hasheadercontent = !empty($passagepictureurl) || !empty($headercontent['description']);
 
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
 if ($moduleinstance->passagesegments === null) {
@@ -1286,6 +1287,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'feedback' => $feedback,
             'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'hasbody' => true, // TEMP.
+            'hasheadercontent' => $hasheadercontent,
             'hasquizquestions' => $hasquizquestions,
             'headercontent' => $headercontent,
             'instructions' => $instructions,
