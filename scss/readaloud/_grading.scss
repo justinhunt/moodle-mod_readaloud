@@ -92,7 +92,7 @@
     }
     &.mod_readaloud_quickgrade_ng {
         @include readaloud-btn-size;
-        @include readaloud-btn-variant(darkgrey, darkgrey, $white);
+        @include readaloud-btn-variant($gray-800, $gray-800, $white);
         &:hover {
             background-color: $gray-200;
         }
