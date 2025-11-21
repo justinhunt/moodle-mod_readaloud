@@ -372,7 +372,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 });
 
                 // Intercept navigation that would cause page reload - use SPA navigation instead
-                $(document).on('click', '.secondary-navigation [data-key="modulepage"] a, .backarrow[data-action="back-to-home"], [data-action="readagain"], [data-action="takequiz"], [data-action="quizviewreport"]', function(e) {
+                $(document).on('click', '.secondary-navigation [data-key="modulepage"] a, .backarrow[data-action="back-to-home"], [data-action="readagain"], [data-action="takequiz"], [data-action="retakequiz"], [data-action="quizviewreport"]', function(e) {
                     e.preventDefault();
                     var action = $(this).data('action');
                     if (action === 'readagain') {
@@ -386,6 +386,11 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         return;
                     } else if (action === 'takequiz') {
                         dd.doquizlayout();
+                        return;
+                    } else if (action === 'retakequiz') {
+                        log.debug('Re-taking quiz');
+                        dd.renderMode('quiz', {retakequiz: true}, true);
+
                         return;
                     } else if (action === 'quizviewreport') {
                         dd.doreportlayout();
@@ -842,6 +847,15 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         // Maybe not .. when activitycontroller init calls setupquiz the quiz html is not there yet.
                         // So lets try here.
                         dd.setupquiz();
+
+                        //if retake quiz
+                        if(extraContext && extraContext.retakequiz){
+                            var quizfinishedcontainer = $('#mod_readaloud_quiz_finished');
+                            var quizitemscontainer = $('#mod_readaloud_quiz_items_cont');
+                            quizfinishedcontainer.hide();
+                            quizitemscontainer.show();
+                        }
+
                     }
 
                     // Scroll/focus like a full page.

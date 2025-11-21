@@ -45,7 +45,6 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
             var togglemodalbutton = $('#mod_readaloud_showquiztryagainmodal');
             togglemodalbutton.click();
 
-
         });
 
         $('body').on('click','.mod_readaloud_quiztryagainmodal .mrq_docancelreattempt',function(e) {

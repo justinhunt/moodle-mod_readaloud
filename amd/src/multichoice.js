@@ -133,7 +133,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/pollyh
 
 
       //on tapping of a response, we either action the choice or show a confirmation button
-      log.debug('Readaloud Multichoice: response clicked' + "#" + itemdata.uniqueid + "_container .readaloud_mc_response");
+      //log.debug('Readaloud Multichoice: response clicked' + "#" + itemdata.uniqueid + "_container .readaloud_mc_response");
       $("#" + itemdata.uniqueid + "_container .readaloud_mc_response").on('click', function(e){
         log.debug('Readaloud Multichoice: response clicked');
           chosenelement = this;

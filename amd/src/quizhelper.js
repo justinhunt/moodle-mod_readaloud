@@ -226,7 +226,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
         } else {
             // Alert server and activity controller that the quiz is complete
             dd.on_complete();
-
+log.debug('quiz iz complete')
             //just reload and re-fetch all the data to display
               $(".readaloud_nextbutton").prop("disabled", true);
               //fetch the results and display them
@@ -252,6 +252,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
                       dd.controls.quizresultscontainer.html(html);
                       dd.controls.quizresultscontainer.show();
                       dd.controls.quizitemscontainer.hide();
+                      log.debug('da quiz iz complete');
                       templates.runTemplateJS(js);
                 });
             });
