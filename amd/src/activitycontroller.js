@@ -382,6 +382,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         }
                         dd.reset_recorder();
                         dd.letsshadow = false;
+                        log.debug('Re-readinglayout');
                         dd.doreadinglayout();
                         return;
                     } else if (action === 'takequiz') {
@@ -389,6 +390,9 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         return;
                     } else if (action === 'retakequiz') {
                         log.debug('Re-taking quiz');
+                        // we need to call rendermode (not doquizlayout) so that we can pass the retakequiz flag
+                        // Rendermode puts the html from php on the page again in a promise that resolves a bit slow
+                        // And we need to hide/show stuff to get retake after that. The flag sets that up
                         dd.renderMode('quiz', {retakequiz: true}, true);
 
                         return;
@@ -832,6 +836,10 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     setTimeout(function() {
                         if (typeof dd.updateBigButtonMenuModeStatus === 'function') dd.updateBigButtonMenuModeStatus();
                     }, 0);
+
+                    if(mode === 'readreport') {
+                        smallreporthelper.init(dd.activitydata);
+                    }
 
                     if (mode === 'practice') {
                         // Now call practice.init() with the template DOM elements available.

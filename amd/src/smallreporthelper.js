@@ -38,9 +38,10 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
 
         //init the module
         init: function(props){
-
+            log.debug("small report init with props");
+            log.debug(props);
             //pick up opts from html
-            var theid = props['configcontrolid'];
+            var theid = props['smallreportcontainer'] + '_opts';
             var configcontrol = $('#' + theid).get(0);
             if (configcontrol) {
                 var opts = JSON.parse(configcontrol.value);
@@ -50,7 +51,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
                 log.debug('Small Report: No config found on page. Giving up.');
                 return;
             }
-
+            log.debug("small report opts");
+            log.debug(opts);
             this.cmid=opts['cmid'];
             this.attemptid=opts['attemptid'];
             this.ready=opts['ready'];
@@ -65,7 +67,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
             this.register_events();
 
             //Init the full report passage
-            passagemarkuphelper.init($('.' + this.cd.fullreportcontainer));
+            passagemarkuphelper.init($('.' + this.cd.passagecontainer));//fullreportcontainer
+            log.debug($('.' + this.cd.passagecontainer));
             if(opts['sessionmatches']){
                 passagemarkuphelper.markup_passage(opts['sessionmatches'],opts['sessionerrors'],opts['sessionendword']);
 

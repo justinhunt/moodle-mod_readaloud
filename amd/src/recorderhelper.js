@@ -12,9 +12,12 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
         status: 'stopped',
 
         reset: function () {
-            var container = $('#' + this.opts['recorderid']);
-            container.attr('data-alreadyparsed', 'false');
-            container.html('');
+            //before we reset, make sure we were initialized in the first place
+            if (this.opts !== null) {
+                var container = $('#' + this.opts['recorderid']);
+                container.attr('data-alreadyparsed', 'false');
+                container.html('');
+            }
         },
 
         init: function (opts, on_recording_start,
