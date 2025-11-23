@@ -2072,14 +2072,6 @@ class utils {
         return $options;
     }
 
-    // public static function fetch_options_showquiz() {
-    //     $options = [constants::M_SHOWQUIZ_NONE => get_string("showquiz_none", constants::M_COMPONENT),
-    //             constants::M_SHOWQUIZ_PASSAGE => get_string("showquiz_passage", constants::M_COMPONENT),
-    //             constants::M_SHOWQUIZ_NOPASSAGE => get_string("showquiz_nopassage", constants::M_COMPONENT)
-    //        ];
-    //     return $options;
-    // }
-
     public static function fetch_options_guidedtranscription(){
         $options = array( constants::GUIDEDTRANS_PASSAGE => get_string("guidedtrans_passage", constants::M_COMPONENT),
             constants::GUIDEDTRANS_CORPUS => get_string("guidedtrans_corpus", constants::M_COMPONENT));
