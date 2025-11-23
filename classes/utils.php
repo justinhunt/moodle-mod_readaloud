@@ -2447,7 +2447,7 @@ class utils {
         ];
 
         // Add the checkbox group to the form
-        $mform->addGroup($steps, 'steps', get_string('activitysteps', constants::M_COMPONENT), array(' '), false);
+        $mform->addGroup($steps, 'steps', get_string('activitysteps', constants::M_COMPONENT), array('<br>'), false);
 
         // Set default values for the checkboxes
         $stepdefaults =[];
