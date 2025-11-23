@@ -57,8 +57,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
                 'ttslanguage', 'ttsvoice', 'ttsspeed', 'enablepreview', 'enableshadow', 'enablelandr' ,'transcriber', 'modelaudiourl', 'modelaudiobreaks',
                 'modelaudiotrans', 'modelaudiofulltrans', 'modelaudiomatches',
                 'enableai', 'allowearlyexit', 'expiredays' ,'region', 'activitylink', 'submitrawaudio', 'stricttranscribe', 'recorder', 'foriframe',
-                'usecorpus', 'corpushash', 'passagepicture', 'passagekey', 'corpusrange', 'customfont', "stdashboardid", 'timecreated',  'timemodified', 'viewstart', 'viewend',
-                'showquiz', 'showqtitles', 'showqreview', 'qfinishscreen', 'qcustomscreen', 'steps',
+                'usecorpus', 'corpushash', 'passagepicture', 'passagekey', 'corpusrange', 'customfont', "stdashboardid", 'timecreated',  'timemodified', 'viewstart', 'viewend', 'showqtitles', 'showqreview', 'qfinishscreen', 'qcustomscreen', 'steps',
         ));
 
         //attempts

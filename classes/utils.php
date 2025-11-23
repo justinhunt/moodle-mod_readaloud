@@ -2072,13 +2072,13 @@ class utils {
         return $options;
     }
 
-    public static function fetch_options_showquiz() {
-        $options = [constants::M_SHOWQUIZ_NONE => get_string("showquiz_none", constants::M_COMPONENT),
-                constants::M_SHOWQUIZ_PASSAGE => get_string("showquiz_passage", constants::M_COMPONENT),
-                constants::M_SHOWQUIZ_NOPASSAGE => get_string("showquiz_nopassage", constants::M_COMPONENT)
-           ];
-        return $options;
-    }
+    // public static function fetch_options_showquiz() {
+    //     $options = [constants::M_SHOWQUIZ_NONE => get_string("showquiz_none", constants::M_COMPONENT),
+    //             constants::M_SHOWQUIZ_PASSAGE => get_string("showquiz_passage", constants::M_COMPONENT),
+    //             constants::M_SHOWQUIZ_NOPASSAGE => get_string("showquiz_nopassage", constants::M_COMPONENT)
+    //        ];
+    //     return $options;
+    // }
 
     public static function fetch_options_guidedtranscription(){
         $options = array( constants::GUIDEDTRANS_PASSAGE => get_string("guidedtrans_passage", constants::M_COMPONENT),
@@ -2465,13 +2465,6 @@ class utils {
 
         // Quiz Options
         $mform->addElement('header', 'quizsettingsheader', get_string('quizsettingsheader', constants::M_COMPONENT));
-
-
-       // show quiz options
-       $showquizoptions = self::fetch_options_showquiz();
-       $mform->addElement('select', 'showquiz', get_string('showquiz', constants::M_COMPONENT), $showquizoptions);
-       $mform->addHelpButton('showquiz', 'showquiz', constants::M_COMPONENT);
-       $mform->setDefault('showquiz', constants::M_SHOWQUIZ_NONE);
 
         // show question titles
         $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
