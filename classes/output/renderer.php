@@ -189,7 +189,8 @@ class renderer extends \plugin_renderer_base {
         $fullreportdata = $this->get_full_student_report_data(
             $moduleinstance,
             $modulecontext,
-            $attempts
+            $attempts,
+            $cm
         );
         $tdata = array_merge($tdata, $fullreportdata);
 
@@ -729,7 +730,7 @@ class renderer extends \plugin_renderer_base {
      * @param array $attempts Array of attempt objects for the student.
      * @return array Associative array containing evaluation status, rendered passage, attempt summaries, charts, and feedback.
      */
-    public function get_full_student_report_data($moduleinstance, $modulecontext, $attempts) {
+    public function get_full_student_report_data($moduleinstance, $modulecontext, $attempts, $cm) {
 
         // Fetch passage renderer.
         $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
@@ -768,7 +769,7 @@ class renderer extends \plugin_renderer_base {
 
         // Show an attempt summary if we have more than one attempt and we are not the guest user.
         // This is a chart of the attempts.
-        if (count($attempts) > 1 && !isguestuser()) {
+        if (count($attempts) >= 1 && !isguestuser()) {
             // If we can calculate a grade, lets do it.
             $showgradesinchart = $moduleinstance->targetwpm > 0;
 
@@ -796,6 +797,13 @@ class renderer extends \plugin_renderer_base {
                         $ret['attemptschart'] =  $renderedchart;
                     }
             }
+        }
+
+        // Get quiz results data.
+        if ($latestattempt) {
+            $quizhelper = new quizhelper($cm);
+            $quizresults = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
+            $ret = array_merge($ret, (array)$quizresults);
         }
 
         // Show feedback summary.
@@ -1273,6 +1281,14 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             $stepscomplete
         );
 
+        // Get full report data for the finalreport template.
+        $fullreportdata = $this->get_full_student_report_data(
+            $moduleinstance,
+            $modulecontext,
+            $attempts,
+            $cm
+        );
+
         // Build the full template context FIRST (before fetching AMD data).
         $templatecontext = array_merge([
             'activityheader' => $activityheader,
@@ -1285,6 +1301,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'enablenoshadow' => $modevisibility['enablenoshadow'],
             'error' => false, // cannot find any code calling show_error.
             'feedback' => $feedback,
+            'fullreportdata' => $fullreportdata,
             'hasaudiobreaks' => $modevisibility['hasaudiobreaks'],
             'hasbody' => true, // TEMP.
             'hasheadercontent' => $hasheadercontent,

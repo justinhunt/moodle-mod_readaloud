@@ -247,7 +247,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     startshadowbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_shadow + '"]'),
                     startquizbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_quiz + '"]'),
                     readagainbutton: $('#' + opts['readagainbutton']),
-                    startreportbutton: $('#' + opts['startreportbutton'] + ' .mode-chooser[data-step="' + opts.steps.step_report + '"]'),
+                    startreportbutton: $('#' + opts['menubuttonscontainer'] + ' .mode-chooser[data-step="' + opts.steps.step_report + '"]'),
                     returnmenubutton: $('#' + opts['returnmenubutton']),
                     stopandplay: $('#' + opts['stopandplay']),
                     quitlisteningbutton: $('#' + opts['quitlisteningbutton']),
@@ -956,20 +956,13 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         return true;
                     }
                     var status;
-                    // Mark step_report as completed if step_read or step_quiz is completed.
-                    if (stepKey === 'step_report' &&
-                        ((stepsComplete['step_read'] === true || stepsComplete['step_read'] === 'true') ||
-                            (stepsComplete['step_quiz'] === true || stepsComplete['step_quiz'] === 'true'))) {
+                    var isComplete = (stepsComplete[stepKey] === true || stepsComplete[stepKey] === 'true');
+                    if (isComplete) {
                         status = 'completed';
+                    } else if (stepKey === firstIncomplete) {
+                        status = 'in-progress';
                     } else {
-                        var isComplete = (stepsComplete[stepKey] === true || stepsComplete[stepKey] === 'true');
-                        if (isComplete) {
-                            status = 'completed';
-                        } else if (stepKey === firstIncomplete) {
-                            status = 'in-progress';
-                        } else {
-                            status = 'upcoming';
-                        }
+                        status = 'upcoming';
                     }
                     renderCallback($elem, status, stepKey);
                 });

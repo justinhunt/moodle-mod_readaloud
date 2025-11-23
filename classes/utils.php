@@ -3670,8 +3670,13 @@ class utils {
                 $opensteps[$stepname] = $step;
             }
         }
-        //Step report is a bit hacky. It is open if the read step is complete
-        $opensteps['step_report'] = self::is_step_complete(constants::STEP_READ,$attempt);
+        // Report is open if: quiz enabled + quiz complete, else read complete.
+        if (self::is_step_enabled(constants::STEP_QUIZ, $moduleinstance)) {
+            $opensteps['step_report'] = self::is_step_complete(constants::STEP_QUIZ, $attempt);
+        } else {
+            $opensteps['step_report'] = self::is_step_complete(constants::STEP_READ, $attempt);
+        }
+
         return $opensteps;
     }
 
@@ -3683,8 +3688,8 @@ class utils {
                 $complete[$stepname] = self::is_step_complete($step, $attempt);
             }
         }
-        // If you have any special cases (like step_report being tied to STEP_READ), handle them here:
-        $complete['step_report'] = self::is_step_complete(constants::STEP_READ, $attempt);
+        // Report cannot be completed, only opened.
+        $complete['step_report'] = false;
         return $complete;
     }
 

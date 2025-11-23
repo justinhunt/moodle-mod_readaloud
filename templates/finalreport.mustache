@@ -1,18 +1,13 @@
+{{#fullreportdata}}
 <div id="{{fullreportcontainer}}" class='mod_readaloud_finalreport {{fullreportcontainer}}'>
 
-    <!--For more than 1 event we have a summary -->
-    {{#hasattemptssummary}}
-        {{>mod_readaloud/studentreadingattemptssummary}}
-        {{>mod_readaloud/studentquizattemptssummary}}
-        {{>mod_readaloud/studentreadingattemptschart}}
-    {{/hasattemptssummary}}
+    {{>mod_readaloud/studentreadingattemptssummary}}
+    {{>mod_readaloud/studentquizattemptssummary}}
 
-    <!--General Feedback -->
     <div class="{{M_FEEDBACK_CONTAINER}} {{constants::M_POSTATTEMPT}}" id="{{M_FEEDBACK_CONTAINER}}">
-        <div class="box py-3 generalbox">
-            <div class="mod_readaloud_center">
+        <div class="box py-3 generalbox mb-3">
             {{generalfeedback}}
-            </div>
         </div>
     </div>
 </div>
+{{/fullreportdata}}
