@@ -2072,14 +2072,6 @@ class utils {
         return $options;
     }
 
-    public static function fetch_options_showquiz() {
-        $options = [constants::M_SHOWQUIZ_NONE => get_string("showquiz_none", constants::M_COMPONENT),
-                constants::M_SHOWQUIZ_PASSAGE => get_string("showquiz_passage", constants::M_COMPONENT),
-                constants::M_SHOWQUIZ_NOPASSAGE => get_string("showquiz_nopassage", constants::M_COMPONENT)
-           ];
-        return $options;
-    }
-
     public static function fetch_options_guidedtranscription(){
         $options = array( constants::GUIDEDTRANS_PASSAGE => get_string("guidedtrans_passage", constants::M_COMPONENT),
             constants::GUIDEDTRANS_CORPUS => get_string("guidedtrans_corpus", constants::M_COMPONENT));
@@ -2447,7 +2439,7 @@ class utils {
         ];
 
         // Add the checkbox group to the form
-        $mform->addGroup($steps, 'steps', get_string('activitysteps', constants::M_COMPONENT), array(' '), false);
+        $mform->addGroup($steps, 'steps', get_string('activitysteps', constants::M_COMPONENT), array('<br>'), false);
 
         // Set default values for the checkboxes
         $stepdefaults =[];
@@ -2465,13 +2457,6 @@ class utils {
 
         // Quiz Options
         $mform->addElement('header', 'quizsettingsheader', get_string('quizsettingsheader', constants::M_COMPONENT));
-
-
-       // show quiz options
-       $showquizoptions = self::fetch_options_showquiz();
-       $mform->addElement('select', 'showquiz', get_string('showquiz', constants::M_COMPONENT), $showquizoptions);
-       $mform->addHelpButton('showquiz', 'showquiz', constants::M_COMPONENT);
-       $mform->setDefault('showquiz', constants::M_SHOWQUIZ_NONE);
 
         // show question titles
         $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
@@ -3677,8 +3662,13 @@ class utils {
                 $opensteps[$stepname] = $step;
             }
         }
-        //Step report is a bit hacky. It is open if the read step is complete
-        $opensteps['step_report'] = self::is_step_complete(constants::STEP_READ,$attempt);
+        // Report is open if: quiz enabled + quiz complete, else read complete.
+        if (self::is_step_enabled(constants::STEP_QUIZ, $moduleinstance)) {
+            $opensteps['step_report'] = self::is_step_complete(constants::STEP_QUIZ, $attempt);
+        } else {
+            $opensteps['step_report'] = self::is_step_complete(constants::STEP_READ, $attempt);
+        }
+
         return $opensteps;
     }
 
@@ -3690,8 +3680,8 @@ class utils {
                 $complete[$stepname] = self::is_step_complete($step, $attempt);
             }
         }
-        // If you have any special cases (like step_report being tied to STEP_READ), handle them here:
-        $complete['step_report'] = self::is_step_complete(constants::STEP_READ, $attempt);
+        // Report cannot be completed, only opened.
+        $complete['step_report'] = false;
         return $complete;
     }
 
