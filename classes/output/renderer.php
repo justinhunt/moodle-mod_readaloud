@@ -800,10 +800,13 @@ class renderer extends \plugin_renderer_base {
         }
 
         // Get quiz results data.
-        if ($latestattempt) {
-            $quizhelper = new quizhelper($cm);
-            $quizresults = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
-            $ret = array_merge($ret, (array)$quizresults);
+        if ($latestattempt && !empty($latestattempt->qdetails)) {
+            $qdetailsobj = json_decode($latestattempt->qdetails);
+            if ($qdetailsobj !== null) {
+                $quizhelper = new quizhelper($cm);
+                $quizresults = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
+                $ret = array_merge($ret, (array)$quizresults);
+            }
         }
 
         // Show feedback summary.
