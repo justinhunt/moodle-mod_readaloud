@@ -418,8 +418,8 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   --bs-btn-font-size: 0.875rem;
   --bs-btn-border-radius: 0.5rem;
   line-height: normal;
-  background-color: darkgrey;
-  border-color: darkgrey;
+  background-color: #565559;
+  border-color: #565559;
   color: #FFFFFF;
   margin: 0.25rem;
 }
@@ -435,11 +435,11 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
 }
 
 .mod_readaloud_postattempt .mod_readaloud_grading_unreadword {
-  background-color: lightgrey;
+  background-color: #E3E3E4;
   text-decoration: none;
 }
 .mod_readaloud_postattempt .mod_readaloud_grading_unreadspace {
-  background-color: lightgrey;
+  background-color: #E3E3E4;
   padding: 0px 2px;
 }
 
@@ -900,6 +900,16 @@ body.path-mod-readaloud #topofscroll.main-inner {
   margin: 0.25rem;
   min-width: 110px;
   white-space: nowrap;
+}
+
+.mod_readaloud_readreport_stars i,
+.mod_readaloud_quizresult_rating i {
+  font-size: 1.2rem;
+  margin-right: 2px;
+}
+.mod_readaloud_readreport_stars i.text-muted,
+.mod_readaloud_quizresult_rating i.text-muted {
+  color: #E3E3E4 !important;
 }
 
 body.path-mod-readaloud #page-content {

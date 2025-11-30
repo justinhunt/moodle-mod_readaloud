@@ -138,16 +138,12 @@ class renderer extends \plugin_renderer_base {
         // Star rating.
         if ($attempt && $graded) {
             if ($showgrades) {
-                $rating = utils::fetch_rating($attempt, $aigrade); // Rating: 0, 1, 2, 3, 4 or 5.
+                $rating = utils::fetch_rating($attempt, $aigrade); // Rating: 0 - 10 (0 - 5 stars with half-star increments).
             } else {
-                $rating = 5;
+                $rating = 10;
             }
             $ready = $rating > -1;
-            $stars = [];
-            for ($star = 0; $star < 5; $star++) {
-                $stars[] = $rating > $star ? 'fa-solid fa-star' : 'fa-regular fa-star';
-            }
-            $tdata['stars'] = $stars;
+            $tdata['stars'] = utils::render_stars($rating);
 
             // Stats.
             $stats = utils::fetch_small_reportdata($attempt, $aigrade);

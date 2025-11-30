@@ -1,0 +1,9 @@
+.mod_readaloud_readreport_stars,
+.mod_readaloud_quizresult_rating {
+    i {
+        @include star-styles;
+        &.text-muted {
+            color: $gray-200 !important;
+        }
+    }
+}
