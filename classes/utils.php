@@ -3452,20 +3452,25 @@ class utils {
     public static function remake_quizsteps_as_array($stepsobject) {
         if(is_array($stepsobject)) {
             return $stepsobject;
-        }else{
-            $steps = [];
-            foreach ($stepsobject as $key => $value)
-            {
-                if(is_numeric($key)){
-                    $key = intval($key);
-                    $steps[$key] = $value;
-                }
-
-            }
-            //sort asc according to the key (itemorder)
-            ksort($steps);
-            return $steps;
         }
+
+        // Handle null or invalid input.
+        if ($stepsobject === null || !is_object($stepsobject)) {
+            return [];
+        }
+
+        $steps = [];
+        foreach ($stepsobject as $key => $value)
+        {
+            if(is_numeric($key)){
+                $key = intval($key);
+                $steps[$key] = $value;
+            }
+
+        }
+        //sort asc according to the key (itemorder)
+        ksort($steps);
+        return $steps;
     }
 
     //Return finished quiz results in a format that can be passed to a mustache template
@@ -3483,7 +3488,8 @@ class utils {
         $context = \context_module::instance($cm->id);
 
         // Steps data.
-        $steps = json_decode($theattempt->qdetails)->steps;
+        $qdetails = json_decode($theattempt->qdetails);
+        $steps = $qdetails->steps ?? null;
 
         // Prepare results for display.
         if (!is_array($steps)) {
