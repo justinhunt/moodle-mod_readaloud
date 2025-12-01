@@ -49,10 +49,10 @@
             {{/ready}}
         </div>
 
-        <div class="quizrating d-flex align-items-center justify-content-between no-wrap mb-4">
+        <div class="readrating d-flex align-items-center justify-content-between no-wrap mb-4">
             <h6 class="fw-semibold mb-0">{{#str}}readaloudresults, mod_readaloud{{/str}}</h6>
-            <div class="mod_readaloud_quizresult_rating mod_readaloud_readreport_stars">
-                {{> mod_readaloud/smallreportstars}}
+            <div class="mod_readaloud_readreport_stars">
+                {{#stars}}<i class="{{.}}"></i>{{/stars}}
             </div>
         </div>
 

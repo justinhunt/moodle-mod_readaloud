@@ -555,6 +555,8 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                                 that.open_next_step(step);
                                 // Then update the UI based on the new stepsopen state
                                 that.updateBigButtonMenuModeStatus();
+                                // Update the progress bar
+                                that.updateProgressBar();
 
                                 break;
                             case false:
@@ -884,6 +886,9 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 $home.removeClass('d-none').attr('hidden', false);
                 dd.controls.activityheader.removeClass('d-none').attr('hidden', false);
 
+                // Update the progress bar when returning home
+                dd.updateProgressBar();
+
                 dd.pushModeToUrl(null);
             },
 
@@ -1049,6 +1054,46 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         }
                     }
                 });
+            },
+
+            updateProgressBar: function () {
+                var dd = this;
+                var stepsEnabled = dd.activitydata.stepsenabled || {};
+                var stepsComplete = dd.activitydata.stepscomplete || {};
+
+                var enabledCount = 0;
+                var completedCount = 0;
+
+                // Count enabled steps (excluding step_report)
+                for (var stepKey in stepsEnabled) {
+                    if (stepKey === 'step_report' || stepsEnabled[stepKey] === 0) {
+                        continue;
+                    }
+                    enabledCount++;
+
+                    if (stepsComplete[stepKey] === true) {
+                        completedCount++;
+                    }
+                }
+
+                // Calculate percentage
+                var percentage = enabledCount > 0 ? (completedCount / enabledCount) * 100 : 0;
+                var percentageRounded = Math.round(percentage * 100) / 100; // Round to 2 decimals
+                var percentageLabel = percentageRounded.toFixed(2) + ' %';
+
+                // Update the progress bar in the DOM
+                var $progressBar = $('.mod_readaloud-activity-progress-bar .progress-bar');
+                var $progressLabel = $('.mod_readaloud-activity-progress-bar .progress-label');
+
+                if ($progressBar.length) {
+                    $progressBar.css('width', percentageRounded + '%');
+                    $progressBar.attr('aria-valuenow', percentageRounded);
+                    $progressBar.text(percentageLabel);
+                }
+
+                if ($progressLabel.length) {
+                    $progressLabel.text(percentageLabel);
+                }
             },
 
             isandroid: function () {

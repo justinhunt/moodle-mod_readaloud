@@ -223,15 +223,30 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
 
                                 //stars
 
-                                //if we are not showing grades, everyone gets 5 stars
-                                if(!that.showgrades){payloadobject.rating=5;}
+                                //if we are not showing grades, everyone gets 5 stars (10 on 0-10 scale)
+                                if(!that.showgrades){payloadobject.rating=10;}
 
-                                var emptystar='fa-regular fa-star';
-                                var solidstar='fa-solid fa-star';
-                                var stars=[];
-                                for(var star=0;star<5;star++){
-                                    stars[star] = payloadobject.rating > star ? solidstar : emptystar;
+                                // rating is now 0-10 from API (0-5 stars with half-star increments)
+                                var fullStars = Math.floor(payloadobject.rating / 2);
+                                var hasHalf = (payloadobject.rating % 2) === 1;
+                                var stars = [];
+
+                                // Add full stars
+                                for (var i = 0; i < fullStars; i++) {
+                                    stars.push('fa-solid fa-star text-warning');
                                 }
+
+                                // Add half star if needed
+                                if (hasHalf) {
+                                    stars.push('fa-solid fa-star-half-stroke text-warning');
+                                }
+
+                                // Fill remaining with empty stars
+                                var remaining = 5 - stars.length;
+                                for (var i = 0; i < remaining; i++) {
+                                    stars.push('fa-regular fa-star text-muted');
+                                }
+
                                 tdata.stars=stars;
                                 templates.render('mod_readaloud/smallreportstars',tdata).then(
                                     function(html,js){

@@ -1715,6 +1715,10 @@ class utils {
             $attemptsummary->av_accuracy = round($attemptsummary->total_accuracy / $attemptsummary->totalattempts,1);
             $attemptsummary->av_sessionscore = round($attemptsummary->total_sessionscore / $attemptsummary->totalattempts,1);
 
+            // Add star rating using same calculation as read report.
+            $starrating = self::fetch_star_rating($attemptsummary->av_sessionscore);
+            $attemptsummary->stars = self::render_stars($starrating);
+
         }
         return $attemptsummary;
     }
@@ -2009,22 +2013,69 @@ class utils {
         );
     }
 
-    //return a rating from 0 - 5 (inclusive)
+    /**
+     * Get star rating (0-10 half-stars) from a percentage score
+     *
+     * @param float $score Percentage score (0-100)
+     * @return int Star rating from 0-10 (representing 0-5 stars with half-star increments)
+     */
+    public static function fetch_star_rating($score) {
+        if ($score == 0) {
+            return 0;
+        }
+        if ($score >= 100) {
+            return 10;
+        }
+
+        // Convert to 0-10 scale with half stars.
+        // Each 10% = 1 half star.
+        return floor($score / 10);
+    }
+
+    /**
+     * Convert star rating (0-10) to Font Awesome icon class array
+     *
+     * @param int $rating Star rating from 0-10 (0-5 stars with half-star increments)
+     * @return array Array of 5 FA icon classes
+     */
+    public static function render_stars($rating) {
+        $stars = [];
+        $fullstars = floor($rating/2);
+        $hashalf = ($rating % 2) == 1;
+
+        // Add full stars.
+        for ($i = 0; $i < $fullstars; $i++) {
+            $stars[] = 'fa-solid fa-star text-warning';
+        }
+
+        // Add half star if needed.
+        if ($hashalf) {
+            $stars[] = 'fa-solid fa-star-half-stroke text-warning';
+        }
+
+        // Fill remaining with empty stars.
+        $remaining = 5 - count($stars);
+        for ($i = 0; $i < $remaining; $i++) {
+            $stars[] = 'fa-solid fa-star text-muted';
+        }
+
+        return $stars;
+    }
+
+    // Return a rating from 0 - 10 (0 - 5 stars with half-star increments).
     public static function fetch_rating($attempt,$aigrade){
         $have_humaneval = $attempt->sessiontime != null;
         $have_aieval = $aigrade && $aigrade->has_transcripts();
-        if(!$have_humaneval && !$have_aieval){
-            return -1;
-        }elseif($have_humaneval){
-            if($attempt->sessionscore==0){return 0;}
-            if($attempt->sessionscore==100){return 5;}
-            return floor($attempt->sessionscore / 20) + 1;
 
-        }else{
-            if($aigrade->aidata->sessionscore==0){return 0;}
-            if($aigrade->aidata->sessionscore==100){return 5;}
-            return floor($aigrade->aidata->sessionscore / 20) + 1;
+        if (!$have_humaneval && !$have_aieval) {
+            return -1;
+        } elseif ($have_humaneval) {
+            $score = $attempt->sessionscore;
+        } else {
+            $score = $aigrade->aidata->sessionscore;
         }
+        // Return 0 - 10 half-star rating.
+        return self::fetch_star_rating($score);
     }
 
     public static function fetch_small_reportdata($attempt,$aigrade){
@@ -3452,23 +3503,28 @@ class utils {
     public static function remake_quizsteps_as_array($stepsobject) {
         if(is_array($stepsobject)) {
             return $stepsobject;
-        }else{
-            $steps = [];
-            foreach ($stepsobject as $key => $value)
-            {
-                if(is_numeric($key)){
-                    $key = intval($key);
-                    $steps[$key] = $value;
-                }
-
-            }
-            //sort asc according to the key (itemorder)
-            ksort($steps);
-            return $steps;
         }
+
+        // Handle null or invalid input.
+        if ($stepsobject === null || !is_object($stepsobject)) {
+            return [];
+        }
+
+        $steps = [];
+        foreach ($stepsobject as $key => $value)
+        {
+            if(is_numeric($key)){
+                $key = intval($key);
+                $steps[$key] = $value;
+            }
+
+        }
+        //sort asc according to the key (itemorder)
+        ksort($steps);
+        return $steps;
     }
 
-    //Return finished quiz results in a format that can be passed to a mustache template
+    // Return finished quiz results in a format that can be passed to a mustache template.
     public static function fetch_quiz_results($quizhelper, $theattempt, $cm) {
         global $CFG, $DB, $PAGE;
 
@@ -3483,7 +3539,8 @@ class utils {
         $context = \context_module::instance($cm->id);
 
         // Steps data.
-        $steps = json_decode($theattempt->qdetails)->steps;
+        $qdetails = json_decode($theattempt->qdetails);
+        $steps = $qdetails->steps ?? null;
 
         // Prepare results for display.
         if (!is_array($steps)) {
@@ -3563,23 +3620,10 @@ class utils {
             }
 
             $result->index++;
+
             // Every item stars.
-            if ($result->grade == 0) {
-                $ystarcnt = 0;
-            } else if ($result->grade < 19) {
-                $ystarcnt = 1;
-            } else if ($result->grade < 39) {
-                $ystarcnt = 2;
-            } else if ($result->grade < 59) {
-                $ystarcnt = 3;
-            } else if ($result->grade < 79) {
-                $ystarcnt = 4;
-            } else {
-                $ystarcnt = 5;
-            }
-            $result->yellowstars = array_fill(0, $ystarcnt, true);
-            $gstarcnt = 5 - $ystarcnt;
-            $result->graystars = array_fill(0, $gstarcnt, true);
+            $result->starrating = self::fetch_star_rating($result->grade);
+            $result->stars = self::render_stars($result->starrating);
 
             $useresults[] = $result;
         }
@@ -3589,23 +3633,10 @@ class utils {
 
         // Course name at top of page.
         $tdata->coursename = $course->fullname;
-        // Item stars.
-        if ($theattempt->qscore == 0) {
-            $ystarcnt = 0;
-        } else if ($theattempt->qscore < 19) {
-            $ystarcnt = 1;
-        } else if ($theattempt->qscore < 39) {
-            $ystarcnt = 2;
-        } else if ($theattempt->qscore < 59) {
-            $ystarcnt = 3;
-        } else if ($theattempt->qscore < 79) {
-            $ystarcnt = 4;
-        } else {
-            $ystarcnt = 5;
-        }
-        $tdata->yellowstars = array_fill(0, $ystarcnt, true);
-        $gstarcnt = 5 - $ystarcnt;
-        $tdata->graystars = array_fill(0, $gstarcnt, true);
+
+        // Overall quiz stars.
+        $tdata->starrating = self::fetch_star_rating($theattempt->qscore);
+        $tdata->stars = self::render_stars($tdata->starrating);
 
         $tdata->total = $theattempt->qscore;
         $tdata->courseurl = $CFG->wwwroot . '/course/view.php?id=' .

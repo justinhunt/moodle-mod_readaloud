@@ -17,6 +17,9 @@
             }
             .mod_readaloud-activity-info {
                 border: $border-width solid $gray-100;
+                .mod_readaloud-activity-progress-bar .progress-bar {
+                    color: transparent;
+                }
             }
         }
 
