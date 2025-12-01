@@ -9,7 +9,6 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
   return {
     controls: {},
     breaks: [],
-    endwordnumber: 0,
     currentstartbreak: false,
     modeling: false,
     thelistenquitmodal: true,
@@ -45,9 +44,6 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
 
       //register the controls
       this.register_controls();
-
-      //register the end word number
-      this.endwordnumber = this.controls.eachword.length;
 
       //register the events
       this.register_events();
@@ -211,16 +207,21 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
         var currentTime = aplayer.currentTime;
         var startbreak = false;
         var nextbreak = false;
+
+        //get the end word number
+        var endwordnumber = that.controls.eachword.length;
+
+
         for (var i = 0; i < that.breaks.length; i++) {
 
           //if this is the last marked break (ie flow till end)
           if (currentTime >= that.breaks[i].audiotime && i + 1 === that.breaks.length) {
             startbreak = that.breaks[i];
             nextbreak = {
-              wordnumber: that.endwordnumber + 1,
+              wordnumber: endwordnumber + 1,
               audiotime: 0
             };
-            //if its just between two breaks (yay)
+            // If it's just between two breaks (yay).
           } else if (currentTime >= that.breaks[i].audiotime && currentTime < that.breaks[i + 1].audiotime) {
             startbreak = that.breaks[i];
             nextbreak = that.breaks[i + 1];
@@ -238,7 +239,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
         }
         //if the current break changed since last time, we go in here
         // (on first time through we want to flag  "changed" so that is why a false current startbreak goes to "changed"
-        //in the special case that we reached the end of the passage we need to raise the eevent
+        //in the special case that we reached the end of the passage we need to raise the event
         var islastbreak = aplayer.ended && nextbreak.audiotime===0;
         if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber || islastbreak) {
           var finishedsentence = $('.' + that.cd.activesentence).text();
@@ -261,9 +262,9 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
             that.controls.stopandplay.attr('aria-pressed', 'false');
           }
 
-          log.debug('Current start break:');
-          log.debug(that.currentstartbreak);
-          log.debug('finished sentence:' + finishedsentence);
+        //  log.debug('Current start break:');
+        //  log.debug(that.currentstartbreak);
+        //  log.debug('finished sentence:' + finishedsentence);
           that.on_reach_audio_break(finishedsentence, that.previousstartbreak, that.currentstartbreak, that.breaks);
         }
       };
@@ -320,9 +321,11 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
     },
 
 
-    on_reach_audio_break: function(sentence, oldbreak, newbreak, breaks) {
+    on_reach_audio_break: function(sentence, oldbreak, newbreak, nextbreak, breaks) {
       log.debug(sentence);
+      log.debug('Previous/old break:');
       log.debug(oldbreak);
+      log.debug('Current/new break:');
       log.debug(newbreak);
     }
 
