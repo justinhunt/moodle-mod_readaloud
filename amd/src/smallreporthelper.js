@@ -233,18 +233,18 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
 
                                 // Add full stars
                                 for (var i = 0; i < fullStars; i++) {
-                                    stars.push('fa-solid fa-star');
+                                    stars.push('fa-solid fa-star text-warning');
                                 }
 
                                 // Add half star if needed
                                 if (hasHalf) {
-                                    stars.push('fa-solid fa-star-half-stroke');
+                                    stars.push('fa-solid fa-star-half-stroke text-warning');
                                 }
 
                                 // Fill remaining with empty stars
                                 var remaining = 5 - stars.length;
                                 for (var i = 0; i < remaining; i++) {
-                                    stars.push('fa-regular fa-star');
+                                    stars.push('fa-regular fa-star text-muted');
                                 }
 
                                 tdata.stars=stars;
