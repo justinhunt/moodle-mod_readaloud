@@ -56,3 +56,8 @@
     padding-left: 15px;
     padding-right: 15px;
 }
+
+@mixin star-styles {
+    font-size: 1.2rem;
+    margin-right: 2px;
+}

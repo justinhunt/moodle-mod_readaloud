@@ -138,16 +138,12 @@ class renderer extends \plugin_renderer_base {
         // Star rating.
         if ($attempt && $graded) {
             if ($showgrades) {
-                $rating = utils::fetch_rating($attempt, $aigrade); // Rating: 0, 1, 2, 3, 4 or 5.
+                $rating = utils::fetch_rating($attempt, $aigrade); // Rating: 0 - 10 (0 - 5 stars with half-star increments).
             } else {
-                $rating = 5;
+                $rating = 10;
             }
             $ready = $rating > -1;
-            $stars = [];
-            for ($star = 0; $star < 5; $star++) {
-                $stars[] = $rating > $star ? 'fa-solid fa-star' : 'fa-regular fa-star';
-            }
-            $tdata['stars'] = $stars;
+            $tdata['stars'] = utils::render_stars($rating);
 
             // Stats.
             $stats = utils::fetch_small_reportdata($attempt, $aigrade);
@@ -936,7 +932,7 @@ class renderer extends \plugin_renderer_base {
      * @param stdClass $moduleinstance The module instance object.
      * @return array Empty if no data, or the flat array from export_for_template().
      */
-    protected function get_activity_header_data(\renderer_base $output, $modulecontext, $moduleinstance): array {
+    protected function get_activity_header_data(\renderer_base $output, $modulecontext, $moduleinstance, $stepsenabled = [], $stepscomplete = []): array {
         global $USER;
         if (!$this->page->activityrecord) {
             return [];
@@ -953,12 +949,47 @@ class renderer extends \plugin_renderer_base {
         $activitycompletion = new \core_course\output\activity_completion($cm, $completiondetails);
         $activitycompletiondata = (array) $activitycompletion->export_for_template($output);
 
+        // Calculate progress bar percentage.
+        $progressbar = $this->calculate_progress_percentage($stepsenabled, $stepscomplete);
+
         $activityheader = array_merge(
             $activitydatesdata,
             $activitycompletiondata,
+            $progressbar
         );
 
         return $activityheader;
+    }
+
+    /**
+     * Calculate progress bar percentage based on enabled and completed steps.
+     *
+     * @param array $stepsenabled Array of enabled steps from get_steps_enabled_state()
+     * @param array $stepscomplete Array of completed steps from get_steps_complete_state()
+     * @return array Progress bar data with percentagevalue and percentlabelvalue
+     */
+    protected function calculate_progress_percentage($stepsenabled, $stepscomplete) {
+        $enabledcount = 0;
+        $completedcount = 0;
+
+        foreach ($stepsenabled as $stepkey => $stepvalue) {
+            // Skip step_report (value is 0).
+            if ($stepkey === 'step_report' || $stepvalue === 0) {
+                continue;
+            }
+            $enabledcount++;
+
+            if (isset($stepscomplete[$stepkey]) && $stepscomplete[$stepkey] === true) {
+                $completedcount++;
+            }
+        }
+
+        $percentage = $enabledcount > 0 ? ($completedcount / $enabledcount) * 100 : 0;
+
+        return [
+            'percentagevalue' => round($percentage, 2),
+            'percentlabelvalue' => sprintf("%.2f %%", $percentage),
+        ];
     }
 
     /**
@@ -1091,12 +1122,11 @@ class renderer extends \plugin_renderer_base {
     ) { // TODO: add in the : array once the imported functions are resolved.
         global $CFG, $DB, $USER;
 
-        // The activity header.
+        // The activity header (note: activity header data including progress bar will be set later after steps are calculated).
         $header = $this->page->activityheader;
         $corecourserenderer = $this->page->get_renderer('core_course');
         $headercontent = (array) $header->export_for_template($corecourserenderer);
         $passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
-        $activityheader = $this->get_activity_header_data($corecourserenderer, $modulecontext, $moduleinstance);
         $hasheadercontent = !empty($passagepictureurl) || !empty($headercontent['description']);
 
 // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
@@ -1225,6 +1255,15 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         $stepsenabled = utils::get_steps_enabled_state($moduleinstance);
         $stepsopen = utils::get_steps_open_state($moduleinstance, $latestattempt);
         $stepscomplete = utils::get_steps_complete_state($moduleinstance, $latestattempt);
+
+        // Now that we have steps data, get activity header with progress bar.
+        $activityheader = $this->get_activity_header_data(
+            $corecourserenderer,
+            $modulecontext,
+            $moduleinstance,
+            $stepsenabled,
+            $stepscomplete
+        );
 
         // Render the passage.
         $widgetid = constants::M_RECORDERID . '_opts_9999';

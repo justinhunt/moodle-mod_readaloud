@@ -1,8 +1,8 @@
 <section class="mod_readaloud_attemptsummary mb-5">
     <div class="d-flex justify-content-between align-items-start mb-3">
         <h6 class="mb-0 fw-semibold">{{#str}} readaloudresults, mod_readaloud {{/str}}</h6>
-        <div class="mod_readaloud_stars">
-            {{{ attemptssummary.stars }}}
+        <div class="mod_readaloud_readreport_stars">
+            {{#attemptssummary.stars}}<i class="{{.}}"></i>{{/attemptssummary.stars}}
         </div>
     </div>
 
