@@ -2479,13 +2479,13 @@ class utils {
         $steps = [
             $mform->createElement('advcheckbox', 'step_listen', '', get_string('enablepreview', constants::M_COMPONENT)),
             $mform->createElement('advcheckbox', 'step_practice', '', get_string('enablelandr', constants::M_COMPONENT)),
-            $mform->createElement('advcheckbox', 'step_shadow', '', get_string('enableshadow', constants::M_COMPONENT)),
+            // $mform->createElement('advcheckbox', 'step_shadow', '', get_string('enableshadow', constants::M_COMPONENT)),
             $mform->createElement('advcheckbox', 'step_read', '', get_string('enableread', constants::M_COMPONENT)),
             $mform->createElement('advcheckbox', 'step_quiz', '', get_string('enablequiz', constants::M_COMPONENT)),
         ];
 
         // Add the checkbox group to the form.
-        // Use w-100 class to force flex line breaks (works consistently across browsers).
+        // Use w-100 class to force flex line breaks (<br> works inconsistently across browsers when in a flex container).
         $mform->addGroup($steps, 'steps', get_string('activitysteps', constants::M_COMPONENT), ['<div class="w-100"></div>'], false);
 
         // Set default values for the checkboxes
