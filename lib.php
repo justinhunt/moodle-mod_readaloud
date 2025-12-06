@@ -494,8 +494,8 @@ function readaloud_process_editors(stdClass $readaloud, ?mod_readaloud_mod_form 
     $context = context_module::instance($cmid);
 
     // Standard editor fields.
-    $editors   = readaloud_get_editornames();
-    $itemid          = isset($readaloud->id) ? $readaloud->id : 0;
+    $editors = readaloud_get_editornames();
+    $itemid = isset($readaloud->id) ? $readaloud->id : 0;
     $edoptions = readaloud_editor_no_files_options($context);
     foreach ($editors as $editor) {
         $readaloud = file_postupdate_standard_editor(
