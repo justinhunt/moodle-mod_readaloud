@@ -2484,8 +2484,9 @@ class utils {
             $mform->createElement('advcheckbox', 'step_quiz', '', get_string('enablequiz', constants::M_COMPONENT)),
         ];
 
-        // Add the checkbox group to the form
-        $mform->addGroup($steps, 'steps', get_string('activitysteps', constants::M_COMPONENT), ['<br>'], false);
+        // Add the checkbox group to the form.
+        // Use w-100 class to force flex line breaks (works consistently across browsers).
+        $mform->addGroup($steps, 'steps', get_string('activitysteps', constants::M_COMPONENT), ['<div class="w-100"></div>'], false);
 
         // Set default values for the checkboxes
         $stepdefaults = [];
