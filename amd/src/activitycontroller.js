@@ -1083,16 +1083,15 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
                 // Update the progress bar in the DOM
                 var $progressBar = $('.mod_readaloud-activity-progress-bar .progress-bar');
-                var $progressLabel = $('.mod_readaloud-activity-progress-bar .progress-label');
+                var $percentLabel = $('[data-percent-label]');
 
                 if ($progressBar.length) {
                     $progressBar.css('width', percentageRounded + '%');
                     $progressBar.attr('aria-valuenow', percentageRounded);
-                    $progressBar.text(percentageLabel);
                 }
 
-                if ($progressLabel.length) {
-                    $progressLabel.text(percentageLabel);
+                if ($percentLabel.length) {
+                    $percentLabel.text(percentageLabel);
                 }
             },
 
