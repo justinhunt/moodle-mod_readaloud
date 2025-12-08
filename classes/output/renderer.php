@@ -1332,8 +1332,9 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         );
 
         // Build the full template context FIRST (before fetching AMD data).
-        $templatecontext = array_merge([
-            'activityheader' => $activityheader,
+        $templatecontext = array_merge(
+            $activityheader, // Flatten activityheader data into root context for easier template access
+            [
             'activityname' => $moduleinstance->name,
             'attempts' => $attempts,
             'backurl' => (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false),
