@@ -641,7 +641,7 @@ function readaloud_update_instance(stdClass $readaloud, ?mod_readaloud_mod_form 
         // check if it has changed, if not do not waste time processing it
         if($oldrecord->passagehash != ($readaloud->region . '|' . $newpassagehash)) {
             // build a lang model
-            if(utils::needs_lang_model($readaloud)) {
+            if (utils::needs_lang_model($readaloud)) {
                 $ret = utils::fetch_lang_model($readaloud->passage, $readaloud->ttslanguage, $readaloud->region);
                 if ($ret && isset($ret->success) && $ret->success)  {
                     $readaloud->passagehash = $readaloud->region . '|' . $newpassagehash;
