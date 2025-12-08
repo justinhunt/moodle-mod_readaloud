@@ -43,8 +43,14 @@
                 {{/correctans}}
             </div>
             <div class="qa-col--icon flex-shrink-0 text-end">
-                <i class="fa-solid fa-circle-check text-success" aria-hidden="true"></i>
-                <span class="visually-hidden">{{#str}}correct, mod_readaloud{{/str}}</span>
+                {{#grade}}
+                    <i class="fa-solid fa-circle-check text-success" aria-hidden="true"></i>
+                    <span class="visually-hidden">{{#str}}correct, mod_readaloud{{/str}}</span>
+                {{/grade}}
+                {{^grade}}
+                    <i class="fa-solid fa-circle-xmark text-danger" aria-hidden="true"></i>
+                    <span class="visually-hidden">{{#str}}incorrect, mod_readaloud{{/str}}</span>
+                {{/grade}}
             </div>
         </div>
         {{/results}}

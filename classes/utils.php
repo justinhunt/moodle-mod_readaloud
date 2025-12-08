@@ -1669,8 +1669,8 @@ class utils {
         $attemptsummary = false;
 
         $sql =
-                "SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore,tai.fulltranscript as fulltranscript FROM {" .
-                constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
+                "SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore, tai.sessionendword as aisessionendword, tai.fulltranscript as fulltranscript " .
+                "FROM {" . constants::M_USERTABLE . "} tu INNER JOIN {user} u ON tu.userid=u.id " .
                 "INNER JOIN {" . constants::M_AITABLE . "} tai ON tai.attemptid=tu.id " .
                 "WHERE tu.readaloudid=? AND u.id=? AND tu.dontgrade = 0 " .
                 " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
@@ -1685,6 +1685,8 @@ class utils {
             $attemptsummary->totalattempts = count($alldata);
             $attemptsummary->total_wpm = 0;
             $attemptsummary->h_wpm = 0;
+            $attemptsummary->total_words = 0;
+            $attemptsummary->h_words = 0;
             $attemptsummary->total_accuracy = 0;
             $attemptsummary->h_accuracy = 0;
             $attemptsummary->total_sessionscore = 0;
@@ -1699,6 +1701,7 @@ class utils {
                     $thedata->wpm = $thedata->aiwpm;
                     $thedata->accuracy = $thedata->aiaccuracy;
                     $thedata->sessionscore = $thedata->aisessionscore;
+                    $thedata->sessionendword = $thedata->aisessionendword;
                 }
                 // calc totals and highest
                 $attemptsummary->total_wpm += $thedata->wpm;
@@ -1707,12 +1710,15 @@ class utils {
                 $attemptsummary->h_accuracy = max($attemptsummary->h_accuracy, $thedata->accuracy);
                 $attemptsummary->total_sessionscore += $thedata->sessionscore;
                 $attemptsummary->h_sessionscore = max($attemptsummary->h_sessionscore, $thedata->sessionscore);
+                $attemptsummary->total_words += $thedata->sessionendword;
+                $attemptsummary->h_words = max($attemptsummary->h_words, $thedata->sessionendword);
 
             }
             // finally calc averages
             $attemptsummary->av_wpm = round($attemptsummary->total_wpm / $attemptsummary->totalattempts, 1);
             $attemptsummary->av_accuracy = round($attemptsummary->total_accuracy / $attemptsummary->totalattempts, 1);
             $attemptsummary->av_sessionscore = round($attemptsummary->total_sessionscore / $attemptsummary->totalattempts, 1);
+            $attemptsummary->av_words = round($attemptsummary->total_words / $attemptsummary->totalattempts, 1);
 
             // Add star rating using same calculation as read report.
             $starrating = self::fetch_star_rating($attemptsummary->av_sessionscore);
@@ -2339,6 +2345,7 @@ class utils {
         global $CFG, $COURSE, $OUTPUT;
         $config = get_config(constants::M_COMPONENT);
         $m35 = $CFG->version >= 2018051700;
+        $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
 
         // if this is setup tab we need to add a field to tell it the id of the activity
         if($setuptab) {
@@ -2502,14 +2509,24 @@ class utils {
                 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5'];
         $mform->addElement('select', 'maxattempts', get_string('maxattempts', constants::M_COMPONENT), $attemptoptions);
 
+        // allow read reattempt
+        $mform->addElement('select', 'readreattempt', get_string('readreattempt', constants::M_COMPONENT), $yesnooptions);
+        $mform->setDefault('readreattempt', 0);
+        $mform->addHelpButton('readreattempt', 'readreattempt', constants::M_COMPONENT);
+
         // Quiz Options
         $mform->addElement('header', 'quizsettingsheader', get_string('quizsettingsheader', constants::M_COMPONENT));
 
         // show question titles
-        $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
         $mform->addElement('select', 'showqtitles', get_string('showqtitles', constants::M_COMPONENT), $yesnooptions);
         $mform->setDefault('showqtitles', 0);
         $mform->addHelpButton('showqtitles', 'showqtitles', constants::M_COMPONENT);
+
+        // allow quiz reattempt
+        $yesnooptions = [1 => get_string('yes'), 0 => get_string('no')];
+        $mform->addElement('select', 'quizreattempt', get_string('quizreattempt', constants::M_COMPONENT), $yesnooptions);
+        $mform->setDefault('quizreattempt', 0);
+        $mform->addHelpButton('quizreattempt', 'quizreattempt', constants::M_COMPONENT);
 
         // show question review
         $mform->addElement('select', 'showqreview', get_string('showqreview', constants::M_COMPONENT),

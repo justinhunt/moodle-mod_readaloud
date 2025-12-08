@@ -897,6 +897,24 @@ function xmldb_readaloud_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2025031500, 'readaloud');
     }
 
+    // Add customfont  to readaloud table
+    if ($oldversion < 2025031503) {
+        $table = new xmldb_table(constants::M_TABLE);
+
+        // Define fields customfont,to be added to readaloud
+        $fields = [];
+        $fields[] = new xmldb_field('quizreattempt', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 1);
+        $fields[] = new xmldb_field('readreattempt', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 1);
+
+        // Add fields
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2025031503, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

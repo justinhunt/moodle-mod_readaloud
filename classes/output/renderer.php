@@ -569,6 +569,8 @@ class renderer extends \plugin_renderer_base {
         $recopts['stepsenabled'] = utils::get_steps_enabled_state($moduleinstance);
         $recopts['stepscomplete'] = utils::get_steps_complete_state($moduleinstance, $latestattempt);
         $recopts['stepsopen'] = utils::get_steps_open_state($moduleinstance, $latestattempt);
+        $recopts['quizreattempt'] = $moduleinstance->quizreattempt ? true : false;
+        $recopts['readreattempt'] = $moduleinstance->readreattempt ? true : false;
         $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
         $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
         $recopts['hider'] = constants::M_HIDER;

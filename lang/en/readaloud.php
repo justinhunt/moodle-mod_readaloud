@@ -1008,3 +1008,7 @@ $string['quitlistening'] = 'Finish Listening';
 $string['improveyourscore'] = 'Want to try to improve your score?';
 $string['reattemptquiz'] = 'Reattempt the Quiz?';
 $string['reallyreattemptquiz'] = 'Reattempting the quiz will overwrite your previous attempt. Are you sure you want to try again?';
+$string['quizreattempt'] = 'Can reattempt the quiz';
+$string['quizreattempt_help'] = 'Allow student to reattempt the quiz within the current attempt.';
+$string['readreattempt'] = 'Can reattempt reading';
+$string['readreattempt_help'] = 'Allow student to reattempt the reading within the current attempt.';

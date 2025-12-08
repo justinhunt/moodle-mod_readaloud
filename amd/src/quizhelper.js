@@ -245,6 +245,7 @@ log.debug('quiz iz complete')
                 results.backurl = dd.backurl;
                 results.passagepictureurl = dd.passagepictureurl;
                 results.activityname = dd.activityname;
+                results.canreattemptquiz = dd.quizdata.quizreattempt;
 
                 log.debug(results);
                 templates.render('mod_readaloud/quizfinished', results).then(

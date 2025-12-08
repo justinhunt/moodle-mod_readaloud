@@ -161,9 +161,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         // Finished quiz results div.
         if ($latestattempt && $cm && $latestattempt->status == utils::is_step_complete(constants::STEP_QUIZ, $latestattempt)) {
             $finisheddata = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
-            $finisheddata->canreattemptquiz = true;
-            // TO DO implement this  .. this field not exist
-            //$moduleinstance->canreattemptquiz ? true : false;
+            $finisheddata->canreattemptquiz = $moduleinstance->quizreattempt ? true : false;
             $modulecontext = \context_module::instance($cm->id);
             $finisheddata->activityname = format_string($moduleinstance->name);
             $finisheddata->backurl = (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false);
@@ -179,9 +177,6 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $finisheddiv = \html_writer::div($finishedcontents , constants::M_QUIZ_FINISHED,
             $finishedattributes);
 
-        // Placeholder div.
-        // $placeholderdiv = \html_writer::div('', constants::M_QUIZ_PLACEHOLDER . ' ' . constants::M_QUIZ_SKELETONBOX,
-        //     ['id' => constants::M_QUIZ_PLACEHOLDER]);
 
         // Quiz items data div.
         $quizdata = $quizhelper->fetch_quiz_items_for_js();
