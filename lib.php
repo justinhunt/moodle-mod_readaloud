@@ -664,7 +664,7 @@ function readaloud_update_instance(stdClass $readaloud, ?mod_readaloud_mod_form 
     }
 
     // We create the marked up speechmarks. We do not save the modelurl, we only save that in the case of human model audio
-    if($needspeechmarks) {
+    if ($needspeechmarks) {
         $config = get_config(constants::M_COMPONENT);
         $token = utils::fetch_token($config->apiuser, $config->apisecret);
         if($token) {
