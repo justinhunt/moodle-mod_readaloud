@@ -2302,10 +2302,11 @@ class utils {
 
 
         //Text Generator Form
-        $textutilsdata = ['cloudpoodlltoken'=>self::fetch_token($config->apiuser,$config->apisecret)];
+        $cloudpoodllserver = self::get_cloud_poodll_server() ;
+        $textutilsdata = ['cloudpoodlltoken'=>self::fetch_token($config->apiuser,$config->apisecret),
+            'cloudpoodllserver' => $cloudpoodllserver];
         $textutils  = $OUTPUT->render_from_template( constants::M_COMPONENT . '/textutils',$textutilsdata);
-        $mform->addElement('static', 'textutils', '',
-                $textutils);
+        $mform->addElement('static', 'textutils', '', $textutils);
 
 
         //The passage

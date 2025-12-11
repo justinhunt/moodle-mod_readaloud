@@ -10,9 +10,14 @@ define(['jquery', 'core/log','core/ajax'], function ($, log,ajax) {
         token:  '',
         region: '',
         owner: '',
+        server: '',
 
         setCloudPoodllToken: function(token){
           this.token=token;
+        },
+
+        setCloudPoodllServer: function(server){
+          this.server=server;
         },
 
         countWords: function(sentence) {
@@ -167,7 +172,7 @@ define(['jquery', 'core/log','core/ajax'], function ($, log,ajax) {
                 + '&owner=poodll'
                 + '&region=useast1';
 
-            var serverurl = 'https://cloud.poodll.com' + "/webservice/rest/server.php";
+            var serverurl = this.server + "/webservice/rest/server.php";
             xhr.open("POST", serverurl, true);
             xhr.setRequestHeader("Cache-Control", "no-cache");
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
