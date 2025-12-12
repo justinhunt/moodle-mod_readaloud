@@ -18,6 +18,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
     phonetics: [],
     cmid: 0,
     ttr: {},
+    endwordnumber: {},
 
     init: function(props) {
 
@@ -27,6 +28,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
       //Get info from modelaudiokaraoke about breaks and text, for use here
       self.mak = props.modelaudiokaraoke;
       self.audiourl = self.mak.fetch_audio_url();
+      self.endwordnumber = self.mak.fetch_endwordnumber();
       self.set_breaks(self.mak.breaks);
 
       self.language = props.language;
@@ -145,6 +147,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
         self.breaks = breaks;
         self.sort_breaks();
         self.add_info_to_breaks();
+        self.add_last_break();
     },
 
     sort_breaks: function() {
@@ -175,6 +178,36 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
           lastbreakaudioend = self.breaks[i].audiotime;
           lastbreakwordnumber = self.breaks[i].wordnumber;
       }
+    },
+
+    add_last_break: function() {
+        var self=this;
+        if(!self.breaks || self.breaks.length === 0) {
+            return;
+        }
+        if(self.breaks[self.breaks.length -1].wordnumber !== self.endwordnumber){
+            //We need to set the time and wordnumber for the last break - it's a bit messy
+            var lastbreakaudiotime = self.breaks[self.breaks.length -1].audiotime;
+
+            // The audioplayer duration can not be establised yet, but that is the true audiotime
+            // just add 0.1 second to get the sequence right, will be edited later in move_break function
+            var audiotime = lastbreakaudiotime + 0.1;
+
+            // The sentence is all the remaining words.
+            var thesentence = "";
+            var lastbreakwordnumber = self.breaks[self.breaks.length -1].wordnumber;
+            for (var thewordnumber = lastbreakwordnumber + 1; thewordnumber <= self.endwordnumber; thewordnumber++) {
+                thesentence += $('#' + def.spaceclass + '_' + thewordnumber).text();
+                thesentence += $('#' + def.wordclass + '_' + thewordnumber).text();
+            }
+
+            var lastbreak = {wordnumber: self.endwordnumber,
+                audiostarttime: lastbreakaudiotime,
+                audiotime: audiotime,
+                sentence: thesentence};
+            
+            self.breaks.push(lastbreak);
+        }
     },
 
     pause_audio: function() {
@@ -278,6 +311,12 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
 
          //hide the self model player because when we show page again we dont want it enabled
          self.controls.playselfbutton.hide();
+
+         // do a hacky little patch up on the last audio break to make sure it is set to the end of the audio
+         var aplayer = self.controls.hiddenplayer[0];
+         if (aplayer.duration && self.breaks[self.breaks.length - 1].audiotime < aplayer.duration) {
+             self.breaks[self.breaks.length - 1].audiotime = aplayer.duration;
+         }
 
          self.pause_audio();
 

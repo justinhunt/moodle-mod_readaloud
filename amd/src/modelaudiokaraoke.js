@@ -88,6 +88,10 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
       return this.controls.audioplayer.attr('src');
     },
 
+    fetch_endwordnumber: function() {
+        return this.controls.eachword.length;
+    },
+
     //load all the controls so we do not have to do it later
     register_controls: function() {
       this.controls.audioplayer = $('#' + this.cd.audioplayerclass);
