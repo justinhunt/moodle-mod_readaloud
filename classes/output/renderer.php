@@ -207,7 +207,6 @@ class renderer extends \plugin_renderer_base {
         $tdata['configjsonstring'] = json_encode($opts);
         $tdata['configcontrolid'] = constants::M_SMALLREPORT_CONTAINER . '_opts';
 
-
         $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', [['configcontrolid' => $tdata['configcontrolid']]]);
         $this->page->requires->strings_for_js(
             ['secs_till_check', 'notgradedyet', 'evaluatedmessage', 'checking', 'notaddedtogradebook'],
@@ -548,9 +547,10 @@ class renderer extends \plugin_renderer_base {
      * @param int      $embed          The embed parameter, default is 0.
      * @param stdClass $latestattempt  The latest attempt object.
      * @param array    $templatecontext The full template context to pass to JavaScript.
+     * @param bool     $hasquizquestions Whether the activity has quiz questions (default false).
      * @return array Associative array containing the activity AMD configuration.
      */
-    public function fetch_activity_amd($cm, $moduleinstance, $token, $embed=0, $latestattempt=null, $templatecontext=[]) {
+    public function fetch_activity_amd($cm, $moduleinstance, $token, $embed=0, $latestattempt=null, $templatecontext=[], $hasquizquestions = false) {
         global $CFG, $USER;
 
         // Here we set up any info we need to pass into javascript.
@@ -568,7 +568,7 @@ class renderer extends \plugin_renderer_base {
         $recopts['steps'] = constants::STEPS;
         $recopts['stepsenabled'] = utils::get_steps_enabled_state($moduleinstance);
         $recopts['stepscomplete'] = utils::get_steps_complete_state($moduleinstance, $latestattempt);
-        $recopts['stepsopen'] = utils::get_steps_open_state($moduleinstance, $latestattempt);
+        $recopts['stepsopen'] = utils::get_steps_open_state($moduleinstance, $latestattempt, $hasquizquestions);
         $recopts['quizreattempt'] = $moduleinstance->quizreattempt ? true : false;
         $recopts['readreattempt'] = $moduleinstance->readreattempt ? true : false;
         $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
@@ -792,7 +792,7 @@ class renderer extends \plugin_renderer_base {
                         // Show the chart of attempt results.
                         $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
                         $renderedchart = $this->fetch_rendered_attemptchart($chartdata, $showgradesinchart);
-                        $ret['attemptschart'] =  $renderedchart;
+                        $ret['attemptschart'] = $renderedchart;
                     }
             }
         }
@@ -1000,11 +1000,11 @@ class renderer extends \plugin_renderer_base {
      * @param stdClass $moduleinstance    The current module instance.
      * @param bool     $canattempt        Initial “can attempt” flag; will be updated based on mode visibility.
      * @param stdClass $latestattempt     The user’s latest attempt record.
-     * @param bool     $noquiz            Optional flag to disable the quiz step.
+     * @param bool      $hasquizquestions Whether quiz has questions (default: false)
      * @return stdClass[]                 Array of step‐data objects.
      */
     protected function get_steps_data($moduleinstance, $canattempt, $latestattempt, $stepsenabled,
-    $stepsopen, $stepscomplete) {
+    $stepsopen, $stepscomplete, $hasquizquestions = false) {
         global $CFG;
 
         $modevisibility   = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
@@ -1035,7 +1035,7 @@ class renderer extends \plugin_renderer_base {
                 || ($key === 'step_practice' && ! $hasaudiobreaks)
                 || ($key === 'step_shadow'   && ! $canshadowattempt)
                 || ($key === 'step_read'     && ! $canattempt)
-                || ($key === 'step_quiz'     && ! empty($noquiz))
+                || ($key === 'step_quiz'     && !$hasquizquestions)
             ) {
                 continue;
             }
@@ -1121,7 +1121,8 @@ class renderer extends \plugin_renderer_base {
         $modulecontext,
         $moduleinstance,
         $reviewattempts
-    ) { // TODO: add in the : array once the imported functions are resolved.
+    ) {
+        // TODO: add in the : array once the imported functions are resolved.
         global $CFG, $DB, $USER;
 
         // The activity header (note: activity header data including progress bar will be set later after steps are calculated).
@@ -1131,121 +1132,131 @@ class renderer extends \plugin_renderer_base {
         $passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
         $hasheadercontent = !empty($passagepictureurl) || !empty($headercontent['description']);
 
-// In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
-if ($moduleinstance->passagesegments === null) {
-    $olditem = false;
-    list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($moduleinstance, $olditem);
-    if (!empty($thephonetic)) {
-        $DB->update_record(constants::M_TABLE, ['id' => $moduleinstance->id, 'phonetic' => $thephonetic, 'passagesegments' => $thepassagesegments]);
-        $moduleinstance->phonetic = $thephonetic;
-        $moduleinstance->passagesegments = $thepassagesegments;
-    }
-}
-// All attempts code.
-// Do we have attempts and ai data.
-$attempts = utils::fetch_user_attempts($moduleinstance);
-// $aievals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->id);
-
-// For Japanese (and later other languages we collapse spaces).
- $collapsespaces = false;
-if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
-    $collapsespaces = true;
-}
-
-// Can attempt ?
-$canattempt = true;
-$canpreview = has_capability('mod/readaloud:preview', $modulecontext);
-if (!$canpreview && $moduleinstance->maxattempts > 0) {
-    $gradeableattempts = 0;
-    if ($attempts) {
-        foreach ($attempts as $candidate) {
-            if ($candidate->dontgrade == 0) {
-                $gradeableattempts++;
+        // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
+        if ($moduleinstance->passagesegments === null) {
+            $olditem = false;
+            list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($moduleinstance, $olditem);
+            if (!empty($thephonetic)) {
+                $DB->update_record(constants::M_TABLE, ['id' => $moduleinstance->id, 'phonetic' => $thephonetic, 'passagesegments' => $thepassagesegments]);
+                $moduleinstance->phonetic = $thephonetic;
+                $moduleinstance->passagesegments = $thepassagesegments;
             }
         }
-    }
-    if ($attempts && $gradeableattempts >= $moduleinstance->maxattempts) {
-        $canattempt = false;
-    }
-}
+        // All attempts code.
+        // Do we have attempts and ai data.
+        $attempts = utils::fetch_user_attempts($moduleinstance);
+        // $aievals = \mod_readaloud\utils::get_aieval_byuser($moduleinstance->id, $USER->id);
 
-// Debug mode is for teachers only.
-if (!$canpreview) {
-    $debug = false;
-}
+        // For Japanese (and later other languages we collapse spaces).
+        $collapsespaces = false;
+        if ($moduleinstance->ttslanguage == constants::M_LANG_JAJP) {
+            $collapsespaces = true;
+        }
 
-// Fetch attempt information.
-if ($attempts) {
-    $latestattempt = current($attempts);
+        // Can attempt ?
+        $canattempt = true;
+        $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
+        if (!$canpreview && $moduleinstance->maxattempts > 0) {
+            $gradeableattempts = 0;
+            if ($attempts) {
+                foreach ($attempts as $candidate) {
+                    if ($candidate->dontgrade == 0) {
+                        $gradeableattempts++;
+                    }
+                }
+            }
+            if ($attempts && $gradeableattempts >= $moduleinstance->maxattempts) {
+                $canattempt = false;
+            }
+        }
 
-    if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
-        $latestaigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
-    } else {
-        $latestaigrade = false;
-    }
+        // Debug mode is for teachers only.
+        if (!$canpreview) {
+            $debug = false;
+        }
 
-    $havehumaneval = $latestattempt->sessiontime != null;
-    $haveaieval = $latestaigrade && $latestaigrade->has_transcripts();
-} else {
-    $latestattempt = false;
-    $havehumaneval = false;
-    $haveaieval = false;
-    $latestaigrade = false;
-}
+        // Fetch attempt information.
+        if ($attempts) {
+            $latestattempt = current($attempts);
 
-// If we are reviewing attempts we do that here and return.
-// If we are going to the dashboard we output that below.
-$passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
-if ($attempts && $reviewattempts) {
-    $attemptreviewhtml = $renderer->show_attempt_for_review($moduleinstance, $attempts,
+            if (\mod_readaloud\utils::can_transcribe($moduleinstance)) {
+                $latestaigrade = new \mod_readaloud\aigrade($latestattempt->id, $modulecontext->id);
+            } else {
+                $latestaigrade = false;
+            }
+
+            $havehumaneval = $latestattempt->sessiontime != null;
+            $haveaieval = $latestaigrade && $latestaigrade->has_transcripts();
+        } else {
+            $latestattempt = false;
+            $havehumaneval = false;
+            $haveaieval = false;
+            $latestaigrade = false;
+        }
+
+        // If we are reviewing attempts we do that here and return.
+        // If we are going to the dashboard we output that below.
+        $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
+        if ($attempts && $reviewattempts) {
+            $attemptreviewhtml = $renderer->show_attempt_for_review($moduleinstance, $attempts,
             $havehumaneval, $haveaieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer, $embed);
-    echo $attemptreviewhtml;
+            echo $attemptreviewhtml;
 
-    return;
-}
+            return;
+        }
 
-// Show small report.
-if ($attempts) {
-    if (!$latestattempt) {
-        $latestattempt = current($attempts);
-    }
-}
+        // Show small report.
+        if ($attempts) {
+            if (!$latestattempt) {
+                $latestattempt = current($attempts);
+            }
+        }
 
-// Fetch a token and report a failure to a display item: $problembox.
-$problembox = '';
-$token = "";
-if (empty($config->apiuser) || empty($config->apisecret)) {
-    $message = get_string('nocredentials', constants::M_COMPONENT,
+        // Fetch a token and report a failure to a display item: $problembox.
+        $problembox = '';
+        $token = "";
+        if (empty($config->apiuser) || empty($config->apisecret)) {
+            $message = get_string('nocredentials', constants::M_COMPONENT,
             $CFG->wwwroot . constants::M_PLUGINSETTINGS);
-    $problembox = $this->show_problembox($message);
-} else {
-    // Fetch token.
-    $token = utils::fetch_token($config->apiuser, $config->apisecret);
+            $problembox = $this->show_problembox($message);
+        } else {
+            // Fetch token.
+            $token = utils::fetch_token($config->apiuser, $config->apisecret);
 
-    // Check token authenticated and no errors in it.
-    $errormessage = utils::fetch_token_error($token);
-    if (!empty($errormessage)) {
-        $problembox = $this->show_problembox($errormessage);
-    }
-}
+            // Check token authenticated and no errors in it.
+            $errormessage = utils::fetch_token_error($token);
+            if (!empty($errormessage)) {
+                $problembox = $this->show_problembox($errormessage);
+            }
+        }
 
-// If we have a problem (usually with auth/token) we display and return.
-if (!empty($problembox)) {
-    $problembox = true;
-}
+        // If we have a problem (usually with auth/token) we display and return.
+        if (!empty($problembox)) {
+            $problembox = true;
+        }
 
-$modelaudiorenderer = $this->page->get_renderer(
-    constants::M_COMPONENT,
-    'modelaudio'
-);
-$modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
-    $moduleinstance,
-    $token,
-    false
-);
+        $modelaudiorenderer = $this->page->get_renderer(
+        constants::M_COMPONENT,
+        'modelaudio'
+        );
+        $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
+        $moduleinstance,
+        $token,
+        false
+        );
 
         $welcomemessage = get_string('welcomemenu', constants::M_COMPONENT) .
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
+
+        // Fetchquiz data for JS.
+        $rsquestionrenderer = $this->page->get_renderer(constants::M_COMPONENT, 'rsquestion');
+        $quizamddata = $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewquestionid = 0, $canreattempt = false, $embed = 0);
+
+        // Quiz html.
+        $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
+        $quizhelper = new quizhelper($cm);
+        $hasquizquestions = $quizhelper->fetch_item_count() > 0;
+        $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm);
 
         // Render the passage.
         $mode = 'noquiz';
@@ -1255,7 +1266,7 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             $modequiz = false;
         }
         $stepsenabled = utils::get_steps_enabled_state($moduleinstance);
-        $stepsopen = utils::get_steps_open_state($moduleinstance, $latestattempt);
+        $stepsopen = utils::get_steps_open_state($moduleinstance, $latestattempt, $hasquizquestions);
         $stepscomplete = utils::get_steps_complete_state($moduleinstance, $latestattempt);
 
         // Now that we have steps data, get activity header with progress bar.
@@ -1265,6 +1276,16 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             $moduleinstance,
             $stepsenabled,
             $stepscomplete
+        );
+
+        // Merge activity header data into headercontent for view.mustache → activity_header.mustache.
+        $headercontent = array_merge(
+            $headercontent,
+            $activityheader,
+            [
+                'activityheader' => $hasheadercontent,
+                'passagepictureurl' => $passagepictureurl,
+            ]
         );
 
         // Render the passage.
@@ -1300,16 +1321,6 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
         // Get practice recorder data.
         $practicedata = $this->show_practice($moduleinstance, $token);
 
-        // Fetchquiz data for JS.
-        $rsquestionrenderer = $this->page->get_renderer(constants::M_COMPONENT, 'rsquestion');
-        $quizamddata = $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewquestionid = 0, $canreattempt = false, $embed = 0);
-
-        // Quiz html.
-        $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
-        $quizhelper = new quizhelper($cm);
-        $hasquizquestions = $quizhelper->fetch_item_count() > 0;
-        $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm);
-
         $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
         $feedback = !empty($moduleinstance->feedback) ? $moduleinstance->feedback : null;
         $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
@@ -1322,7 +1333,8 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             $latestattempt,
             $stepsenabled,
             $stepsopen,
-            $stepscomplete
+            $stepscomplete,
+            $hasquizquestions
         );
 
         // Get full report data for the finalreport template.
@@ -1375,10 +1387,10 @@ $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
             'welcomemessage' => $welcomemessage,
             'practice' => $practicedata['practice'],
             'practice_rtl' => $practicedata['practice_rtl'],
-        ], $this->get_all_constants());
+            ], $this->get_all_constants());
 
         // Fetch AMD data, passing the existing templatecontext to be stored in JSON for JavaScript.
-        $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed, $latestattempt, $templatecontext);
+        $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed, $latestattempt, $templatecontext, $hasquizquestions);
 
         // Add the AMD data to the templatecontext.
         $templatecontext['activityamddata'] = $activityamddata;
