@@ -2,7 +2,11 @@
 <div id="{{fullreportcontainer}}" class='mod_readaloud_finalreport {{fullreportcontainer}}'>
 
     {{>mod_readaloud/studentreadingattemptssummary}}
-    {{>mod_readaloud/studentquizattemptssummary}}
+    {{#stepsenabled.step_quiz}}
+    {{#hasquizquestions}}
+        {{>mod_readaloud/studentquizattemptssummary}}
+    {{/hasquizquestions}}
+    {{/stepsenabled.step_quiz}}
 
     <div class="{{M_FEEDBACK_CONTAINER}} {{constants::M_POSTATTEMPT}}" id="{{M_FEEDBACK_CONTAINER}}">
         <div class="box py-3 generalbox mb-3">

@@ -76,6 +76,7 @@
     {{/smallreport}}
 
     <!--View quiz if it has been enabled-->
+    {{#stepsenabled.step_quiz}}
     {{#hasquizquestions}}
     <div id="mod_readaloud_quiztime_container" class="d-flex justify-content-between p-3 my-4 rounded">
         <div id="quiztime_title_container" class="d-flex flex-column justify-content-between">
@@ -88,6 +89,8 @@
         <button class="mod_readaloud_takequiz_button btn btn-primary align-self-center" data-action="takequiz">{{#str}}takethequiz, mod_readaloud{{/str}}</button>
     </div>
     {{/hasquizquestions}}
+    {{/stepsenabled.step_quiz}}
+
 
     <!--The audio player-->
     {{#smallreport}}
@@ -102,7 +105,9 @@
     <div class="mod_readaloud_readingpassage_section mb-4">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h6 class="fw-semibold mb-0">{{#str}}readingpassage, mod_readaloud{{/str}}</h6>
-            <button class="btn btn-primary" data-action="readagain">{{#str}}readagain, mod_readaloud{{/str}}</button>
+            {{#readreattempt}}
+                <button class="btn btn-primary" data-action="readagain">{{#str}}readagain, mod_readaloud{{/str}}</button>
+            {{/readreattempt}}
         </div>
         {{> mod_readaloud/passagecontainer}}
     </div>

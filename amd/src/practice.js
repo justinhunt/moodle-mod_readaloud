@@ -205,7 +205,7 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
                 audiostarttime: lastbreakaudiotime,
                 audiotime: audiotime,
                 sentence: thesentence};
-            
+
             self.breaks.push(lastbreak);
         }
     },

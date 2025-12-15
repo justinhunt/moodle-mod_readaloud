@@ -1153,7 +1153,7 @@ class renderer extends \plugin_renderer_base {
             $collapsespaces = true;
         }
 
-        // Can attempt ?
+        // Can attempt
         $canattempt = true;
         $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
         if (!$canpreview && $moduleinstance->maxattempts > 0) {
@@ -1384,6 +1384,7 @@ class renderer extends \plugin_renderer_base {
             'stepsopen' => $stepsopen,
             'stopandplay' => true, // TEMP.
             'token' => $token,
+            'readreattempt' => $moduleinstance->readreattempt ? true : false,
             'welcomemessage' => $welcomemessage,
             'practice' => $practicedata['practice'],
             'practice_rtl' => $practicedata['practice_rtl'],

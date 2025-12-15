@@ -25,8 +25,6 @@
 namespace mod_readaloud;
 defined('MOODLE_INTERNAL') || die();
 
-use mod_readaloud\constants;
-
 /**
  * Functions used generally across this mod
  *
@@ -2795,11 +2793,7 @@ class utils {
         $editors         = readaloud_get_editornames();
 
         // Get itemid - handle both array and object forms.
-        if (is_array($moduleinstance)) {
-            $itemid = isset($moduleinstance['id']) ? $moduleinstance['id'] : (isset($moduleinstance['instance']) ? $moduleinstance['instance'] : 0);
-        } else {
-            $itemid = isset($moduleinstance->id) ? $moduleinstance->id : (isset($moduleinstance->instance) ? $moduleinstance->instance : 0);
-        }
+        $itemid = 0;
 
         // Standard editor fields.
         foreach ($editors as $editor) {
@@ -3891,11 +3885,12 @@ class utils {
      */
     public static function get_passage_picture($moduleinstance, $modulecontext) {
         $fs = get_file_storage();
+        $itemid = 0;
         $files = $fs->get_area_files(
             $modulecontext->id,
-            'mod_readaloud',
-            'passagepicture',
-            $moduleinstance->id,
+            constants::M_COMPONENT,
+            constants::PASSAGEPICTURE_FILEAREA,
+            $itemid,
             'timemodified',
             false
         );
@@ -3908,9 +3903,9 @@ class utils {
         // Build and return the pluginfile URL.
         return \moodle_url::make_pluginfile_url(
             $modulecontext->id,
-            'mod_readaloud',
-            'passagepicture',
-            $moduleinstance->id,
+            constants::M_COMPONENT,
+            constants::PASSAGEPICTURE_FILEAREA,
+            $itemid,
             $file->get_filepath(),
             $file->get_filename()
         )->out(false);
