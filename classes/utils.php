@@ -3699,15 +3699,15 @@ class utils {
         return $enabledsteps;
     }
     // Get the open state of all the steps (for mustache/js)
-    public static function get_steps_open_state($moduleinstance, $attempt) {
+    public static function get_steps_open_state($moduleinstance, $attempt, $hasquizquestions) {
         $opensteps = [];
         foreach (constants::STEPS as $stepname => $step) {
             if (self::is_step_open($step, $moduleinstance, $attempt)) {
                 $opensteps[$stepname] = $step;
             }
         }
-        // Report is open if: quiz enabled + quiz complete, else read complete.
-        if (self::is_step_enabled(constants::STEP_QUIZ, $moduleinstance)) {
+        // Report is open if: quiz enabled, has questions + quiz complete, else read complete.
+        if (self::is_step_enabled(constants::STEP_QUIZ, $moduleinstance) && $hasquizquestions) {
             $opensteps['step_report'] = self::is_step_complete(constants::STEP_QUIZ, $attempt);
         } else {
             $opensteps['step_report'] = self::is_step_complete(constants::STEP_READ, $attempt);
