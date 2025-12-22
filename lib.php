@@ -516,7 +516,7 @@ function readaloud_process_editors(stdClass $readaloud, ?mod_readaloud_mod_form 
         $context->id,
         constants::M_COMPONENT,
         constants::PASSAGEPICTURE_FILEAREA,
-        $itemid,
+        0,
         $ppoptions,
     );
 
