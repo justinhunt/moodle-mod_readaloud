@@ -2408,6 +2408,7 @@ class utils {
             'wrap="virtual" rows="15" cols="100"');
         $mform->setDefault('passage', '');
         $mform->setType('passage', PARAM_RAW);
+        $mform->addRule('passage', null, 'required', null, 'client');
         $mform->addElement('static', 'passagedescr', '',
             get_string('passage_descr', constants::M_COMPONENT));
         $mform->addHelpButton('passage', 'passage', constants::M_COMPONENT);

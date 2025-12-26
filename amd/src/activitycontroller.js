@@ -596,6 +596,14 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
             open_next_step: function (oldstep) {
                 var that = this;
                 var adata = this.activitydata;
+
+                // Special case: Report step (value 0) after Read completion.
+                // Report's step value is 0, so it won't be caught by the normal loop.
+                if (oldstep == adata.steps.step_read) {
+                    that.controls.startreportbutton.removeClass('no-click');
+                    that.activitydata.stepsopen['step_report'] = adata.steps.step_report;
+                }
+
                 // Loop through adata.steps array.
                 // This looks like['step_listen': 1, 'step_practice': 2, 'step_shadow': 4, 'step_read': 8, 'step_quiz': 16].
                 for (var key in adata.steps) {
@@ -610,11 +618,6 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         if (step_chooser.length) {
                             step_chooser.removeClass('no-click');
                             step_chooser[0].removeEventListener('click', disableClick, true);
-
-                            // (Hacky) show report if read step was done.
-                            if (oldstep == adata.steps.step_read) {
-                                that.controls.startreportbutton.removeClass('no-click');
-                            }
 
                             // Record the newly opened step as 'open' for client side use.
                             that.activitydata.stepsopen[key] = thestep;
