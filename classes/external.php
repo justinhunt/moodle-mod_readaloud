@@ -594,5 +594,32 @@ class mod_readaloud_external extends external_api {
         return new external_value(PARAM_BOOL);
     }
 
+    public static function fetch_student_attempt_summary_parameters() {
+        return new external_function_parameters(
+            ['cmid' => new external_value(PARAM_INT, 'The cmid', VALUE_REQUIRED)]
+        );
+    }
+
+    public static function fetch_student_attempt_summary($cmid) {
+        global $DB, $USER, $PAGE;
+        $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        $modulecontext = context_module::instance($cmid);
+        $PAGE->set_context($modulecontext);
+        $PAGE->set_cm($cm);
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'timecreated DESC');
+        if($attempts && count($attempts)>0) {
+            $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
+            $ret = $renderer->get_full_student_report_data($moduleinstance, $modulecontext, $attempts, $cm);
+        } else {
+            $ret = false;
+        }
+        return json_encode($ret);
+    }
+
+    public static function fetch_student_attempt_summary_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
 
 }

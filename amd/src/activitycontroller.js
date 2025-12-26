@@ -214,6 +214,8 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 quizhelper.on_complete = function () {
                     // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_quiz);
+                    // Re-fetch the student attempt summary data
+                    dd.update_full_report_data();
                 }
             },
 
@@ -347,6 +349,9 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
 
                     // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_read);
+
+                    // Re-fetch the student attempt summary data when small report comed back
+                    smallreporthelper.on_results_fetched = dd.update_full_report_data;
 
                     // Send user to the finished report immediately.
                     smallreporthelper.update_filename(eventdata.mediaurl);
@@ -526,6 +531,25 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 dd.controls.homebutton.click(function (e) {
                     dd.domenulayout();
                 });
+            },
+
+            update_full_report_data: function(){
+                var that = this;
+                Ajax.call([{
+                    methodname: 'mod_readaloud_fetch_student_attempt_summary',
+                    args: {
+                        cmid: that.cmid,
+                    },
+                    done: function (ajaxresult) {
+                        var payloadobject = JSON.parse(ajaxresult);
+                        if (payloadobject) {
+                            // Update local activitydata with new attempt summary data.
+                            that.activitydata.fullreportdata = payloadobject.attemptsummary;
+                            log.debug('Updated attempt summary data:', that.activitydata.attemptsummary);
+                        }
+                    },
+                    fail: notification.exception
+                }]);
             },
 
             // When a step is completed, we update the activity completion on the server

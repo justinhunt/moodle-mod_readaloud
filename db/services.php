@@ -61,27 +61,27 @@ $functions = array(
         'capabilities' => 'mod/readaloud:managequestions',
         'type'        => 'write',
         'ajax'        => true,
-),
+    ),
 
-'mod_readaloud_move_item' => array(
+    'mod_readaloud_move_item' => array(
         'classname'   => 'mod_readaloud_external',
         'methodname'  => 'move_item',
         'description' => 'move item.',
         'capabilities' => 'mod/readaloud:managequestions',
         'type'        => 'write',
         'ajax'        => true,
-),
+    ),
 
-'mod_readaloud_duplicate_item' => array(
+    'mod_readaloud_duplicate_item' => array(
     'classname'   => 'mod_readaloud_external',
     'methodname'  => 'duplicate_item',
     'description' => 'duplicate item.',
     'capabilities' => 'mod/readaloud:managequestions',
     'type'        => 'write',
     'ajax'        => true,
-),
+    ),
 
-'mod_readaloud_report_quizstep_grade' => array(
+    'mod_readaloud_report_quizstep_grade' => array(
                 'classname'   => 'mod_readaloud_external',
                 'methodname'  => 'report_quizstep_grade',
                 'description' => 'Reports the grade of a quiz step',
@@ -89,7 +89,7 @@ $functions = array(
                 'type'        => 'write',
                 'ajax'        => true,
         ),
-'mod_readaloud_evaluate_transcript' => array(
+    'mod_readaloud_evaluate_transcript' => array(
                 'classname'   => 'mod_readaloud_external',
                 'methodname'  => 'evaluate_transcript',
                 'description' => 'evaluate transcript',
@@ -97,7 +97,7 @@ $functions = array(
                 'type'        => 'read',
                 'ajax'        => true,
             ),
-'mod_readaloud_fetch_quiz_results' => array(
+    'mod_readaloud_fetch_quiz_results' => array(
                 'classname'   => 'mod_readaloud_external',
                 'methodname'  => 'fetch_quiz_results',
                 'description' => 'fetch_quiz_results',
@@ -105,7 +105,7 @@ $functions = array(
                 'type'        => 'read',
                 'ajax'        => true,
             ),
- 'mod_readaloud_report_activitystep_completion' => array(
+     'mod_readaloud_report_activitystep_completion' => array(
                 'classname'   => 'mod_readaloud_external',
                 'methodname'  => 'report_activitystep_completion',
                 'description' => 'Reports the completion of an activity step',
@@ -113,12 +113,22 @@ $functions = array(
                 'type'        => 'write',
                 'ajax'        => true,
         ),
- 'mod_readaloud_fetch_student_reading_report' => array(
-                'classname'   => 'mod_readaloud_external',
-                'methodname'  => 'fetch_student_reading_report',
-                'description' => 'Fetch the marked passage+results for a student to see',
-                'capabilities' => 'mod/readaloud:view',
-                'type'        => 'read',
-                'ajax'        => true,
- ),
+     'mod_readaloud_fetch_student_reading_report' => array(
+                    'classname'   => 'mod_readaloud_external',
+                    'methodname'  => 'fetch_student_reading_report',
+                    'description' => 'Fetch the marked passage+results for a student to see',
+                    'capabilities' => 'mod/readaloud:view',
+                    'type'        => 'read',
+                    'ajax'        => true,
+     ),
+
+    'mod_readaloud_fetch_student_attempt_summary' => array(
+        'classname'   => 'mod_readaloud_external',
+        'methodname'  => 'fetch_student_attempt_summary',
+        'description' => 'Fetch the quiz and reading results for display in full report',
+        'capabilities' => 'mod/readaloud:view',
+        'type'        => 'read',
+        'ajax'        => true,
+    ),
+
 );

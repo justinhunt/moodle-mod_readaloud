@@ -190,6 +190,9 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
             this.controls.dummyplayer.show();
         },
 
+        //call back function
+        on_results_fetched: function() {},
+
         check_for_results: function (that, seconds) {
 
             //decrement 1 s. At 15 seconds do the check
@@ -285,6 +288,9 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
                                 //show the full report
                                 log.debug('showing full report');
                                 that.controls.fullreportcontainer.show();
+
+                                // Alert any listeners
+                                that.on_results_fetched();
 
                                 break;
 
