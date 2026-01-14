@@ -37,7 +37,7 @@ $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '
 $quizhelper = new \mod_readaloud\quizhelper($cm);
 $items = $quizhelper->fetch_items();
 
-// mode is necessary for tabs
+// Mode is necessary for tabs.
 $mode = 'rsquestions';
 // Set page url before require login, so post login will return here
 $PAGE->set_url('/mod/readaloud/rsquestion/rsquestions.php', ['id' => $cm->id, 'mode' => $mode]);
@@ -74,8 +74,9 @@ echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('rsquestion
 require_capability('mod/readaloud:itemview', $context);
 
     // if have edit permission, show edit buttons
-if (has_capability('mod/readaloud:itemview', $context)){
-    echo $rsquestionrenderer->add_edit_page_links($context, $tableid);
+if (has_capability('mod/readaloud:itemview', $context)) {
+    //echo $rsquestionrenderer->add_edit_page_links($context, $tableid);
+    echo $rsquestionrenderer->add_multichoice_item_link($context, $tableid);
 }
 
 // if we have items, show em

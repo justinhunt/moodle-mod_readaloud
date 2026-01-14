@@ -398,7 +398,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         // we need to call rendermode (not doquizlayout) so that we can pass the retakequiz flag
                         // Rendermode puts the html from php on the page again in a promise that resolves a bit slow
                         // And we need to hide/show stuff to get retake after that. The flag sets that up
-                        dd.renderMode('quiz', {retakequiz: true}, true);
+                        dd.renderMode('quiz', {retakequiz: true, quizfinished: false}, true);
 
                         return;
                     } else if (action === 'quizviewreport') {

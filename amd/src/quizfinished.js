@@ -23,6 +23,7 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
         this.init_strings();
         this.register_controls();
         this.register_events();
+        this.reset_instructions_header(this.strings.quizfinishedhelp);
 
     },
 
@@ -30,6 +31,12 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
         this.controls.quizfinishedcontainer = $('#mod_readaloud_quiz_finished');
         this.controls.quizitemscontainer = $('#mod_readaloud_quiz_items_cont');
         this.controls.togglemodalbutton = $('#mod_readaloud_showquiztryagainmodal');
+        this.controls.instructionsheader = $("#mod_readaloud_quizmode .mod_readaloud-activity-header-inpage .mod_readaloud_instructions");
+    },
+
+    reset_instructions_header: function(instructions) {
+        // Change the instructions header to quiz finished instructions
+        this.controls.instructionsheader.text(instructions);
     },
 
     register_events: function(){
@@ -106,14 +113,18 @@ define(['jquery', 'core/log','core/modal_factory','core/str','core/modal_events'
         // set up strings
         str.get_strings([
             {"key": "reattempttitle",       "component": 'mod_readaloud'},
-            {"key": "reattemptbody",           "component": 'mod_readaloud'},
-            {"key": "reattempt",           "component": 'mod_readaloud'}
+            {"key": "reattemptbody",        "component": 'mod_readaloud'},
+            {"key": "reattempt",           "component": 'mod_readaloud'},
+            {"key": "quizfinishedhelp",    "component": 'mod_readaloud'},
+            {"key": "quizhelp",    "component": 'mod_readaloud'},
 
         ]).done(function(s) {
             var i = 0;
             that.strings.reattempttitle = s[i++];
             that.strings.reattemptbody = s[i++];
             that.strings.reattempt = s[i++];
+            that.strings.quizfinishedhelp = s[i++];
+            that.strings.quizhelp = s[i++];
         });
     }
   };

@@ -1257,6 +1257,7 @@ class renderer extends \plugin_renderer_base {
         $quizhelper = new quizhelper($cm);
         $hasquizquestions = $quizhelper->fetch_item_count() > 0;
         $quizhtml = $rsquestionrenderer->show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm);
+        $quizfinished = utils::quiz_is_finished($moduleinstance, $latestattempt, $cm);
 
         // Render the passage.
         $mode = 'noquiz';
@@ -1375,6 +1376,7 @@ class renderer extends \plugin_renderer_base {
             'problembox' => $problembox,
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => isset($quizhtml) ? $quizhtml : null,
+            'quizfinished' => $quizfinished,
             'recorder' => $recorder,
             'smallreport' => $smallreport,
             'steps' => constants::STEPS,

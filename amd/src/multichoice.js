@@ -47,6 +47,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/pollyh
       var theplayer = $("#" + itemdata.uniqueid + "_player");
       var nextbutton = $("#" + itemdata.uniqueid + "_container .readaloud_nextbutton");
       var confirmchoicebutton = $("#" + itemdata.uniqueid + "_container .readaloud_mc_confirmchoice");
+      // Results panel is commented out in the HTML, but we keep the code here in case we want to use it later
       var resultspanel = $("#" + itemdata.uniqueid + "_container .readaloud_resultspanel");
       var resultspanelswish = $("#" + itemdata.uniqueid + "_container .readaloud_resultspanel_swish");
       var resultspanelstars = $("#" + itemdata.uniqueid + "_container .readaloud_swishstars");

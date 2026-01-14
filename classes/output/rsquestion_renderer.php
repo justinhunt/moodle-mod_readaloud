@@ -27,7 +27,8 @@ use mod_readaloud\quizhelper;
  * @copyright COPYRIGHTNOTICE
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rsquestion_renderer extends \plugin_renderer_base {
+class rsquestion_renderer extends \plugin_renderer_base
+{
 
     /**
      * Return HTML to display add first page links
@@ -35,7 +36,8 @@ class rsquestion_renderer extends \plugin_renderer_base {
      * @param int $tableid
      * @return string
      */
-    public function add_edit_page_links($context, $tableid) {
+    public function add_edit_page_links($context, $tableid)
+    {
         global $CFG;
         $itemid = 0;
         $config = get_config(constants::M_COMPONENT);
@@ -56,15 +58,48 @@ class rsquestion_renderer extends \plugin_renderer_base {
         // but when there is a lot to be edited , a standalone page is better. The modaleditform flag is acted on on additemlink template and rsquestionmanager js
         $modaleditform = false; // $config->modaleditform == "1";
         foreach ($qtypes as $qtype) {
-            $data = ['wwwroot' => $CFG->wwwroot, 'type' => $qtype, 'itemid' => $itemid, 'cmid' => $this->page->cm->id,
-              'label' => get_string('add' . $qtype . 'item', constants::M_COMPONENT), 'modaleditform' => $modaleditform];
+            $data = [
+                'wwwroot' => $CFG->wwwroot,
+                'type' => $qtype,
+                'itemid' => $itemid,
+                'cmid' => $this->page->cm->id,
+                'label' => get_string('add' . $qtype . 'item', constants::M_COMPONENT),
+                'modaleditform' => $modaleditform
+            ];
             $links[] = $this->render_from_template('mod_readaloud/additemlink', $data);
         }
 
         $props = ['contextid' => $context->id, 'tableid' => $tableid, 'modaleditform' => $modaleditform, 'wwwroot' => $CFG->wwwroot, 'cmid' => $this->page->cm->id];
         $this->page->requires->js_call_amd(constants::M_COMPONENT . '/rsquestionmanager', 'init', [$props]);
 
-        return $this->output->box($output.implode("", $links), 'generalbox firstpageoptions mod_readaloud_link_box_container');
+        return $this->output->box($output . implode("", $links), 'generalbox firstpageoptions mod_readaloud_link_box_container');
+    }
+
+    public function add_multichoice_item_link($context, $tableid)
+    {
+        global $CFG;
+        $itemid = 0;
+        $config = get_config(constants::M_COMPONENT);
+
+        // If modaleditform is true adding and editing item types is done in a popup modal. Thats good ...
+        // but when there is a lot to be edited , a standalone page is better. The modaleditform flag is acted on on additemlink template and rsquestionmanager js
+        $modaleditform = false; // $config->modaleditform == "1";
+
+        $data = [
+            'wwwroot' => $CFG->wwwroot,
+            'type' => constants::TYPE_MULTICHOICE,
+            'itemid' => $itemid,
+            'cmid' => $this->page->cm->id,
+            'isbutton' => true,
+            'label' => get_string('addquestion', constants::M_COMPONENT),
+            'modaleditform' => $modaleditform
+        ];
+
+        $output = $this->output->heading(get_string("whatdonow", "readaloud"), 3);
+        $links = [$this->render_from_template('mod_readaloud/additemlink', $data)];
+        $props = ['contextid' => $context->id, 'tableid' => $tableid, 'modaleditform' => $modaleditform, 'wwwroot' => $CFG->wwwroot, 'cmid' => $this->page->cm->id];
+        $this->page->requires->js_call_amd(constants::M_COMPONENT . '/rsquestionmanager', 'init', [$props]);
+        return $this->output->box($output . implode("", $links), 'generalbox firstpageoptions mod_readaloud_link_box_container');
     }
 
 
@@ -73,7 +108,8 @@ class rsquestion_renderer extends \plugin_renderer_base {
      *
      * @param int $tableid The ID of the table to setup.
      */
-    public function setup_datatables($tableid) {
+    public function setup_datatables($tableid)
+    {
         global $USER;
 
         $tableprops = [];
@@ -98,27 +134,31 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $opts['tableid'] = $tableid;
         $opts['tableprops'] = $tableprops;
         $this->page->requires->js_call_amd(constants::M_COMPONENT . "/datatables", 'init', [$opts]);
-        $this->page->requires->css( new \moodle_url('https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css'));
-        $this->page->requires->css( new \moodle_url('https://cdn.datatables.net/buttons/3.2.0/css/buttons.dataTables.min.css'));
+        $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css'));
+        $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.2.0/css/buttons.dataTables.min.css'));
         $this->page->requires->strings_for_js(['bulkdelete', 'bulkdeletequestion'], constants::M_COMPONENT);
     }
 
-    public function show_no_items($cm, $showadditemlinks) {
+    public function show_no_items($cm, $showadditemlinks)
+    {
         $displaytext = $this->output->box_start();
         $displaytext .= $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
         if ($showadditemlinks) {
             $displaytext .= \html_writer::div(get_string('letsadditems', constants::M_COMPONENT), '', []);
-            $displaytext .= $this->output->single_button(new \moodle_url(constants::M_URL . '/rsquestion/rsquestions.php',
-                ['id' => $cm->id]), get_string('additems', constants::M_COMPONENT));
+            $displaytext .= $this->output->single_button(new \moodle_url(
+                constants::M_URL . '/rsquestion/rsquestions.php',
+                ['id' => $cm->id]
+            ), get_string('additems', constants::M_COMPONENT));
         }
         $displaytext .= $this->output->box_end();
         $ret = \html_writer::div($displaytext, constants::M_NOITEMS_CONT, ['id' => constants::M_NOITEMS_CONT]);
         return $ret;
     }
-    function show_noitems_message($itemsvisible) {
+    function show_noitems_message($itemsvisible)
+    {
         $message = $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
         $displayvalue = $itemsvisible ? 'none' : 'block';
-        $ret = \html_writer::div($message , constants::M_NOITEMS_CONT, ['id' => constants::M_NOITEMS_CONT, 'style' => 'display: '.$displayvalue]);
+        $ret = \html_writer::div($message, constants::M_NOITEMS_CONT, ['id' => constants::M_NOITEMS_CONT, 'style' => 'display: ' . $displayvalue]);
         return $ret;
     }
 
@@ -128,7 +168,8 @@ class rsquestion_renderer extends \plugin_renderer_base {
      * @param integer $courseid
      * @return string html of table
      */
-    public function show_items_list($items, $readaloud, $cm, $visible) {
+    public function show_items_list($items, $readaloud, $cm, $visible)
+    {
 
         // new code
         $data = [];
@@ -136,7 +177,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $data['display'] = $visible ? 'block' : 'none';
         $itemsarray = [];
         foreach (array_values($items) as $i => $item) {
-            $arrayitem = (Array)$item;
+            $arrayitem = (Array) $item;
             $arrayitem['index'] = ($i + 1);
             // due to odd  data in the field from legacy times we need to check for empty or oddstrings
             $arrayitem['typelabel'] = empty($arrayitem['type']) || strlen($arrayitem['type']) < 4 ? 'unknown' : get_string($arrayitem['type'], constants::M_COMPONENT);
@@ -156,75 +197,86 @@ class rsquestion_renderer extends \plugin_renderer_base {
     /**
      *  Show quiz container
      */
-    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm) {
+    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm)
+    {
 
         // Finished quiz results div.
-        if ($latestattempt && $cm && $latestattempt->status == utils::is_step_complete(constants::STEP_QUIZ, $latestattempt)) {
+        $quiz_is_finished = utils::quiz_is_finished($moduleinstance, $latestattempt, $cm);
+        if ($quiz_is_finished) {
             $finisheddata = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
             $finisheddata->canreattemptquiz = $moduleinstance->quizreattempt ? true : false;
             $modulecontext = \context_module::instance($cm->id);
             $finisheddata->activityname = format_string($moduleinstance->name);
             $finisheddata->backurl = (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false);
-            $finisheddata->passagepictureurl = utils::get_passage_picture($moduleinstance,  $modulecontext);
+            $finisheddata->passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
             $finishedcontents = $this->render_from_template(constants::M_COMPONENT . '/quizfinished', $finisheddata);
         } else {
             $finishedcontents = '';
         }
         $finishedattributes = ['id' => constants::M_QUIZ_FINISHED];
-        if(empty($finishedcontents)){
+        if (empty($finishedcontents)) {
             $finishedattributes['style'] = 'display: none;';
         }
-        $finisheddiv = \html_writer::div($finishedcontents , constants::M_QUIZ_FINISHED,
-            $finishedattributes);
+        $finisheddiv = \html_writer::div(
+            $finishedcontents,
+            constants::M_QUIZ_FINISHED,
+            $finishedattributes
+        );
 
 
         // Quiz items data div.
         $quizdata = $quizhelper->fetch_quiz_items_for_js();
         $itemshtml = [];
-        foreach($quizdata as $item){
+        foreach ($quizdata as $item) {
             $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/' . $item->type, $item);
         }
 
         $quizattributes = ['id' => constants::M_QUIZ_ITEMS_CONTAINER];
         // Div style if we have a custom font use it. If quiz has results, items are by default hidden.
         $style = '';
-        if(!empty($moduleinstance->lessonfont)){
+        if (!empty($moduleinstance->lessonfont)) {
             $style .= "font-family: '$moduleinstance->lessonfont', serif;";
         }
-        if(!empty($finishedcontents)){
+        if (!empty($finishedcontents)) {
             $style .= "display: none;";
         }
-        if(!empty($style)){
+        if (!empty($style)) {
             $quizattributes['style'] = $style;
-        };
+        }
+        ;
 
         // Quiz items div.
         $quizitemsclass = constants::M_QUIZ_ITEMS_CONTAINER;
-        $quizitemsdiv = \html_writer::div(implode('', $itemshtml) , $quizitemsclass, $quizattributes);
+        $quizitemsdiv = \html_writer::div(implode('', $itemshtml), $quizitemsclass, $quizattributes);
 
         $ret = $quizitemsdiv . $finisheddiv;
         return $ret;
     }
 
-    public function show_quiz_preview($quizhelper, $qid) {
+    public function show_quiz_preview($quizhelper, $qid)
+    {
 
         // quiz data
         $quizdata = $quizhelper->fetch_quiz_items_for_js();
         $itemshtml = [];
-        foreach($quizdata as $item) {
+        foreach ($quizdata as $item) {
             if ($item->id == $qid) {
                 $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/' . $item->type, $item);
             }
         }
 
-        $quizdiv = \html_writer::div(implode('', $itemshtml) , constants::M_QUIZ_CONTAINER,
-                ['id' => constants::M_QUIZ_CONTAINER]);
+        $quizdiv = \html_writer::div(
+            implode('', $itemshtml),
+            constants::M_QUIZ_CONTAINER,
+            ['id' => constants::M_QUIZ_CONTAINER]
+        );
 
         $ret = $quizdiv;
         return $ret;
     }
 
-    function fetch_quiz_amd($cm, $moduleinstance, $previewquestionid=0, $canreattempt=false, $embed=0) {
+    function fetch_quiz_amd($cm, $moduleinstance, $previewquestionid = 0, $canreattempt = false, $embed = 0)
+    {
         global $CFG, $USER;
         // Any html we want to return to be sent to the page.
         $rethtml = '';
@@ -254,8 +306,11 @@ class rsquestion_renderer extends \plugin_renderer_base {
         // First confirm we are authorised before we try to get the token.
         $config = get_config(constants::M_COMPONENT);
         if (empty($config->apiuser) || empty($config->apisecret)) {
-            $errormessage = get_string('nocredentials', constants::M_COMPONENT,
-                    $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+            $errormessage = get_string(
+                'nocredentials',
+                constants::M_COMPONENT,
+                $CFG->wwwroot . constants::M_PLUGINSETTINGS
+            );
             return $this->show_problembox($errormessage);
         } else {
             // Fetch token.
@@ -274,7 +329,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $recopts['stt_guided'] = $moduleinstance->transcriber == constants::TRANSCRIBER_GUIDED;
 
         $recopts['courseurl'] = $CFG->wwwroot . '/course/view.php?id=' .
-            $moduleinstance->course  . '#section-'. ($cm->section - 1);
+            $moduleinstance->course . '#section-' . ($cm->section - 1);
 
         $recopts['useanimatecss'] = true; // $config->animations == constants::M_ANIM_FANCY;
 
@@ -282,8 +337,10 @@ class rsquestion_renderer extends \plugin_renderer_base {
         $recopts['showqreview'] = $moduleinstance->showqreview ? true : false;
 
         // the activity URL for returning to on finished
-        $activityurl = new \moodle_url(constants::M_URL . '/quiz.php',
-            ['n' => $moduleinstance->id]);
+        $activityurl = new \moodle_url(
+            constants::M_URL . '/quiz.php',
+            ['n' => $moduleinstance->id]
+        );
 
         // add embedding url param if we are embedded
         if ($embed > 0) {
@@ -300,8 +357,10 @@ class rsquestion_renderer extends \plugin_renderer_base {
         }
 
         // show back to course button if we are not in an iframe
-        if ($config->enablesetuptab ||
-            $embed > 0) {
+        if (
+            $config->enablesetuptab ||
+            $embed > 0
+        ) {
             $recopts['backtocourse'] = '';
         } else {
             $recopts['backtocourse'] = true;
@@ -325,7 +384,7 @@ class rsquestion_renderer extends \plugin_renderer_base {
         // this inits the M.mod_readaloud thingy, after the page has loaded.
         // we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
         // convert opts to json
-        $jsonstring = json_encode($recopts, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+        $jsonstring = json_encode($recopts, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if (($jsonstring) === false) {
             $err = json_last_error();
         }

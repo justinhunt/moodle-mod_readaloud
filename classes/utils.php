@@ -2121,7 +2121,7 @@ class utils {
     public static function fetch_options_qfinishscreen() {
         $options = [constants::FINISHSCREEN_SIMPLE => get_string("qfinishscreen_simple", constants::M_COMPONENT),
             constants::FINISHSCREEN_FULL => get_string("qfinishscreen_full", constants::M_COMPONENT),
-            constants::FINISHSCREEN_CUSTOM => get_string("qfinishscreen_custom", constants::M_COMPONENT),
+           /* constants::FINISHSCREEN_CUSTOM => get_string("qfinishscreen_custom", constants::M_COMPONENT), */
            ];
         return $options;
     }
@@ -2339,6 +2339,16 @@ class utils {
         ];
     }
 
+    public static function quiz_is_finished($moduleinstance, $latestattempt, $cm) {
+        if ($latestattempt && 
+            $cm && 
+            $latestattempt->status == utils::is_step_complete(constants::STEP_QUIZ, $latestattempt)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public static function add_mform_elements($mform, $context, $cmid, $setuptab=false) {
         global $CFG, $COURSE, $OUTPUT;
         $config = get_config(constants::M_COMPONENT);
@@ -2528,10 +2538,17 @@ class utils {
         $mform->addHelpButton('quizreattempt', 'quizreattempt', constants::M_COMPONENT);
 
         // show question review
+        // This shows a review of the questions and answers after the question completion. 
+        // If only multiple choice questions are used, this has no effect. So we hard code this to true until we expose more questions
+        /*
         $mform->addElement('select', 'showqreview', get_string('showqreview', constants::M_COMPONENT),
         $yesnooptions);
         $mform->setDefault('showqreview', 1);
         $mform->addHelpButton('showqreview', 'showqreview', constants::M_COMPONENT);
+        */
+        $mform->addElement('hidden', 'showqreview');
+        $mform->setType('showqreview', PARAM_INT); 
+        $mform->setDefault('showqreview', 1);
 
         // quiz finish screen
         $screenoptions = self::fetch_options_qfinishscreen();

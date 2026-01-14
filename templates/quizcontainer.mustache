@@ -27,7 +27,12 @@
     <h2 id="quiz-title" class="visually-hidden">{{#str}}mode_quiz, mod_readaloud{{/str}}</h2>
 
     {{< mod_readaloud/activity_header_inpage}}
-        {{$instructions}}{{#str}} quizhelp, mod_readaloud {{/str}}{{/instructions}}
+        {{#quizfinished}}
+          {{$instructions}}{{#str}} quizfinishedhelp, mod_readaloud {{/str}}{{/instructions}}
+        {{/quizfinished}}
+        {{^quizfinished}}
+          {{$instructions}}{{#str}} quizhelp, mod_readaloud {{/str}}{{/instructions}}
+        {{/quizfinished}}
     {{/ mod_readaloud/activity_header_inpage}}
 
     <div id="{{M_QUIZ_CONTAINER_WRAP}}" class="{{M_QUIZ_CONTAINER_WRAP}}">
