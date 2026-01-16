@@ -25,12 +25,12 @@
  */
 
 /* jshint ignore:start */
-define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
+define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/definitions',
     'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
     'core/ajax', 'core/notification', 'mod_readaloud/smallreporthelper',
     'mod_readaloud/practice', 'mod_readaloud/quizhelper', 'mod_readaloud/clicktohear',  'core/templates',
 ],
-    function ($, log, str, def, recorderhelper, modelaudiokaraoke,
+    function ($, log, str, Fragment, def, recorderhelper, modelaudiokaraoke,
         Ajax, notification, smallreporthelper, practice, quizhelper, clicktohear, Templates) {
 
         "use strict"; // jshint ;_;
@@ -215,7 +215,8 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                     // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_quiz);
                     // Re-fetch the student attempt summary data
-                    dd.update_full_report_data();
+                  //  dd.update_full_report_data();
+dd.refresh_activity_data('fullreportdata');
                 }
             },
 
@@ -533,6 +534,34 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                 });
             },
 
+            refresh_activity_data: function (requestedcontextitems = 'all') {
+                var params = {debug: this.activitydata.debug, 
+                    embed: this.activitydata.embed, 
+                    reviewattempts: this.activitydata.reviewattempts,
+                    requestedcontextitems: requestedcontextitems
+                };
+                var returneditems = Fragment.loadFragment('mod_readaloud', 'appcontext', this.contextid, params);
+                // Split requestedcontextitems on commas and loop through them
+                var contextitems = requestedcontextitems.split(',');
+                for (var i = 0; i < contextitems.length; i++) {
+                    var requestedcontextitem = contextitems[i];
+                    // If that item is in returneditems, update activitydata
+                    if(requestedcontextitem == 'all' ||requestedcontextitem in returneditems) {
+                        switch(requestedcontextitem) {
+                            case 'all':
+                                this.activitydata.templatecontext = returneditems;
+                                break;
+                            case 'somethingthatmightneedhandling':
+                                // Do something.
+                                break;    
+                            default:       
+                                //e.g 'fullreportdata' or 'steps'
+                                this.activitydata.templatecontext[requestedcontextitem] = returneditems[requestedcontextitem];    
+                        }
+                    }
+                }
+            },
+
             update_full_report_data: function(){
                 var that = this;
                 Ajax.call([{
@@ -544,7 +573,7 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         var payloadobject = JSON.parse(ajaxresult);
                         if (payloadobject) {
                             // Update local activitydata with new attempt summary data.
-                            that.activitydata.fullreportdata = payloadobject.attemptsummary;
+                            that.activitydata.templatecontext.fullreportdata = payloadobject.attemptsummary;
                             log.debug('Updated attempt summary data:', that.activitydata.attemptsummary);
                         }
                     },
@@ -880,8 +909,8 @@ define(['jquery', 'core/log', "core/str", 'mod_readaloud/definitions',
                         dd.setup_recorder();
                     }
                     if (mode === 'quiz') {
-                        /* quizhelper already init'd in setupquiz; it draws into quizcontainer */
-                        // Maybe not .. when activitycontroller init calls setupquiz the quiz html is not there yet.
+                        // quizhelper already init'd in setupquiz; it draws into quizcontainer but ..
+                        // when activitycontroller init calls setupquiz the quiz html is not there yet.
                         // So lets try here.
                         dd.setupquiz();
 

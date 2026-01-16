@@ -151,6 +151,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
                             templates.render('mod_readaloud/audioplayer',tdata).then(
                                 function(html,js){
                                     //that.controls.player.html(html);
+                                    templates.clearNodeContents('.' + def.smallreportplayer);
                                     templates.appendNodeContents('.' + def.smallreportplayer, html, js);
                                     that.controls.dummyplayer.hide();
                                 }

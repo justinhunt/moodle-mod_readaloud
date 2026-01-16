@@ -1042,3 +1042,55 @@ function readaloud_output_fragment_preview($args) {
     $ret .= $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $args->itemid);
     return $ret;
 }
+
+function readaloud_output_fragment_appcontext($args) {
+    global $DB, $PAGE;
+    $args = (object) $args;
+    $context = $args->context;
+    $reviewattempts = $args->reviewattempts;
+    $debug = $args->debug;
+    $embed = $args->embed;
+    $requestedcontextitems = $args->requestedcontextitems;
+
+    $cm         = get_coursemodule_from_id('readaloud', $context->instanceid, 0, false, MUST_EXIST);
+    //$course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $moduleinstance  = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST);
+    $config = get_config(constants::M_COMPONENT);
+
+    $renderer = $PAGE->get_renderer('mod_readaloud');
+    $appcontext = $renderer->get_view_page_data(
+        $cm,
+        $config,
+        $debug,
+        $embed,
+        $context,
+        $moduleinstance,
+        $reviewattempts
+    );
+    $appcontextobj = (object) $appcontext;
+    // Trim it back to what was requested.
+    // First remove the html-> jsdata loader stuff.
+    unset($appcontextobj->activityamddata);
+
+    // If its "all" we return everything.
+    if ($requestedcontextitems == 'all') {
+        return $appcontextobj;
+    }
+
+    // Else we make an item array and loop it.
+    $contextitems = explode(',', $requestedcontextitems);
+    $returnobj = new stdClass();
+    foreach ($contextitems as $requestedcontextitem) {
+        switch($requestedcontextitem){
+            case 'somedatathatneedstobedealtwith':
+                // Do something special here
+                break;
+            default:
+                if (property_exists($appcontextobj, $requestedcontextitem)) {
+                    $returnobj->{$requestedcontextitem} = $appcontextobj->{$requestedcontextitem};
+                }
+                break;
+        }
+    }
+    return $returnobj;
+}

@@ -1393,7 +1393,8 @@ class renderer extends \plugin_renderer_base {
             ], $this->get_all_constants());
 
         // Fetch AMD data, passing the existing templatecontext to be stored in JSON for JavaScript.
-        $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token, $embed, $latestattempt, $templatecontext, $hasquizquestions);
+        $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token,
+             $embed, $latestattempt, $templatecontext, $hasquizquestions);
 
         // Add the AMD data to the templatecontext.
         $templatecontext['activityamddata'] = $activityamddata;
