@@ -204,15 +204,15 @@ class renderer extends \plugin_renderer_base {
             'sessionmatches'    => $stats ? $stats->sessionmatches : false,
             'sessionendword'    => $stats ? $stats->sessionendword : false,
         ];
-        $tdata['configjsonstring'] = json_encode($opts);
-        $tdata['configcontrolid'] = constants::M_SMALLREPORT_CONTAINER . '_opts';
+  //      $tdata['configjsonstring'] = json_encode($opts);
+  //      $tdata['configcontrolid'] = constants::M_SMALLREPORT_CONTAINER . '_opts';
 
-        $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', [['configcontrolid' => $tdata['configcontrolid']]]);
-        $this->page->requires->strings_for_js(
-            ['secs_till_check', 'notgradedyet', 'evaluatedmessage', 'checking', 'notaddedtogradebook'],
-            constants::M_COMPONENT
-        );
-
+  //      $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', [['configcontrolid' => $tdata['configcontrolid']]]);
+    //    $this->page->requires->strings_for_js(
+   //         ['secs_till_check', 'notgradedyet', 'evaluatedmessage', 'checking', 'notaddedtogradebook'],
+   //         constants::M_COMPONENT
+   //     );
+        $tdata = array_merge($tdata, $opts);
         return $tdata;
     }
 
@@ -790,9 +790,11 @@ class renderer extends \plugin_renderer_base {
                         $ret['attemptshowgrades'] = $showgradesinchart;
 
                         // Show the chart of attempt results.
-                        $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
-                        $renderedchart = $this->fetch_rendered_attemptchart($chartdata, $showgradesinchart);
-                        $ret['attemptschart'] = $renderedchart;
+                        // TO DO delete this we dont need the chart
+
+                       // $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
+                       // $renderedchart = $this->fetch_rendered_attemptchart($chartdata, $showgradesinchart);
+                       // $ret['attemptschart'] = $renderedchart;
                     }
             }
         }
@@ -1353,8 +1355,10 @@ class renderer extends \plugin_renderer_base {
             'activityname' => $moduleinstance->name,
             'attempts' => $attempts,
             'backurl' => (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false),
+            'contextid' => $modulecontext->id,
             'canattempt' => $modevisibility['canattempt'],
             'canshadowattempt' => $modevisibility['canshadowattempt'],
+             'debug' => $debug,
             'embed' => $embed,
             'enablenoshadow' => $modevisibility['enablenoshadow'],
             'error' => false, // cannot find any code calling show_error.
@@ -1377,6 +1381,7 @@ class renderer extends \plugin_renderer_base {
             'quizamddata' => isset($quizamddata) ? $quizamddata : null,
             'quizhtml' => isset($quizhtml) ? $quizhtml : null,
             'quizfinished' => $quizfinished,
+             'reviewattempts' => $reviewattempts,
             'recorder' => $recorder,
             'smallreport' => $smallreport,
             'steps' => constants::STEPS,

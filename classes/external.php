@@ -594,30 +594,71 @@ class mod_readaloud_external extends external_api {
         return new external_value(PARAM_BOOL);
     }
 
-    public static function fetch_student_attempt_summary_parameters() {
-        return new external_function_parameters(
-            ['cmid' => new external_value(PARAM_INT, 'The cmid', VALUE_REQUIRED)]
-        );
+    public static function fetch_view_data_parameters() {
+        return new external_function_parameters([
+            'cmid' => new external_value(PARAM_INT, 'The cmid', VALUE_REQUIRED),
+            'requestedcontextitems' => new external_value(PARAM_TEXT, 'The data items to return', VALUE_REQUIRED),
+        ]);
     }
 
-    public static function fetch_student_attempt_summary($cmid) {
-        global $DB, $USER, $PAGE;
+    public static function fetch_view_data($cmid, $requestedcontextitems) {
+        global $DB, $PAGE, $OUTPUT;
         $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
         $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
         $modulecontext = context_module::instance($cmid);
+        $config = get_config(constants::M_COMPONENT);
+
+
+        // Hacks to make sure we can call renderer without errors
+        $PAGE->set_url('/');
         $PAGE->set_context($modulecontext);
         $PAGE->set_cm($cm);
-        $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'timecreated DESC');
-        if($attempts && count($attempts)>0) {
-            $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
-            $ret = $renderer->get_full_student_report_data($moduleinstance, $modulecontext, $attempts, $cm);
-        } else {
-            $ret = false;
+        $OUTPUT->header();
+        ob_start();
+
+        $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
+        $debug=0;
+        $embed=0;
+        $reviewattempts=0;
+        $appcontext = $renderer->get_view_page_data(
+            $cm,
+            $config,
+            $debug,
+            $embed,
+            $modulecontext,
+            $moduleinstance,
+            $reviewattempts
+        );
+        $appcontextobj = (object) $appcontext;
+        // Trim it back to what was requested.
+        // First remove the html-> jsdata loader stuff.
+        unset($appcontextobj->activityamddata);
+
+        // If its "all" we return everything.
+        if ($requestedcontextitems == 'all') {
+            return $appcontextobj;
         }
-        return json_encode($ret);
+
+        // Else we make an item array and loop it.
+        $contextitems = explode(',', $requestedcontextitems);
+        $returnobj = new stdClass();
+        foreach ($contextitems as $requestedcontextitem) {
+            switch($requestedcontextitem){
+                case 'somedatathatneedstobedealtwith':
+                    // Do something special here
+                    break;
+                default:
+                    if (property_exists($appcontextobj, $requestedcontextitem)) {
+                        $returnobj->{$requestedcontextitem} = $appcontextobj->{$requestedcontextitem};
+                    }
+                    break;
+            }
+        }
+        ob_clean();
+        return json_encode($returnobj);
     }
 
-    public static function fetch_student_attempt_summary_returns() {
+    public static function fetch_view_data_returns() {
         return new external_value(PARAM_RAW);
     }
 

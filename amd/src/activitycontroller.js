@@ -26,12 +26,13 @@
 
 /* jshint ignore:start */
 define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/definitions',
-    'mod_readaloud/recorderhelper', 'mod_readaloud/modelaudiokaraoke',
+     'mod_readaloud/modelaudiokaraoke',
     'core/ajax', 'core/notification', 'mod_readaloud/smallreporthelper',
-    'mod_readaloud/practice', 'mod_readaloud/quizhelper', 'mod_readaloud/clicktohear',  'core/templates',
+    'mod_readaloud/practice', 'mod_readaloud/read', 'mod_readaloud/quizhelper',
+    'mod_readaloud/clicktohear',  'core/templates',
 ],
-    function ($, log, str, Fragment, def, recorderhelper, modelaudiokaraoke,
-        Ajax, notification, smallreporthelper, practice, quizhelper, clicktohear, Templates) {
+    function ($, log, str, Fragment, def, modelaudiokaraoke,
+        Ajax, notification, smallreporthelper, practice, read, quizhelper, clicktohear, Templates) {
 
         "use strict"; // jshint ;_;
 
@@ -119,6 +120,9 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 // Set up listen and repeat.
                 dd.setuppractice();
 
+                // Set up read
+                dd.setupread();
+
                 // Init recorder and html and events.
                 // NOTE: setup_recorder() is now called dynamically when read/shadow template is loaded.
                 // dd.setup_recorder();
@@ -148,6 +152,10 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 // Enable browser navigation from home to view.
                 window.addEventListener('popstate', dd.onPopState.bind(dd));
 
+            },
+
+            get_activity_data: function () {
+                return this.activitydata;
             },
 
             setup_strings: function () {
@@ -214,11 +222,46 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 quizhelper.on_complete = function () {
                     // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_quiz);
-                    // Re-fetch the student attempt summary data
-                  //  dd.update_full_report_data();
-dd.refresh_activity_data('fullreportdata');
+                    // Re-fetch the results data
+                    dd.refresh_activity_data('fullreportdata,smallreport');
                 }
             },
+
+            setupread: function () {
+                var dd = this;
+
+                var readprops = dd.getJsPropsForMode('read');
+                read.init(readprops);
+
+                // Set the callback function to complete the quiz.
+                read.on_complete = function (eventdata) {
+                    // Complete the current step (update server and ui).
+                    dd.update_activity_step(dd.activitydata.steps.step_read);
+                    // Re-fetch the results data, and when thats done redo the readreport
+                    smallreporthelper.on_results_fetched = function(){
+                        dd.refresh_activity_data('fullreportdata,smallreport,passagehtml' ,
+                            function() {
+                                 // First make sure the user is still in readreportdummy location
+                                 if (dd.getModeFromUrl() === 'readreportdummy') {
+                                     dd.doreadreportlayout();
+                                 } else {
+                                     log.debug('Callback to display readreport skipped because the user is no longer on that page/view');
+                                 }
+                            }.bind(dd)
+                        );
+                    };
+
+                    smallreporthelper.update_filename(eventdata.mediaurl);
+                    // Commence a loop checking for results
+                    smallreporthelper.start_check_for_results();
+                    // Send user to the  read report immediately though it will be a dummy
+                    dd.dodummyreadreportlayout();
+                    // Set flag in small report data so if user comes in off menu,
+                    // It will not show read report of old data, but show readreportdummy
+                    dd.activitydata.templatecontext.smallreport.ready = false;
+                }
+            },
+
 
             process_html: function (opts) {
                 // These css classes/ids are all passed in from php in
@@ -277,98 +320,6 @@ dd.refresh_activity_data('fullreportdata');
                     && navigator.mediaDevices.getUserMedia);
             },
 
-            reset_recorder: function () {
-                recorderhelper.reset();
-                this.setup_recorder();
-            },
-
-            setup_recorder: function () {
-                var dd = this;
-
-                // After the recorder reports that it has (really) started, this function is called.
-                var beginall = function () {
-                    dd.passagerecorded = true;
-                    if (dd.stepshadow_enabled && dd.letsshadow) {
-                        dd.controls.modelaudioplayer[0].play();
-                    }
-                };
-
-                var on_speech = function (eventdata) {
-                    var speech = eventdata.capturedspeech;
-                    var speechresults = eventdata.speechresults;
-                };
-
-                // Originates from the recording:started event.
-                // Contains no meaningful data.
-                // See https://api.poodll.com.
-                var on_recording_start = function (eventdata) {
-                    dd.rec_time_start = new Date().getTime();
-                    dd.dopassagelayout();
-
-                    // dd.controls.passagecontainer.show(1000, beginall);
-                    dd.controls.passagecontainer.show(500, beginall);
-                    dd.controls.passagecontainer[0].scrollIntoView({ behaviour: "smooth", block: "start", inline: "nearest" });
-
-                    /*
-                    var scrollparent = $("#page");
-                    var newtop = scrollparent.scrollTop() + dd.controls.passagecontainer.offset().top - scrollparent.offset().top;
-                    if(newtop<0) {newtop=0;}
-                    scrollparent.animate({scrollTop: newtop}, 500,beginall);
-                    */
-
-                };
-
-                // Originates from the recording:ended event.
-                // Contains no meaningful data.
-                // See https://api.poodll.com.
-                var on_recording_end = function (eventdata) {
-                    // Its a bit hacky but the rec end event can arrive immed. somehow probably when the mic test ends.
-                    var now = new Date().getTime();
-                    if ((now - dd.rec_time_start) < 3000) {
-                        return;
-                    }
-                    dd.douploadlayout();
-                    // If we are shadowing we should stop the audio player.
-                    if (dd.stepshadow_enabled && dd.letsshadow) {
-                        dd.controls.modelaudioplayer[0].currentTime = 0;
-                        dd.controls.modelaudioplayer[0].pause();
-                    }
-                };
-
-                // Data sent here originates from the awaiting_processing event.
-                // See https://api.poodll.com.
-                var on_audio_processing = function (eventdata) {
-                    // At this point we know the submission has been uploaded and we know the fileURL.
-                    // So we send the submission.
-                    var now = new Date().getTime();
-                    var rectime = now - dd.rec_time_start;
-                    if (rectime > 0) {
-                        rectime = Math.ceil(rectime / 1000);
-                    }
-
-                    dd.send_submission(eventdata.mediaurl, rectime);
-
-                    // Complete the current step (update server and ui).
-                    dd.update_activity_step(dd.activitydata.steps.step_read);
-
-                    // Re-fetch the student attempt summary data when small report comed back
-                    smallreporthelper.on_results_fetched = dd.update_full_report_data;
-
-                    // Send user to the finished report immediately.
-                    smallreporthelper.update_filename(eventdata.mediaurl);
-                    smallreporthelper.start_check_for_results();
-                    dd.doreadreportlayout();
-                };
-
-                // Init the recorder.
-                recorderhelper.init(dd.activitydata,
-                    on_recording_start,
-                    on_recording_end,
-                    on_audio_processing,
-                    on_speech,
-                );
-            },
-
             register_events: function () {
                 var dd = this;
 
@@ -386,7 +337,7 @@ dd.refresh_activity_data('fullreportdata');
                         if (!result) {
                             return;
                         }
-                        dd.reset_recorder();
+                        read.reset_recorder();
                         dd.letsshadow = false;
                         log.debug('Re-readinglayout');
                         dd.doreadinglayout();
@@ -460,13 +411,14 @@ dd.refresh_activity_data('fullreportdata');
                         return;
                     }
                     // Reset the recorder and start again.
-                    dd.reset_recorder();
+                    read.reset_recorder();
                     dd.letsshadow = false;
                     dd.doreadinglayout();
                 });
 
                 dd.controls.readagainbutton.keypress(function (e) {
                     if (e.which == 32 || e.which == 13) {
+                        read.reset_recorder();
                         dd.letsshadow = false;
                         dd.doreadinglayout();
                         e.preventDefault();
@@ -534,47 +486,42 @@ dd.refresh_activity_data('fullreportdata');
                 });
             },
 
-            refresh_activity_data: function (requestedcontextitems = 'all') {
-                var params = {debug: this.activitydata.debug, 
-                    embed: this.activitydata.embed, 
-                    reviewattempts: this.activitydata.reviewattempts,
-                    requestedcontextitems: requestedcontextitems
-                };
-                var returneditems = Fragment.loadFragment('mod_readaloud', 'appcontext', this.contextid, params);
-                // Split requestedcontextitems on commas and loop through them
-                var contextitems = requestedcontextitems.split(',');
-                for (var i = 0; i < contextitems.length; i++) {
-                    var requestedcontextitem = contextitems[i];
-                    // If that item is in returneditems, update activitydata
-                    if(requestedcontextitem == 'all' ||requestedcontextitem in returneditems) {
-                        switch(requestedcontextitem) {
-                            case 'all':
-                                this.activitydata.templatecontext = returneditems;
-                                break;
-                            case 'somethingthatmightneedhandling':
-                                // Do something.
-                                break;    
-                            default:       
-                                //e.g 'fullreportdata' or 'steps'
-                                this.activitydata.templatecontext[requestedcontextitem] = returneditems[requestedcontextitem];    
-                        }
-                    }
-                }
-            },
-
-            update_full_report_data: function(){
+           refresh_activity_data: async function (requestedcontextitems = 'all', callbackfunction = null) {
                 var that = this;
                 Ajax.call([{
-                    methodname: 'mod_readaloud_fetch_student_attempt_summary',
+                    methodname: 'mod_readaloud_fetch_view_data',
                     args: {
                         cmid: that.cmid,
+                        requestedcontextitems: requestedcontextitems,
                     },
                     done: function (ajaxresult) {
-                        var payloadobject = JSON.parse(ajaxresult);
-                        if (payloadobject) {
-                            // Update local activitydata with new attempt summary data.
-                            that.activitydata.templatecontext.fullreportdata = payloadobject.attemptsummary;
-                            log.debug('Updated attempt summary data:', that.activitydata.attemptsummary);
+                        var returneditems = JSON.parse(ajaxresult);
+                        if (returneditems) {
+
+                            // Split requestedcontextitems on commas and loop through them
+                            var contextitems = requestedcontextitems.split(',');
+                            for (var i = 0; i < contextitems.length; i++) {
+                                var requestedcontextitem = contextitems[i];
+
+                                // If that item is in returneditems, update activitydata
+                                if (requestedcontextitem === 'all' || requestedcontextitem in returneditems) {
+                                    switch (requestedcontextitem) {
+                                        case 'all':
+                                            that.activitydata.templatecontext = returneditems;
+                                            break;
+                                        case 'somethingthatmightneedhandling':
+                                            // Do something specific for this case
+                                            break;
+                                        default:
+                                            // e.g., 'fullreportdata' or 'steps'
+                                            that.activitydata.templatecontext[requestedcontextitem] = returneditems[requestedcontextitem];
+                                    }
+                                }
+                            }
+                        }
+                        // Do callback if we have one.
+                        if(callbackfunction && typeof callbackfunction === 'function') {
+                            callbackfunction();
                         }
                     },
                     fail: notification.exception
@@ -638,9 +585,7 @@ dd.refresh_activity_data('fullreportdata');
                 for (var key in adata.steps) {
                     var thestep = adata.steps[key];
                     // If the looped step is less than or equal to the old step, skip.
-                    if (thestep <= oldstep) {
-                        continue;
-                    } else {
+                    if (thestep > oldstep) {
                         // If the looped step is enabled (present on page), open it.
                         var step_chooser = $('#' + adata['menubuttonscontainer'] + ' .mode-chooser[data-step="' + thestep + '"]');
                         log.debug(step_chooser);
@@ -654,53 +599,6 @@ dd.refresh_activity_data('fullreportdata');
                         }
                     }
                 }
-            },
-
-            send_submission: function (filename, rectime) {
-                var that = this;
-                var shadowing = (that.stepshadow_enabled && that.letsshadow) ? 1 : 0;
-                Ajax.call([{
-                    methodname: 'mod_readaloud_submit_regular_attempt',
-                    args: {
-                        cmid: that.cmid,
-                        filename: filename,// encodeURIComponent(filename),
-                        rectime: rectime,
-                        shadowing: shadowing
-                    },
-                    done: function (ajaxresult) {
-                        var payloadobject = JSON.parse(ajaxresult);
-                        if (payloadobject) {
-                            switch (payloadobject.success) {
-                                case true:
-                                    log.debug('attempted submission accepted');
-                                    break;
-                                case false:
-                                default:
-                                    log.debug('attempted item evaluation failure');
-                                    if (payloadobject.message) {
-                                        log.debug('message: ' + payloadobject.message);
-                                    }
-                            }
-                        }
-                    },
-                    fail: notification.exception
-                }]);
-            },
-
-            dopassagelayout: function () {
-                var m = this;
-
-                // Hide.
-                m.controls.introbox.hide();
-
-                m.controls.readingcontainer.addClass(def.containerfillscreen);
-            },
-
-            douploadlayout: function () {
-                var m = this;
-
-                m.controls.passagecontainer.addClass(m.passagefinished);
-                m.controls.hider.fadeIn('fast');
             },
 
             // TODO: These appear to be unused. Let's trial removal.
@@ -783,13 +681,23 @@ dd.refresh_activity_data('fullreportdata');
 
             // Read report.
             doreadreportlayout: function () {
-                this.renderMode('readreport', null, true);
+                // If we are waiting on results, show the placeholder, otherwise show the real report.
+                if( !this.activitydata.templatecontext.smallreport.ready ) {
+                    this.renderMode('readreportdummy', null, true);
+                } else {
+                    this.renderMode('readreport', null, true);
+                }
+            },
+
+            // Dummy Read report.
+            dodummyreadreportlayout: function () {
+                this.renderMode('readreportdummy', null, true);
             },
 
             getModeFromUrl: function () {
                 var params = new URLSearchParams(window.location.search);
                 var mode = params.get('mode');
-                var allowed = ['listen', 'practice', 'read', 'shadow', 'quiz', 'report', 'readreport', 'quizreport'];
+                var allowed = ['listen', 'practice', 'read', 'shadow', 'quiz', 'report', 'readreport','readreportdummy', 'quizreport'];
                 return allowed.indexOf(mode) >= 0 ? mode : null;
             },
 
@@ -805,6 +713,7 @@ dd.refresh_activity_data('fullreportdata');
                     'quiz': 'step_quiz',
                     'report': 'step_report',
                     'readreport': 'step_read', // Requires read completion.
+                    'readreportdummy': 'step_read', // Requires read completion.
                     'quizreport': 'step_quiz', // Requires quiz completion.
                 }
 
@@ -847,10 +756,52 @@ dd.refresh_activity_data('fullreportdata');
                     case 'read':     return 'mod_readaloud/read';
                     case 'shadow':   return 'mod_readaloud/listen'; // TEMP: reuse listen for shadow
                     case 'quiz':     return 'mod_readaloud/quizcontainer';
+                    case 'quizreport':     return 'mod_readaloud/quizreport';
                     case 'report':   return 'mod_readaloud/finalreport';
                     case 'readreport': return 'mod_readaloud/readreport';
+                    case 'readreportdummy': return 'mod_readaloud/readreportdummy';
                     default:         return null;
                 }
+            },
+
+            // Map the modes to their corresponding mustache templates.
+            getJsPropsForMode: function (mode) {
+                var dd = this;
+                var props = {};
+                switch (mode) {
+
+                    case 'read':
+                        props = {
+                            activitycontroller: dd,
+                            passagecontainer: dd.activitydata['passagecontainer'],
+                            modelaudioplayer: dd.activitydata['modelaudioplayer'],
+                            hider: dd.activitydata['hider'],
+                            stepshadow_enabled: dd.steps_enabled.step_shadow,
+                            cmid: dd.cmid,
+                            passagefinished: dd.passagefinished,
+                            letsshadow: dd.letsshadow,
+
+                        };
+                        break;
+
+                    case 'practice':
+                        props = dd.practice_opts;
+                        break;
+
+                    case 'readreport':
+                        props = dd.activitydata.templatecontext.smallreport;
+                        break;
+
+                    case 'readreportdummy':
+                    case 'shadow':
+                    case 'quiz':
+                    case 'quizreport':
+                    case 'report':
+                    case 'listen':
+
+                    default:
+                }
+                return props;
             },
 
             // Hide home, render mode template into modeview.
@@ -896,17 +847,19 @@ dd.refresh_activity_data('fullreportdata');
                     }, 0);
 
                     if(mode === 'readreport') {
-                        smallreporthelper.init(dd.activitydata);
+                        var readreportprops = dd.getJsPropsForMode('readreport');
+                        smallreporthelper.init(readreportprops);
                     }
 
                     if (mode === 'practice') {
-                        // Now call practice.init() with the template DOM elements available.
-                        practice.init(dd.practice_opts);
+                        var practiceprops = dd.getJsPropsForMode('practice');
+                        practice.init(practiceprops);
                     }
                     if (mode === 'read' || mode === 'shadow') {
                         // Initialise the Cloud Poodll recorder after the template is rendered.
                         // The recorder div is now in the DOM, so we can initialise it.
-                        dd.setup_recorder();
+                        var readprops = dd.getJsPropsForMode('read');
+                        read.init(readprops);
                     }
                     if (mode === 'quiz') {
                         // quizhelper already init'd in setupquiz; it draws into quizcontainer but ..

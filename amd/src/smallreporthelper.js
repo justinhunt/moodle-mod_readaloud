@@ -37,20 +37,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
         },
 
         //init the module
-        init: function(props){
-            log.debug("small report init with props");
-            log.debug(props);
-            //pick up opts from html
-            var theid = props['smallreportcontainer'] + '_opts';
-            var configcontrol = $('#' + theid).get(0);
-            if (configcontrol) {
-                var opts = JSON.parse(configcontrol.value);
-                $(theid).remove();
-            } else {
-                //if there is no config we might as well give up
-                log.debug('Small Report: No config found on page. Giving up.');
-                return;
-            }
+        init: function(opts){
             log.debug("small report opts");
             log.debug(opts);
             this.cmid=opts['cmid'];
@@ -151,7 +138,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
                             templates.render('mod_readaloud/audioplayer',tdata).then(
                                 function(html,js){
                                     //that.controls.player.html(html);
-                                    templates.clearNodeContents('.' + def.smallreportplayer);
+                                    $('.' + def.smallreportplayer).html('');
                                     templates.appendNodeContents('.' + def.smallreportplayer, html, js);
                                     that.controls.dummyplayer.hide();
                                 }
@@ -217,82 +204,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
                         switch (payloadobject.ready) {
                             case true:
                                 log.debug('result fetched');
-                                var heading = that.evaluated;
-                                if(that.notingradebook){
-                                    heading = heading + ' ' + that.notaddedtogradebook;
-                                }
-                                that.controls.heading.text(heading);
-                                var tdata=[];
-                                tdata.ready=payloadobject.ready;
-
-                                //stars
-
-                                //if we are not showing grades, everyone gets 5 stars (10 on 0-10 scale)
-                                if(!that.showgrades){payloadobject.rating=10;}
-
-                                // rating is now 0-10 from API (0-5 stars with half-star increments)
-                                var fullStars = Math.floor(payloadobject.rating / 2);
-                                var hasHalf = (payloadobject.rating % 2) === 1;
-                                var stars = [];
-
-                                // Add full stars
-                                for (var i = 0; i < fullStars; i++) {
-                                    stars.push('fa-solid fa-star text-warning');
-                                }
-
-                                // Add half star if needed
-                                if (hasHalf) {
-                                    stars.push('fa-solid fa-star-half-stroke text-warning');
-                                }
-
-                                // Fill remaining with empty stars
-                                var remaining = 5 - stars.length;
-                                for (var i = 0; i < remaining; i++) {
-                                    stars.push('fa-regular fa-star text-muted');
-                                }
-
-                                tdata.stars=stars;
-                                templates.render('mod_readaloud/smallreportstars',tdata).then(
-                                    function(html,js){
-                                        that.controls.stars.html(html);
-                                    }
-                                );
-
-                                //stats
-                                //if we are not showing stats, we really should not be here
-                                if(!that.showstats){
-                                    that.controls.status.hide();
-                                    break;
-                                }
-
-                                tdata.wpm=payloadobject.wpm;
-                                tdata.acc=payloadobject.acc;
-                                tdata.totalwords=payloadobject.totalwords;
-
-                                templates.render('mod_readaloud/smallreportcards',tdata).then(
-                                    function(html,js){
-                                        that.controls.cards.html(html);
-                                    }
-                                );
-
-                                that.controls.status.hide();
-
-                                //re-markup the full report passage
-                                log.debug('clearing passage markup');
-                                passagemarkuphelper.clear_markup();
-                                if(that.showstats) {
-                                    log.debug('marking up passage');
-                                    passagemarkuphelper.markup_passage(payloadobject.sessionmatches,
-                                        payloadobject.sessionerrors, payloadobject.sessionendword);
-                                }
-
-                                //show the full report
-                                log.debug('showing full report');
-                                that.controls.fullreportcontainer.show();
-
                                 // Alert any listeners
                                 that.on_results_fetched();
-
                                 break;
 
                             case false:

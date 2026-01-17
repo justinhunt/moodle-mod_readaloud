@@ -998,11 +998,15 @@ $string['quiztimehelp'] = 'Take the quiz to test your reading skill further.';
 $string['readaloudresults'] = 'Read Aloud Results';
 $string['readingpassage'] = 'Reading Passage';
 $string['readreporthelp'] = "Check your results. How well did you understand the passage?";
+$string['readreportdummyhelp'] = "Your results are on their way ... please wait ... ";
+$string['nowevaluatingreading'] = "We are evaluating your reading .. wait a moment ...";
+
 $string['takethequiz'] = 'Take the Quiz';
 $string['timetopractice'] = 'Finished Listening?';
 $string['tryagain'] = 'Try Again';
 $string['viewfinalreport'] = 'View Final Report';
 $string['viewfinalreportintro'] = 'Your complete results and progress summary.';
+$string['finalreporthelp'] = 'Your complete results and progress summary.';
 $string['welldone'] = 'Well Done!';
 $string['welldone_desc'] = 'You pronounced all of the words correctly!';
 $string['quitlistening'] = 'Finish Listening';

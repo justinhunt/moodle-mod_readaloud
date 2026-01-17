@@ -122,9 +122,9 @@ $functions = array(
                     'ajax'        => true,
      ),
 
-    'mod_readaloud_fetch_student_attempt_summary' => array(
+    'mod_readaloud_fetch_view_data' => array(
         'classname'   => 'mod_readaloud_external',
-        'methodname'  => 'fetch_student_attempt_summary',
+        'methodname'  => 'fetch_view_data',
         'description' => 'Fetch the quiz and reading results for display in full report',
         'capabilities' => 'mod/readaloud:view',
         'type'        => 'read',
