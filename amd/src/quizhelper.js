@@ -65,10 +65,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
       on_complete: function() {},
 
       prepare_html: function() {
-
-        // this.controls.quizcontainer.append(submitbutton);
-        this.controls.quizfinished=$("#mod_readaloud_quiz_finished");
-
+        this.controls.quizspinner=$("#mod_readaloud_quizspinner");
       },
 
       init_questions: function(quizdata) {
@@ -225,8 +222,17 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
 
         } else {
             // Alert server and activity controller that the quiz is complete
-            dd.on_complete();
-log.debug('quiz iz complete')
+            log.debug('quiz iz complete');
+             $(".readaloud_nextbutton").prop("disabled", true);
+             dd.on_complete();
+             
+             // For now put a spinner here so it does not look like nothing is happening
+            theoldquestion.hide();
+            dd.controls.quizspinner.removeClass('d-none').addClass('d-flex');
+            
+            return;
+
+/*
             //just reload and re-fetch all the data to display
               $(".readaloud_nextbutton").prop("disabled", true);
               //fetch the results and display them
@@ -258,7 +264,7 @@ log.debug('quiz iz complete')
                 });
             });
             return;
-        
+*/
         }//end of if has more questions
 
         dd.render_quiz_progress(stepdata.index+1,this.quizdata.length);

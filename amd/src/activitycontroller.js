@@ -223,7 +223,16 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                     // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_quiz);
                     // Re-fetch the results data
-                    dd.refresh_activity_data('fullreportdata,smallreport');
+                    dd.refresh_activity_data('fullreportdata,smallreport,quizfinisheddata',
+                        function() {
+                            // First make sure the user is still in readreportdummy location
+                            if (dd.getModeFromUrl() === 'quiz') {
+                                dd.doquizlayout();
+                            } else {
+                                log.debug('Callback to display quizreport skipped because the user is no longer on that page/view');
+                            }
+                        }.bind(dd)
+                    );
                 }
             },
 
@@ -310,7 +319,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                     modeview: $('#' + opts['modeview']),
                     activityheader: $('.mod_readaloud-activity-header'),
                     takequizbutton: $('.mod_readaloud_takequiz_button'),
-                    quizviewreportbutton: $('.mod_readaloud_quizviewreport_button'),
+                    viewfinalreportbutton: $('.mod_readaloud_quizviewreport_button'),
                 };
                 this.controls = controls;
             },
@@ -329,7 +338,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 });
 
                 // Intercept navigation that would cause page reload - use SPA navigation instead
-                $(document).on('click', '.secondary-navigation [data-key="modulepage"] a, .backarrow[data-action="back-to-home"], [data-action="readagain"], [data-action="takequiz"], [data-action="retakequiz"], [data-action="quizviewreport"]', function(e) {
+                $(document).on('click', '.secondary-navigation [data-key="modulepage"] a, .backarrow[data-action="back-to-home"], [data-action="readagain"], [data-action="takequiz"], [data-action="retakequiz"], [data-action="viewfinalreport"]', function(e) {
                     e.preventDefault();
                     var action = $(this).data('action');
                     if (action === 'readagain') {
@@ -350,10 +359,11 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                         // we need to call rendermode (not doquizlayout) so that we can pass the retakequiz flag
                         // Rendermode puts the html from php on the page again in a promise that resolves a bit slow
                         // And we need to hide/show stuff to get retake after that. The flag sets that up
-                        dd.renderMode('quiz', {retakequiz: true, quizfinished: false}, true);
-
+                        //dd.renderMode('quiz', {retakequiz: true, quizfinished: false}, true);
+                        var retake = true;
+                        dd.doquizlayout(retake);
                         return;
-                    } else if (action === 'quizviewreport') {
+                    } else if (action === 'viewfinalreport') {
                         dd.doreportlayout();
                         return;
                     }
@@ -670,8 +680,12 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
             },
 
             // Quiz mode.
-            doquizlayout: function () {
-                this.renderMode('quiz', null, true);
+            doquizlayout: function (retake = false) {
+                if( retake || this.activitydata.templatecontext.quizfinished !== true ){
+                    this.renderMode('quiz', null, true);
+                } else {
+                    this.renderMode('quizreport', null, true);
+                }
             },
 
             // Report mode.
@@ -866,15 +880,6 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                         // when activitycontroller init calls setupquiz the quiz html is not there yet.
                         // So lets try here.
                         dd.setupquiz();
-
-                        //if retake quiz
-                        if(extraContext && extraContext.retakequiz){
-                            var quizfinishedcontainer = $('#mod_readaloud_quiz_finished');
-                            var quizitemscontainer = $('#mod_readaloud_quiz_items_cont');
-                            quizfinishedcontainer.hide();
-                            quizitemscontainer.show();
-                        }
-
                     }
 
                     // Scroll/focus like a full page.

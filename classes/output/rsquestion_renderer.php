@@ -194,35 +194,30 @@ class rsquestion_renderer extends \plugin_renderer_base
 
     }
 
-    /**
-     *  Show quiz container
-     */
-    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm)
+    public function fetch_quizfinished_data($quizhelper, $moduleinstance, $latestattempt, $cm)
     {
-
         // Finished quiz results div.
-        $quiz_is_finished = utils::quiz_is_finished($moduleinstance, $latestattempt, $cm);
-        if ($quiz_is_finished) {
+        $quizisfinished = utils::quiz_is_finished($moduleinstance, $latestattempt, $cm);
+        if ($quizisfinished) {
             $finisheddata = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
+            $finisheddata->isfinished = true;
             $finisheddata->canreattemptquiz = $moduleinstance->quizreattempt ? true : false;
             $modulecontext = \context_module::instance($cm->id);
             $finisheddata->activityname = format_string($moduleinstance->name);
             $finisheddata->backurl = (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false);
             $finisheddata->passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
-            $finishedcontents = $this->render_from_template(constants::M_COMPONENT . '/quizfinished', $finisheddata);
         } else {
-            $finishedcontents = '';
+            $finisheddata = new \stdClass();
+            $finisheddata->isfinished = false;
         }
-        $finishedattributes = ['id' => constants::M_QUIZ_FINISHED];
-        if (empty($finishedcontents)) {
-            $finishedattributes['style'] = 'display: none;';
-        }
-        $finisheddiv = \html_writer::div(
-            $finishedcontents,
-            constants::M_QUIZ_FINISHED,
-            $finishedattributes
-        );
+        return $finisheddata;
+    }
 
+    /**
+     *  Show quiz container
+     */
+    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm)
+    {
 
         // Quiz items data div.
         $quizdata = $quizhelper->fetch_quiz_items_for_js();
@@ -237,19 +232,13 @@ class rsquestion_renderer extends \plugin_renderer_base
         if (!empty($moduleinstance->lessonfont)) {
             $style .= "font-family: '$moduleinstance->lessonfont', serif;";
         }
-        if (!empty($finishedcontents)) {
-            $style .= "display: none;";
-        }
-        if (!empty($style)) {
-            $quizattributes['style'] = $style;
-        }
-        ;
+        $quizattributes['style'] = $style;
 
         // Quiz items div.
         $quizitemsclass = constants::M_QUIZ_ITEMS_CONTAINER;
         $quizitemsdiv = \html_writer::div(implode('', $itemshtml), $quizitemsclass, $quizattributes);
 
-        $ret = $quizitemsdiv . $finisheddiv;
+        $ret = $quizitemsdiv;
         return $ret;
     }
 

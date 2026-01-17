@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_readaloud/quizcontainer
+    @template mod_readaloud/quizreport
 
     Quiz container
 
@@ -27,20 +27,19 @@
     <h2 id="quiz-title" class="visually-hidden">{{#str}}mode_quiz, mod_readaloud{{/str}}</h2>
 
     {{< mod_readaloud/activity_header_inpage}}
-          {{$instructions}}{{#str}} quizhelp, mod_readaloud {{/str}}{{/instructions}}
+          {{$instructions}}{{#str}} quizfinishedhelp, mod_readaloud {{/str}}{{/instructions}}
     {{/ mod_readaloud/activity_header_inpage}}
 
     <div id="{{M_QUIZ_CONTAINER_WRAP}}" class="{{M_QUIZ_CONTAINER_WRAP}}">
         <div id="{{M_QUIZ_CONTAINER}}" class="{{M_QUIZ_CONTAINER}} d-flex flex-column">
             <div id="quizquestion" class="quizquestion">
-                {{{quizhtml}}}
-            </div>
-            <!--A big spinner in the centre of the page-->
-            <div id="mod_readaloud_quizspinner" class="mod_readaloud_quizspinner d-none justify-content-center my-5">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">{{#str}}loading, core{{/str}}</span>
+                <div id="{{M_QUIZ_FINISHED}}" class="{{M_QUIZ_FINISHED}}">
+                    {{#quizfinisheddata}}
+                        {{> mod_readaloud/quizfinished}}
+                    {{/quizfinisheddata}}
                 </div>
             </div>
+
             {{#smallreport.thepassage}}
                 {{>mod_readaloud/studentreadingpassage}}
             {{/smallreport.thepassage}}
