@@ -162,7 +162,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions',
 
           log.debug(transcript_evaluation);
           //display results
-          templates.render('mod_readaloud/freespeakingresults',transcript_evaluation).then(
+          templates.render('mod_readaloud/qi_freespeakingresults',transcript_evaluation).then(
             function(html,js){
                 self.resultsbox.html(html);
                 //do corrections markup

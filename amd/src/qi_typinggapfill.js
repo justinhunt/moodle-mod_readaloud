@@ -2,14 +2,13 @@ define(['jquery',
     'core/log',
     'core/ajax',
     'mod_readaloud/definitions',
-    'mod_readaloud/pollyhelper',
     'mod_readaloud/animatecss',
     'mod_readaloud/progresstimer',
     'core/templates'
-], function($, log, ajax, def, polly, anim, progresstimer, templates) {
+], function($, log, ajax, def, anim, progresstimer, templates) {
     "use strict"; // jshint ;_;
 
-    log.debug('Readaloud listening gap fill: initialising');
+    log.debug('Readaloud typing gap fill: initialising');
 
     return {
 
@@ -18,22 +17,19 @@ define(['jquery',
             return $.extend(true, {}, this);
         },
 
-        usevoice: 'Amy',
-
         init: function(index, itemdata, quizhelper) {
             var self = this;
             self.itemdata = itemdata;
             self.quizhelper = quizhelper;
             self.index = index;
 
-            // Anim
             var animopts = {};
             animopts.useanimatecss = quizhelper.useanimatecss;
             anim.init(animopts);
 
             self.register_events();
-            self.setvoice();
             self.getItems();
+            self.appReady();
         },
 
         next_question: function() {
@@ -57,15 +53,15 @@ define(['jquery',
             review_data.correctitems=self.items.filter(function(e) {return e.correct;}).length;
 
             //Get controls
-            var listencont = $("#" + self.itemdata.uniqueid + "_container .lgapfill_listen_cont");
+            var listencont = $("#" + self.itemdata.uniqueid + "_container .tgapfill_listen_cont");
             var qbox = $("#" + self.itemdata.uniqueid + "_container .question");
-            //var recorderbox = $("#" + self.itemdata.uniqueid + "_container .lgapfill_speakbtncontainer");
-            var gamebox = $("#" + self.itemdata.uniqueid + "_container .lgapfill_game");
-            var controlsbox = $("#" + self.itemdata.uniqueid + "_container .lgapfill_controls");
-            var resultsbox = $("#" + self.itemdata.uniqueid + "_container .lgapfill_resultscontainer");
+            //var recorderbox = $("#" + self.itemdata.uniqueid + "_container .tgapfill_speakbtncontainer");
+            var gamebox = $("#" + self.itemdata.uniqueid + "_container .tgapfill_game");
+            var controlsbox = $("#" + self.itemdata.uniqueid + "_container .tgapfill_controls");
+            var resultsbox = $("#" + self.itemdata.uniqueid + "_container .tgapfill_resultscontainer");
 
             //display results
-            templates.render('mod_readaloud/listitemresults',review_data).then(
+            templates.render('mod_readaloud/qi_listitemresults',review_data).then(
               function(html,js){
                   resultsbox.html(html);
                   //show and hide
@@ -85,78 +81,30 @@ define(['jquery',
 
             var self = this;
 
+            // Next page button.
             $("#" + self.itemdata.uniqueid + "_container .readaloud_nextbutton").on('click', function(e) {
                 self.next_question();
             });
 
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_start_btn").on("click", function() {
+            // Start button.
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_start_btn").on("click", function() {
                 self.start();
             });
 
-            //AUDIO PLAYER events
-            var audioplayerbtn=$("#" + self.itemdata.uniqueid + "_container .lgapfill_listen_btn");
-            //audio button click event
-            audioplayerbtn.on("click", function() {
-                var theaudio =self.items[self.game.pointer].audio;
-
-                //if we are already playing stop playing
-                if(!theaudio.paused){
-                    theaudio.pause();
-                    theaudio.currentTime=0;
-                    $(audioplayerbtn).children('.fa').removeClass('fa-stop');
-                    $(audioplayerbtn).children('.fa').addClass('fa-volume-up');
-                    return;
-                }
-
-                //change icon to indicate playing state
-                theaudio.addEventListener('ended', function(){
-                    $(audioplayerbtn).children('.fa').removeClass('fa-stop');
-                    $(audioplayerbtn).children('.fa').addClass('fa-volume-up');
-                });
-
-                theaudio.addEventListener('play', function(){
-                    $(audioplayerbtn).children('.fa').removeClass('fa-volume-up');
-                    $(audioplayerbtn).children('.fa').addClass('fa-stop');
-                });
-
-                theaudio.load();
-                theaudio.play();
-            });
-
-            //toggle audio playback on spacekey press in input boxes
-            $("#" + self.itemdata.uniqueid + "_container").on("keydown", ".single-character", function(e) {
-                if (e.which == 32) {
-                    e.preventDefault();
-                    audioplayerbtn.trigger("click");
-                }
-            });
-
-
-
-
-            // On skip button click
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_skip_btn").on("click", function() {
-                // Disable buttons
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_ctrl-btn").prop("disabled", true);
-                // Reveal prompt
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_speech.lgapfill_teacher_left").text(self.items[self.game.pointer].prompt + "");
-                // Reveal answers
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_targetWord").each(function() {
-                    var realidx = $(this).data("realidx");
-                    var lgapfill_targetWord = self.items[self.game.pointer].lgapfill_targetWords[realidx];
-                    $(this).val(lgapfill_targetWord);
-                });
-
+            // Skip.
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_skip_btn").on("click", function() {
+                $(this).prop("disabled", true);
+                $("#" + self.itemdata.uniqueid + "_container .tgapfill_check_btn").prop("disabled", true);
                 self.stopTimer(self.items[self.game.pointer].timer);
 
                 //mark as answered and incorrect
                 self.items[self.game.pointer].answered = true;
                 self.items[self.game.pointer].correct = false;
 
-                // Move on after short time, to next prompt, or next question
+                // Move on after short time, to next prompt, or next question.
                 if (self.game.pointer < self.items.length - 1) {
                     setTimeout(function() {
-                        $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer).hide();
+                        $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer).hide();
                         self.game.pointer++;
                         self.nextPrompt();
                     }, 2000);
@@ -165,44 +113,17 @@ define(['jquery',
                 }
             });
 
-
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_check_btn").on("click", function() {
+            // Check.
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_check_btn").on("click", function() {
                 self.check_answer();
             });
 
-            // Listen for enter key on input boxeslap
+            // Listen for enter key on input boxes
             $("#" + self.itemdata.uniqueid + "_container").on("keydown", ".single-character", function(e) {
                 if (e.which == 13) {
                     self.check_answer();
                 }
             });
-
-            // Auto nav between inputs
-            $("#" + self.itemdata.uniqueid + "_container").on("keyup", ".lgapfill_targetWord", function(e) {
-
-                // Move focus between textboxes
-                // log.debug(e);
-                var target = e.srcElement || e.target;
-                var maxLength = parseInt(target.attributes.maxlength.value, 10);
-                var myLength = target.value.length;
-                var key = e.which;
-                if (myLength >= maxLength) {
-                    var nextIdx = $(this).data('idx') + 1;
-                    var next = $("#" + self.itemdata.uniqueid + "_container input.lgapfill_targetWord[data-idx=\"" + nextIdx + "\"");
-                    if (next.length === 1) {
-                        next.focus();
-                    }
-
-                    // Move to previous field if empty (user pressed backspace or delete)
-                } else if ((key == 8 || key == 46) && myLength === 0) {
-                    var previousIdx = $(this).data('idx') - 1;
-                    var previous = $("#" + self.itemdata.uniqueid + "_container input.lgapfill_targetWord[data-idx=\"" + previousIdx + "\"");
-                    if (previous.length === 1) {
-                        previous.focus();
-                    }
-                }
-            });
-
         },
 
         game: {
@@ -212,7 +133,7 @@ define(['jquery',
         check_answer: function() {
             var self = this;
             var passage = self.items[self.game.pointer].parsedstring;
-            var characterunputs = $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + ' input.single-character');
+            var characterunputs = $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer + ' input.single-character');
             var transcript = [];
 
             characterunputs.each(function() {
@@ -229,13 +150,6 @@ define(['jquery',
             });
         },
 
-        setvoice: function() {
-            var self = this;
-            self.usevoice = self.itemdata.usevoice;
-            self.voiceoption = self.itemdata.voiceoption;
-            return;
-        },
-
         getItems: function() {
             var self = this;
             var text_items = self.itemdata.sentences;
@@ -246,8 +160,8 @@ define(['jquery',
                     prompt: target.prompt,
                     parsedstring: target.parsedstring,
                     definition: target.definition,
-                    typed: "",
                     timer: [],
+                    typed: "",
                     answered: false,
                     correct: false,
                     audio: null
@@ -255,60 +169,42 @@ define(['jquery',
             }).filter(function(e) {
                 return e.target !== "";
             });
-
-            $.each(self.items, function(index, item) {
-                polly.fetch_polly_url(item.prompt, self.voiceoption, self.usevoice).then(function(audiourl) {
-                    item.audio = new Audio();
-                    item.audio.src = audiourl;
-                    if (self.items.filter(function(e) {
-                        return e.audio == null;
-                    }).length == 0) {
-                        // Calling AppReady caused issues when the appReady had already been called AND hidestartpage was true
-                        //it would cause next prompt -> next reply to be called again, and two prompts would be shown at once
-                        //probably ok just to call it here
-                        self.appReady();
-                    }
-                });
-            });
         },
 
         appReady: function() {
             var self = this;
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_not_loaded").hide();
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_loaded").show();
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_not_loaded").hide();
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_loaded").show();
             if(self.itemdata.hidestartpage){
                 self.start();
             }else{
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_start_btn").prop("disabled", false);
+                $("#" + self.itemdata.uniqueid + "_container .tgapfill_start_btn").prop("disabled", false);
             }
         },
 
         gotComparison: function(comparison) {
             var self = this;
-            log.debug("gotComparison", comparison);
             var timelimit_progressbar = $("#" + self.itemdata.uniqueid + "_container .progress-container .progress-bar");
             if (comparison) {
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + " .lgapfill_feedback[data-idx='" + self.game.pointer + "']").addClass("fa fa-check");
+                $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer + " .tgapfill_feedback[data-idx='" + self.game.pointer + "']").addClass("fa fa-check");
                 self.items[self.game.pointer].answered = true;
                 self.items[self.game.pointer].correct = true;
                 self.items[self.game.pointer].typed = false;
-                //if they got it correct, make the input boxes green and move forward
-                log.debug("correct!!");
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + " input").addClass("ra_gapfill_char_correct");
+                //make the input boxes green and move forward
+                $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer + " input").addClass("ra_gapfill_char_correct");
 
-
-                //if they cant retry OR the time limit is up, move on
+            //if they cant retry OR the time limit is up, move on
             } else if(!self.itemdata.allowretry || timelimit_progressbar.hasClass('progress-bar-complete')) {
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + " .lgapfill_feedback[data-idx='" + self.game.pointer + "']").addClass("fa fa-times");
+                $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer + " .tgapfill_feedback[data-idx='" + self.game.pointer + "']").addClass("fa fa-times");
                 self.items[self.game.pointer].answered = true;
                 self.items[self.game.pointer].correct = false;
                 self.items[self.game.pointer].typed = false;
             } else {
                 //it was wrong but they can retry
-                var thereply = $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer);
+                var thereply = $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer);
                 anim.do_animate(thereply, 'shakeX animate__faster').then(
                     function() {
-                        $("#" + self.itemdata.uniqueid + "_container .lgapfill_ctrl-btn").prop("disabled", false);
+                        $("#" + self.itemdata.uniqueid + "_container .tgapfill_ctrl-btn").prop("disabled", false);
                     }
                 );
                 return;
@@ -318,7 +214,7 @@ define(['jquery',
 
             if (self.game.pointer < self.items.length - 1) {
                 setTimeout(function() {
-                    $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer).hide();
+                    $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer).hide();
                     self.game.pointer++;
                     self.nextPrompt();
                 }, 2000);
@@ -327,27 +223,11 @@ define(['jquery',
             }
         },
 
-        getWords: function(thetext) {
-            var self = this;
-            var checkcase = false;
-            if (checkcase == 'false') {
-                thetext = thetext.toLowerCase();
-            }
-            var chunks = thetext.split(self.quizhelper.spliton_regexp).filter(function(e) {
-                return e !== "";
-            });
-            var words = [];
-            for (var i = 0; i < chunks.length; i++) {
-                if (!chunks[i].match(self.quizhelper.spliton_regexp)) {
-                    words.push(chunks[i]);
-                }
-            }
-            return words;
-        },
-
         getComparison: function(passage, transcript, callback) {
             var self = this;
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_ctrl-btn").prop("disabled", true);
+
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_ctrl-btn").prop("disabled", true);
+
             var correctanswer = true;
 
             passage.forEach(function(data, index) {
@@ -355,7 +235,7 @@ define(['jquery',
 
                 if (data.type === 'input') {
                     if (correctanswer === true) {
-                        char = $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + ' input.single-character[data-index="' + index + '"]').val();
+                        char = $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer + ' input.single-character[data-index="' + index + '"]').val();
                         if (char == '') {
                             correctanswer = false;
                         } else if (char != data.character) {
@@ -375,7 +255,6 @@ define(['jquery',
             //progress dots are updated on next_item. The last item has no next item, so we update from here
             self.updateProgressDots();
 
-            //disable the buttons and go to next question or review
             setTimeout(function() {
                 $(".readaloud_nextbutton").prop("disabled",false);
                 if(self.quizhelper.showqreview){
@@ -389,7 +268,7 @@ define(['jquery',
         start: function() {
             var self = this;
 
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_ctrl-btn").prop("disabled", true);
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_ctrl-btn").prop("disabled", true);
 
             self.items.forEach(function(item) {
                 item.spoken = "";
@@ -398,12 +277,11 @@ define(['jquery',
             });
 
             self.game.pointer = 0;
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_listen_cont").show();
+
             $("#" + self.itemdata.uniqueid + "_container .question").show();
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_game").show();
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_start_btn").hide();
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_mainmenu").hide();
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_controls").show();
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_start_btn").hide();
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_mainmenu").hide();
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_controls").show();
 
             self.nextPrompt();
 
@@ -413,16 +291,11 @@ define(['jquery',
 
             var self = this;
 
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_ctrl-btn").prop("disabled", false);
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_ctrl-btn").prop("disabled", false);
 
             self.updateProgressDots();
 
             self.nextReply();
-
-            //play the audio (if the audio player is ready)
-            if(self.items[self.game.pointer].audio !==null) {
-                $("#" + self.itemdata.uniqueid + "_container .lgapfill_listen_btn").trigger('click');
-            }
         },
 
         updateProgressDots: function() {
@@ -437,47 +310,45 @@ define(['jquery',
               }
               return "<i style='color:" + color + "' class='fa fa-circle'></i>";
             }).join(" ");
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_title").html(progress);
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_title").html(progress);
         },
 
         nextReply: function() {
             var self = this;
-            var code = "<div class='lgapfill_reply lgapfill_reply_" + self.game.pointer + " text-center' style='display:none;'>";
+            var code = "<div class='tgapfill_reply tgapfill_reply_" + self.game.pointer + " text-center' style='display:none;'>";
 
             code += "<div class='form-container'>";
             self.items[self.game.pointer].parsedstring.forEach(function(data, index) {
                 if (data.type === 'input') {
-                    code += "<input class='single-character' type='text' autocomplete='off' name='filltext" + index + "' maxlength='1' data-index='" + index + "'>";
+                    code += "<input class='single-character' autocomplete='off' type='text' name='filltext" + index + "' maxlength='1' data-index='" + index + "'>";
                 } else if (data.type === 'mtext') {
-                    code += "<input class='single-character-mtext' autocomplete='off' type='text' name='readonly" + index + "' maxlength='1' value='" + data.character + "' readonly>";
+                    code += "<input class='single-character-mtext' type='text' name='readonly" + index + "' maxlength='1' value='" + data.character + "' readonly>";
                 } else {
                     code += data.character;
                 }
             });
-            code += " <i data-idx='" + self.game.pointer + "' class='lgapfill_feedback'></i></div>";
+            code += " <i data-idx='" + self.game.pointer + "' class='tgapfill_feedback'></i></div>";
 
-            if((self.items[self.game.pointer].definition )!=='') {
-                //hint or definition
-                code += "<div class='definition-container'>";
-                code += "<div class='definition'>" + self.items[self.game.pointer].definition + "</div>";
-                code += "</div>";
-            }
+            code += "<div class='definition-container'>";
+            code += "<div class='definition'>" + self.items[self.game.pointer].definition + "</div>";
+            code += "</div>";
 
             code += "</div>";
             $("#" + self.itemdata.uniqueid + "_container .question").append(code);
-            var newreply = $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer);
+
+            var newreply = $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer);
 
             anim.do_animate(newreply, 'zoomIn animate__faster', 'in').then(
                 function() {
                 }
             );
 
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_ctrl-btn").prop("disabled", false);
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_ctrl-btn").prop("disabled", false);
 
-            var inputElements = [...document.querySelectorAll("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + ' input.single-character')];
+            var inputElements = [...document.querySelectorAll("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer + ' input.single-character')];
             self.formReady(inputElements);
 
-            $("#" + self.itemdata.uniqueid + "_container .lgapfill_reply_" + self.game.pointer + ' input.single-character:first').focus();
+            $("#" + self.itemdata.uniqueid + "_container .tgapfill_reply_" + self.game.pointer + ' input.single-character:first').focus();
 
             if (self.itemdata.timelimit > 0) {
                 $("#" + self.itemdata.uniqueid + "_container .progress-container").show();
@@ -485,8 +356,12 @@ define(['jquery',
                 var progresbar = $("#" + self.itemdata.uniqueid + "_container .progress-container #progresstimer").progressTimer({
                     height: '5px',
                     timeLimit: self.itemdata.timelimit,
-                    onFinish: function () {
-                        $("#" + self.itemdata.uniqueid + "_container .lgapfill_check_btn").trigger('click');
+                    onFinish: function() {
+                        log.debug('timer finished');
+                        var btn = $("#" + self.itemdata.uniqueid + "_container .tgapfill_check_btn");
+                        log.debug(btn);
+
+                        $("#" + self.itemdata.uniqueid + "_container .tgapfill_check_btn").trigger('click');
                     }
                 });
 
@@ -511,7 +386,7 @@ define(['jquery',
                     // focus the input before the current. Then the event happens
                     // which will clear the "before" input box.
                     if (e.keyCode === 8 && e.target.value === "") {
-                        inputElements[Math.max(0, index - 1)].focus();
+                     inputElements[Math.max(0, index - 1)].focus();
                     }
                 });
                 ele.addEventListener("input", function(e) {

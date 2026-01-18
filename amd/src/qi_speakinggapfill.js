@@ -107,7 +107,7 @@ define(['jquery',
             var resultsbox = $("#" + self.itemdata.uniqueid + "_container .sgapfill_resultscontainer");
 
             //display results
-            templates.render('mod_readaloud/listitemresults',review_data).then(
+            templates.render('mod_readaloud/qi_listitemresults',review_data).then(
               function(html,js){
                   resultsbox.html(html);
                   //show and hide

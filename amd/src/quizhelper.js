@@ -1,8 +1,8 @@
 define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'core/ajax','mod_readaloud/pollyhelper',
-    'mod_readaloud/multichoice', 'mod_readaloud/multiaudio',
-        'mod_readaloud/page', 'mod_readaloud/shortanswer',
-        'mod_readaloud/listeninggapfill', 'mod_readaloud/typinggapfill', 'mod_readaloud/speakinggapfill',
-        'mod_readaloud/freespeaking', 'mod_readaloud/freewriting'],
+    'mod_readaloud/qi_multichoice', 'mod_readaloud/qi_multiaudio',
+        'mod_readaloud/qi_page', 'mod_readaloud/qi_shortanswer',
+        'mod_readaloud/qi_listeninggapfill', 'mod_readaloud/qi_typinggapfill', 'mod_readaloud/qi_speakinggapfill',
+        'mod_readaloud/qi_freespeaking', 'mod_readaloud/qi_freewriting'],
   function($, log, def, templates, Ajax, polly, multichoice, multiaudio,
            page, shortanswer, listeninggapfill, typinggapfill, speakinggapfill, freespeaking, freewriting) {
     "use strict"; // jshint ;_;
@@ -225,7 +225,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'core/templates', 'co
             log.debug('quiz iz complete');
              $(".readaloud_nextbutton").prop("disabled", true);
              dd.on_complete();
-             
+
              // For now put a spinner here so it does not look like nothing is happening
             theoldquestion.hide();
             dd.controls.quizspinner.removeClass('d-none').addClass('d-flex');

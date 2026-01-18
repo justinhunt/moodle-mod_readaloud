@@ -142,7 +142,7 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/correc
 
               log.debug(transcript_evaluation);
               //display results
-              templates.render('mod_readaloud/freewritingresults',transcript_evaluation).then(
+              templates.render('mod_readaloud/qi_freewritingresults',transcript_evaluation).then(
                   function(html,js){
                     self.resultsbox.html(html);
                     //do corrections markup

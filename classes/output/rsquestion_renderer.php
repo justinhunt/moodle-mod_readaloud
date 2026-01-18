@@ -223,7 +223,7 @@ class rsquestion_renderer extends \plugin_renderer_base
         $quizdata = $quizhelper->fetch_quiz_items_for_js();
         $itemshtml = [];
         foreach ($quizdata as $item) {
-            $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/' . $item->type, $item);
+            $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/qi_' . $item->type, $item);
         }
 
         $quizattributes = ['id' => constants::M_QUIZ_ITEMS_CONTAINER];
@@ -250,7 +250,7 @@ class rsquestion_renderer extends \plugin_renderer_base
         $itemshtml = [];
         foreach ($quizdata as $item) {
             if ($item->id == $qid) {
-                $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/' . $item->type, $item);
+                $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/qi_' . $item->type, $item);
             }
         }
 
