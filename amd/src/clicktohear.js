@@ -17,6 +17,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions', 'mod_readaloud/pollyhe
             wordclass: def.wordclass,
             passagecontainer: def.passagecontainer,
             fullreportcontainer: def.fullreportcontainer,
+            readingcontainer: def.readingcontainer,
         },
 
         //init the module
@@ -32,6 +33,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions', 'mod_readaloud/pollyhe
             this.controls.audioplayer = $('#' + this.cd.hiddenplayerclass);
             this.controls.component = $('#' + def.component);
             this.controls.fullreportcontainer = $("." + this.cd.fullreportcontainer);
+            this.controls.readingcontainer = $("." + this.cd.readingcontainer);
         },
 
         //attach the various event handlers we need
@@ -47,7 +49,10 @@ define(['jquery', 'core/log','mod_readaloud/definitions', 'mod_readaloud/pollyhe
 
             //register click listener
             //this is a delegated event handler because the elements are not there when we start
-            this.controls.component.on('click', "." + this.cd.fullreportcontainer +' .' + this.cd.wordclass, function () {
+            this.controls.component.on('click', 
+                "." + this.cd.readingcontainer +'.reviewmode .' + this.cd.wordclass
+                + ", ." + this.cd.passagecontainer +'.reviewmode .' + this.cd.wordclass 
+                , function () {
                 var wordnumber = parseInt($(this).attr('data-wordnumber'));
                 var word = $('#' + that.cd.wordclass + '_' + wordnumber);
                 var text = word.text();

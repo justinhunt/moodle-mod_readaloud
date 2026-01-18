@@ -26,9 +26,11 @@ namespace mod_readaloud\output;
 use mod_readaloud\constants;
 use mod_readaloud\utils;
 
-class passage_renderer extends \plugin_renderer_base {
+class passage_renderer extends \plugin_renderer_base
+{
 
-    public function render_attempt_scoresheader($passagehelper, $nograde=false) {
+    public function render_attempt_scoresheader($passagehelper, $nograde = false)
+    {
 
         $ret = "<hr/>";
 
@@ -37,20 +39,20 @@ class passage_renderer extends \plugin_renderer_base {
         $ret .= '<div class="table-responsive mod_readaloud_scorestable">';
         $ret .= '<table class="table table-condensed table-bordered">';
         $ret .= '<thead><tr>';
-        $ret .= '<th>'.get_string('wpm', constants::M_COMPONENT).'</th>';
-        $ret .= '<th>'.get_string('accuracy_p', constants::M_COMPONENT).'</th>';
-        if(!$nograde) {
+        $ret .= '<th>' . get_string('wpm', constants::M_COMPONENT) . '</th>';
+        $ret .= '<th>' . get_string('accuracy_p', constants::M_COMPONENT) . '</th>';
+        if (!$nograde) {
             $ret .= '<th>' . get_string('grade_p', constants::M_COMPONENT) . '</th>';
         }
-        $ret .= '<th>'.get_string('mistakes', constants::M_COMPONENT).'</th>';
+        $ret .= '<th>' . get_string('mistakes', constants::M_COMPONENT) . '</th>';
         $ret .= '</tr></thead>';
         $ret .= '<tbody><tr>';
-        $ret .= '<td id="'.constants::M_GRADING_WPM_SCORE.'"></td>';
-        $ret .= '<td id="'.constants::M_GRADING_ACCURACY_SCORE.'"></td>';
-        if(!$nograde) {
+        $ret .= '<td id="' . constants::M_GRADING_WPM_SCORE . '"></td>';
+        $ret .= '<td id="' . constants::M_GRADING_ACCURACY_SCORE . '"></td>';
+        if (!$nograde) {
             $ret .= '<td id="' . constants::M_GRADING_SESSION_SCORE . '"></td>';
         }
-        $ret .= '<td id="'.constants::M_GRADING_ERROR_SCORE.'"></td>';
+        $ret .= '<td id="' . constants::M_GRADING_ERROR_SCORE . '"></td>';
         $ret .= '</tr></tbody>';
 
         $ret .= "</table>";
@@ -60,7 +62,8 @@ class passage_renderer extends \plugin_renderer_base {
 
     }
 
-    public function render_gradenow($passagehelper, $language, $collapsespaces=false) {
+    public function render_gradenow($passagehelper, $language, $collapsespaces = false)
+    {
         $actionheader = $this->render_attempt_scoresheader($passagehelper);
         $ret = $this->render_attempt_header($passagehelper->attemptdetails('userfullname'));
         $ret .= $actionheader;
@@ -70,26 +73,29 @@ class passage_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function render_userreview($passagehelper, $language, $collapsespaces=false, $nograde=false) {
+    public function render_userreview($passagehelper, $language, $collapsespaces = false, $nograde = false)
+    {
         $actionheader = $this->render_attempt_scoresheader($passagehelper, $nograde);
         $passagereview = $this->render_attempted_passage($passagehelper, $language, $collapsespaces);
         $ret = $actionheader . $passagereview;
         return $ret;
     }
 
-    public function render_attempted_passage($passagehelper, $language, $collapsespaces=false) {
+    public function render_attempted_passage($passagehelper, $language, $collapsespaces = false)
+    {
 
         // we put some CSS at the top of the passage container to control things like padding word separation etc
         $extraclasses = 'reviewmode';
         // for Japanese (and later other languages we collapse spaces)
-        if($collapsespaces){
+        if ($collapsespaces) {
             $extraclasses .= ' collapsespaces';
         }
         $thepassage = $this->render_passage($passagehelper->attemptdetails('passagesegments'), $language, false, $extraclasses);
         return $thepassage;
     }
 
-    public function render_machinereview($passagehelper, $language, $debug = false) {
+    public function render_machinereview($passagehelper, $language, $debug = false)
+    {
         $actionheader = $this->render_attempt_scoresheader($passagehelper);
         $ret = $this->render_machinegrade_attempt_header($passagehelper->attemptdetails('userfullname'));
         $ret .= $actionheader;
@@ -102,37 +108,59 @@ class passage_renderer extends \plugin_renderer_base {
         return $ret;
     }
 
-    public function render_machinereview_buttons($passagehelper) {
+    public function render_machinereview_buttons($passagehelper)
+    {
         $attemptid = $passagehelper->attemptdetails('id');
         $readaloudid = $passagehelper->attemptdetails('readaloudid');
-        $url = new \moodle_url(constants::M_URL . '/grading.php',
-                ['action' => 'gradenow', 'n' => $readaloudid, 'attemptid' => $attemptid]);
+        $url = new \moodle_url(
+            constants::M_URL . '/grading.php',
+            ['action' => 'gradenow', 'n' => $readaloudid, 'attemptid' => $attemptid]
+        );
         $btn = new \single_button($url, get_string('gradethisattempt', constants::M_COMPONENT), 'post');
         $gradenowbutton = $this->output->render($btn);
 
-        $spotcheckbutton = \html_writer::tag('button',
-                get_string('spotcheckbutton', constants::M_COMPONENT),
-                ['type' => 'button', 'id' => constants::M_CLASS . '_spotcheckbutton',
-                        'class' => constants::M_CLASS . '_spotcheckbutton btn btn-success', 'disabled' => true]);
+        $spotcheckbutton = \html_writer::tag(
+            'button',
+            get_string('spotcheckbutton', constants::M_COMPONENT),
+            [
+                'type' => 'button',
+                'id' => constants::M_CLASS . '_spotcheckbutton',
+                'class' => constants::M_CLASS . '_spotcheckbutton btn btn-success',
+                'disabled' => true
+            ]
+        );
 
-        $transcriptcheckbutton = \html_writer::tag('button',
-                get_string('transcriptcheckbutton', constants::M_COMPONENT),
-                ['type' => 'button', 'id' => constants::M_CLASS . '_transcriptcheckbutton',
-                        'class' => constants::M_CLASS . '_transcriptcheckbutton btn btn-warning']);
+        $transcriptcheckbutton = \html_writer::tag(
+            'button',
+            get_string('transcriptcheckbutton', constants::M_COMPONENT),
+            [
+                'type' => 'button',
+                'id' => constants::M_CLASS . '_transcriptcheckbutton',
+                'class' => constants::M_CLASS . '_transcriptcheckbutton btn btn-warning'
+            ]
+        );
 
-        $ret = \html_writer::div($gradenowbutton . $spotcheckbutton . $transcriptcheckbutton,
-                constants::M_CLASS . '_grading_passageactions');
+        $ret = \html_writer::div(
+            $gradenowbutton . $spotcheckbutton . $transcriptcheckbutton,
+            constants::M_CLASS . '_grading_passageactions'
+        );
         return $ret;
     }
 
-    public function render_debuginfo($debugsequences, $transcript, $fulltranscript) {
-        $divfulltranscript = \html_writer::div('<pre>' . print_r(json_decode($fulltranscript), true) . '</pre>',
-                constants::M_CLASS . '_grading_debugfulltranscript');
+    public function render_debuginfo($debugsequences, $transcript, $fulltranscript)
+    {
+        $divfulltranscript = \html_writer::div(
+            '<pre>' . print_r(json_decode($fulltranscript), true) . '</pre>',
+            constants::M_CLASS . '_grading_debugfulltranscript'
+        );
         // sequences
         $debugsequences = '';
         foreach ($debugsequences as $sequence) {
-            $debugsequences .= \html_writer::tag('span', '<pre>' . print_r($sequence, true) . '</pre>',
-                    ['class' => constants::M_CLASS . '_debugsequence']);
+            $debugsequences .= \html_writer::tag(
+                'span',
+                '<pre>' . print_r($sequence, true) . '</pre>',
+                ['class' => constants::M_CLASS . '_debugsequence']
+            );
         }
         $divsequences = \html_writer::div($debugsequences, constants::M_CLASS . '_grading_debugsequences');
 
@@ -142,34 +170,41 @@ class passage_renderer extends \plugin_renderer_base {
         $tcount = 0;
         foreach ($twords as $tword) {
             $tcount++;
-            $tusewords[] = \html_writer::tag('span', $tword,
-                    ['class' => constants::M_CLASS . '_debug_transcriptword', 'data-wordnumber' => $tcount]);
+            $tusewords[] = \html_writer::tag(
+                'span',
+                $tword,
+                ['class' => constants::M_CLASS . '_debug_transcriptword', 'data-wordnumber' => $tcount]
+            );
         }
         $divtranscript = \html_writer::div(implode(' ', $tusewords), constants::M_CLASS . '_grading_debugtranscript');
 
         $htranscript = $this->output->heading('transcript', 5);
         $hsequences = $this->output->heading('sequences', 5);
         $hfulltranscript = $this->output->heading('full transcript', 5);
-        $ret = \html_writer::div($htranscript . $divtranscript
-                . $hsequences . $divsequences
-        // . $h_fulltranscript . $div_fulltranscript,constants::M_CLASS . '_grading_debuginfo'
+        $ret = \html_writer::div(
+            $htranscript . $divtranscript
+            . $hsequences . $divsequences
+            // . $h_fulltranscript . $div_fulltranscript,constants::M_CLASS . '_grading_debuginfo'
         );
         return $ret;
     }
 
-    public function render_attempt_header($username) {
+    public function render_attempt_header($username)
+    {
         $ret = $this->output->heading(get_string('showingattempt', constants::M_COMPONENT, $username), 4);
         return $ret;
     }
 
-    public function render_machinegrade_attempt_header($username) {
+    public function render_machinegrade_attempt_header($username)
+    {
         $ret = $this->output->heading(get_string('showingmachinegradedattempt', constants::M_COMPONENT, $username), 3);
         return $ret;
     }
 
-    public function render_passage($passage, $language,  $containerclass=false, $extraclasses=false) {
+    public function render_passage($passage, $language, $containerclass = false, $extraclasses = false)
+    {
         global $DB;
-        $moduleinstance  = $DB->get_record('readaloud', ['id' => $this->page->cm->instance], '*', MUST_EXIST);
+        $moduleinstance = $DB->get_record('readaloud', ['id' => $this->page->cm->instance], '*', MUST_EXIST);
 
         // load the HTML document
         $doc = new \DOMDocument;
@@ -215,7 +250,7 @@ class passage_renderer extends \plugin_renderer_base {
                 $spacenode = $doc->createElement('span', $seperator);
 
                 // if its a non word character eg : in 'chapter one : beginning'
-                if(\mod_readaloud\diff::cleanText($word) === '') {
+                if (\mod_readaloud\diff::cleanText($word) === '') {
                     $node->parentNode->appendChild($newnode);
                     $node->parentNode->appendChild($spacenode);
                     $newnode = $doc->createElement('span', $word);
@@ -245,7 +280,7 @@ class passage_renderer extends \plugin_renderer_base {
         // TODO auto determine when to use collapsespaces
         $extraclasses = $extraclasses ? ' ' . $extraclasses : '';
         // For right to left languages we want to add the RTL direction and right justify.
-        switch($language){
+        switch ($language) {
             case constants::M_LANG_ARAE:
             case constants::M_LANG_ARSA:
             case constants::M_LANG_FAIR:
@@ -253,43 +288,65 @@ class passage_renderer extends \plugin_renderer_base {
                 $extraclasses .= ' ' . constants::M_CLASS . '_rtl';
                 break;
             default:
-                // nothing special
+            // nothing special
         }
 
         $attributes = [];
-        if(!empty($moduleinstance->customfont)){
+        if (!empty($moduleinstance->customfont)) {
             $attributes['style'] = "font-family: '$moduleinstance->customfont', serif;";
         }
         // there should no longer be different container classes. remove this soon: Justin 2020-5-31
-        if($containerclass) {
+        if ($containerclass) {
             $ret = \html_writer::div($usepassage, $containerclass . $extraclasses, $attributes);
-        }else{
-            $ret = \html_writer::div($usepassage,  constants::M_PASSAGE_CONTAINER . $extraclasses, $attributes);
+        } else {
+            $ret = \html_writer::div($usepassage, constants::M_PASSAGE_CONTAINER . $extraclasses, $attributes);
         }
         return $ret;
     }
 
-    public function render_passageactions() {
+    public function render_passageactions()
+    {
 
-        $gradingbutton = \html_writer::tag('button',
-                get_string('gradingbutton', constants::M_COMPONENT),
-                ['type' => 'button', 'id' => constants::M_CLASS . '_gradingbutton',
-                        'class' => constants::M_CLASS . '_gradingbutton btn btn-primary', 'disabled' => true]);
+        $gradingbutton = \html_writer::tag(
+            'button',
+            get_string('gradingbutton', constants::M_COMPONENT),
+            [
+                'type' => 'button',
+                'id' => constants::M_CLASS . '_gradingbutton',
+                'class' => constants::M_CLASS . '_gradingbutton btn btn-primary',
+                'disabled' => true
+            ]
+        );
 
-        $spotcheckbutton = \html_writer::tag('button',
-                get_string('spotcheckbutton', constants::M_COMPONENT),
-                ['type' => 'button', 'id' => constants::M_CLASS . '_spotcheckbutton',
-                        'class' => constants::M_CLASS . '_spotcheckbutton btn btn-success']);
+        $spotcheckbutton = \html_writer::tag(
+            'button',
+            get_string('spotcheckbutton', constants::M_COMPONENT),
+            [
+                'type' => 'button',
+                'id' => constants::M_CLASS . '_spotcheckbutton',
+                'class' => constants::M_CLASS . '_spotcheckbutton btn btn-success'
+            ]
+        );
 
-        $transcriptcheckbutton = \html_writer::tag('button',
-                get_string('transcriptcheckbutton', constants::M_COMPONENT),
-                ['type' => 'button', 'id' => constants::M_CLASS . '_transcriptcheckbutton',
-                        'class' => constants::M_CLASS . '_transcriptcheckbutton btn btn-warning']);
+        $transcriptcheckbutton = \html_writer::tag(
+            'button',
+            get_string('transcriptcheckbutton', constants::M_COMPONENT),
+            [
+                'type' => 'button',
+                'id' => constants::M_CLASS . '_transcriptcheckbutton',
+                'class' => constants::M_CLASS . '_transcriptcheckbutton btn btn-warning'
+            ]
+        );
 
-        $clearbutton = \html_writer::tag('button',
-                get_string('doclear', constants::M_COMPONENT),
-                ['type' => 'button', 'id' => constants::M_CLASS . '_clearbutton',
-                        'class' => constants::M_CLASS . '_clearbutton btn btn-link']);
+        $clearbutton = \html_writer::tag(
+            'button',
+            get_string('doclear', constants::M_COMPONENT),
+            [
+                'type' => 'button',
+                'id' => constants::M_CLASS . '_clearbutton',
+                'class' => constants::M_CLASS . '_clearbutton btn btn-link'
+            ]
+        );
 
         $buttons = $gradingbutton . $spotcheckbutton . $transcriptcheckbutton . $clearbutton;
 
@@ -297,16 +354,23 @@ class passage_renderer extends \plugin_renderer_base {
         return $container;
     }
 
-    public function render_audioplayer($audiourl) {
-        $audioplayer = \html_writer::tag('audio', '',
-                ['controls' => '', 'src' => $audiourl, 'id' => constants::M_GRADING_PLAYER]);
+    public function render_audioplayer($audiourl)
+    {
+        $audioplayer = \html_writer::tag(
+            'audio',
+            '',
+            ['controls' => '', 'src' => $audiourl, 'id' => constants::M_GRADING_PLAYER]
+        );
 
         $data = [];
         $data['src'] = $audiourl;
         $audioplayer = $this->render_from_template('mod_readaloud/audioplayer', $data);
 
-        $ret = \html_writer::div($audioplayer, constants::M_GRADING_PLAYER_CONTAINER,
-                ['id' => constants::M_GRADING_PLAYER_CONTAINER]);
+        $ret = \html_writer::div(
+            $audioplayer,
+            constants::M_GRADING_PLAYER_CONTAINER,
+            ['id' => constants::M_GRADING_PLAYER_CONTAINER]
+        );
         return $ret;
     }
 

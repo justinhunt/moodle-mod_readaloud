@@ -753,7 +753,7 @@ class renderer extends \plugin_renderer_base {
         }
 
         // For passage rendering.
-        $extraclasses = "readmode";
+        $extraclasses = "reviewmode";
 
          // For Japanese (and later other languages we collapse spaces).
         $collapsespaces = false;

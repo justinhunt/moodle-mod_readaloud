@@ -109,6 +109,9 @@
                 <button class="btn btn-primary" data-action="readagain">{{#str}}readagain, mod_readaloud{{/str}}</button>
             {{/readreattempt}}
         </div>
-        {{> mod_readaloud/passagecontainer}}
+        {{#smallreport.thepassage}}
+             {{>mod_readaloud/studentreadingpassage}}
+        {{/smallreport.thepassage}}
+        {{! mod_readaloud/passagecontainer }}
     </div>
 </div>
