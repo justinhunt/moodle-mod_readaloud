@@ -7,8 +7,8 @@
  * @copyright  2020 Justin Hunt <poodllsupport@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_events', 'core/fragment', 'core/ajax', 'core/yui'],
-    function($, log,Str, ModalFactory, ModalEvents, Fragment, Ajax, Y) {
+define(['jquery', 'core/log', 'core/str', 'core/modal_factory', 'core/modal_events', 'core/fragment', 'core/ajax', 'core/yui'],
+    function ($, log, Str, ModalFactory, ModalEvents, Fragment, Ajax, Y) {
 
         /**
          * Constructor
@@ -20,7 +20,7 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
          *
          * Each call to init gets it's own instance of this class.
          */
-        var TheForm = function(selector, contextid, callback) {
+        var TheForm = function (selector, contextid, callback) {
             this.contextid = contextid;
             this.callback = callback;
 
@@ -58,21 +58,22 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
          * @private
          * @return {Promise}
          */
-        TheForm.prototype.preinit = function(selector) {
+        TheForm.prototype.preinit = function (selector) {
             var triggers = $(selector);
-            var dd=this;
+            var dd = this;
 
-            $('body').on('click',selector,function(e) {
+            $('body').on('click', selector, function (e) {
                 //prevent it doing a real click (which will do the non ajax version of a click)
                 e.preventDefault();
 
-                dd.itemid=$(this).data('id');
+                dd.itemid = $(this).data('id');
 
                 ModalFactory.create({
                     type: ModalFactory.types.CANCEL,
-                 //   title: dd.questiontitle,
+                    //   title: dd.questiontitle,
                     body: dd.getBody({})
                 }).then(function (modal) {
+                    log.debug('here comes the modal');
                     // Keep a reference to the modal.
                     dd.modal = modal;
                     //Str.get_string(dd.formname , 'mod_readaloud').then(function(title){dd.formtitle=title;dd.modal.setTitle(dd.formtitle);});
@@ -81,9 +82,8 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
                     //questions are big, we want a big modal.
                     dd.modal.setLarge();
 
-
                     // We want to call our callback to do any housekeeping after the form is closed
-                    dd.modal.getRoot().on(ModalEvents.hidden, function() {
+                    dd.modal.getRoot().on(ModalEvents.hidden, function () {
                         dd.callback();
                     }.bind(dd));
 
@@ -93,7 +93,6 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
                         dd.modal.getRoot().append('<style>.readaloud_nextbutton { display: none ! important; }</style>');
                         dd.modal.getRoot().append('<style>.readaloud_quiz_progress { display: none ! important; }</style>');
                     });
-
 
                     dd.modal.show();
                     return dd.modal;
@@ -109,11 +108,13 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
          * @private
          * @return {Promise}
          */
-        TheForm.prototype.getBody = function() {
+        TheForm.prototype.getBody = function () {
 
             // Get the content of the modal.
-            var params = {itemid: this.itemid};
+            var params = { itemid: this.itemid };
             var html = Fragment.loadFragment('mod_readaloud', 'preview', this.contextid, params);
+            log.debug('here comes the html');
+            log.debug(html);
             return html;
 
         };
@@ -133,7 +134,7 @@ define(['jquery', 'core/log','core/str', 'core/modal_factory', 'core/modal_event
              * @param {function} callback The callback.
              * @return {Promise}
              */
-            init: function(selector, contextid, callback) {
+            init: function (selector, contextid, callback) {
                 return new TheForm(selector, contextid, callback);
             }
         };

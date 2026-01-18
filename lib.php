@@ -1031,14 +1031,29 @@ function readaloud_output_fragment_preview($args) {
     global $DB, $PAGE;
     $args = (object) $args;
     $context = $args->context;
+    $config = get_config('mod_readaloud');
 
     $cm         = get_coursemodule_from_id('readaloud', $context->instanceid, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
     $moduleinstance  = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST);
 
     $rsquestionrenderer = $PAGE->get_renderer('mod_readaloud', 'rsquestion');
+    $renderer = $PAGE->get_renderer('mod_readaloud');
     $quizhelper = new \mod_readaloud\quizhelper($cm);
-    $ret = $rsquestionrenderer->show_quiz_preview($quizhelper, $args->itemid);
-    $ret .= $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $args->itemid);
-    return $ret;
+    $ret_qdata = $rsquestionrenderer->show_quiz_preview($quizhelper, $args->itemid);
+    $ret_amd = $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $args->itemid);
+    // We need to add this
+    $activitydata = $renderer->get_view_page_data(
+            $cm,
+            $config,
+            0,
+            0,
+            $context,
+            $moduleinstance,
+            0
+        );
+    $opts = [$activitydata, 'cmid' => $cm->id, 0];
+    $PAGE->requires->js_call_amd("mod_readaloud/questionhelper", 'init', [$opts]);
+    
+    return $ret_qdata . $ret_amd;
 }
