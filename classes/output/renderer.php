@@ -546,6 +546,32 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
+     * This function embeds the AMD data on the page for restoring from html(json).
+     *
+     * @param stdClass $cm             The course module object.
+     * @param array    $activitydata   The data to pass to JavaScript.
+     * @return array Associative array containing the info needed to pass to js to restore data from html(json)
+     */
+    public function embed_activitydata_on_page($cm,$activitydata) {
+        global $CFG, $USER;
+
+        // This inits the M.mod_readaloud thingy, after the page has loaded.
+        // We put the opts in html on the page because moodle/AMD doesn't like lots of opts in js.
+        // Convert opts to json.
+        $jsonstring = json_encode($activitydata);
+        $widgetid = constants::M_RECORDERID . '_opts_9999';
+
+        $this->page->requires->strings_for_js(['gotnosound', 'done', 'beginreading'], constants::M_COMPONENT);
+
+        return [
+            'widgetid' => $widgetid,
+            'jsonstring' => $jsonstring,
+            'modeview' => constants::M_COMPONENT . '_modeview_' . $cm->id,
+        ];
+    }
+
+
+    /**
      * Fetch the AMD configuration for the activity.
      *
      * This function prepares all data required by the front-end JavaScript, including
@@ -564,107 +590,95 @@ class renderer extends \plugin_renderer_base {
         global $CFG, $USER;
 
         // Here we set up any info we need to pass into javascript.
-        $recopts = [];
+        $adata = [];
 
         // Recorder html ids.
-        $recopts['recordercontainer'] = constants::M_RECORDER_CONTAINER;
-        $recopts['recorderid'] = constants::M_RECORDERID;
-        $recopts['recordingcontainer'] = constants::M_RECORDING_CONTAINER;
+        $adata['recordercontainer'] = constants::M_RECORDER_CONTAINER;
+        $adata['recorderid'] = constants::M_RECORDERID;
+        $adata['recordingcontainer'] = constants::M_RECORDING_CONTAINER;
 
         // Activity html ids.
-        $recopts['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
-        $recopts['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
-        $recopts['breaks'] = $moduleinstance->modelaudiobreaks;
-        $recopts['steps'] = constants::STEPS;
-        $recopts['stepsenabled'] = utils::get_steps_enabled_state($moduleinstance);
-        $recopts['stepscomplete'] = utils::get_steps_complete_state($moduleinstance, $latestattempt);
-        $recopts['stepsopen'] = utils::get_steps_open_state($moduleinstance, $latestattempt, $hasquizquestions);
-        $recopts['quizreattempt'] = $moduleinstance->quizreattempt ? true : false;
-        $recopts['readreattempt'] = $moduleinstance->readreattempt ? true : false;
-        $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
-        $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
-        $recopts['hider'] = constants::M_HIDER;
-        $recopts['hiddenaudioplayer'] = constants::M_HIDDEN_PLAYER;
-        $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
-        $recopts['practiceinstructionscontainer'] = constants::M_PRACTICEINSTRUCTIONS_CONTAINER;
-        $recopts['menubuttonscontainer'] = constants::M_MENUBUTTONS_CONTAINER;
-        $recopts['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
-        $recopts['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
-        $recopts['modejourneycontainer'] = constants::M_MODE_JOURNEY_CONTAINER;
-        $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
-        $recopts['practicecontainerwrap'] = constants::M_PRACTICE_CONTAINER_WRAP;
-        $recopts['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
-        $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
-        $recopts['quizcontainerwrap'] = constants::M_QUIZ_CONTAINER_WRAP;
-        $recopts['quizitemscontainer'] = constants::M_QUIZ_ITEMS_CONTAINER;
-        $recopts['quizplaceholder'] = constants::M_QUIZ_PLACEHOLDER;
-        $recopts['homecontainer'] = constants::M_HOME_CONTAINER;
-        $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
-        $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
-        $recopts['fullreportcontainer']  = constants::M_FULLREPORT_CONTAINER;
-        $recopts['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;
-        $recopts['modeview'] = constants::M_COMPONENT . '_modeview_' . $cm->id;
+        $adata['activityinstructionscontainer'] = constants::M_ACTIVITYINSTRUCTIONS_CONTAINER;
+        $adata['allowearlyexit'] = $moduleinstance->allowearlyexit ? true : false;
+        $adata['breaks'] = $moduleinstance->modelaudiobreaks;
+        $adata['steps'] = constants::STEPS;
+        $adata['stepsenabled'] = utils::get_steps_enabled_state($moduleinstance);
+        $adata['stepscomplete'] = utils::get_steps_complete_state($moduleinstance, $latestattempt);
+        $adata['stepsopen'] = utils::get_steps_open_state($moduleinstance, $latestattempt, $hasquizquestions);
+        $adata['quizreattempt'] = $moduleinstance->quizreattempt ? true : false;
+        $adata['readreattempt'] = $moduleinstance->readreattempt ? true : false;
+        $adata['errorcontainer'] = constants::M_ERROR_CONTAINER;
+        $adata['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
+        $adata['hider'] = constants::M_HIDER;
+        $adata['hiddenaudioplayer'] = constants::M_HIDDEN_PLAYER;
+        $adata['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
+        $adata['practiceinstructionscontainer'] = constants::M_PRACTICEINSTRUCTIONS_CONTAINER;
+        $adata['menubuttonscontainer'] = constants::M_MENUBUTTONS_CONTAINER;
+        $adata['menuinstructionscontainer'] = constants::M_MENUINSTRUCTIONS_CONTAINER;
+        $adata['modelaudioplayer'] = constants::M_MODELAUDIO_PLAYER;
+        $adata['modejourneycontainer'] = constants::M_MODE_JOURNEY_CONTAINER;
+        $adata['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
+        $adata['practicecontainerwrap'] = constants::M_PRACTICE_CONTAINER_WRAP;
+        $adata['previewinstructionscontainer'] = constants::M_PREVIEWINSTRUCTIONS_CONTAINER;
+        $adata['quizcontainer'] = constants::M_QUIZ_CONTAINER;
+        $adata['quizcontainerwrap'] = constants::M_QUIZ_CONTAINER_WRAP;
+        $adata['quizitemscontainer'] = constants::M_QUIZ_ITEMS_CONTAINER;
+        $adata['quizplaceholder'] = constants::M_QUIZ_PLACEHOLDER;
+        $adata['homecontainer'] = constants::M_HOME_CONTAINER;
+        $adata['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
+        $adata['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
+        $adata['fullreportcontainer']  = constants::M_FULLREPORT_CONTAINER;
+        $adata['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;
+        $adata['modeview'] = constants::M_COMPONENT . '_modeview_' . $cm->id;
 
-        $recopts['audioplayerclass'] = constants::M_MODELAUDIO_PLAYER;
-        $recopts['playbutton'] = constants::M_PLAY_BTN;
-        $recopts['homebutton'] = constants::M_HOME;
-        $recopts['startlandrbutton'] = constants::M_STARTLANDR;
-        $recopts['startpreviewbutton'] = constants::M_STARTPREVIEW;
-        $recopts['startreadingbutton'] = constants::M_STARTNOSHADOW;
-        $recopts['startreportbutton'] = constants::M_STARTREPORT;
-        $recopts['readagainbutton'] = constants::M_READAGAIN;
-        $recopts['fullreportbutton'] = constants::M_FULLREPORT;
-        $recopts['startshadowbutton'] = constants::M_STARTSHADOW;
-        $recopts['startquizbutton'] = constants::M_STARTQUIZ;
-        $recopts['quizresultscontainer'] = constants::M_QUIZ_FINISHED;
-        $recopts['stopandplay'] = constants::M_STOPANDPLAY;
-        $recopts['quitlisteningbutton'] = constants::M_QUITLISTENING;
-        $recopts['stopbutton'] = constants::M_STOP_BTN;
-        $recopts['recordbutton'] = constants::M_RECORD_BTN;
-        $recopts['returnmenubutton'] = constants::M_RETURNMENU;
-        $recopts['ttsvoice'] = $moduleinstance->ttsvoice;
+        $adata['audioplayerclass'] = constants::M_MODELAUDIO_PLAYER;
+        $adata['playbutton'] = constants::M_PLAY_BTN;
+        $adata['homebutton'] = constants::M_HOME;
+        $adata['startlandrbutton'] = constants::M_STARTLANDR;
+        $adata['startpreviewbutton'] = constants::M_STARTPREVIEW;
+        $adata['startreadingbutton'] = constants::M_STARTNOSHADOW;
+        $adata['startreportbutton'] = constants::M_STARTREPORT;
+        $adata['readagainbutton'] = constants::M_READAGAIN;
+        $adata['fullreportbutton'] = constants::M_FULLREPORT;
+        $adata['startshadowbutton'] = constants::M_STARTSHADOW;
+        $adata['startquizbutton'] = constants::M_STARTQUIZ;
+        $adata['quizresultscontainer'] = constants::M_QUIZ_FINISHED;
+        $adata['stopandplay'] = constants::M_STOPANDPLAY;
+        $adata['quitlisteningbutton'] = constants::M_QUITLISTENING;
+        $adata['stopbutton'] = constants::M_STOP_BTN;
+        $adata['recordbutton'] = constants::M_RECORD_BTN;
+        $adata['returnmenubutton'] = constants::M_RETURNMENU;
+        $adata['ttsvoice'] = $moduleinstance->ttsvoice;
 
-        $recopts['phonetics'] = '';
+        $adata['phonetics'] = '';
         if ($moduleinstance->phonetic && !empty($moduleinstance->phonetic)) {
-            $recopts['phonetics'] = explode(' ', $moduleinstance->phonetic);
+            $adata['phonetics'] = explode(' ', $moduleinstance->phonetic);
         }
 
-        $recopts['transcriber'] = $moduleinstance->transcriber;
+        $adata['transcriber'] = $moduleinstance->transcriber;
         // This will force browser recognition to use Poodll (not chrome or other browser speech).
-        if ($recopts['transcriber'] == constants::TRANSCRIBER_GUIDED) {
-            $recopts['stt_guided'] = true;
+        if ($adata['transcriber'] == constants::TRANSCRIBER_GUIDED) {
+            $adata['stt_guided'] = true;
         } else {
-            $recopts['stt_guided'] = false;
+            $adata['stt_guided'] = false;
         }
 
-        $recopts['appid'] = constants::M_COMPONENT;
-        $recopts['expiretime'] = 300;// Max expire time is 300 seconds.
-        $recopts['language'] = $moduleinstance->ttslanguage;
-        $recopts['owner'] = hash('md5', $USER->username);
-        $recopts['parent'] = $CFG->wwwroot;
-        $recopts['region'] = $moduleinstance->region;
-        $recopts['token'] = $token;
+        $adata['appid'] = constants::M_COMPONENT;
+        $adata['expiretime'] = 300;// Max expire time is 300 seconds.
+        $adata['language'] = $moduleinstance->ttslanguage;
+        $adata['owner'] = hash('md5', $USER->username);
+        $adata['parent'] = $CFG->wwwroot;
+        $adata['region'] = $moduleinstance->region;
+        $adata['token'] = $token;
 
         // Quiz data.
         $quizhelper = new quizhelper($cm);
-        $recopts['quizdata'] = $quizhelper->fetch_quiz_items_for_js($this);
+        $adata['quizdata'] = $quizhelper->fetch_quiz_items_for_js($this);
 
         // Store the full template context for use in JavaScript when rendering templates. dynamically.
-        $recopts['templatecontext'] = $templatecontext;
+        $adata['templatecontext'] = $templatecontext;
 
-        // This inits the M.mod_readaloud thingy, after the page has loaded.
-        // We put the opts in html on the page because moodle/AMD doesn't like lots of opts in js.
-        // Convert opts to json.
-        $jsonstring = json_encode($recopts);
-        $widgetid = constants::M_RECORDERID . '_opts_9999';
-
-        $this->page->requires->strings_for_js(['gotnosound', 'done', 'beginreading'], constants::M_COMPONENT);
-
-        return [
-            'widgetid' => $widgetid,
-            'jsonstring' => $jsonstring,
-            'modeview' => constants::M_COMPONENT . '_modeview_' . $cm->id,
-        ];
+        return $adata;
     }
 
     /**
@@ -1213,7 +1227,6 @@ class renderer extends \plugin_renderer_base {
             $attemptreviewhtml = $renderer->show_attempt_for_review($moduleinstance, $attempts,
             $havehumaneval, $haveaieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer, $embed);
             echo $attemptreviewhtml;
-
             return;
         }
 
@@ -1259,10 +1272,6 @@ class renderer extends \plugin_renderer_base {
 
         $welcomemessage = get_string('welcomemenu', constants::M_COMPONENT) .
         ($canattempt ? '' : '<br>' . get_string('exceededattempts', constants::M_COMPONENT, $moduleinstance->maxattempts));
-
-        // Fetchquiz data for JS.
-        $rsquestionrenderer = $this->page->get_renderer(constants::M_COMPONENT, 'rsquestion');
-        $quizamddata = $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $previewquestionid = 0, $canreattempt = false, $embed = 0);
 
         // Quiz html.
         $rsquestionrenderer = $this->page->get_renderer(\mod_readaloud\constants::M_COMPONENT, 'rsquestion');
@@ -1413,10 +1422,11 @@ class renderer extends \plugin_renderer_base {
 
         // Fetch AMD data, passing the existing templatecontext to be stored in JSON for JavaScript.
         $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token,
-             $embed, $latestattempt, $templatecontext, $hasquizquestions);
+            $embed, $latestattempt, $templatecontext, $hasquizquestions);
+        $activityembedtags = $this->embed_activitydata_on_page($cm,$activityamddata);
 
-        // Add the AMD data to the templatecontext.
-        $templatecontext['activityamddata'] = $activityamddata;
+        // Add the AMD data (well the embed tags) to the templatecontext.
+        $templatecontext['activityamddata'] = $activityembedtags;
 
         // Return the complete templatecontext.
         return $templatecontext;

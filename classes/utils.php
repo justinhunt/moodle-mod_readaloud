@@ -3798,7 +3798,12 @@ class utils {
         });
         $useresults = [];
         foreach ($results as $result) {
-
+            // If the result does not have a matching question, continue.
+            // This should not ever really happen .. but we do not prevent it yet 01/18/2026.
+            if (!isset($quizdata[$result->index])) {
+                // This might occur if a question was deleted after it already had results
+                continue;
+            }
             $items = $DB->get_record(constants::M_QTABLE, ['id' => $quizdata[$result->index]->id]);
             $result->title = $items->name;
 

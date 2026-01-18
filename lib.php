@@ -1032,7 +1032,6 @@ function readaloud_output_fragment_preview($args) {
     $args = (object) $args;
     $context = $args->context;
     $config = get_config('mod_readaloud');
-
     $cm         = get_coursemodule_from_id('readaloud', $context->instanceid, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
     $moduleinstance  = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST);
@@ -1040,20 +1039,30 @@ function readaloud_output_fragment_preview($args) {
     $rsquestionrenderer = $PAGE->get_renderer('mod_readaloud', 'rsquestion');
     $renderer = $PAGE->get_renderer('mod_readaloud');
     $quizhelper = new \mod_readaloud\quizhelper($cm);
+    // This is the data to return
     $ret_qdata = $rsquestionrenderer->show_quiz_preview($quizhelper, $args->itemid);
-    $ret_amd = $rsquestionrenderer->fetch_quiz_amd($cm, $moduleinstance, $args->itemid);
-    // We need to add this
-    $activitydata = $renderer->get_view_page_data(
-            $cm,
-            $config,
-            0,
-            0,
-            $context,
-            $moduleinstance,
-            0
-        );
+
+    // At this point we are ready to return but we need to javascript to run so do that first.
+    // To get javascript to run we need to get the $activitydata.
+    // So we need to use some dummy data and some real data.
+    $embed = 0;
+    $latestattempt = 0;
+    $templatecontext = [];
+    $hasquizquestions = $quizhelper->fetch_item_count() > 0;
+    $token = utils::fetch_token($config->apiuser, $config->apisecret);
+    $activitydata = $renderer->fetch_activity_amd($cm, $moduleinstance, $token,
+        $embed, $latestattempt, $templatecontext, $hasquizquestions);
+    //trim quiz questions back to the one we want
+    foreach ($activitydata['quizdata'] as $qitem) {
+        if ((int) $qitem->id === $args->itemid) {
+            $activitydata['quizdata']= [$qitem];
+            break;
+        }
+    }
+
     $opts = [$activitydata, 'cmid' => $cm->id, 0];
-    $PAGE->requires->js_call_amd("mod_readaloud/questionhelper", 'init', [$opts]);
-    
-    return $ret_qdata . $ret_amd;
+    $PAGE->requires->js_call_amd("mod_readaloud/quizhelper", 'init', $opts);
+
+    // Ok now we can return
+    return $ret_qdata ;
 }

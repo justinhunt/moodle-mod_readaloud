@@ -36,7 +36,7 @@ class rsquestion_renderer extends \plugin_renderer_base
      * @param int $tableid
      * @return string
      */
-    public function add_edit_page_links($context, $tableid)
+    public function add_item_links($context, $tableid)
     {
         global $CFG;
         $itemid = 0;
@@ -262,130 +262,6 @@ class rsquestion_renderer extends \plugin_renderer_base
 
         $ret = $quizdiv;
         return $ret;
-    }
-
-    function fetch_quiz_amd($cm, $moduleinstance, $previewquestionid = 0, $canreattempt = false, $embed = 0)
-    {
-        global $CFG, $USER;
-        // Any html we want to return to be sent to the page.
-        $rethtml = '';
-
-        // Here we set up any info we need to pass into javascript.
-
-        $recopts = [];
-        // Recorder html ids.
-        $recopts['recorderid'] = constants::M_RECORDERID;
-        $recopts['recordingcontainer'] = constants::M_RECORDING_CONTAINER;
-        $recopts['recordercontainer'] = constants::M_RECORDER_CONTAINER;
-
-        // Activity html ids.
-        $recopts['errorcontainer'] = constants::M_ERROR_CONTAINER;
-        $recopts['feedbackcontainer'] = constants::M_FEEDBACK_CONTAINER;
-        $recopts['hider'] = constants::M_HIDER;
-        $recopts['instructionscontainer'] = constants::M_INSTRUCTIONS_CONTAINER;
-        $recopts['passagecontainer'] = constants::M_PASSAGE_CONTAINER;
-        $recopts['quizcontainer'] = constants::M_QUIZ_CONTAINER;
-        $recopts['quizplaceholder'] = constants::M_QUIZ_PLACEHOLDER;
-        $recopts['quizitemscontainer'] = constants::M_QUIZ_ITEMS_CONTAINER;
-        $recopts['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
-        $recopts['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
-        $recopts['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;
-        $recopts['startquizbutton'] = constants::M_STARTQUIZ;
-
-        // First confirm we are authorised before we try to get the token.
-        $config = get_config(constants::M_COMPONENT);
-        if (empty($config->apiuser) || empty($config->apisecret)) {
-            $errormessage = get_string(
-                'nocredentials',
-                constants::M_COMPONENT,
-                $CFG->wwwroot . constants::M_PLUGINSETTINGS
-            );
-            return $this->show_problembox($errormessage);
-        } else {
-            // Fetch token.
-            $token = utils::fetch_token($config->apiuser, $config->apisecret);
-
-            // Check token authenticated and no errors in it.
-            $errormessage = utils::fetch_token_error($token);
-            if (!empty($errormessage)) {
-                return $this->show_problembox($errormessage);
-            }
-        }
-        $recopts['token'] = $token;
-        $recopts['owner'] = hash('md5', $USER->username);
-        $recopts['region'] = $moduleinstance->region;
-        $recopts['ttslanguage'] = $moduleinstance->ttslanguage;
-        $recopts['stt_guided'] = $moduleinstance->transcriber == constants::TRANSCRIBER_GUIDED;
-
-        $recopts['courseurl'] = $CFG->wwwroot . '/course/view.php?id=' .
-            $moduleinstance->course . '#section-' . ($cm->section - 1);
-
-        $recopts['useanimatecss'] = true; // $config->animations == constants::M_ANIM_FANCY;
-
-        // to show a post item results panel
-        $recopts['showqreview'] = $moduleinstance->showqreview ? true : false;
-
-        // the activity URL for returning to on finished
-        $activityurl = new \moodle_url(
-            constants::M_URL . '/quiz.php',
-            ['n' => $moduleinstance->id]
-        );
-
-        // add embedding url param if we are embedded
-        if ($embed > 0) {
-            $activityurl->param('embed', $embed);
-        }
-        // set the activity url
-        $recopts['activityurl'] = $activityurl->out();
-
-        // the reattempturl if its ok
-        $recopts['reattempturl'] = "";
-        if ($canreattempt) {
-            $activityurl->param('retake', '1');
-            $recopts['reattempturl'] = $activityurl->out();
-        }
-
-        // show back to course button if we are not in an iframe
-        if (
-            $config->enablesetuptab ||
-            $embed > 0
-        ) {
-            $recopts['backtocourse'] = '';
-        } else {
-            $recopts['backtocourse'] = true;
-        }
-
-        // quiz data
-        $quizhelper = new quizhelper($cm);
-        $quizdata = $quizhelper->fetch_quiz_items_for_js($this);
-        if ($previewquestionid) {
-            foreach ($quizdata as $item) {
-                if ($item->id == $previewquestionid) {
-                    $item->preview = true;
-                    $recopts['quizdata'] = [$item];
-                    break;
-                }
-            }
-        } else {
-            $recopts['quizdata'] = $quizdata;
-        }
-
-        // this inits the M.mod_readaloud thingy, after the page has loaded.
-        // we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
-        // convert opts to json
-        $jsonstring = json_encode($recopts, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        if (($jsonstring) === false) {
-            $err = json_last_error();
-        }
-        $widgetid = constants::M_RECORDERID . '_opts_9999';
-        $optshtml = \html_writer::tag('input', '', ['id' => 'amdopts_' . $widgetid, 'type' => 'hidden', 'value' => $jsonstring]);
-
-        // the recorder div
-        $rethtml = $rethtml . $optshtml;
-
-
-        // these need to be returned and echo'ed to the page
-        return $rethtml;
     }
 
     /**

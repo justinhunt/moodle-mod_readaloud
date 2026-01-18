@@ -222,10 +222,12 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 quizhelper.on_complete = function () {
                     // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_quiz);
+                    // Flag the quiz as finished
+                    dd.activitydata.templatecontext.quizfinished = true;
                     // Re-fetch the results data
                     dd.refresh_activity_data('fullreportdata,smallreport,quizfinisheddata',
                         function() {
-                            // First make sure the user is still in readreportdummy location
+                            // First make sure the user is still in quiz location
                             if (dd.getModeFromUrl() === 'quiz') {
                                 dd.doquizlayout();
                             } else {
@@ -242,11 +244,14 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 var readprops = dd.getJsPropsForMode('read');
                 read.init(readprops);
 
+
                 // Set the callback function to complete the quiz.
                 read.on_complete = function (eventdata) {
                     // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_read);
-                    // Re-fetch the results data, and when thats done redo the readreport
+                    // Init the small report helper to check for results
+                    var readreportprops = dd.getJsPropsForMode('readreport');
+                    smallreporthelper.init(readreportprops);
                     smallreporthelper.on_results_fetched = function(){
                         dd.refresh_activity_data('fullreportdata,smallreport,passagehtml' ,
                             function() {
@@ -273,8 +278,8 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
 
 
             process_html: function (opts) {
-                // These css classes/ids are all passed in from php in
-                // renderer.php::fetch_activity_amd should maybe just simplify and declare them in definitions.js.
+                // These css classes/ids are all passed in from php in renderer.php::fetch_activity_amd
+                //  should maybe just simplify and declare them in definitions.js.
                 var controls = {
                     hider: $('.' + opts['hider']),
                     introbox: $('.' + 'mod_intro_box'),
@@ -542,6 +547,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
             // and open the next step
             update_activity_step: function (step) {
                 var that = this;
+                var isasync = false;
                 Ajax.call([{
                     methodname: 'mod_readaloud_report_activitystep_completion',
                     args: {
@@ -576,7 +582,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
 
                     },
                     fail: notification.exception
-                }]);
+                }],isasync);
             },
 
             open_next_step: function (oldstep) {

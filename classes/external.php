@@ -643,6 +643,7 @@ class mod_readaloud_external extends external_api {
         $contextitems = explode(',', $requestedcontextitems);
         $returnobj = new stdClass();
         foreach ($contextitems as $requestedcontextitem) {
+            $requestedcontextitem = trim($requestedcontextitem);
             switch($requestedcontextitem){
                 case 'somedatathatneedstobedealtwith':
                     // Do something special here

@@ -63,6 +63,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
 
             //if we are ready, we can start checking for results
             if(!this.ready && this.attemptid){
+                log.debug('not ready yet, will start checking for results');
                 this.start_check_for_results();
             }
 
@@ -75,7 +76,10 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
             //if we are doing remote transcribe, we need to check for results
             if(this.remotetranscribe) {
                 //check for ai results
+                log.debug('doing remote transcribe, so begin check for results');
                 this.check_for_results(this, 15);
+            } else {
+                log.debug('not doing remote transcribe, so no need to check for results');
             }
             //check for audio audio
             this.check_for_audio(0);
@@ -184,10 +188,11 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
         check_for_results: function (that, seconds) {
 
             //decrement 1 s. At 15 seconds do the check
-            seconds=seconds-1;
+            seconds = seconds - 1;
             if(seconds>0){
                 setTimeout(that.check_for_results,1000,that,seconds);
                 that.controls.status.text(that.secstillcheck + seconds);
+                log.debug('seconds till next check: ' + seconds);
                 return;
             }
 
