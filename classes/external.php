@@ -398,7 +398,7 @@ class mod_readaloud_external extends external_api {
         $modulecontext = context_module::instance($cmid);
         $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'id DESC');
         $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
-        $report = $renderer->get_smallreport_data($moduleinstance, $modulecontext, $attempts, $token);
+        $report = $renderer->get_readreport_data($moduleinstance, $modulecontext, $attempts, $token);
         return $report;
     }
 

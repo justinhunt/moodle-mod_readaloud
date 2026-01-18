@@ -27,12 +27,12 @@
 /* jshint ignore:start */
 define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/definitions',
      'mod_readaloud/modelaudiokaraoke',
-    'core/ajax', 'core/notification', 'mod_readaloud/smallreporthelper',
+    'core/ajax', 'core/notification', 'mod_readaloud/readreporthelper',
     'mod_readaloud/practice', 'mod_readaloud/read', 'mod_readaloud/quizhelper',
     'mod_readaloud/clicktohear',  'core/templates',
 ],
     function ($, log, str, Fragment, def, modelaudiokaraoke,
-        Ajax, notification, smallreporthelper, practice, read, quizhelper, clicktohear, Templates) {
+        Ajax, notification, readreporthelper, practice, read, quizhelper, clicktohear, Templates) {
 
         "use strict"; // jshint ;_;
 
@@ -137,8 +137,8 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 // Set up click to hear.
                 dd.setupclicktohear();
 
-                // Set up small report helper.
-                smallreporthelper.init(dd.activitydata);
+                // Set up read report helper.
+                readreporthelper.init(dd.activitydata);
 
                 // Set initial mode.
                 var initialMode = dd.getModeFromUrl();
@@ -225,7 +225,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                     // Flag the quiz as finished
                     dd.activitydata.templatecontext.quizfinished = true;
                     // Re-fetch the results data
-                    dd.refresh_activity_data('fullreportdata,smallreport,quizfinisheddata',
+                    dd.refresh_activity_data('fullreportdata,readreport,quizfinisheddata',
                         function() {
                             // First make sure the user is still in quiz location
                             if (dd.getModeFromUrl() === 'quiz') {
@@ -249,11 +249,11 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 read.on_complete = function (eventdata) {
                     // Complete the current step (update server and ui).
                     dd.update_activity_step(dd.activitydata.steps.step_read);
-                    // Init the small report helper to check for results
+                    // Init the read report helper to check for results
                     var readreportprops = dd.getJsPropsForMode('readreport');
-                    smallreporthelper.init(readreportprops);
-                    smallreporthelper.on_results_fetched = function(){
-                        dd.refresh_activity_data('fullreportdata,smallreport,passagehtml' ,
+                    readreporthelper.init(readreportprops);
+                    readreporthelper.on_results_fetched = function(){
+                        dd.refresh_activity_data('fullreportdata,readreport,passagehtml' ,
                             function() {
                                  // First make sure the user is still in readreportdummy location
                                  if (dd.getModeFromUrl() === 'readreportdummy') {
@@ -265,14 +265,14 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                         );
                     };
 
-                    smallreporthelper.update_filename(eventdata.mediaurl);
+                    readreporthelper.update_filename(eventdata.mediaurl);
                     // Commence a loop checking for results
-                    smallreporthelper.start_check_for_results();
+                    readreporthelper.start_check_for_results();
                     // Send user to the  read report immediately though it will be a dummy
                     dd.dodummyreadreportlayout();
-                    // Set flag in small report data so if user comes in off menu,
+                    // Set flag in read report data so if user comes in off menu,
                     // It will not show read report of old data, but show readreportdummy
-                    dd.activitydata.templatecontext.smallreport.ready = false;
+                    dd.activitydata.templatecontext.readreport.ready = false;
                 }
             },
 
@@ -311,7 +311,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                     returnmenubutton: $('#' + opts['returnmenubutton']),
                     stopandplay: $('#' + opts['stopandplay']),
                     quitlisteningbutton: $('#' + opts['quitlisteningbutton']),
-                    smallreportcontainer: $('#' + opts['smallreportcontainer']),
+                    readreportcontainer: $('#' + opts['readreportcontainer']),
                     fullreportcontainer: $('#' + opts['fullreportcontainer']),
                     readingcontainer: $('#' + def.readingcontainer),
                     modeimagecontainer: $('#' + opts['modeimagecontainer']),
@@ -627,7 +627,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
             //     m.controls.quizcontainerwrap.hide();
             //     m.controls.recordingcontainer.hide();
             //     m.controls.returnmenubutton.hide();
-            //     m.controls.smallreportcontainer.hide();
+            //     m.controls.readreportcontainer.hide();
 
             //     // Show.
             //     m.controls.menubuttonscontainer.show();
@@ -702,7 +702,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
             // Read report.
             doreadreportlayout: function () {
                 // If we are waiting on results, show the placeholder, otherwise show the real report.
-                if( !this.activitydata.templatecontext.smallreport.ready ) {
+                if( !this.activitydata.templatecontext.readreport.ready ) {
                     this.renderMode('readreportdummy', null, true);
                 } else {
                     this.renderMode('readreport', null, true);
@@ -809,7 +809,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                         break;
 
                     case 'readreport':
-                        props = dd.activitydata.templatecontext.smallreport;
+                        props = dd.activitydata.templatecontext.readreport;
                         break;
 
                     case 'readreportdummy':
@@ -868,7 +868,7 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
 
                     if(mode === 'readreport') {
                         var readreportprops = dd.getJsPropsForMode('readreport');
-                        smallreporthelper.init(readreportprops);
+                        readreporthelper.init(readreportprops);
                     }
 
                     if (mode === 'practice') {

@@ -243,7 +243,7 @@ class constants {
     const M_PREVIEWINSTRUCTIONS = 'mod_readaloud_previewinstructions';
     const M_PRACTICEINSTRUCTIONS_CONTAINER = 'mod_readaloud_practiceinstructions_cont';
     const M_PRACTICEINSTRUCTIONS = 'mod_readaloud_practiceinstructions';
-    const M_SMALLREPORT_CONTAINER = 'mod_readaloud_smallreport_cont';
+    const M_READREPORT_CONTAINER = 'mod_readaloud_readreport_cont';
     const M_FULLREPORT_CONTAINER = 'mod_readaloud_fullreport_cont';
     const M_INTRO_CONTAINER = 'mod_intro_box';
     const M_MODE_JOURNEY_CONTAINER = 'mod_readaloud_mode_journey_container';

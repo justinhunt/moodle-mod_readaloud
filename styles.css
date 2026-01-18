@@ -879,14 +879,14 @@ body.path-mod-readaloud #topofscroll.main-inner {
   padding: 0.2rem;
 }
 
-#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .fs-1 {
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_readreport_card .fs-1 {
   font-size: 2.125rem !important;
 }
-#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .stat-label {
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_readreport_card .stat-label {
   color: #727276;
   line-height: 1.2;
 }
-#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_smallreport_card .statbox-icon img.icon {
+#mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_readreport_card .statbox-icon img.icon {
   height: 32px;
   max-height: 32px;
   width: auto;

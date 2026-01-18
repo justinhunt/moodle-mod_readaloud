@@ -3,7 +3,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
     function ($, log, def, passagemarkuphelper, str, Ajax,templates, notification) {
     "use strict"; // jshint ;_;
     /*
-    This file does small report
+    This file does read report
      */
 
     log.debug('Click to hear: initialising');
@@ -38,7 +38,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
 
         //init the module
         init: function(opts){
-            log.debug("small report opts");
+            log.debug("read report opts");
             log.debug(opts);
             this.cmid=opts['cmid'];
             this.attemptid=opts['attemptid'];
@@ -142,8 +142,8 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
                             templates.render('mod_readaloud/audioplayer',tdata).then(
                                 function(html,js){
                                     //that.controls.player.html(html);
-                                    $('.' + def.smallreportplayer).html('');
-                                    templates.appendNodeContents('.' + def.smallreportplayer, html, js);
+                                    $('.' + def.readreportplayer).html('');
+                                    templates.appendNodeContents('.' + def.readreportplayer, html, js);
                                     that.controls.dummyplayer.hide();
                                 }
                             );
@@ -171,7 +171,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/passagem
         },
 
         reset_display: function(){
-            //reset the small report to the default state
+            //reset the read report to the default state
             this.controls.heading.text(this.notgradedyet);
             this.controls.stars.html('');
             this.controls.cards.html('');

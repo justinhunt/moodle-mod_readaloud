@@ -110,7 +110,7 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
-     * Returns the template data for the small report.
+     * Returns the template data for the read report.
      *
      * @param object $moduleinstance
      * @param object|false $attempt
@@ -118,9 +118,9 @@ class renderer extends \plugin_renderer_base {
      * @param int $embed
      * @return mixed
      */
-    protected function get_smallreport_data($moduleinstance, $modulecontext, $cm, $attempts = false, $attempt = false, $aigrade = false ) {
+    protected function get_readreport_data($moduleinstance, $modulecontext, $cm, $attempts = false, $attempt = false, $aigrade = false ) {
 
-        // Template data for small report.
+        // Template data for read report.
         $tdata = [];
 
         // Show grades and stats.
@@ -190,7 +190,7 @@ class renderer extends \plugin_renderer_base {
         );
         $tdata = array_merge($tdata, $fullreportdata);
 
-        // JavaScript to initiate small report.
+        // JavaScript to initiate read report.
         $opts = [
             'filename'         => $filename,
             'attemptid'        => $attempt ? $attempt->id : false,
@@ -204,14 +204,7 @@ class renderer extends \plugin_renderer_base {
             'sessionmatches'    => $stats ? $stats->sessionmatches : false,
             'sessionendword'    => $stats ? $stats->sessionendword : false,
         ];
-  //      $tdata['configjsonstring'] = json_encode($opts);
-  //      $tdata['configcontrolid'] = constants::M_SMALLREPORT_CONTAINER . '_opts';
 
-  //      $this->page->requires->js_call_amd(constants::M_COMPONENT . "/smallreporthelper", 'init', [['configcontrolid' => $tdata['configcontrolid']]]);
-    //    $this->page->requires->strings_for_js(
-   //         ['secs_till_check', 'notgradedyet', 'evaluatedmessage', 'checking', 'notaddedtogradebook'],
-   //         constants::M_COMPONENT
-   //     );
         $tdata = array_merge($tdata, $opts);
         return $tdata;
     }
@@ -626,7 +619,7 @@ class renderer extends \plugin_renderer_base {
         $adata['quizplaceholder'] = constants::M_QUIZ_PLACEHOLDER;
         $adata['homecontainer'] = constants::M_HOME_CONTAINER;
         $adata['recordbuttoncontainer'] = constants::M_RECORD_BUTTON_CONTAINER;
-        $adata['smallreportcontainer'] = constants::M_SMALLREPORT_CONTAINER;
+        $adata['readreportcontainer'] = constants::M_READREPORT_CONTAINER;
         $adata['fullreportcontainer']  = constants::M_FULLREPORT_CONTAINER;
         $adata['startbuttoncontainer'] = constants::M_START_BUTTON_CONTAINER;
         $adata['modeview'] = constants::M_COMPONENT . '_modeview_' . $cm->id;
@@ -1128,7 +1121,7 @@ class renderer extends \plugin_renderer_base {
      * Get all data required for the activity view page template.
      *
      * This includes activity header, attempts, passage rendering, recorder,
-     * quiz data, small reports, feedback, and AMD configuration.
+     * quiz data, read reports, feedback, and AMD configuration.
      *
      * @param cm_info   $cm             The course module.
      * @param stdClass  $config         Plugin configuration.
@@ -1230,7 +1223,7 @@ class renderer extends \plugin_renderer_base {
             return;
         }
 
-        // Show small report.
+        // Show read report.
         if ($attempts) {
             if (!$latestattempt) {
                 $latestattempt = current($attempts);
@@ -1350,7 +1343,7 @@ class renderer extends \plugin_renderer_base {
         $feedback = !empty($moduleinstance->feedback) ? $moduleinstance->feedback : null;
         $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
         $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
-        $smallreport = $this->get_smallreport_data($moduleinstance, $modulecontext, $cm, $attempts, $latestattempt, $latestaigrade);
+        $readreport = $this->get_readreport_data($moduleinstance, $modulecontext, $cm, $attempts, $latestattempt, $latestaigrade);
 
         $stepsdata = $this->get_steps_data (
             $moduleinstance,
@@ -1406,7 +1399,7 @@ class renderer extends \plugin_renderer_base {
             'quizfinisheddata' => $quizfinisheddata,
             'reviewattempts' => $reviewattempts,
             'recorder' => $recorder,
-            'smallreport' => $smallreport,
+            'readreport' => $readreport,
             'steps' => constants::STEPS,
             'stepscomplete' => $stepscomplete,
             'stepsdata' => $stepsdata,

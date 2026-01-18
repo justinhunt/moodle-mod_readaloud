@@ -32,7 +32,7 @@
         {{/instructions}}
     {{/ mod_readaloud/activity_header_inpage}}
 
-    {{#smallreport}}
+    {{#readreport}}
         <div class='mod_readaloud_readreport_heading mb-3'>
             {{#ready}}
                 <!--{{#showstats}}{{#str}}evaluatedmessage , mod_readaloud{{/str}}{{/showstats}}-->
@@ -59,7 +59,7 @@
         <!-- Stats cards -->
         {{#showstats}}
             <div class="mod_readaloud_readreport_cards row g-3 mb-4">
-                {{> mod_readaloud/smallreportcards}}
+                {{> mod_readaloud/readreportcards}}
             </div>
         {{/showstats}}
 
@@ -73,7 +73,7 @@
                 {{/remotetranscribe}}
             </div>
         {{/ready}}
-    {{/smallreport}}
+    {{/readreport}}
 
     <!--View quiz if it has been enabled-->
     {{#stepsenabled.step_quiz}}
@@ -93,13 +93,13 @@
 
 
     <!--The audio player-->
-    {{#smallreport}}
+    {{#readreport}}
     <div class="mod_readaloud_audioplayer_section mb-4">
         <div class="mod_readaloud_readreport_player">
-            {{> mod_readaloud/smallreportplayer}}
+            {{> mod_readaloud/readreportplayer}}
         </div>
     </div>
-    {{/smallreport}}
+    {{/readreport}}
 
     <!--The reading passage with read again button-->
     <div class="mod_readaloud_readingpassage_section mb-4">
@@ -109,9 +109,9 @@
                 <button class="btn btn-primary" data-action="readagain">{{#str}}readagain, mod_readaloud{{/str}}</button>
             {{/readreattempt}}
         </div>
-        {{#smallreport.thepassage}}
+        {{#readreport.thepassage}}
              {{>mod_readaloud/studentreadingpassage}}
-        {{/smallreport.thepassage}}
+        {{/readreport.thepassage}}
         {{! mod_readaloud/passagecontainer }}
     </div>
 </div>

@@ -2,7 +2,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions'],
     function ($, log, def) {
     "use strict"; // jshint ;_;
     /*
-    This file does small report
+    This file does read report
      */
 
     log.debug('Click to hear: initialising');

@@ -80,16 +80,16 @@ define(['jquery', 'core/log'], function ($, log) {
         modeltranscript: 'mod_readaloud_modeltranscript',
         transcriber_amazonstreaming: 4,
 
-        //small report
-        smallreportcontainer: 'mod_readaloud_smallreport_cont',
-        smallreportrating: 'mod_readaloud_smallreport_rating',
-        smallreportstars: 'mod_readaloud_smallreport_stars',
-        smallreportcards: 'mod_readaloud_smallreport_cards',
-        smallreportplayer: 'mod_readaloud_smallreport_player',
-        smallreportdummyplayer: 'mod_readaloud_smallreport_dummyplayer',
-        smallreportstatus: 'mod_readaloud_smallreport_status',
-        smallreportheading: 'mod_readaloud_smallreport_heading',
-        fullreportbutton: 'mod_readaloud_smallreport_fullreportbutton',
+        //read report
+        readreportcontainer: 'mod_readaloud_readreport_cont',
+       // readreportrating: 'mod_readaloud_readreport_rating',
+        readreportstars: 'mod_readaloud_readreport_stars',
+        readreportcards: 'mod_readaloud_readreport_cards',
+        readreportplayer: 'mod_readaloud_readreport_player',
+        readreportdummyplayer: 'mod_readaloud_readreport_dummyplayer',
+        readreportstatus: 'mod_readaloud_readreport_status',
+       // readreportheading: 'mod_readaloud_readreport_heading',
+        fullreportbutton: 'mod_readaloud_readreport_fullreportbutton',
 
         // Read report.
         readreportcontainer: 'mod_readaloud_readreport_cont',

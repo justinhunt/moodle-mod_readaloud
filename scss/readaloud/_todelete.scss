@@ -80,7 +80,7 @@
   }
 
 
-  div.mod_readaloud_smallreport_stars {
+  div.mod_readaloud_readreport_stars {
     padding: 5px;
   }
 
@@ -327,14 +327,14 @@
     text-align: right;
   }
 
-  /* Small report */
-  .mod_readaloud_smallreport_cont {
+  /* read report */
+  .mod_readaloud_readreport_cont {
     /* padding: 5px; */
     /* max-width: 920px; */
     margin: 1rem auto;
   }
 
-  .mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars {
+  .mod_readaloud_readreport_cont .mod_readaloud_readreport_stars {
     color: orange;
     font-size: 1.25rem;
     justify-content: space-between;
@@ -342,11 +342,11 @@
     margin-top: 1rem;
     width: 100%;
   }
-  .mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars .fa-regular.fa-star {
+  .mod_readaloud_readreport_cont .mod_readaloud_readreport_stars .fa-regular.fa-star {
     color: lightgray;
   }
 
-  .mod_readaloud_smallreport_cont  .mod_readaloud_smallreport_cards {
+  .mod_readaloud_readreport_cont  .mod_readaloud_readreport_cards {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -356,18 +356,18 @@
   }
 
   @media screen and (min-width: 768px) {
-    .mod_readaloud_smallreport_cont .mod_readaloud_smallreport_stars,
-    .mod_readaloud_smallreport_cont  .mod_readaloud_smallreport_cards {
+    .mod_readaloud_readreport_cont .mod_readaloud_readreport_stars,
+    .mod_readaloud_readreport_cont  .mod_readaloud_readreport_cards {
       width: 60%;
       max-width: 500px;
     }
   }
 
-  // .mod_readaloud_smallreport_cards .mod_readaloud_smallreport_card_content {
+  // .mod_readaloud_readreport_cards .mod_readaloud_readreport_card_content {
   //   padding: 0.35rem;
   // }
 
-  // .mod_readaloud_smallreport_card_tag {
+  // .mod_readaloud_readreport_card_tag {
   //   background: orange;
   //   border-radius: 5px;
   //   font-weight: 700;
@@ -383,7 +383,7 @@
   //   bottom: auto;
   // }
 
-  .mod_readaloud_smallreport_card {
+  .mod_readaloud_readreport_card {
     background: #FAFBFD;
     border: 1px solid #DCE0E3;
     border-radius: 4px;
@@ -396,11 +396,11 @@
   }
 
   @media screen and (min-width: 768px) {
-    .mod_readaloud_smallreport_card {
+    .mod_readaloud_readreport_card {
       padding: 10px;
     }
   }
-  .mod_readaloud_smallreport_card p {
+  .mod_readaloud_readreport_card p {
     font-size: 13px;
     line-height: 16px;
   }
@@ -420,13 +420,13 @@
   }
 
   @media screen and (min-width: 576px) {
-    .mod_readaloud_smallreport_player {
+    .mod_readaloud_readreport_player {
       width: 60%;
     }
     .mod_readaloud_audioplayer_play_button {
       top: 36px
     }
-    .mod_readaloud_smallreport_card {
+    .mod_readaloud_readreport_card {
       min-width: 130px;
     }
   }
