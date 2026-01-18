@@ -236,9 +236,11 @@ $string['ningxia'] = 'Ningxia, China';
 $string['forever'] = 'Never expire';
 
 $string['azureapikey'] = 'Azure Speech API Key';
-$string['azureapikey_details'] = 'This is the API key for your Azure speech resource. If you do not have one you can get one from the Azure portal.';
+$string['azureapikey_details'] = 'This is the API key for using Azure speech services with ReadAloud. It is optional.  This is primarily for use by our users in Mainland China. See <a href= "https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/overview">here</a> for more details.';
 $string['azureapiregion'] = 'Azure Speech Region';
-$string['azureapiregion_details'] = 'This is the region for your Azure speech resource. If you do not have one you can get one from the Azure portal.';
+$string['azureapiregion_details'] = 'This is the region for your Azure speech services API key. If you do not have one you can get one from the Azure portal.';
+
+$string['otherapikeys'] = 'Other API Keys (BYOK)';
 
 $string['en-us'] = 'English (US)';
 $string['es-us'] = 'Spanish (US)';

@@ -76,7 +76,7 @@ class item_shortanswer extends item {
         // Do we need a streaming token?
         $alternatestreaming = get_config(constants::M_COMPONENT, 'alternatestreaming');
         $isenglish = strpos($this->moduleinstance->ttslanguage, 'en') === 0;
-        if ($isenglish) {
+        if ($isenglish || true) {
             $tokenobject = utils::fetch_streaming_token($this->moduleinstance->region);
             if ($tokenobject) {
                 $testitem->speechtoken = $tokenobject->token;
