@@ -132,7 +132,9 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 dd.setup_strings();
 
                 // Set up quiz.
-                dd.setupquiz();
+                // Don't call quizhelper.init() here - it will be called in renderMode() when template exists.
+                // the html for the questions is not on the page yet.
+                //dd.setupquiz();
 
                 // Set up click to hear.
                 dd.setupclicktohear();
