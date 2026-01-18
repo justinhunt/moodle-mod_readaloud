@@ -75,8 +75,8 @@ require_capability('mod/readaloud:itemview', $context);
 
     // if have edit permission, show edit buttons
 if (has_capability('mod/readaloud:itemview', $context)) {
-    //echo $rsquestionrenderer->add_edit_page_links($context, $tableid);
-    echo $rsquestionrenderer->add_multichoice_item_link($context, $tableid);
+    echo $rsquestionrenderer->add_edit_page_links($context, $tableid);
+    //echo $rsquestionrenderer->add_multichoice_item_link($context, $tableid);
 }
 
 // if we have items, show em
