@@ -615,6 +615,8 @@ abstract class item implements templatable, renderable {
         $testitem->region = $this->region;
         $testitem->cloudpoodlltoken = $this->token;
         $testitem->wwwroot = $CFG->wwwroot;
+        $testitem->cloudpoodllurl = utils::get_cloud_poodll_server();
+        $testitem->appid = constants::M_COMPONENT;
         $testitem->language = $this->language;
         $testitem->hints = '';
         $testitem->owner = hash('md5', $USER->username);

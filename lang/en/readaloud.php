@@ -235,6 +235,11 @@ $string['mumbai'] = 'Mumbai, India';
 $string['ningxia'] = 'Ningxia, China';
 $string['forever'] = 'Never expire';
 
+$string['azureapikey'] = 'Azure Speech API Key';
+$string['azureapikey_details'] = 'This is the API key for your Azure speech resource. If you do not have one you can get one from the Azure portal.';
+$string['azureapiregion'] = 'Azure Speech Region';
+$string['azureapiregion_details'] = 'This is the region for your Azure speech resource. If you do not have one you can get one from the Azure portal.';
+
 $string['en-us'] = 'English (US)';
 $string['es-us'] = 'Spanish (US)';
 $string['en-au'] = 'English (Aus.)';

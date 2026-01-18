@@ -87,6 +87,23 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT . '/apisecret',
             get_string('apisecret', constants::M_COMPONENT), $showbelowapisecret, '', PARAM_TEXT));
 
+    // Azure API key
+    $name = 'azureapikey';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = get_string($name . '_details', constants::M_COMPONENT);
+    $default = '';
+    $settings->add(new admin_setting_configtext(constants::M_COMPONENT . "/$name",
+        $label, $details, $default, PARAM_TEXT));
+
+    // Azure API region
+    $name = 'azureapiregion';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = get_string($name . '_details', constants::M_COMPONENT);
+    $default = 'eastus';
+    $options = utils::fetch_regions_azure();
+    $settings->add(new admin_setting_configselect(constants::M_COMPONENT . "/$name",
+        $label, $details, $default, $options));
+
     // Cloud Poodll Server.
     $settings->add(new admin_setting_configtext(constants::M_COMPONENT .  '/cloudpoodllserver',
         get_string('cloudpoodllserver', constants::M_COMPONENT),

@@ -404,8 +404,18 @@ class renderer extends \plugin_renderer_base {
         $alternatestreaming = get_config(constants::M_COMPONENT, 'alternatestreaming');
         $isenglish = strpos($moduleinstance->ttslanguage, 'en') === 0;
         if ($isenglish) {
-            $data['speechtoken'] = utils::fetch_streaming_token($moduleinstance->region);
-            $data['speechtokentype'] = 'assemblyai';
+            $tokenobject = utils::fetch_streaming_token($moduleinstance->region);
+            if ($tokenobject) {
+                $data['speechtoken'] = $tokenobject->token;
+                $data['speechtokenregion'] = $tokenobject->region;
+                $data['speechtokenvalidseconds'] = $tokenobject->validseconds;
+                $data['speechtokentype'] = $tokenobject->tokentype;
+            } else {
+                $data['speechtoken'] = false;
+                $data['speechtokenregion'] = '';
+                $data['speechtokenvalidseconds'] = 0;
+                $data['speechtokentype'] = '';
+            }
             if ($alternatestreaming) {
                 $data['forcestreaming'] = true;
             }

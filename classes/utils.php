@@ -1439,6 +1439,229 @@ class utils {
         return $results;
     }
 
+    public static function fetch_regions_azure() {
+        return [
+            'australiacentral' => 'Australia Central',
+            'australiaeast' => 'Australia East',
+            'australiasoutheast' => 'Australia Southeast',
+            'brazilsouth' => 'Brazil South',
+            'brazilsoutheast' => 'Brazil Southeast',
+            'canadacentral' => 'Canada Central',
+            'canadaeast' => 'Canada East',
+            'centralindia' => 'Central India',
+            'centralus' => 'Central US',
+            'chinaeast' => 'China East',
+            'chinaeast2' => 'China East 2',
+            'chinaeast3' => 'China East 3',
+            'chinanorth' => 'China North',
+            'chinanorth2' => 'China North 2',
+            'chinanorth3' => 'China North 3',
+            'eastasia' => 'East Asia',
+            'eastus' => 'East US',
+            'eastus2' => 'East US 2',
+            'francecentral' => 'France Central',
+            'germanywestcentral' => 'Germany West Central',
+            'israelcentral' => 'Israel Central',
+            'italynorth' => 'Italy North',
+            'japaneast' => 'Japan East',
+            'japanwest' => 'Japan West',
+            'koreacentral' => 'Korea Central',
+            'mexicocentral' => 'Mexico Central',
+            'newzealandnorth' => 'New Zealand North',
+            'northcentralus' => 'North Central US',
+            'northeurope' => 'North Europe',
+            'polandcentral' => 'Poland Central',
+            'qatarcentral' => 'Qatar Central',
+            'southafricanorth' => 'South Africa North',
+            'southcentralus' => 'South Central US',
+            'southeastasia' => 'Southeast Asia',
+            'southindia' => 'South India',
+            'spaincentral' => 'Spain Central',
+            'swedencentral' => 'Sweden Central',
+            'switzerlandnorth' => 'Switzerland North',
+            'uaenorth' => 'UAE North',
+            'uksouth' => 'UK South',
+            'ukwest' => 'UK West',
+            'westcentralus' => 'West Central US',
+            'westeurope' => 'West Europe',
+            'westus2' => 'West US 2',
+            'westus3' => 'West US 3',
+        ];
+    }
+
+    // Fetch the azure streaming token (locally .. not from cloudpoodll)
+    public static function fetch_azure_token()
+    {
+        $conf = get_config(constants::M_COMPONENT);
+
+        $apikey = $conf->azureapikey;
+        $apiregion = $conf->azureapiregion;
+        if (empty($apikey) || empty($apiregion)) {
+            return false;
+        }
+
+        // if we already have a token just use that
+        $now = time();
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
+        $tokenobject = $cache->get('azuretoken'. '_' . $apiregion);
+        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now) {
+            // For js we set the valid number of seconds.
+            $tokenobject->validseconds = $tokenobject->validuntil - $now;
+            return $tokenobject;
+        }
+
+
+
+        // The REST API we are calling.
+        // We need to get the ms region from the poodll region.
+        $apidomain = 'microsoft.com';
+        if (strpos($apiregion,'china') === 0) {
+            $apidomain = 'azure.cn';
+        } elseif (strpos($apiregion,'usgov') === 0) {
+            $apidomain = 'azure.us';
+        }
+        $fetchurl = 'https://' . $apiregion . '.api.cognitive.' . $apidomain . '/sts/v1.0/issueToken';
+        $c = new \curl();
+        $options = [
+            'CURLOPT_HTTPHEADER' => [
+                'Ocp-Apim-Subscription-Key: ' . $apikey,
+                'Content-Length: 0',
+            ],
+            'CURLOPT_POSTFIELDS' => '',
+            'CURLOPT_POST' => true,
+        ];
+
+        $response = $c->post($fetchurl, '', $options);
+
+        if (!$response) {
+            return false;
+        } else {
+            $azuretoken = $response;
+            // Cache the token.
+            $tokenobject = new \stdClass();
+            $tokenobject->token = $azuretoken;
+            $tokenobject->tokentype = 'azure';
+            $tokenobject->region = $apiregion;
+            // Azure tokens are valid for 10 minutes (600 seconds).
+            $tokenobject->validuntil = $now + (9 * MINSECS);
+            $cache->set('azuretoken' . '_' . $apiregion, $tokenobject);
+            // For js we set the valid number of seconds.
+            $tokenobject->validseconds = $tokenobject->validuntil - $now;
+            return $tokenobject;
+        }
+    }
+
+
+    // Fetch the appropriate azure region for the given poodll region
+    public static function fetch_ms_region($poodllregion)
+    {
+
+        switch ($poodllregion) {
+            case 'ningxia':
+            case 'chinaeast2':
+                return 'chinaeast2';
+
+            case 'capetown':
+            case 'southafricanorth':
+                return 'southafricanorth';
+
+            case 'bahrain':
+            case 'dublin':
+            case 'frankfurt':
+            case 'london':
+            case 'westeurope':
+                return 'westeurope';
+
+            case 'tokyo':
+            case 'useast1':
+            case 'ottawa':
+            case 'saopaulo':
+            case 'singapore':
+            case 'mumbai':
+            case 'sydney':
+            case 'eastus':
+            default:
+                return 'eastus';
+        }
+    }
+
+    // Fetch the streaming token for the region and language
+    // MSSpeech is just for fluency. It is an Azure Speech key but its for backwards compat.
+    // Notably it serves cloud hosted tokens which currently do not support ningxia/chinaeast2 region.
+    public static function fetch_msspeech_token($poodllregion)
+    {
+        // If we have our own azure key use that. (otherwise we get it from cloudpoodll).
+        // It maye be safer from China to use cloudpoodll because the speech assessment SDK may not be in China.
+        $conf = get_config(constants::M_COMPONENT);
+        $apikey = $conf->azureapikey;
+        $apiregion = $conf->azureapiregion;
+        $tokenobject = false;
+        if (!empty($apikey) && !empty($apiregion)) {
+            $tokenobject = self::fetch_azure_token();
+        }
+        if ($tokenobject) {
+            return $tokenobject;
+        }
+
+        // Users in China with no Azure key, should use the global endpoint though it might fail, because its better than nothing
+        // if we have a cached token just use that
+        $now = time();
+        $msregion = self::fetch_ms_region($poodllregion);
+        // fetch_msspeech_token does not have a ningxia region so it returns a global key.(24/12/2025)
+        // so we need to change the region from chinaeast2 to eastus here. Otherwise in js it will use the wrong endpoint for the token.
+        // later we will switch to the fetch_azure_key and do away with this.
+        if ($msregion == 'chinaeast2') {
+            $msregion = 'eastus';
+        }
+
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
+        $tokenobject = $cache->get('msspeechtoken' . '_' . $msregion);
+        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now) {
+            // For js we set the valid number of seconds
+            $tokenobject->validseconds = $tokenobject->validuntil - $now;
+            return $tokenobject;
+        }
+
+        $cloudpoodlltoken = false;
+        $conf = get_config(constants::M_COMPONENT);
+        if (!empty($conf->apiuser) && !empty($conf->apisecret)) {
+            $cloudpoodlltoken = self::fetch_token($conf->apiuser, $conf->apisecret);
+        }
+        if (!$cloudpoodlltoken || empty($cloudpoodlltoken)) {
+            return false;
+        }
+
+        // The REST API we are calling.
+        $functionname = 'local_cpapi_fetch_msspeech_token';
+
+        // log.debug(params);
+        $params = [];
+
+        $response = self::curl_fetch($serverurl, $params);
+        if (!self::is_json($response)) {
+            return false;
+        } else {
+            $payloadobject = json_decode($response);
+            if ($payloadobject->returnCode == 0 && isset($payloadobject->returnMessage)) {
+                $msspeechtoken = $payloadobject->returnMessage;
+                // cache the token
+                $tokenobject = new \stdClass();
+                $tokenobject->token = $msspeechtoken;
+                $tokenobject->tokentype = 'msspeech';
+                $tokenobject->region = $msregion;
+                // MS speech tokens are only valid for 10 minutes.
+                // So we just cache for 9 mins.
+                $tokenobject->validuntil = $now + (9 * MINSECS);
+                $cache->set('msspeechtoken' . '_' . $msregion, $tokenobject);
+                // For js we set the valid number of seconds
+                $tokenobject->validseconds = $tokenobject->validuntil - $now;
+                return $tokenobject;
+            } else {
+                return false;
+            }
+        }
+    }
+
     /*
     * This will return an array of mistranscript strings for a single attemot. 1 entry per passageword.
      * To be consistent with how data is stored in matches/errors, we return a 1 based array of mistranscriptions
@@ -3773,87 +3996,34 @@ class utils {
         return $prevstepcomplete;
     }
 
-    public static function fetch_streaming_token($region) {
+    // Fetch the streaming token for the region and language
+    public static function fetch_streaming_token($poodllregion)
+    {
+        global $CFG;
 
-        // if we already have a token just use that
-        $now = time();
-        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
-        $tokenobject = $cache->get('assemblyaitoken');
-        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now) {
-            return $tokenobject->token;
-        }
+        // Where token can be fetched from cloudpoodll we do that.
+        // BYOT ala azure (bring your own tokens)have a separate implementation .
 
-        $cloudpoodlltoken = false;
-        $conf = get_config(constants::M_COMPONENT);
-        if (!empty($conf->apiuser) && !empty($conf->apisecret)) {
-            $cloudpoodlltoken = self::fetch_token($conf->apiuser, $conf->apisecret);
-        }
-        if (!$cloudpoodlltoken || empty($cloudpoodlltoken)) {
-            return false;
-        }
+        $token = false;
+        //try for an azure token
+        $token = self::fetch_azure_token();
 
-         // The REST API we are calling.
-         $functionname = 'local_cpapi_fetch_assemblyai_token';
 
-         // log.debug(params);
-         $params = [];
-         $params['wstoken'] = $cloudpoodlltoken;
-         $params['wsfunction'] = $functionname;
-         $params['moodlewsrestformat'] = 'json';
-         $params['region'] = $region;
-         // $params['language'] = $language;
-
-         $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
-         $response = self::curl_fetch($serverurl, $params);
-        if (!self::is_json($response)) {
-            return false;
+        // If the token was set, return it. Else lets fall back to assemblyai.
+        if ($token) {
+            return $token;
         } else {
-            $payloadobject = json_decode($response);
-            if ($payloadobject->returnCode == 0 && isset($payloadobject->returnMessage)) {
-                $assemblyaitoken = $payloadobject->returnMessage;
-                // cache the token
-                $tokenobject = new \stdClass();
-                $tokenobject->token = $assemblyaitoken;
-                $tokenobject->validuntil = $now + (30 * MINSECS);
-                $cache->set('assemblyaitoken', $tokenobject);
-                return $assemblyaitoken;
-            } else {
-                return false;
-            }
+            $tokentype = 'assemblyai';
         }
-    }
-    // Fetch the appropriate azure region for the given poodll region
-    public static function fetch_ms_region($poodllregion) {
 
-        switch($poodllregion){
-            case 'capetown':
-            case 'bahrain':
-            case 'dublin':
-            case 'frankfurt':
-            case 'london':
-                return 'westeurope';
-            case 'tokyo':
-            case 'useast1':
-            case 'ottawa':
-            case 'saopaulo':
-            case 'singapore':
-            case 'mumbai':
-            case 'sydney':
-            default:
-                return 'eastus';
-        }
-    }
-
-     // Fetch the streaming token for the region and language
-    public static function fetch_msspeech_token($poodllregion) {
-
-        // if we already have a token just use that
+        // If we already have a token just use that.
         $now = time();
-        $msregion = self::fetch_ms_region($poodllregion);
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
-        $tokenobject = $cache->get('msspeechtoken' . '_' . $msregion);
+        $tokenobject = $cache->get($tokentype . 'token' . '_' . $poodllregion);
         if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now) {
-            return $tokenobject->token;
+            // For js we set the valid number of seconds
+            $tokenobject->validseconds = $tokenobject->validuntil - $now;
+            return $tokenobject;
         }
 
         $cloudpoodlltoken = false;
@@ -3866,34 +4036,41 @@ class utils {
         }
 
         // The REST API we are calling.
-        $functionname = 'local_cpapi_fetch_msspeech_token';
+        $functionname = 'local_cpapi_fetch_some_token';
 
         // log.debug(params);
         $params = [];
         $params['wstoken'] = $cloudpoodlltoken;
         $params['wsfunction'] = $functionname;
         $params['moodlewsrestformat'] = 'json';
-        $params['region'] = self::fetch_ms_region($poodllregion);
+        $params['region'] = $poodllregion;
+        $params['tokentype'] = $tokentype;
 
         $serverurl = self::get_cloud_poodll_server() . '/webservice/rest/server.php';
         $response = self::curl_fetch($serverurl, $params);
+
         if (!self::is_json($response)) {
             return false;
         } else {
-            $payloadobject = json_decode($response);
-            if ($payloadobject->returnCode == 0 && isset($payloadobject->returnMessage)) {
-                $msspeechtoken = $payloadobject->returnMessage;
+             $payloadobject = json_decode($response);
+            if (isset($payloadobject->returnCode) && $payloadobject->returnCode == 0 && isset($payloadobject->returnMessage)) {
+                $thetoken = $payloadobject->returnMessage;
                 // cache the token
                 $tokenobject = new \stdClass();
-                $tokenobject->token = $msspeechtoken;
-                $tokenobject->validuntil = $now + (30 * MINSECS);
-                $cache->set('msspeechtoken'. '_' . $msregion, $tokenobject);
-                return $msspeechtoken;
+                $tokenobject->tokentype = $tokentype;
+                $tokenobject->token = $thetoken;
+                $tokenobject->region = $poodllregion;
+                $tokenobject->validuntil = $now + (10 * MINSECS);
+                $cache->set($tokentype . 'token' . '_' . $poodllregion, $tokenobject);
+                // For js we set the valid number of seconds
+                $tokenobject->validseconds = $tokenobject->validuntil - $now;
+                return $tokenobject;
             } else {
                 return false;
             }
         }
     }
+
 
     /**
      * Return the pluginfile URL of the passage picture.
