@@ -766,6 +766,20 @@ body.path-mod-readaloud #topofscroll.main-inner {
   margin: 0.25rem;
   min-width: 110px;
 }
+#mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_items_cont .readaloud_questioncontainer .mod_readaloud_ttrec_waveButtonContainer {
+  margin: auto;
+  position: relative;
+  width: 181px;
+}
+#mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_items_cont .readaloud_questioncontainer .mod_readaloud_ttrec_waveButtonContainer canvas.mod_readaloud_ttrec_waveForm {
+  background-color: transparent;
+  height: 46px;
+  width: 100%;
+}
+#mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_items_cont .readaloud_questioncontainer .mod_readaloud_ttrec_waveButtonContainer button.mod_readaloud_ttrec_waveButton {
+  font-size: 24px;
+  position: absolute;
+}
 #mod_readaloud_quiz_cont_wrap #mod_readaloud_quiz_items_cont .readaloud_questioncontainer .readaloud_nextbutton {
   background-color: #513DEB;
   border-color: #513DEB;
@@ -950,4 +964,5 @@ body.path-mod-readaloud #page-content .font-sm {
   font-weight: 600;
   line-height: normal;
 }
+
 /*# sourceMappingURL=styles.css.map */

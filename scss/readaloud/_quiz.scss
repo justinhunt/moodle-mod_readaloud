@@ -27,6 +27,21 @@
                     min-width: 110px;
                 }
             }
+
+            .mod_readaloud_ttrec_waveButtonContainer {
+                margin: auto;
+                position: relative;
+                width: 181px;
+                canvas.mod_readaloud_ttrec_waveForm {
+                    background-color: transparent;
+                    height: 46px;
+                    width: 100%;
+                }
+                button.mod_readaloud_ttrec_waveButton {
+                    font-size: 24px;
+                    position: absolute;
+                }
+            }
             .readaloud_nextbutton {
                 @include readaloud-btn-variant($purple, $purple, $white);
                 min-width: 110px;
