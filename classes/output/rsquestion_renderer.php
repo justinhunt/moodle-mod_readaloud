@@ -254,14 +254,20 @@ class rsquestion_renderer extends \plugin_renderer_base
             }
         }
 
+        // Quiz items div.
+        $quizitemsdiv = \html_writer::div(implode('', $itemshtml),
+            constants::M_QUIZ_ITEMS_CONTAINER,
+            ['id' => constants::M_QUIZ_ITEMS_CONTAINER]);
+
+
+        // Quiz div
         $quizdiv = \html_writer::div(
-            implode('', $itemshtml),
-            constants::M_QUIZ_CONTAINER,
-            ['id' => constants::M_QUIZ_CONTAINER]
+            $quizitemsdiv,
+            constants::M_QUIZ_CONTAINER_WRAP,
+            ['id' => constants::M_QUIZ_CONTAINER_WRAP]
         );
 
-        $ret = $quizdiv;
-        return $ret;
+        return $quizdiv;
     }
 
     /**

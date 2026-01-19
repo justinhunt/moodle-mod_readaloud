@@ -242,8 +242,9 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder', 'mod_readaloud/ttstr
 
                 var width = this.canvas.width() * 2;
                 this.listener.getByteTimeDomainData(this.analyserData);
-
-                this.canvasCtx.fillStyle = '#F5F5FE';
+                // Set canvas white
+                // transparent sadly, doesnt clear the previous stroke 'rgba(0, 0, 0, 0)';
+                this.canvasCtx.fillStyle = '#FFFFFF';
                 this.canvasCtx.fillRect(0, 0, width, this.waveHeight * 2);
 
                 this.canvasCtx.lineWidth = 5;
