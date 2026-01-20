@@ -129,6 +129,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder', 'mod_readaloud/ttstr
                         that.streamer.init(that.therecorder.speechtoken,that.therecorder.speechtokenregion, that);
                         that.enablesilencedetection = false;
                     }
+
                     //Alert TT recorder that we are ready to go (it will do visuals and manage state of recorder)
                     that.onStream(stream);
 

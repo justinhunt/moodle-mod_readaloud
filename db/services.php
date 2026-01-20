@@ -131,4 +131,13 @@ $functions = array(
         'ajax'        => true,
     ),
 
+    'mod_readaloud_refresh_token' => array(
+        'classname'   => 'mod_readaloud_external',
+        'methodname'  => 'refresh_token',
+        'description' => 'refreshes the speech recognition token',
+        'capabilities' => 'mod/readaloud:view',
+        'type'        => 'read',
+        'ajax'        => true,
+    ),
+
 );

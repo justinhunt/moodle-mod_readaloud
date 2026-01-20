@@ -663,5 +663,55 @@ class mod_readaloud_external extends external_api {
         return new external_value(PARAM_RAW);
     }
 
+    /**
+     * refresh token
+     * @param string $type
+     * @param string $region
+     * @return string
+     */
+    public static function refresh_token($type, $region) {
+        global $DB, $USER;
+        $fulltoken = false;
+        $params = self::validate_parameters(self::refresh_token_parameters(), [
+            'type' => $type,
+            'region' => $region]);
+        extract($params);
+
+        // Do the token refresh.
+        switch ($type) {
+            // Ms Speech gets its own token type - it uses speech assessment SDK so its not plain transcription.
+            case 'msspeech':
+                $fulltoken = utils::fetch_msspeech_token($region);
+                break;
+
+            case 'assemblyai':
+            case 'azure':
+            default:
+                // The token type that will be fetched isdetermined by the region (and other config settings).
+                // As long as its not msspeech .. it comes in here.
+                $fulltoken = utils::fetch_streaming_token($region);
+        }
+        return json_encode($fulltoken);
+    }
+
+    /**
+     * refresh token parameters
+     * @return external_function_parameters
+     */
+    public static function refresh_token_parameters() {
+        return new external_function_parameters([
+            'type' => new external_value(PARAM_TEXT),
+            'region' => new external_value(PARAM_TEXT),
+        ]);
+    }
+
+    /**
+     * refresh token returns
+     * @return external_value
+     */
+    public static function refresh_token_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
 
 }
