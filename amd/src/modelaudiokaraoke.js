@@ -244,7 +244,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
         //if the current break changed since last time, we go in here
         // (on first time through we want to flag  "changed" so that is why a false current startbreak goes to "changed"
         //in the special case that we reached the end of the passage we need to raise the event
-        var islastbreak = aplayer.ended && nextbreak.audiotime===0;
+        var islastbreak = aplayer.ended && (nextbreak.audiotime===0 || nextbreak === false);
         if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber || islastbreak) {
           var finishedsentence = $('.' + that.cd.activesentence).text();
           that.previousstartbreak = that.currentstartbreak;
@@ -256,10 +256,15 @@ define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def
               $('#' + that.cd.spaceclass + '_' + thewordnumber).addClass((that.cd.activesentence));
               $('#' + that.cd.wordclass + '_' + thewordnumber).addClass((that.cd.activesentence));
             }
+          } else if (startbreak === false && nextbreak === false) {
+            //highlight to end in the case that there is only one sentence
+            that.controls.eachword.addClass(that.cd.activesentence);
+            that.controls.eachspace.addClass(that.cd.activesentence);
+
           }
 
           //If it is the last break, show our Modal
-          if(islastbreak) {
+          if (islastbreak) {
             that.show_listenquitmodal();
             // ensure the button state stays in sync with the play state
             // audio has ended so show the stop button

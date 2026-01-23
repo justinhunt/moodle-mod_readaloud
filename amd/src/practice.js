@@ -144,10 +144,22 @@ define(['jquery', 'core/log', 'core/ajax', 'mod_readaloud/definitions', 'mod_rea
     // Set the breaks for the practice activity.
     set_breaks: function(breaks) {
         var self = this;
-        self.breaks = breaks;
-        self.sort_breaks();
-        self.add_info_to_breaks();
-        self.add_last_break();
+        if(!breaks || breaks.length === 0) {
+            // Add a dummy first break in the case that its a single sentence with no breaks
+            // And then set up the last break and remove the dummy
+            self.breaks = [{wordnumber: 0, audiotime: 0}];
+            self.add_last_break();
+            self.add_info_to_breaks();
+            //remove the dummy first break, renumber the break and set a bogus audiotime
+            self.breaks.shift();
+            self.breaks[0].breaknumber = 1;
+            self.breaks[0].audiotime = 30;
+        } else {
+            self.breaks = breaks;
+            self.sort_breaks();
+            self.add_info_to_breaks();
+            self.add_last_break();
+        }
     },
 
     sort_breaks: function() {

@@ -1,4 +1,5 @@
-define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorderhelper','mod_readaloud/modelaudiokaraoke'], function ($, log, def, recorderhelper, karaoke) {
+define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorderhelper','mod_readaloud/modelaudiokaraoke'],
+    function ($, log, def, recorderhelper, karaoke) {
     "use strict"; // jshint ;_;
     /*
     This file helps you get Polly URLs at runtime
@@ -50,15 +51,18 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
 
             //register the controls
             this.register_controls();
-            //register the events
-            this.register_events();
+
             //markup passage
             this.markup_passage();
+
             //load recorder
             this.init_recorder(opts);
 
             //init karaoke
             this.init_karaoke();
+
+            //register the events
+            this.register_events();
 
             //if it looks like we have a human audio, do a transcript check
             var audiourl = this.controls.audioplayer.attr('src');
@@ -111,7 +115,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','mod_readaloud/recorder
             var that = this;
 
             var clickhandler = function () {
-
+log.debug('clicked word/space in mode ' + that.currentmode);
                 if (that.currentmode === 'modeling') {
                     var wordnumber = parseInt($(this).attr('data-wordnumber'));
                     var nextspace = $('#' + that.cd.spaceclass + '_' + wordnumber);
