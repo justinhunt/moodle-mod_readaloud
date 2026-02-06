@@ -210,6 +210,20 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
+     *  Show grades admin heading
+     */
+    public function show_admintab_heading($showtitle, $showinstructions) {
+        $thetitle = $this->output->heading($showtitle, 3, 'main');
+        $displaytext = \html_writer::div($thetitle, constants::M_CLASS . '_center');
+        $displaytext .= $this->output->box_start();
+        $displaytext .= \html_writer::div($showinstructions, constants::M_CLASS . '_center');
+        $displaytext .= $this->output->box_end();
+        $ret = \html_writer::div($displaytext);
+
+        return $ret;
+    }
+
+    /**
      * Render a "Machine Regrade All" button for the given module instance.
      *
      * @param stdClass $moduleinstance The module instance
