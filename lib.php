@@ -316,6 +316,11 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
 
     $params = ["moduleid" => $moduleinstance->id];
     $cantranscribe = utils::can_transcribe($moduleinstance);
+    $cm = get_coursemodule_from_instance('readaloud', $moduleinstance->id, $moduleinstance->course, false, MUST_EXIST);
+    $quizhelper = new \mod_readaloud\quizhelper($cm);
+    $quizenabled = $quizhelper->quiz_enabled();
+    $airawgradecalc = $quizenabled ? '(ai.sessionscore + ai.qscore / 2)' : 'ai.sessionscore';
+    $humanrawgradecalc = $quizenabled ? '(attempt.sessionscore + attempt.qscore / 2)' : 'attempt.sessionscore';
 
     if (!empty($userid)) {
         $params["userid"] = $userid;
@@ -328,16 +333,18 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
     switch ($moduleinstance->gradeoptions) {
         case constants::M_GRADEHIGHEST:
 
+            
+
             // aigrades sql
-            $aisql = "SELECT u.id, u.id AS userid,MAX(ai.sessionscore) AS rawgrade
+            $aisql = "SELECT u.id, u.id AS userid,MAX(" . $airawgradecalc. ") AS rawgrade
                   FROM {user} u, {" . constants::M_AITABLE . "} ai INNER JOIN {" . constants::M_USERTABLE . "} attempt ON ai.attemptid = attempt.id
                  WHERE  u.id = attempt.userid AND ai.readaloudid = :moduleid AND attempt.dontgrade = 0
                        $user
               GROUP BY u.id";
 
-            $humansql = "SELECT u.id, u.id AS userid,MAX(a.sessionscore) AS rawgrade
-                  FROM {user} u,  {" . constants::M_USERTABLE . "} a
-                 WHERE  u.id = a.userid AND a.readaloudid = :moduleid AND a.dontgrade = 0
+            $humansql = "SELECT u.id, u.id AS userid,MAX(" . $humanrawgradecalc. ") AS rawgrade
+                  FROM {user} u,  {" . constants::M_USERTABLE . "} attempt
+                 WHERE  u.id = attempt.userid AND attempt.readaloudid = :moduleid AND attempt.dontgrade = 0
                        $user
               GROUP BY u.id";
 
@@ -369,16 +376,16 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
         default;
 
             // aigrades sql
-            $aisql = "SELECT u.id, u.id AS userid, MAX(ai.sessionscore) AS rawgrade
+            $aisql = "SELECT u.id, u.id AS userid, MAX(" . $airawgradecalc. ") AS rawgrade
                       FROM {user} u, {" . constants::M_AITABLE . "} ai INNER JOIN {" . constants::M_USERTABLE . "} attempt ON ai.attemptid = attempt.id
                      WHERE attempt.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid AND iattempt.dontgrade = 0)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
                            $user
                   GROUP BY u.id, ai.sessionscore";
 
             // human_sql
-            $humansql = "SELECT u.id, u.id AS userid, MAX(a.sessionscore) AS rawgrade
-                          FROM {user} u, {" . constants::M_USERTABLE . "} a
-                         WHERE a.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} ia WHERE ia.userid=u.id AND ia.readaloudid = a.readaloudid AND ia.dontgrade = 0)  AND u.id = a.userid AND a.readaloudid = :moduleid
+            $humansql = "SELECT u.id, u.id AS userid, MAX(" . $humanrawgradecalc. ") AS rawgrade
+                          FROM {user} u, {" . constants::M_USERTABLE . "} attempt
+                         WHERE attempt.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} ia WHERE ia.userid=u.id AND ia.readaloudid = attempt.readaloudid AND ia.dontgrade = 0)  AND u.id = attempt.userid AND attempt.readaloudid = :moduleid
                                $user
                       GROUP BY u.id";
 
@@ -430,28 +437,34 @@ function readaloud_is_complete($course, $cm, $userid, $type) {
         return $type;
     }
 
+    $quizhelper = new \mod_readaloud\quizhelper($cm);
+    $quizenabled = $quizhelper->quiz_enabled();
     $cantranscribe = utils::can_transcribe($moduleinstance);
+
+    $airawgradecalc = $quizenabled ? '(ai.sessionscore + ai.qscore / 2)' : 'ai.sessionscore';
+    $humanrawgradecalc = $quizenabled ? '(attempt.sessionscore + attempt.qscore / 2)' : 'attempt.sessionscore';
     $params = ['userid' => $userid, 'moduleid' => $moduleinstance->id];
+
     if ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID && $cantranscribe) {
         // choose greater or  ai or human score
-        $sql = "SELECT  GREATEST(MAX(ai.sessionscore), MAX(a.sessionscore)) AS grade
+        $sql = "SELECT  GREATEST(MAX(". $airawgradecalc ."), MAX(". $humanrawgradecalc .")) AS grade
                       FROM {" . constants::M_AITABLE . "} ai
-                      INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
-                     WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
+                      INNER JOIN {" . constants::M_USERTABLE . "} attempt ON attempt.id = ai.attemptid
+                     WHERE attempt.userid = :userid AND attempt." . constants::M_MODNAME . "id = :moduleid";
 
     } else if($moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY && $cantranscribe) {
 
         // choose AI grades only
-        $sql = "SELECT  MAX(ai.sessionscore) AS grade
+        $sql = "SELECT  MAX(". $airawgradecalc .") AS grade
                       FROM {" . constants::M_AITABLE . "} ai
-                      INNER JOIN {" . constants::M_USERTABLE . "} a ON a.id = ai.attemptid
-                     WHERE a.userid = :userid AND a." . constants::M_MODNAME . "id = :moduleid";
+                      INNER JOIN {" . constants::M_USERTABLE . "} attempt ON attempt.id = ai.attemptid
+                     WHERE attempt.userid = :userid AND attempt.readaloudid = :moduleid";
 
     } else {
         // choose human grades only
-        $sql = "SELECT  MAX( sessionscore  ) AS grade
-                      FROM {" . constants::M_USERTABLE . "}
-                     WHERE userid = :userid AND " . constants::M_MODNAME . "id = :moduleid";
+        $sql = "SELECT  MAX(". $humanrawgradecalc .") AS grade
+                      FROM {" . constants::M_USERTABLE . "} attempt
+                     WHERE attempt.userid = :userid AND attempt.readaloudid = :moduleid";
     }
 
     $result = $DB->get_field_sql($sql, $params);
