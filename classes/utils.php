@@ -2926,8 +2926,9 @@ class utils {
         // Post attempt
         $mform->addElement('header', 'postattemptheader', get_string('postattemptheader', constants::M_COMPONENT));
 
-        // Get the modules.
-        if(!$setuptab) {
+        // Get the modules.and the drop down list of activities
+        // TO DO - after nobody complains we can actually remove this for now its just hidden
+        if(!$setuptab && false) {
             if ($mods = get_course_mods($COURSE->id)) {
                 $modinstances = [];
                 foreach ($mods as $mod) {

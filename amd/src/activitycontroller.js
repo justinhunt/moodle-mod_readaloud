@@ -591,15 +591,9 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
                 var that = this;
                 var adata = this.activitydata;
 
-                // Special case: Report step (value 0) after Read completion.
-                // Report's step value is 0, so it won't be caught by the normal loop.
-                if (oldstep == adata.steps.step_read) {
-                    that.controls.startreportbutton.removeClass('no-click');
-                    that.activitydata.stepsopen['step_report'] = adata.steps.step_report;
-                }
-
                 // Loop through adata.steps array.
                 // This looks like['step_listen': 1, 'step_practice': 2, 'step_shadow': 4, 'step_read': 8, 'step_quiz': 16].
+                var openednextstep = false;
                 for (var key in adata.steps) {
                     var thestep = adata.steps[key];
                     // If the looped step is less than or equal to the old step, skip.
@@ -613,8 +607,20 @@ define(['jquery', 'core/log', "core/str", "core/fragment", 'mod_readaloud/defini
 
                             // Record the newly opened step as 'open' for client side use.
                             that.activitydata.stepsopen[key] = thestep;
+                            openednextstep = true;
                             break;
                         }
+                    }
+                }
+                // If openednextstep is still false here, then oldstep was the last one.(report is special case and has value 0)
+                // So we should open the report step if it is enabled.
+                if (!openednextstep) {
+                    var reportstep = adata.steps.step_report;
+                    var report_chooser = $('#' + adata['menubuttonscontainer'] + ' .mode-chooser[data-step="' + reportstep + '"]');
+                    if (report_chooser.length) {
+                        report_chooser.removeClass('no-click');
+                        report_chooser[0].removeEventListener('click', disableClick, true);
+                        that.activitydata.stepsopen['step_report'] = reportstep;
                     }
                 }
             },
