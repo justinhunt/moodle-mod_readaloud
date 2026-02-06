@@ -40,6 +40,12 @@ class quizhelper {
         $this->course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
     }
 
+    public function quiz_enabled() {
+        $hasquizquestions = $this->fetch_item_count() > 0;
+        $quizstepenabled = utils::is_step_enabled(constants::STEP_QUIZ, $this->mod);
+        return ($quizstepenabled && $hasquizquestions);
+    }
+
     public function fetch_item_count() {
         global $DB;
         if (!$this->items) {

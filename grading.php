@@ -278,7 +278,7 @@ switch ($action) {
 
     //list view of attempts and grades and action links
     case 'grading':
-        $report = new \mod_readaloud\report\grading();
+        $report = new \mod_readaloud\report\grading($moduleinstance, $cm);
         //formdata should only have simple values, not objects
         //later it gets turned into urls for the export buttons
         $formdata = new stdClass();
@@ -292,7 +292,7 @@ switch ($action) {
         if (!groups_user_groups_visible($course, $userid, $cm)) {
             throw new moodle_exception('nopermissiontoshow');
         }
-        $report = new \mod_readaloud\report\gradingbyuser();
+        $report = new \mod_readaloud\report\gradingbyuser($moduleinstance, $cm);
         //formdata should only have simple values, not objects
         //later it gets turned into urls for the export buttons
         $formdata = new stdClass();
@@ -305,7 +305,7 @@ switch ($action) {
 /*
     case 'machinegrading':
         $mode = "machinegrading";
-        $report = new \mod_readaloud\report\machinegrading();
+        $report = new \mod_readaloud\report\machinegrading($moduleinstance, $cm);
         //formdata should only have simple values, not objects
         //later it gets turned into urls for the export buttons
         $formdata = new stdClass();
@@ -334,7 +334,7 @@ switch ($action) {
 /*
     case 'machinegradingbyuser':
         $mode = "machinegrading";
-        $report = new \mod_readaloud\report\machinegradingbyuser();
+        $report = new \mod_readaloud\report\machinegradingbyuser($moduleinstance, $cm);
         //formdata should only have simple values, not objects
         //later it gets turned into urls for the export buttons
         $formdata = new stdClass();

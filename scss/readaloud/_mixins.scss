@@ -25,8 +25,7 @@
 }
 
 @mixin readaloud-passage-picture($size) {
-    aspect-ratio: 1/1;
-    height: $size;
+    height: auto;
     width: $size;
 }
 

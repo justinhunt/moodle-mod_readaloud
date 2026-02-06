@@ -6,8 +6,7 @@
   color: #727276;
 }
 .path-mod-readaloud #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-header-main .mod_readaloud-activity-picture img {
-  aspect-ratio: 1/1;
-  height: 122px;
+  height: auto;
   width: 122px;
 }
 .path-mod-readaloud #page.drawers .mod_readaloud-activity-header .mod_readaloud-activity-info {
@@ -21,8 +20,7 @@
   width: 1rem;
 }
 .path-mod-readaloud #page.drawers .mod_readaloud-activity-header-inpage .mod_readaloud-activity-header-main .mod_readaloud-activity-picture img {
-  aspect-ratio: 1/1;
-  height: 34px;
+  height: auto;
   width: 34px;
   border-radius: 50%;
 }
