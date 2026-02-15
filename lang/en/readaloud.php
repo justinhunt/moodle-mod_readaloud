@@ -30,12 +30,54 @@ defined('MOODLE_INTERNAL') || die();
 $string['activitylink'] = 'Link to next activity';
 $string['activitylink_help'] = 'To provide a link after the attempt to another activity in the course, select the activity from the dropdown list.';
 $string['activitylinkname'] = 'Continue to next activity: {$a}';
+$string['alternatives'] = 'Alternatives';
+$string['alternatives_descr'] =
+        'Specify matching options for specific passage words. 1 word set per line. e.g their|there|they\'re See <a href="https://support.poodll.com/support/solutions/articles/19000096937-tuning-your-read-aloud-activity">docs</a> for more details.';
 $string['attemptsheading'] = 'Attempts report';
+$string['attemptsreport'] = 'Attempts report';
+$string['attemptssummaryheading'] = 'Attempts summary report';
+$string['attemptssummaryreport'] = 'Attempts summary report';
+$string['audiofile'] = 'Audio';
+$string['averages'] = 'Average';
 $string['basicheading'] = 'Basic report';
+$string['basicreport'] = 'Basic report';
+$string['beginreading'] = 'Begin reading';
+$string['cannotgradenow'] = ' - ';
 $string['complete'] = 'Complete';
+$string['defaultfeedback'] = 'Thanks for reading.';
+$string['defaultwelcome'] =
+        'In this activity you should read a passage out loud. You may be required to test your microphone first. You should see the audio recorder below. After you have started recording the reading passage will appear. Read the passage aloud as clearly as you can.';
+$string['deletealluserdata'] = 'Delete all user data';
+$string['done'] = 'Done';
+$string['enabletts'] = 'Enable TTS(experimental)';
+$string['enabletts_details'] = 'TTS is currently not implemented';
+$string['errorheader'] = 'Error';
+$string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
+$string['exceededallattempts'] = "You have used all of your attempts.";
+$string['exceededattempts'] = 'You have completed the maximum {$a} attempts.';
+$string['exportexcel'] = 'Export to CSV';
+$string['feedbacklabel_details'] = 'The default text to show in the feedback field when creating a new Read Aloud activity.';
+$string['gotnosound'] = 'We could not hear you. Please check the permissions and settings for microphone and try again.';
+$string['gradehighest'] = 'highest scoring attempt';
+$string['gradelatest'] = 'score of latest attempt';
+$string['gradenone'] = 'No grade';
+$string['gradenow'] = 'Grade now';
+$string['gradeoptions'] = 'Grade options';
+$string['gradeoptions_details'] =
+    'NB This determines the gradebook entry. The ReadAloud grading page is not affected and will display the latest attempt.';
+$string['gradeoptions_help'] =
+        'When there are multiple attempts by a user on a reading, this setting determines which attempt to use when grading';
+$string['grading'] = 'Grading';
+$string['gradingbyuserheading'] = 'Grading all attempts for: {$a}';
+$string['gradingheading'] = 'Grading latest attempts for each user.';
+$string['hiddenevaluationmessage'] = 'Your attempt has been received. Thank you.';
+$string['highest'] = 'Highest';
 $string['id'] = 'ID';
-$string['inprogress'] = 'In progress';
 $string['locked'] = 'Locked';
+$string['machinegradingbyuserheading'] = 'Machine evaluated attempts for: {$a}';
+$string['machinegradingheading'] = 'Machine evaluated latest attempt for each user.';
+$string['maxattempts'] = 'Max. attempts';
+$string['mingrade'] = 'Minimum grade';
 $string['modulename'] = 'Poodll ReadAloud';
 $string['modulename_help'] =
     'ReadAloud gives students practice and feedback reading passages aloud. It can be entirely automatically graded and helps teachers assess and understand their students second language reading ability. The process is as follows:
@@ -46,116 +88,60 @@ $string['modulename_help'] =
 5. Students and teachers can see the FEEDBACK and RESULTS.';
 $string['modulenameplural'] = 'Poodll ReadAlouds';
 $string['name'] = 'Name';
+$string['notaddedtogradebook'] = 'This was a shadow practice, and not added to gradebook.';
+$string['notgradedyet'] = 'Your submission has been received, but has not been graded yet. It might take a few minutes.';
+$string['notmanuallygradedyet'] = 'Your submission has been received, but has not been graded yet.';
+$string['overview_help'] = 'Overview help';
+$string['passagelabel'] = 'Reading passage';
 $string['pluginadministration'] = 'ReadAloud administration';
 $string['pluginname'] = 'Poodll ReadAloud';
+$string['preview'] = 'Preview';
 $string['privacy:metadata'] = 'The Poodll Read Aloud plugin does store personal data.';
+$string['processing'] = 'Processing';
 $string['readaloud:addinstance'] = 'Add a new Read Aloud';
-$string['readaloud:itemedit'] = 'Edit items';
-$string['readaloud:itemview'] = 'View items';
+
 $string['readaloud:manage'] = 'Can manage Read Aloud instances';
 $string['readaloud:manageattempts'] = 'Can manage Read Aloud attempts';
 $string['readaloud:preview'] = 'Can preview Read Aloud activities';
 $string['readaloud:pushtoclones'] = 'Can push settings to clones';
 $string['readaloud:submit'] = 'Can submit Read Aloud attempts';
-$string['readaloud:tts'] = 'Can use Text To Speech(tts)';
-$string['readaloud:view'] = 'View Read Aloud';
 $string['readaloud:viewreports'] = 'Can view Read Aloud grades and reports';
-$string['readaloudfieldset'] = 'Custom example fieldset';
 $string['readaloudname'] = 'Poodll ReadAloud';
 $string['readaloudname_help'] =
         'This is the content of the help tooltip associated with the readaloudname field. Markdown syntax is supported.';
 
-
-$string['readaloud:view'] = 'Preview Read Aloud';
-
-$string['timecreated'] = 'Time created';
-// $string['attemptsbyuserheading'] = 'User Attempts Report';
-$string['attemptssummaryheading'] = 'Attempts summary report';
-$string['gradingheading'] = 'Grading latest attempts for each user.';
-$string['machinegradingheading'] = 'Machine evaluated latest attempt for each user.';
-$string['gradingbyuserheading'] = 'Grading all attempts for: {$a}';
-$string['machinegradingbyuserheading'] = 'Machine evaluated attempts for: {$a}';
-$string['totalattempts'] = 'Attempts';
-$string['overview'] = 'Overview';
-$string['overview_help'] = 'Overview help';
-$string['view'] = 'View';
-$string['preview'] = 'Preview';
-$string['viewreports'] = 'View report';
+$string['readaloudtask'] = 'Read Aloud task';
+$string['reattempt'] = 'Try again';
 $string['reports'] = 'Reports';
-$string['viewgrading'] = 'View grading';
-$string['grading'] = 'Grading';
-$string['gradenow'] = 'Grade now';
-$string['cannotgradenow'] = ' - ';
-$string['showingattempt'] = 'Showing attempt for: {$a}';
-$string['showingmachinegradedattempt'] = 'Machine evaluated attempt for: {$a}';
-$string['basicreport'] = 'Basic report';
-$string['returntoreports'] = 'Return to reports';
 $string['returntogradinghome'] = 'Return to grading top';
 $string['returntomachinegradinghome'] = 'Return to machine evaluations top';
-$string['exportexcel'] = 'Export to CSV';
-$string['mingrade'] = 'Minimum grade';
-$string['deletealluserdata'] = 'Delete all user data';
-$string['maxattempts'] = 'Max. attempts';
-$string['unlimited'] = 'unlimited';
-$string['gradeoptions'] = 'Grade options';
-$string['gradeoptions_help'] =
-        'When there are multiple attempts by a user on a reading, this setting determines which attempt to use when grading';
-$string['gradeoptions_details'] =
-    'NB This determines the gradebook entry. The ReadAloud grading page is not affected and will display the latest attempt.';
-$string['gradenone'] = 'No grade';
-$string['gradelowest'] = 'lowest scoring attempt';
-$string['gradehighest'] = 'highest scoring attempt';
-$string['gradelatest'] = 'score of latest attempt';
-$string['gradeaverage'] = 'average score of all attempts';
-$string['exceededattempts'] = 'You have completed the maximum {$a} attempts.';
-$string['exceededallattempts'] = "You have used all of your attempts.";
-$string['readaloudtask'] = 'Read Aloud task';
-$string['passagelabel'] = 'Reading passage';
-$string['welcomelabel'] = 'Default instructions';
-$string['welcomelabel_details'] = 'The default instructions. Can be edited when creating a new Read Aloud activity.';
-$string['feedbacklabel'] = 'Default feedback';
-$string['feedbacklabel_details'] = 'The default text to show in the feedback field when creating a new Read Aloud activity.';
-$string['welcomelabel'] = 'Pre-attempt instructions';
-$string['feedbacklabel'] = 'Post-attempt instructions';
-$string['alternatives'] = 'Alternatives';
-$string['alternatives_descr'] =
-        'Specify matching options for specific passage words. 1 word set per line. e.g their|there|they\'re See <a href="https://support.poodll.com/support/solutions/articles/19000096937-tuning-your-read-aloud-activity">docs</a> for more details.';
-
-$string['defaultwelcome'] =
-        'In this activity you should read a passage out loud. You may be required to test your microphone first. You should see the audio recorder below. After you have started recording the reading passage will appear. Read the passage aloud as clearly as you can.';
-$string['defaultfeedback'] = 'Thanks for reading.';
+$string['returntoreports'] = 'Return to reports';
+$string['saveandnext'] = 'Save .... and next';
+$string['showingattempt'] = 'Showing attempt for: {$a}';
+$string['showingmachinegradedattempt'] = 'Machine evaluated attempt for: {$a}';
+$string['submitted'] = 'submitted';
 $string['timelimit'] = 'Time limit';
-$string['gotnosound'] = 'We could not hear you. Please check the permissions and settings for microphone and try again.';
-$string['done'] = 'Done';
-$string['processing'] = 'Processing';
-$string['beginreading'] = 'Begin reading';
-$string['errorheader'] = 'Error';
+$string['totalattempts'] = 'Attempts';
+
+$string['unlimited'] = 'unlimited';
 $string['uploadconverterror'] =
         'An error occured while posting your file to the server. Your submission has NOT been received. Please refresh the page and try again.';
-$string['attemptsreport'] = 'Attempts report';
-$string['attemptssummaryreport'] = 'Attempts summary report';
-$string['myattemptssummary'] = 'Attempts summary ({$a} attempts)';
-$string['summaryexplainer'] = 'The table below shows your average and your highest scores for this activity.';
-$string['averages'] = 'Average';
-$string['highest'] = 'Highest';
-$string['submitted'] = 'submitted';
 $string['username'] = 'User';
-$string['audiofile'] = 'Audio';
+$string['view'] = 'View';
+$string['viewgrading'] = 'View grading';
+$string['viewreports'] = 'View report';
+
+
+
+$string['welcomelabel_details'] = 'The default instructions. Can be edited when creating a new Read Aloud activity.';
+
+
+
+
 $string['wpm'] = 'WPM';
-$string['timecreated'] = 'Time created';
-$string['nodataavailable'] = 'No data available yet';
-$string['saveandnext'] = 'Save .... and next';
-$string['reattempt'] = 'Try again';
-$string['notgradedyet'] = 'Your submission has been received, but has not been graded yet. It might take a few minutes.';
-$string['notmanuallygradedyet'] = 'Your submission has been received, but has not been graded yet.';
-$string['evaluatedmessage'] = 'Your latest attempt has been received and the evaluation is shown below.';
-$string['hiddenevaluationmessage'] = 'Your attempt has been received. Thank you.';
-$string['notaddedtogradebook'] = 'This was a shadow practice, and not added to gradebook.';
-$string['enabletts'] = 'Enable TTS(experimental)';
-$string['enabletts_details'] = 'TTS is currently not implemented';
+
 // We hijacked this setting for both TTS STT .... bad ... but they are always the same aren't they?
 $string['ttslanguage'] = 'Passage language';
-$string['ttslanguage_details'] = 'This value is used for speech recognition and text to speech.';
 $string['deleteattemptconfirm'] = "Are you sure that you want to delete this attempt?";
 $string['deletenow'] = '';
 $string['allowearlyexit'] = 'Can exit early';
@@ -164,7 +150,6 @@ $string['allowearlyexit_details'] =
 $string['allowearlyexit_defaultdetails'] =
         'Sets the default setting for allow_early_exit. Can be overriden at the activity level. If true, allow_early_exit means that students can finish before the time limit, by pressing a finish button. The WPM is calculated using their recording time.';
 $string['itemsperpage'] = 'Items per page';
-$string['itemsperpage_details'] = 'This sets the number of rows to be shown on reports or lists of attempts.';
 $string['accuracy'] = 'Accuracy';
 $string['accuracy_p'] = 'Acc(%)';
 $string['av_accuracy_p'] = 'Av. acc(%)';
@@ -174,8 +159,6 @@ $string['grade'] = 'Grade';
 $string['grade_p'] = 'Final grade(%)';
 $string['readgrade_p'] = 'Read grade(%)';
 $string['quizscore_p'] = 'Quiz grade(%)';
-$string['av_grade_p'] = 'Av. grade(%)';
-$string['h_grade_p'] = 'Max grade(%)';
 $string['av_readgrade_p'] = 'Av. read grade(%)';
 $string['h_readgrade_p'] = 'Max read grade(%)';
 $string['av_quizscore_p'] = 'Av. quiz score(%)';
@@ -216,8 +199,6 @@ $string['accmethod_noerrors'] = 'Ignore all errors';
 $string['apiuser'] = 'Poodll API user ';
 $string['apiuser_details'] = 'The Poodll account username that authorises Poodll on this site.';
 $string['apisecret'] = 'Poodll API secret ';
-$string['apisecret_details'] =
-        'The Poodll API secret. See <a href= "https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret">here</a> for more details';
 $string['enableai'] = 'Enable AI';
 $string['enableai_details'] = 'Read Aloud can evaluate results from a student attempt using AI. Check to enable.';
 
@@ -237,10 +218,7 @@ $string['ningxia'] = 'Ningxia, China';
 $string['forever'] = 'Never expire';
 
 $string['azureapikey'] = 'Azure speech API key';
-$string['azureapikey_details'] = 'This is the API key for using Azure speech services with ReadAloud. It is optional.  This is primarily for use by our users in Mainland China. See <a href= "https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/overview">here</a> for more details.';
 $string['azureapiregion'] = 'Azure speech region';
-$string['azureapiregion_details'] = 'This is the region for your Azure speech services API key. If you do not have one you can get one from the Azure portal.';
-
 $string['otherapikeys'] = 'Other API keys (BYOK)';
 
 $string['en-us'] = 'English (US)';
@@ -339,7 +317,6 @@ $string['adjustedgrade_p'] = 'Adj. grade(%)';
 $string['evaluationview'] = "Evaluation display";
 $string['evaluationview_details'] = "What to show students after they have attempted and received an evaluation";
 $string['humanpostattempt'] = "Evaluation display (human)";
-$string['humanpostattempt_details'] = "What to show students after they have attempted and received a human evaluation";
 $string['machinepostattempt'] = "Evaluation display (machine)";
 $string['machinepostattempt_details'] = "What to show students after they have attempted and received a machine evaluation";
 $string['postattempt_none'] = "Show the passage. Don't show evaluation or errors.";
@@ -356,7 +333,6 @@ $string['ok'] = "OK";
 $string['ng'] = "Not OK";
 $string['notok'] = "Not OK";
 $string['machinegrademethod'] = "Human/Machine grading";
-$string['machinegrademethod_details'] = "Use machine evaluations or human evaluations as grades in grade book.";
 $string['machinegrademethod_help'] = "Use machine evaluations or human evaluations as grades in grade book.";
 $string['machinegradenone'] = "Never use machine eval. for grade";
 $string['machinegradehybrid'] = "Use human or machine eval. for grade";
@@ -431,17 +407,8 @@ $string['passageword'] = 'Passage word';
 $string['mistranscriptions'] = 'Mistranscriptions';
 $string['mistrans_count'] = 'Count';
 $string['total_mistranscriptions'] = 'Total mistranscriptions: {$a}';
-
-$string['previewreading'] = 'Listen';
 $string['startreading'] = 'Read';
 $string['readagain'] = 'Read again';
-$string['startshadowreading'] = 'Shadow practice';
-$string['practicereading'] = 'Practice';
-
-
-$string['transcriber'] = 'Line transcriber';
-$string['transcriber_details'] = 'The transcription engine to use for line by line reading.';
-$string['transcriber_none'] = 'No transcription';
 $string['transcriber_guided'] = 'Guided STT (Poodll)';
 $string['transcriber_strict'] = 'Open STT (Strict)';
 
@@ -449,18 +416,14 @@ $string['stricttranscribe'] = 'Passage transcriber';
 $string['stricttranscribe_details'] = 'The transcriber to use for full passage readings.';
 
 $string['sessionscoremethod'] = 'Grade calculation';
-$string['sessionscoremethod_details'] = 'How the value(%) for gradebook is calculated.';
 $string['sessionscoremethod_help'] = 'The value(%) for gradebook is calculated as a percentage, either WPM / Target_WPM (normal) or (WPM - Errors)/ Target_WPM (strict)';
 $string['sessionscorenormal'] = 'Normal: Total correct words per min / Target_WPM';
 $string['sessionscorestrict'] = 'Strict: (Total correct words - errors) per min /Target WPM';
 $string['modelaudio'] = 'Model audio';
 $string['ttsvoice'] = 'TTS voice';
 $string['enablepreview'] = 'Enable listen mode';
-$string['enablepreview_details'] = 'Listen mode shows the reading and model audio to student before the activity commences.';
 $string['enableshadow'] = 'Enable practice mode (Shadowing)';
-$string['enableshadow_details'] = 'Enables shadowing mode. This plays the model audio as students are read the entire passage aloud. Students will need headphones for this.';
 $string['enablelandr'] = 'Enable practice mode (Listen and Repeat)';
-$string['enablelandr_details'] = 'Enables listen and repeat mode. Line by line, the student listens and reads alternately.';
 $string['savemodelaudio'] = 'Save recording';
 $string['uploadmodelaudio'] = 'Upload audio file';
 $string['modelaudioclear'] = 'Clear audio';
@@ -482,9 +445,6 @@ $string['extraslowspeed'] = 'Extra slow';
 $string['welcomemenu'] = 'Choose from the options below.';
 $string['returnmenu'] = 'Return to menu';
 $string['attemptno'] = 'Attempt {$a}';
-$string['progresschart'] = 'Progress chart';
-$string['chartexplainer'] = 'The chart below shows your progress over time in reading this passage.';
-
 $string['previewhelp'] = "Listen to a speaker read the passage aloud. You do not need to read aloud.";
 $string['readhelp'] = "Read the passage aloud. Speak at a speed that is natural for you.";
 $string['shadowhelp'] = "Read the passage aloud, along with the teacher. You should wear headphones.";
@@ -495,13 +455,9 @@ $string['playbutton'] = "Play";
 $string['recordbutton'] = "Record";
 $string['stopbutton'] = "Stop";
 $string['taptolisten'] = "Tap to listen";
-$string['taptorecord'] = "Tap to record";
 
-$string['returntomenu'] = "Return to menu";
 $string['fullreport'] = "View full report";
-$string['fullreportnoeval'] = "View passage";
 
-$string['nocourseid'] = 'You must specify a course_module ID or an instance ID. Probably your session expired.';
 
 $string['secs_till_check'] = 'Checking for results in: ';
 $string['checking'] = ' ... checking ... ';
@@ -514,8 +470,6 @@ $string['rec_readaloud'] = 'Mic-test then start';
 $string['rec_once'] = 'Just start';
 $string['rec_upload'] = 'Upload (for devs/admins)';
 
-$string['transcriber_warning'] = 'You have selected instant transcription. Note that this will <strong>only work if passage language and region are correct</strong>.';
-
 $string['close'] = 'Close';
 $string['modelaudiowarning'] = "Model audio not marked up.";
 $string['modelaudiobreaksclear'] = ' Clear model audio markup';
@@ -525,19 +479,9 @@ $string['enablesetuptab_details'] = "Show a tab containing the activity instance
 $string['setup'] = "Setup";
 $string['manualbreaktiming'] = ' Manual break timing';
 
-$string['nopassage'] = "No reading passage";
-$string['addpassage'] = "Setup activity";
-$string['waitforpassage'] = "There is no reading passage set yet for this activity. You will not be able to do the activity until your teacher adds one";
-$string['letsaddpassage'] = "There is no reading passage set yet for this activity. Lets add one.";
-
-$string['readaloud:itemview'] = 'View questions';
-$string['readaloud:itemedit'] = 'Edit questions';
-
 // rsquestions
 $string['numeric'] = 'Must be numeric ';
 $string['iteminuse'] = 'This item is part of users attempt history. It cannot be deleted.';
-$string['moveitemup'] = 'Up';
-$string['moveitemdown'] = 'Down';
 
 // Questions.
 $string['rsquestions'] = 'Questions';
@@ -545,10 +489,7 @@ $string['managersquestions'] = 'Manage questions';
 $string['correctanswer'] = 'Correct answer';
 $string['incorrectanswer'] = 'Incorrect answer';
 $string['whatdonow'] = 'Add or edit questions for the post-reading quiz.';
-$string['addnewitem'] = 'Add a new question';
-$string['addingitem'] = 'Adding a new question';
 $string['editingitem'] = 'Editing a question';
-$string['addtextpromptshortitem'] = 'Add item';
 $string['createaitem'] = 'Create a question';
 $string['edit'] = 'Edit';
 $string['item'] = 'Item';
@@ -556,32 +497,17 @@ $string['itemtitle'] = 'Question title';
 $string['itemcontents'] = 'Question text';
 $string['answer'] = 'Answer';
 $string['saveitem'] = 'Save item';
-$string['audioitemfile'] = 'Item audio (MP3)';
 $string['itemname'] = 'Question name';
 $string['itemorder'] = 'Item order';
-$string['correct'] = 'Correct';
-$string['itemtype'] = 'Item type';
 $string['actions'] = 'Actions';
 $string['edititem'] = 'Edit item';
 $string['previewitem'] = 'Preview item';
-$string['deleteitem'] = 'Delete item';
 $string['duplicateitem'] = 'Duplicate item';
 $string['confirmitemdelete'] = 'Are you sure you want to <i>DELETE</i> item? : {$a}';
 $string['confirmitemdeletetitle'] = 'Really delete item?';
 $string['noitems'] = 'This quiz contains no questions';
-$string['itemdetails'] = 'Item details: {$a}';
-$string['itemsummary'] = 'Item summary: {$a}';
-$string['iscorrectlabel'] = 'Correct/Incorrect';
 $string['textchoice'] = 'Text area choice';
 $string['textboxchoice'] = 'Text box choice';
-$string['audioresponse'] = 'Audio response';
-$string['correcttranslationtitle'] = 'Correct translation';
-$string['shuffleanswers'] = 'Shuffle answers';
-$string['shufflequestions'] = 'Shuffle questions';
-$string['correct'] = 'Correct';
-$string['avgcorrect'] = 'Av. correct';
-$string['avgtotaltime'] = 'Av. duration';
-$string['nodataavailable'] = 'No data available';
 $string['quiz'] = 'Quiz';
 $string['waiting'] = '-- waiting --';
 $string['waitingforteacher'] = 'Your teacher will check your reading soon.';
@@ -592,39 +518,30 @@ $string['notmasterinstance'] = 'You can not push settings from this ReadAloud ac
 $string['push'] = 'Push';
 $string['pushpage'] = 'Push page';
 $string['pushalternatives'] = 'Push alternatives';
-$string['pushalternatives_desc'] = 'Push alternatives field to all clone instances.';
 $string['pushalternatives_done'] = 'Alternatives have been pushed';
 
 $string['pushpassage'] = 'Push passage (and related settings)';
-$string['pushpassage_desc'] = 'Push passage and phonetics and segments and other elements that are unique to the passage, to clones. ';
 $string['pushpassage_done'] = 'Passage has been pushed';
 
 $string['pushquestions'] = 'Push questions';
-$string['pushquestions_desc'] = 'You could push comprehension questions from here if there were any. They will be implemented soon.';
 $string['pushquestions_done'] = 'Questions have been pushed';
 
 $string['pushtargetwpm'] = 'Target WPM';
-$string['pushtargetwpm_desc'] = 'Push the Target WPM setting to all clone instances.';
 $string['pushtargetwpm_done'] = 'Target WPM has been pushed';
 
 $string['pushtimelimit'] = 'Time limit';
-$string['pushtimelimit_desc'] = 'Push the time limit setting to all clone instances.';
 $string['pushtimelimit_done'] = 'Time limit has been pushed';
 
 $string['pushcanexitearly'] = 'Can exit early';
-$string['pushcanexitearly_desc'] = 'Push the \'Can exit early\' setting to all clone instances. This setting allows users to exit the activity before the time limit is reached.';
 $string['pushcanexitearly_done'] = 'Can exit early has been pushed';
 
 $string['pushmodes'] = 'Modes';
-$string['pushmodes_desc'] = 'Push the optional activity mode settings (preview, listen and repeat and shadow) from this instance to clone instances.';
 $string['pushmodes_done'] = 'Modes have been pushed';
 
 $string['pushgradesettings'] = 'Grade settings';
-$string['pushgradesettings_desc'] = 'Push some of grade settings (completion cond. min grade, grade calculation, human/machine grading, highest/latest attempt) from this instance to clone instances. This wont update the max grade or other settings that affect the gradebook setup nor will it force a regrade of existing attempts. It is best to only use this on not yet attempted clones.';
 $string['pushgradesettings_done'] = 'Grade settings have been pushed';
 
 $string['pushttsmodelaudio'] = 'Push TTS and model audio';
-$string['pushttsmodelaudio_desc'] = 'Push TTS and model audio related settings, this will not push any uploaded/recorded audio. It will push TTS audio and meta data including audio breaks.';
 $string['pushttsmodelaudio_done'] = 'TTS and model audio have been pushed';
 
 $string['masterinstance'] = 'Master instance';
@@ -655,7 +572,6 @@ $string['activityopenscloses'] = "Activity open/close dates";
 $string['nottsvoice'] = "No TTS voice";
 
 $string['guidedtranscriptionadmin'] = "Guided transcription admin";
-$string['guidedtrans_corpus'] = "Use corpus texts";
 $string['usecorpus'] = "Guided transcription type";
 $string['usecorpuschanged'] = "Guided transcription type changed";
 
@@ -667,15 +583,12 @@ $string['apply_site'] = "this site activities";
 $string['corpusrange'] = "Corpus range";
 $string['corpusrange_course'] = "This course";
 $string['corpusrange_site'] = "This site";
-$string['guidedtrans_corpus'] = "Use corpus (all ReadAloud passages)";
 $string['guidedtrans_passage'] = "Use this activity passage";
 $string['guidedtransinstructions'] = "When using guided transcription the transcriber will steer the transcript towards the guide, i.e the words/phrases in this activity's passage, or the words/phrases in the full corpus of ReadAloud passages. Using the full corpus of ReadAloud passages will pick up more reading errors.";
 $string['pushcorpus_details'] = "The course/site corpus will be updated automatically, but you can use the button below to update and push the corpus if you need to. This will generate a guide from the corpus range, and it will set all ReadAloud activities(using guided transcription) within the range to use the guide.";
 $string['pushcorpus_button'] = "Update and push corpus guide";
 $string['corpuspushed'] = "Corpus guide pushed";
 $string['passagekey'] = 'Passage key';
-$string['passagekey_details'] =
-    'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier. It is fine to leave it empty.';
 $string['passagekey_help'] =
     'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier.';
 
@@ -731,8 +644,6 @@ $string['overwrite'] = "Overwrite";
 $string['cancel'] = "Cancel";
 $string['datatables_info'] = "Showing _START_ to _END_ of _TOTAL_ entries";
 $string['datatables_infoempty'] = "Showing 0 to 0 of 0 entries";
-$string['datatables_infofiltered'] = "(filtered from _MAX_ total entries)";
-$string['datatables_infothousands'] = ",";
 $string['datatables_lengthmenu'] = "Show _MENU_ entries";
 $string['datatables_search'] = "Search:";
 $string['datatables_zerorecords'] = "No matching records found";
@@ -751,20 +662,10 @@ $string['five'] = "five";
 $string['passagepicture'] = 'Passage picture';
 $string['passagepicture_descr'] = 'Add a picture into the activity header.';
 $string['stdashboardid'] = 'Student dashboard ID';
-$string['stdashboardid_details'] = 'If the student dashboard block is installed, put the id of the block here.';
 $string['eventreadaloudattemptsubmitted'] = 'ReadAloud attempt submitted';
 $string['bulkdelete'] = 'Delete selected';
 $string['bulkdeletequestion'] = 'Are you sure you want to delete the selected question?';
 $string['addquestion'] = 'Add question';
-$string['addmultichoiceitem'] = 'Multi choice';
-$string['addmultiaudioitem'] = 'MC audio';
-$string['addpageitem'] = 'Content page';
-$string['addshortansweritem'] = 'Short answer';
-$string['addlisteninggapfillitem'] = 'Listening gapfill';
-$string['addspeakinggapfillitem'] = 'Speaking gapfill';
-$string['addtypinggapfillitem'] = 'Typing gapfill';
-$string['addfreewritingitem'] = 'Free writing';
-$string['addfreespeakingitem'] = 'Free speaking';
 $string['multichoice'] = 'Multi choice';
 $string['multiaudio'] = 'MC audio';
 $string['dictation'] = 'Dictation';
@@ -783,12 +684,7 @@ $string['freespeaking'] = 'Free speaking';
 $string['fluency'] = 'Fluency';
 $string['passagereading'] = 'Passage reading';
 $string['conversation'] = 'Conversation';
-$string['transcriber'] = 'Transcriber';
-$string['transcriber_details'] = 'The transcription engine to use';
-$string['transcriber_auto'] = 'Open STT (Strict)';
-$string['transcriber_poodll'] = 'Guided STT (Poodll)';
 $string['pagelayout'] = 'Page layout';
-$string['thatsnotright'] = 'Something is wrong';
 $string['newitem'] = 'Item: {$a}';
 
 $string['d_question'] = 'Item';
@@ -809,13 +705,8 @@ $string['layoutmagazine'] = 'Magazine';
 $string['mediaprompts'] = "Media prompts";
 // Media toggles.
 $string['addmedia'] = 'Image / audio or video';
-$string['addmedia_instructions'] = 'Choose the media type you want to show in the lesson item.';
-$string['addiframe'] = 'iFrame / custom HTML';
-$string['addiframe_instructions'] = 'Paste the embed code for the iframe you want to show in the lesson item.';
 $string['addttsaudio'] = 'TTS Audio';
-$string['addttsaudio_instructions'] = 'Enter the text you want to be spoken by the TTS engine.';
 $string['addtextarea'] = 'Text block';
-$string['addtextarea_instructions'] = 'Enter the text you want to show in the lesson item.';
 $string["reallydeletemediaprompt"] = "Really delete media: ";
 $string["deletemediaprompt"] = "Delete media?";
 $string["choosemediaprompt"] = "Choose media type ..";
@@ -828,10 +719,6 @@ $string['itemttsquestionvoice'] = 'TTS prompt speaker';
 $string['itemtextarea'] = 'Text block';
 
 // TTS options.
-$string['ttsnormal'] = 'Normal';
-$string['ttsslow'] = 'Slow';
-$string['ttsveryslow'] = 'Very Slow';
-$string['ttsssml'] = 'SSML';
 $string['choosevoiceoption'] = 'TTS prompt options';
 $string['autoplay'] = 'Autoplay';
 $string["itemsettingsheadings"] = "Item Settings";
@@ -866,7 +753,6 @@ $string['hidestartpage'] = 'Hide start page';
 $string['hidestartpage_desc'] = 'If checked the activity item begins as soon as it has loaded.';
 $string['sentenceprompts'] = 'Sentences (prompts)';
 $string['relevancetype'] = 'Relevance type';
-$string['relevancetype_desc'] = 'AI will penalize answers of low relevance. Choose the type of relevance to use.';
 $string['relevancetype_none'] = 'Relevance not considered';
 $string['relevancetype_question'] = 'Relevance to the question (item text)';
 $string['relevancetype_modelanswer'] = 'Relevance to a model answer';
@@ -886,19 +772,14 @@ $string['aigrade_instructions'] = 'Grading instructions for AI';
 $string['aigrade_feedback'] = 'Feedback instructions for AI';
 $string['aigrade_feedback_language'] = 'AI feedback language';
 $string["aigrade_feedback_title"] = "Feedback";
-$string['itemtype'] = 'Item type';
+
 $string['action'] = 'Action';
 $string['order'] = 'Order';
-$string['deleteitem'] = 'Delete item';
-$string['deleteitem_message'] = 'Really delete item:&nbsp;';
 $string['deletebuttonlabel'] = 'DELETE';
 $string['totalscore'] = 'Score';
-$string['backtomenu'] = "Back to top menu";
 $string['reattempttitle'] = "Reattempt quiz";
 $string['reattemptbody'] = "Do you want to reattempt this quiz?";
-$string['showquestionscores'] = "Show question scores";
 $string['questiontext'] = "Question";
-$string['questionscore'] = "Score";
 $string['check'] = "Check";
 $string['skip'] = "Skip";
 $string['start'] = "Start";
@@ -908,10 +789,7 @@ $string['showcorrections'] = "Show inline corrections";
 $string['hidecorrections'] = "Hide inline corrections";
 $string['reallyreattempt'] = 'Your previous attempt will be overwritten. Are you sure you want to try again?';
 $string['answerdetails'] = 'Answer details';
-$string['seeanswerdetails'] = 'see details';
-$string['notsubmit'] = 'Not submitted';
-$string['notsubmitted'] = 'You have not submitted your answer. Submit now?';
-$string['submitnow'] = 'Submit';
+
 $string["allowmicaccess"] = "Please allow access to your microphone.";
 $string["nomicdetected"] = "No microphone detected.";
 $string["speechnotrecognized"] = "We could not recognize your speech.";
@@ -933,7 +811,6 @@ $string["qfinishscreen_full"] = "Full - score and question details";
 $string["qfinishscreen_custom"] = "Custom";
 $string["qfinishscreencustom"] = "Custom finish screen";
 $string["qfinishscreencustom_help"] = "The custom screen is an advanced feature, that allows you to build a custom finish screen using mustache notation and variables. Some of the variables are: {total} {courseurl} {coursename} {yellowstars} {graystars} {reattempturl} and an array of {results} each with {title}, {grade}, {yellowstars} and {graystars} variables.";
-$string['qfinishscreencustom_details'] = "If the quiz finish screen options are set to 'custom' this will be the default mustache template that generates the finish screen. It can be overridden at the quiz level.";
 
 // Modes.
 $string['home'] = 'Home';
@@ -943,12 +820,8 @@ $string['mode_quiz'] = 'Quiz';
 $string['mode_read'] = 'Read';
 $string['mode_shadow'] = 'Shadow';
 $string['mode_report'] = 'Report';
-$string['mode_listenandrepeat'] = 'Listen and repeat';
-$string['mode_tooltip_notcomplete'] = 'Next: {{a}}'; // Adds the next mode name.
-$string['mode_tooltip_end'] = 'End';
 
 $string['next'] = 'Next';
-$string['practiceiconalt'] = 'Practice';
 $string['prev'] = 'Prev';
 $string['taptospeak'] = 'Tap to speak';
 
@@ -958,7 +831,6 @@ $string['letsadditems'] = 'Lets add some questions!';
 $string['additems'] = 'Add quiz questions';
 $string['numberonly'] = 'Numbers only';
 $string['aigrade_modelanswer'] = 'Model answer';
-$string['reattemptquiz'] = 'Reattempt quiz';
 $string['enableread'] = 'Enable read';
 $string['enablequiz'] = 'Enable quiz';
 $string['activitysteps'] = 'Activity steps';
@@ -1006,9 +878,142 @@ $string['welldone'] = 'Well done!';
 $string['welldone_desc'] = 'You pronounced all of the words correctly!';
 $string['quitlistening'] = 'Finish listening';
 $string['improveyourscore'] = 'Want to try to improve your score?';
-$string['reattemptquiz'] = 'Reattempt the quiz?';
 $string['reallyreattemptquiz'] = 'Reattempting the quiz will overwrite your previous attempt. Are you sure you want to try again?';
 $string['quizreattempt'] = 'Can reattempt the quiz';
 $string['quizreattempt_help'] = 'Allow student to reattempt the quiz within the current attempt.';
 $string['readreattempt'] = 'Can reattempt reading';
 $string['readreattempt_help'] = 'Allow student to reattempt the reading within the current attempt.';
+
+// Duplicate strings.
+$string['readaloud:view'] = 'Preview Read Aloud';
+$string['readaloud:view'] = 'View Read Aloud';
+$string['readaloud:itemedit'] = 'Edit questions';
+$string['readaloud:itemedit'] = 'Edit items';
+$string['readaloud:itemview'] = 'View questions';
+$string['readaloud:itemview'] = 'View items';
+$string['timecreated'] = 'Time created';
+$string['timecreated'] = 'Time created';
+$string['welcomelabel'] = 'Default instructions';
+$string['welcomelabel'] = 'Pre-attempt instructions';
+$string['feedbacklabel'] = 'Post-attempt instructions';
+$string['feedbacklabel'] = 'Default feedback';
+$string['nodataavailable'] = 'No data available';
+$string['nodataavailable'] = 'No data available yet';
+$string['transcriber'] = 'Line transcriber';
+$string['transcriber'] = 'Transcriber';
+$string['transcriber_details'] = 'The transcription engine to use';
+$string['transcriber_details'] = 'The transcription engine to use for line by line reading.';
+$string['correct'] = 'Correct';
+$string['correct'] = 'Correct';
+$string['itemtype'] = 'Item type';
+$string['itemtype'] = 'Item type';
+$string['deleteitem'] = 'Delete item';
+$string['deleteitem'] = 'Delete item';
+$string['guidedtrans_corpus'] = "Use corpus texts";
+$string['guidedtrans_corpus'] = "Use corpus (all ReadAloud passages)";
+$string['reattemptquiz'] = 'Reattempt quiz';
+$string['reattemptquiz'] = 'Reattempt the quiz?';
+
+// $string['waitforpassage'] = "There is no reading passage set yet for this activity. You will not be able to do the activity until your teacher adds one";
+// $string['ttsveryslow'] = 'Very Slow';
+// $string['ttsssml'] = 'SSML';
+// $string['ttsnormal'] = 'Normal';
+// $string['ttsslow'] = 'Slow';
+// $string['transcriber_warning'] = 'You have selected instant transcription. Note that this will <strong>only work if passage language and region are correct</strong>.';
+// $string['transcriber_none'] = 'No transcription';
+// $string['transcriber_auto'] = 'Open STT (Strict)';
+// $string['transcriber_poodll'] = 'Guided STT (Poodll)';
+// $string['thatsnotright'] = 'Something is wrong';
+// $string['taptorecord'] = "Tap to record";
+// $string['summaryexplainer'] = 'The table below shows your average and your highest scores for this activity.';
+// $string['submitnow'] = 'Submit';
+// $string['startshadowreading'] = 'Shadow practice';
+// $string['shuffleanswers'] = 'Shuffle answers';
+// $string['shufflequestions'] = 'Shuffle questions';
+// $string['showquestionscores'] = "Show question scores";
+// $string['seeanswerdetails'] = 'see details';
+// $string['returntomenu'] = "Return to menu";
+// $string['readaloudfieldset'] = 'Custom example fieldset';
+// $string['inprogress'] = 'In progress';
+// $string['readaloud:tts'] = 'Can use Text To Speech(tts)';
+// $string['attemptsbyuserheading'] = 'User Attempts Report';
+// $string['overview'] = 'Overview';
+// $string['gradelowest'] = 'lowest scoring attempt';
+// $string['gradeaverage'] = 'average score of all attempts';
+// $string['myattemptssummary'] = 'Attempts summary ({$a} attempts)';
+// $string['ttslanguage_details'] = 'This value is used for speech recognition and text to speech.';
+// $string['itemsperpage_details'] = 'This sets the number of rows to be shown on reports or lists of attempts.';
+// $string['av_grade_p'] = 'Av. grade(%)';
+// $string['h_grade_p'] = 'Max grade(%)';
+// $string['apisecret_details'] =
+// 'The Poodll API secret. See <a href= "https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret">here</a> for more details';
+// $string['azureapikey_details'] = 'This is the API key for using Azure speech services with ReadAloud. It is optional.  This is primarily for use by our users in Mainland China. See <a href= "https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/overview">here</a> for more details.';
+// $string['azureapiregion_details'] = 'This is the region for your Azure speech services API key. If you do not have one you can get one from the Azure portal.';
+// $string['humanpostattempt_details'] = "What to show students after they have attempted and received a human evaluation";
+// $string['machinegrademethod_details'] = "Use machine evaluations or human evaluations as grades in grade book.";
+// $string['previewreading'] = 'Listen';
+// $string['practicereading'] = 'Practice';
+// $string['sessionscoremethod_details'] = 'How the value(%) for gradebook is calculated.';
+// $string['enablepreview_details'] = 'Listen mode shows the reading and model audio to student before the activity commences.';
+// $string['enableshadow_details'] = 'Enables shadowing mode. This plays the model audio as students are read the entire passage aloud. Students will need headphones for this.';
+// $string['enablelandr_details'] = 'Enables listen and repeat mode. Line by line, the student listens and reads alternately.';
+// $string['progresschart'] = 'Progress chart';
+// $string['chartexplainer'] = 'The chart below shows your progress over time in reading this passage.';
+// $string['fullreportnoeval'] = "View passage";
+
+// $string['nocourseid'] = 'You must specify a course_module ID or an instance ID. Probably your session expired.';
+// $string['pushgradesettings_desc'] = 'Push some of grade settings (completion cond. min grade, grade calculation, human/machine grading, highest/latest attempt) from this instance to clone instances. This wont update the max grade or other settings that affect the gradebook setup nor will it force a regrade of existing attempts. It is best to only use this on not yet attempted clones.';
+// $string['pushmodes_desc'] = 'Push the optional activity mode settings (preview, listen and repeat and shadow) from this instance to clone instances.';
+// $string['pushcanexitearly_desc'] = 'Push the \'Can exit early\' setting to all clone instances. This setting allows users to exit the activity before the time limit is reached.';
+// $string['pushtimelimit_desc'] = 'Push the time limit setting to all clone instances.';
+// $string['pushtargetwpm_desc'] = 'Push the Target WPM setting to all clone instances.';
+// $string['pushquestions_desc'] = 'You could push comprehension questions from here if there were any. They will be implemented soon.';
+// $string['pushpassage_desc'] = 'Push passage and phonetics and segments and other elements that are unique to the passage, to clones. ';
+// $string['pushalternatives_desc'] = 'Push alternatives field to all clone instances.';
+// $string['audioresponse'] = 'Audio response';
+// $string['correcttranslationtitle'] = 'Correct translation';
+// $string['avgcorrect'] = 'Av. correct';
+// $string['avgtotaltime'] = 'Av. duration';
+// $string['itemdetails'] = 'Item details: {$a}';
+// $string['itemsummary'] = 'Item summary: {$a}';
+// $string['iscorrectlabel'] = 'Correct/Incorrect';
+// $string['audioitemfile'] = 'Item audio (MP3)';
+// $string['addtextpromptshortitem'] = 'Add item';
+// $string['addnewitem'] = 'Add a new question';
+// $string['addingitem'] = 'Adding a new question';
+// $string['moveitemup'] = 'Up';
+// $string['moveitemdown'] = 'Down';
+// $string['nopassage'] = "No reading passage";
+// $string['addpassage'] = "Setup activity";
+// $string['letsaddpassage'] = "There is no reading passage set yet for this activity. Lets add one.";
+// $string['relevancetype_desc'] = 'AI will penalize answers of low relevance. Choose the type of relevance to use.';
+// $string['addtextarea_instructions'] = 'Enter the text you want to show in the lesson item.';
+// $string['addttsaudio_instructions'] = 'Enter the text you want to be spoken by the TTS engine.';
+// $string['addmedia_instructions'] = 'Choose the media type you want to show in the lesson item.';
+// $string['addiframe'] = 'iFrame / custom HTML';
+// $string['addiframe_instructions'] = 'Paste the embed code for the iframe you want to show in the lesson item.';
+// $string['addmultichoiceitem'] = 'Multi choice';
+// $string['addmultiaudioitem'] = 'MC audio';
+// $string['addpageitem'] = 'Content page';
+// $string['addshortansweritem'] = 'Short answer';
+// $string['addlisteninggapfillitem'] = 'Listening gapfill';
+// $string['addspeakinggapfillitem'] = 'Speaking gapfill';
+// $string['addtypinggapfillitem'] = 'Typing gapfill';
+// $string['addfreewritingitem'] = 'Free writing';
+// $string['addfreespeakingitem'] = 'Free speaking';
+// $string['stdashboardid_details'] = 'If the student dashboard block is installed, put the id of the block here.';
+// $string['datatables_infofiltered'] = "(filtered from _MAX_ total entries)";
+// $string['datatables_infothousands'] = ",";
+// $string['passagekey_details'] =
+// 'The passage key is just a tag that will be exported to csv with some reports to make post processing those reports in a spreadsheet easier. It is fine to leave it empty.';
+// $string['pushttsmodelaudio_desc'] = 'Push TTS and model audio related settings, this will not push any uploaded/recorded audio. It will push TTS audio and meta data including audio breaks.';
+// $string['practiceiconalt'] = 'Practice';
+// $string['mode_listenandrepeat'] = 'Listen and repeat';
+// $string['mode_tooltip_notcomplete'] = 'Next: {{a}}'; // Adds the next mode name.
+// $string['mode_tooltip_end'] = 'End';
+// $string['qfinishscreencustom_details'] = "If the quiz finish screen options are set to 'custom' this will be the default mustache template that generates the finish screen. It can be overridden at the quiz level.";
+// $string['notsubmit'] = 'Not submitted';
+// $string['notsubmitted'] = 'You have not submitted your answer. Submit now?';
+// $string['questionscore'] = "Score";
+// $string['backtomenu'] = "Back to top menu";
+// $string['deleteitem_message'] = 'Really delete item:&nbsp;';
