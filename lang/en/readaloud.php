@@ -884,6 +884,14 @@ $string['quizreattempt_help'] = 'Allow student to reattempt the quiz within the 
 $string['readreattempt'] = 'Can reattempt reading';
 $string['readreattempt_help'] = 'Allow student to reattempt the reading within the current attempt.';
 
+$string['azureapikey_details'] = 'This is the API key for using Azure speech services with ReadAloud. It is optional.  This is primarily for use by our users in Mainland China. See <a href= "https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/overview">here</a> for more details.';
+$string['azureapiregion_details'] = 'This is the region for your Azure speech services API key. If you do not have one you can get one from the Azure portal.';
+$string['machinegrademethod_details'] = "Use machine evaluations or human evaluations as grades in grade book.";
+$string['sessionscoremethod_details'] = 'How the value(%) for gradebook is calculated.';
+$string['ttslanguage_details'] = 'This value is used for speech recognition and text to speech.';
+$string['itemsperpage_details'] = 'This sets the number of rows to be shown on reports or lists of attempts.';
+$string['stdashboardid_details'] = 'If the student dashboard block is installed, put the id of the block here.';
+
 // Duplicate strings.
 $string['readaloud:view'] = 'Preview Read Aloud';
 $string['readaloud:view'] = 'View Read Aloud';
@@ -941,19 +949,13 @@ $string['reattemptquiz'] = 'Reattempt the quiz?';
 // $string['gradelowest'] = 'lowest scoring attempt';
 // $string['gradeaverage'] = 'average score of all attempts';
 // $string['myattemptssummary'] = 'Attempts summary ({$a} attempts)';
-// $string['ttslanguage_details'] = 'This value is used for speech recognition and text to speech.';
-// $string['itemsperpage_details'] = 'This sets the number of rows to be shown on reports or lists of attempts.';
 // $string['av_grade_p'] = 'Av. grade(%)';
 // $string['h_grade_p'] = 'Max grade(%)';
 // $string['apisecret_details'] =
 // 'The Poodll API secret. See <a href= "https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret">here</a> for more details';
-// $string['azureapikey_details'] = 'This is the API key for using Azure speech services with ReadAloud. It is optional.  This is primarily for use by our users in Mainland China. See <a href= "https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/overview">here</a> for more details.';
-// $string['azureapiregion_details'] = 'This is the region for your Azure speech services API key. If you do not have one you can get one from the Azure portal.';
 // $string['humanpostattempt_details'] = "What to show students after they have attempted and received a human evaluation";
-// $string['machinegrademethod_details'] = "Use machine evaluations or human evaluations as grades in grade book.";
 // $string['previewreading'] = 'Listen';
 // $string['practicereading'] = 'Practice';
-// $string['sessionscoremethod_details'] = 'How the value(%) for gradebook is calculated.';
 // $string['enablepreview_details'] = 'Listen mode shows the reading and model audio to student before the activity commences.';
 // $string['enableshadow_details'] = 'Enables shadowing mode. This plays the model audio as students are read the entire passage aloud. Students will need headphones for this.';
 // $string['enablelandr_details'] = 'Enables listen and repeat mode. Line by line, the student listens and reads alternately.';
@@ -1001,7 +1003,6 @@ $string['reattemptquiz'] = 'Reattempt the quiz?';
 // $string['addtypinggapfillitem'] = 'Typing gapfill';
 // $string['addfreewritingitem'] = 'Free writing';
 // $string['addfreespeakingitem'] = 'Free speaking';
-// $string['stdashboardid_details'] = 'If the student dashboard block is installed, put the id of the block here.';
 // $string['datatables_infofiltered'] = "(filtered from _MAX_ total entries)";
 // $string['datatables_infothousands'] = ",";
 // $string['passagekey_details'] =
