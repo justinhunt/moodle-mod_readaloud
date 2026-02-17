@@ -45,8 +45,7 @@ $string['beginreading'] = 'Begin reading';
 $string['cannotgradenow'] = ' - ';
 $string['complete'] = 'Complete';
 $string['defaultfeedback'] = 'Thanks for reading.';
-$string['defaultwelcome'] =
-        'In this activity you should read a passage out loud. You may be required to test your microphone first. You should see the audio recorder below. After you have started recording the reading passage will appear. Read the passage aloud as clearly as you can.';
+$string['defaultwelcome'] = 'Complete this activity by working through the tasks on your screen. You will listen to, practice, and read a passage aloud before reviewing your performance in the report.';
 $string['deletealluserdata'] = 'Delete all user data';
 $string['done'] = 'Done';
 $string['enabletts'] = 'Enable TTS(experimental)';
@@ -73,6 +72,7 @@ $string['gradingheading'] = 'Grading latest attempts for each user.';
 $string['hiddenevaluationmessage'] = 'Your attempt has been received. Thank you.';
 $string['highest'] = 'Highest';
 $string['id'] = 'ID';
+$string['instructions'] = 'Instructions';
 $string['locked'] = 'Locked';
 $string['machinegradingbyuserheading'] = 'Machine evaluated attempts for: {$a}';
 $string['machinegradingheading'] = 'Machine evaluated latest attempt for each user.';
