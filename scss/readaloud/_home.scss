@@ -41,3 +41,8 @@
         }
     }
 }
+
+.modeview-list:focus,
+.modeview-list:focus-visible {
+    outline: none;
+}
