@@ -509,7 +509,7 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   outline: none;
 }
 
-body.path-mod-readaloud #topofscroll.main-inner {
+body#page-mod-readaloud-view #topofscroll.main-inner {
   max-width: 830px;
   margin: 0 auto;
   padding-left: 15px;
