@@ -559,7 +559,7 @@ class renderer extends \plugin_renderer_base {
      * @param array    $activitydata   The data to pass to JavaScript.
      * @return array Associative array containing the info needed to pass to js to restore data from html(json)
      */
-    public function embed_activitydata_on_page($cm,$activitydata) {
+    public function embed_activitydata_on_page($cm, $activitydata) {
         global $CFG, $USER;
 
         // This inits the M.mod_readaloud thingy, after the page has loaded.
@@ -823,9 +823,9 @@ class renderer extends \plugin_renderer_base {
                         // Show the chart of attempt results.
                         // TO DO delete this we dont need the chart
 
-                       // $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
-                       // $renderedchart = $this->fetch_rendered_attemptchart($chartdata, $showgradesinchart);
-                       // $ret['attemptschart'] = $renderedchart;
+                        // $chartdata = utils::fetch_attempt_chartdata($moduleinstance);
+                        // $renderedchart = $this->fetch_rendered_attemptchart($chartdata, $showgradesinchart);
+                        // $ret['attemptschart'] = $renderedchart;
                     }
             }
         }
@@ -1163,7 +1163,8 @@ class renderer extends \plugin_renderer_base {
         $corecourserenderer = $this->page->get_renderer('core_course');
         $headercontent = (array) $header->export_for_template($corecourserenderer);
         $passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
-        $hasheadercontent = !empty($passagepictureurl) || !empty($headercontent['description']);
+        $preattemptinstructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
+        $hasheadercontent = !empty($passagepictureurl) || !empty($headercontent['description']) || !empty($preattemptinstructions);
 
         // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
         if ($moduleinstance->passagesegments === null) {
@@ -1317,6 +1318,7 @@ class renderer extends \plugin_renderer_base {
             [
                 'activityheader' => $hasheadercontent,
                 'passagepictureurl' => $passagepictureurl,
+                'preattemptinstructions' => $preattemptinstructions,
             ]
         );
 
@@ -1430,7 +1432,7 @@ class renderer extends \plugin_renderer_base {
         // Fetch AMD data, passing the existing templatecontext to be stored in JSON for JavaScript.
         $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token,
             $embed, $latestattempt, $templatecontext, $hasquizquestions);
-        $activityembedtags = $this->embed_activitydata_on_page($cm,$activityamddata);
+        $activityembedtags = $this->embed_activitydata_on_page($cm, $activityamddata);
 
         // Add the AMD data (well the embed tags) to the templatecontext.
         $templatecontext['activityamddata'] = $activityembedtags;

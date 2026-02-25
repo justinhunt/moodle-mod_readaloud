@@ -504,7 +504,12 @@ body.path-mod-readaloud #page-content button.control.control--recordbutton[aria-
   box-shadow: none;
 }
 
-body.path-mod-readaloud #topofscroll.main-inner {
+.modeview-list:focus,
+.modeview-list:focus-visible {
+  outline: none;
+}
+
+body#page-mod-readaloud-view #topofscroll.main-inner {
   max-width: 830px;
   margin: 0 auto;
   padding-left: 15px;
@@ -962,5 +967,4 @@ body.path-mod-readaloud #page-content .font-sm {
   font-weight: 600;
   line-height: normal;
 }
-
 /*# sourceMappingURL=styles.css.map */

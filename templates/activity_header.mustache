@@ -84,11 +84,17 @@
     <div class="mod_readaloud-activity-header-main bg-purple6 rounded d-flex flex-nowrap align-items-start justify-content-between p-3 gap-3"
      data-for="page-activity-header">
 
-        {{#description}}
+        {{#hasheadercontent}}
         <div class="mod_readaloud-activity-description flex-grow-1" id="intro">
+            {{#description}}
             {{{description}}}
+            {{/description}}
+            {{#preattemptinstructions}}
+            <h2>{{#str}} instructions, mod_readaloud {{/str}}</h2>
+            {{{preattemptinstructions}}}
+            {{/preattemptinstructions}}
         </div>
-        {{/description}}
+        {{/hasheadercontent}}
 
         {{#passagepictureurl}}
         <div class="mod_readaloud-activity-picture flex-shrink-0 ms-2">
