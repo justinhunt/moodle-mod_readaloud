@@ -921,6 +921,9 @@ $string['guidedtrans_corpus'] = "Use corpus texts";
 $string['guidedtrans_corpus'] = "Use corpus (all ReadAloud passages)";
 $string['reattemptquiz'] = 'Reattempt quiz';
 $string['reattemptquiz'] = 'Reattempt the quiz?';
+$string['addtextarea_instructions'] = 'Enter the text you want to show in the lesson item.';
+$string['addttsaudio_instructions'] = 'Enter the text you want to be spoken by the TTS engine.';
+$string['addmedia_instructions'] = 'Choose the media type you want to show in the lesson item.';
 
 // $string['waitforpassage'] = "There is no reading passage set yet for this activity. You will not be able to do the activity until your teacher adds one";
 // $string['ttsveryslow'] = 'Very Slow';
@@ -989,9 +992,7 @@ $string['reattemptquiz'] = 'Reattempt the quiz?';
 // $string['addpassage'] = "Setup activity";
 // $string['letsaddpassage'] = "There is no reading passage set yet for this activity. Lets add one.";
 // $string['relevancetype_desc'] = 'AI will penalize answers of low relevance. Choose the type of relevance to use.';
-// $string['addtextarea_instructions'] = 'Enter the text you want to show in the lesson item.';
-// $string['addttsaudio_instructions'] = 'Enter the text you want to be spoken by the TTS engine.';
-// $string['addmedia_instructions'] = 'Choose the media type you want to show in the lesson item.';
+
 // $string['addiframe'] = 'iFrame / custom HTML';
 // $string['addiframe_instructions'] = 'Paste the embed code for the iframe you want to show in the lesson item.';
 // $string['addmultichoiceitem'] = 'Multi choice';
