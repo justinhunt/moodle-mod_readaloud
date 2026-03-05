@@ -319,21 +319,18 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
     $cm = get_coursemodule_from_instance('readaloud', $moduleinstance->id, $moduleinstance->course, false, MUST_EXIST);
     $quizhelper = new \mod_readaloud\quizhelper($cm);
     $quizenabled = $quizhelper->quiz_enabled();
-    $airawgradecalc = $quizenabled ? '(ai.sessionscore + ai.qscore / 2)' : 'ai.sessionscore';
-    $humanrawgradecalc = $quizenabled ? '(attempt.sessionscore + attempt.qscore / 2)' : 'attempt.sessionscore';
+    $airawgradecalc = $quizenabled ? '(ai.sessionscore + attempt.qscore) / 2' : 'ai.sessionscore';
+    $humanrawgradecalc = $quizenabled ? '(attempt.sessionscore + attempt.qscore) / 2' : 'attempt.sessionscore';
 
     if (!empty($userid)) {
         $params["userid"] = $userid;
         $user = "AND u.id = :userid";
     } else {
         $user = "";
-
     }
 
     switch ($moduleinstance->gradeoptions) {
         case constants::M_GRADEHIGHEST:
-
-            
 
             // aigrades sql
             $aisql = "SELECT u.id, u.id AS userid,MAX(" . $airawgradecalc. ") AS rawgrade
@@ -390,7 +387,7 @@ function readaloud_get_user_grades($moduleinstance, $userid = 0) {
                       GROUP BY u.id";
 
             // hybrid sql
-            $hybridsql = "SELECT u.id, MAX(attempt.sessiontime) as sessiontime, MAX(attempt.sessionscore) as humangrade, u.id AS userid, MAX(ai.sessionscore) AS aigrade
+            $hybridsql = "SELECT u.id, MAX(attempt.sessiontime) as sessiontime, MAX(" . $humanrawgradecalc. ") as humangrade, u.id AS userid, MAX(" . $airawgradecalc. ") AS aigrade
                       FROM {user} u, {" . constants::M_AITABLE . "} ai INNER JOIN {" . constants::M_USERTABLE . "} attempt ON ai.attemptid = attempt.id
                      WHERE attempt.id= (SELECT max(id) FROM {" . constants::M_USERTABLE . "} iattempt WHERE iattempt.userid=u.id AND iattempt.readaloudid = ai.readaloudid AND iattempt.dontgrade = 0)  AND u.id = attempt.userid AND ai.readaloudid = :moduleid
                            $user

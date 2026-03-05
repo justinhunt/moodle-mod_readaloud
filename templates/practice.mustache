@@ -64,13 +64,19 @@
                 </button>
             </div>
 
-            <div id="mod_readaloud_practice_navigation" class="d-flex justify-content-between w-100" role="group" aria-label="Practice navigation">
-                <button id="mod_readaloud_practice_skipback" class="btn btn-link text-start" type="button" >
-                    <i class="fa-solid fa-chevron-left me-2" aria-hidden="true"></i>{{#str}} prev, mod_readaloud {{/str}}
-                </button>
-                <button id="mod_readaloud_practice_skipforward" class="btn btn-link text-end" type="button" >
-                    {{#str}} next, mod_readaloud {{/str}}<i class="fa-solid fa-chevron-right ms-2" aria-hidden="true"></i>
-                </button>
+            <div id="mod_readaloud_practice_navigation" class="d-flex w-100 align-items-center" role="group" aria-label="Practice navigation">
+                <div class="text-start" style="flex: 1;">
+                    <button id="mod_readaloud_practice_skipback" class="btn btn-link" type="button" >
+                        <i class="fa-solid fa-chevron-left me-2" aria-hidden="true"></i>{{#str}} prev, mod_readaloud {{/str}}
+                    </button>
+                </div>
+                <div id="mod_readaloud_practice_progress" class="text-center fw-bold" style="flex: 1;">
+                </div>
+                <div class="text-end" style="flex: 1;">
+                    <button id="mod_readaloud_practice_skipforward" class="btn btn-link" type="button" >
+                        {{#str}} next, mod_readaloud {{/str}}<i class="fa-solid fa-chevron-right ms-2" aria-hidden="true"></i>
+                    </button>
+                </div>
             </div>
 
             <div id="mod_readaloud_practice_controls" class="controls d-flex flex-column align-items-center p-3 mt-4" role="group" aria-label="Practice controls">
