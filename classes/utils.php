@@ -1490,8 +1490,7 @@ class utils {
     }
 
     // Fetch the azure streaming token (locally .. not from cloudpoodll)
-    public static function fetch_azure_token()
-    {
+    public static function fetch_azure_token() {
         $conf = get_config(constants::M_COMPONENT);
 
         $apikey = $conf->azureapikey;
@@ -1510,14 +1509,12 @@ class utils {
             return $tokenobject;
         }
 
-
-
         // The REST API we are calling.
         // We need to get the ms region from the poodll region.
         $apidomain = 'microsoft.com';
-        if (strpos($apiregion,'china') === 0) {
+        if (strpos($apiregion, 'china') === 0) {
             $apidomain = 'azure.cn';
-        } elseif (strpos($apiregion,'usgov') === 0) {
+        } else if (strpos($apiregion, 'usgov') === 0) {
             $apidomain = 'azure.us';
         }
         $fetchurl = 'https://' . $apiregion . '.api.cognitive.' . $apidomain . '/sts/v1.0/issueToken';
@@ -1553,8 +1550,7 @@ class utils {
 
 
     // Fetch the appropriate azure region for the given poodll region
-    public static function fetch_ms_region($poodllregion)
-    {
+    public static function fetch_ms_region($poodllregion) {
 
         switch ($poodllregion) {
             case 'ningxia':
@@ -1588,8 +1584,7 @@ class utils {
     // Fetch the streaming token for the region and language
     // MSSpeech is just for fluency. It is an Azure Speech key but its for backwards compat.
     // Notably it serves cloud hosted tokens which currently do not support ningxia/chinaeast2 region.
-    public static function fetch_msspeech_token($poodllregion)
-    {
+    public static function fetch_msspeech_token($poodllregion) {
         // If we have our own azure key use that. (otherwise we get it from cloudpoodll).
         // It maye be safer from China to use cloudpoodll because the speech assessment SDK may not be in China.
         $conf = get_config(constants::M_COMPONENT);
@@ -2563,9 +2558,9 @@ class utils {
     }
 
     public static function quiz_is_finished($moduleinstance, $latestattempt, $cm) {
-        if ($latestattempt && 
-            $cm && 
-            $latestattempt->status == utils::is_step_complete(constants::STEP_QUIZ, $latestattempt)){
+        if ($latestattempt &&
+            $cm &&
+            $latestattempt->status == self::is_step_complete(constants::STEP_QUIZ, $latestattempt)){
             return true;
         }else{
             return false;
@@ -2761,7 +2756,7 @@ class utils {
         $mform->addHelpButton('quizreattempt', 'quizreattempt', constants::M_COMPONENT);
 
         // show question review
-        // This shows a review of the questions and answers after the question completion. 
+        // This shows a review of the questions and answers after the question completion.
         // If only multiple choice questions are used, this has no effect. So we hard code this to true until we expose more questions
         /*
         $mform->addElement('select', 'showqreview', get_string('showqreview', constants::M_COMPONENT),
@@ -2770,7 +2765,7 @@ class utils {
         $mform->addHelpButton('showqreview', 'showqreview', constants::M_COMPONENT);
         */
         $mform->addElement('hidden', 'showqreview');
-        $mform->setType('showqreview', PARAM_INT); 
+        $mform->setType('showqreview', PARAM_INT);
         $mform->setDefault('showqreview', 1);
 
         // quiz finish screen
@@ -3788,7 +3783,12 @@ class utils {
         $context = \context_module::instance($cm->id);
 
         // Steps data.
-        $qdetails = json_decode($theattempt->qdetails);
+        if(empty($theattempt->qdetails)){
+            $qdetails = new \stdClass();
+            $qdetails->steps = null;
+        }else{
+            $qdetails = json_decode($theattempt->qdetails);
+        }
         $steps = $qdetails->steps ?? null;
 
         // Prepare results for display.
@@ -4003,17 +4003,15 @@ class utils {
     }
 
     // Fetch the streaming token for the region and language
-    public static function fetch_streaming_token($poodllregion)
-    {
+    public static function fetch_streaming_token($poodllregion) {
         global $CFG;
 
         // Where token can be fetched from cloudpoodll we do that.
         // BYOT ala azure (bring your own tokens)have a separate implementation .
 
         $token = false;
-        //try for an azure token
+        // try for an azure token
         $token = self::fetch_azure_token();
-
 
         // If the token was set, return it. Else lets fall back to assemblyai.
         if ($token) {

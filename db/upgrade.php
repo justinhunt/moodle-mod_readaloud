@@ -851,7 +851,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     }
 
     // Add steps field to table. Update steps and status of existing attempts
-    if ($oldversion < 2025031500) {
+    if ($oldversion < 2026030601) {
         $table = new xmldb_table(constants::M_TABLE);
 
         // Define fields to be added to readaloud .. just steps
@@ -894,14 +894,14 @@ function xmldb_readaloud_upgrade($oldversion) {
                 $DB->set_field(constants::M_USERTABLE, 'status', $status, ['id' => $attempt->id]);
             }
         }
-        upgrade_mod_savepoint(true, 2025031500, 'readaloud');
+        upgrade_mod_savepoint(true, 2026030601, 'readaloud');
     }
 
     // Add customfont  to readaloud table
-    if ($oldversion < 2025031503) {
+    if ($oldversion < 2026030602) {
         $table = new xmldb_table(constants::M_TABLE);
 
-        // Define fields customfont,to be added to readaloud
+        // Defineto be added to readaloud
         $fields = [];
         $fields[] = new xmldb_field('quizreattempt', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 1);
         $fields[] = new xmldb_field('readreattempt', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 1);
@@ -912,7 +912,7 @@ function xmldb_readaloud_upgrade($oldversion) {
                 $dbman->add_field($table, $field);
             }
         }
-        upgrade_mod_savepoint(true, 2025031503, 'readaloud');
+        upgrade_mod_savepoint(true, 2026030602, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
