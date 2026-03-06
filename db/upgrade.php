@@ -800,7 +800,7 @@ function xmldb_readaloud_upgrade($oldversion) {
     }
 
     // Add iteminstructions to rs questions table.
-    if ($oldversion < 2025011805) {
+    if ($oldversion < 2026030603) {
         $questiontable = new xmldb_table(constants::M_QTABLE);
 
         // Define fields to be added .
@@ -847,11 +847,11 @@ function xmldb_readaloud_upgrade($oldversion) {
                 $dbman->add_field($activitytable, $field);
             }
         }
-        upgrade_mod_savepoint(true, 2025011805, 'readaloud');
+        upgrade_mod_savepoint(true, 2026030603, 'readaloud');
     }
 
     // Add steps field to table. Update steps and status of existing attempts
-    if ($oldversion < 2026030601) {
+    if ($oldversion < 2026030604) {
         $table = new xmldb_table(constants::M_TABLE);
 
         // Define fields to be added to readaloud .. just steps
@@ -873,7 +873,6 @@ function xmldb_readaloud_upgrade($oldversion) {
 
         if ($readalouds) {
             foreach ($readalouds as $ra) {
-                $ra->showquiz = false;
                 $steps = 0;
                 $steps += $ra->enablepreview ? constants::STEP_LISTEN : 0;
                 $steps += $ra->enablelandr ? constants::STEP_PRACTICE : 0;
@@ -898,14 +897,14 @@ function xmldb_readaloud_upgrade($oldversion) {
                 }
             }
         }
-        upgrade_mod_savepoint(true, 2026030601, 'readaloud');
+        upgrade_mod_savepoint(true, 2026030604, 'readaloud');
     }
 
     // Add customfont  to readaloud table
-    if ($oldversion < 2026030602) {
+    if ($oldversion < 2026030605) {
         $table = new xmldb_table(constants::M_TABLE);
 
-        // Defineto be added to readaloud
+        // Defineto be added to readaloud.
         $fields = [];
         $fields[] = new xmldb_field('quizreattempt', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 1);
         $fields[] = new xmldb_field('readreattempt', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 1);
@@ -916,7 +915,7 @@ function xmldb_readaloud_upgrade($oldversion) {
                 $dbman->add_field($table, $field);
             }
         }
-        upgrade_mod_savepoint(true, 2026030602, 'readaloud');
+        upgrade_mod_savepoint(true, 2026030605, 'readaloud');
     }
 
     // Final return of upgrade result (true, all went good) to Moodle.
