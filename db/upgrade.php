@@ -892,8 +892,10 @@ function xmldb_readaloud_upgrade($oldversion) {
         if ($attempts ) {
             foreach ($attempts as $attempt) {
                 $steps = $stepsbyreadaloud[$attempt->readaloudid];
-                $status = $steps;
-                $DB->set_field(constants::M_USERTABLE, 'status', $status, ['id' => $attempt->id]);
+                if ($steps) {
+                    $status = $steps;
+                    $DB->set_field(constants::M_USERTABLE, 'status', $status, ['id' => $attempt->id]);
+                }
             }
         }
         upgrade_mod_savepoint(true, 2026030601, 'readaloud');
