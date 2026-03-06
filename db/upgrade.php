@@ -870,9 +870,10 @@ function xmldb_readaloud_upgrade($oldversion) {
         // we had checkboxes for preview / shadow / landr. But we need to convert these to steps
         $readalouds = $DB->get_records(constants::M_TABLE);
         $stepsbyreadaloud = [];
-        $ra->showquiz = false;
+
         if ($readalouds) {
             foreach ($readalouds as $ra) {
+                $ra->showquiz = false;
                 $steps = 0;
                 $steps += $ra->enablepreview ? constants::STEP_LISTEN : 0;
                 $steps += $ra->enablelandr ? constants::STEP_PRACTICE : 0;
