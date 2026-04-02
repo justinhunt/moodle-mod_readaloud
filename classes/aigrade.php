@@ -34,7 +34,8 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package mod_readaloud
  */
-class aigrade {
+class aigrade
+{
 
     /**
      * @var int The ID of the attempt
@@ -68,7 +69,8 @@ class aigrade {
      * @param int $modulecontextid The ID of the module context (optional)
      * @param bool $streamingresults Whether to process streaming results (optional)
      */
-    public function __construct($attemptid, $modulecontextid = 0, $streamingresults=false) {
+    public function __construct($attemptid, $modulecontextid = 0, $streamingresults = false)
+    {
         global $DB;
         $this->attemptid = $attemptid;
         $this->modulecontextid = $modulecontextid;
@@ -105,7 +107,7 @@ class aigrade {
                     // TO DO put this in the correct location.
                     if (class_exists('\block_readaloudstudent\flower') && $this->attemptdata->flowerid == 0) {
                         $usedashboardid = $this->activitydata->stdashboardid ?
-                        $this->activitydata->stdashboardid : get_config(constants::M_COMPONENT, 'stdashboardid');
+                            $this->activitydata->stdashboardid : get_config(constants::M_COMPONENT, 'stdashboardid');
                         if ($usedashboardid) {
                             $blockcontext = \context_block::instance($usedashboardid);
                             if ($blockcontext) {
@@ -129,7 +131,8 @@ class aigrade {
      * @param string $property The property name to retrieve.
      * @return mixed The value of the specified property.
      */
-    public function aidetails($property) {
+    public function aidetails($property)
+    {
         switch ($property) {
             case 'sessionscore':
                 $ret = $this->aidata->sessionscore;
@@ -160,26 +163,30 @@ class aigrade {
     }
 
     // has attempt data. If not we really can not do much. Perhaps the attempt was deleted?
-    public function has_attempt() {
+    public function has_attempt()
+    {
         global $CFG;
         require_once($CFG->dirroot . '/mod/readaloud/lib.php');
         return $this->attemptdata ? true : false;
     }
 
     // we leave it up to the grading logic how/if it adds the ai grades to gradebook
-    public function send_to_gradebook() {
+    public function send_to_gradebook()
+    {
         global $CFG;
         require_once($CFG->dirroot . '/mod/readaloud/lib.php');
         readaloud_update_grades($this->activitydata, $this->attemptdata->userid);
     }
 
     // do we have the AI transcripts
-    public function has_transcripts() {
+    public function has_transcripts()
+    {
         return property_exists($this->aidata, 'fulltranscript') && !empty($this->aidata->fulltranscript);
     }
 
     // If we are re-attempting we need to clear the transcript data so that we can start fresh
-    public function clear_transcripts() {
+    public function clear_transcripts()
+    {
         global $DB;
 
         // Clear the AI data in the database.
@@ -234,19 +241,22 @@ class aigrade {
     }
 
     // do we have the AI at all
-    public static function is_ai_enabled($moduleinstance) {
+    public static function is_ai_enabled($moduleinstance)
+    {
         return utils::can_transcribe($moduleinstance);
     }
 
     // add an entry for the AI data for this attempt in the database
     // we will fill it up with data shortly
-    public static function create_record($attemptdata, $timelimit) {
+    public static function create_record($attemptdata, $timelimit)
+    {
         global $DB;
         $data = new \stdClass();
         $data->attemptid = $attemptdata->id;
         $data->courseid = $attemptdata->courseid;
         $data->readaloudid = $attemptdata->readaloudid;
-        $data->sessiontime = isset($attemptdata->sessiontime) ? $attemptdata->sessiontime : $timelimit;
+        $data->sessiontime = isset($attemptdata->sessiontime) && !empty($attemptdata->sessiontime)
+            ? $attemptdata->sessiontime : $timelimit;
         $data->transcript = '';
         $data->sessionerrors = '';
         $data->errorcount = 0;
@@ -257,7 +267,8 @@ class aigrade {
         return $recordid;
     }
 
-    public function process_streaming_transcripts($streamingresults) {
+    public function process_streaming_transcripts($streamingresults)
+    {
         global $DB;
         $success = false;
         $transcript = false;
@@ -287,7 +298,8 @@ class aigrade {
 
     // transcripts become ready in their own time, if they're ready update data and DB,
     // if not just report that back
-    public function fetch_transcripts() {
+    public function fetch_transcripts()
+    {
         global $DB, $CFG;
         $success = false;
         $transcript = false;
@@ -311,7 +323,7 @@ class aigrade {
             $record->id = $this->recordid;
             $cleantranscript = diff::cleanText($transcript);
             $shortlang = utils::fetch_short_lang($this->activitydata->ttslanguage);
-            switch ($shortlang){
+            switch ($shortlang) {
                 case 'ja':
                     // probably needs segmented transcript, more testing needed here and from external
                     $cleantranscript = alphabetconverter::words_to_suji_convert($this->activitydata->passagesegments, $transcript);
@@ -319,11 +331,11 @@ class aigrade {
                 case 'en':
                 default:
                     // find digits in original passage, and convert number words to digits in the target passage
-                    $cleantranscript = alphabetconverter::words_to_numbers_convert($this->activitydata->passagesegments, $cleantranscript, $shortlang );
+                    $cleantranscript = alphabetconverter::words_to_numbers_convert($this->activitydata->passagesegments, $cleantranscript, $shortlang);
             }
 
             // for eszetts we need special processing
-            if($shortlang == 'de') {
+            if ($shortlang == 'de') {
                 // find eszetts in original passage, and convert ss words to eszetts in the target passage
                 $cleantranscript = alphabetconverter::ss_to_eszett_convert($this->activitydata->passagesegments, $cleantranscript);
             }
@@ -339,25 +351,28 @@ class aigrade {
     }
 
     // this is the serious stuff, this is the high level function that manages the comparison of transcript and passage
-    public function do_diff($debug = false) {
+    public function do_diff($debug = false)
+    {
         global $DB;
 
         // Run the transcript to passage matching process
         // A lot of data gets returned.
         /*
-        *   session matches: {"1":{"word":"oh","pposition":1,"tposition":1,"audiostart":"3.1399998664855957","audioend":"3.179999828338623","altmatch":0},"2":{"word":"lady","pposition":2,"tposition":2,"audiostart":"3.1999998092651367","audioend":"3.5","altmatch":0}}
-        *   sesson errors: {"4":{"word":"it","wordnumber":4},"11":{"word":"it","wordnumber":11},"15":{"word":"in","wordnumber":15}}
-        *
-        *
-        */
+         *   session matches: {"1":{"word":"oh","pposition":1,"tposition":1,"audiostart":"3.1399998664855957","audioend":"3.179999828338623","altmatch":0},"2":{"word":"lady","pposition":2,"tposition":2,"audiostart":"3.1999998092651367","audioend":"3.5","altmatch":0}}
+         *   sesson errors: {"4":{"word":"it","wordnumber":4},"11":{"word":"it","wordnumber":11},"15":{"word":"in","wordnumber":15}}
+         *
+         *
+         */
         list($sessionmatches, $sessionendword, $sessionerrors, $errorcount, $debugsequences) =
-                utils::fetch_diff($this->activitydata->passagesegments,
-                        $this->activitydata->alternatives,
-                        $this->aidata->transcript,
-                        $this->aidata->fulltranscript,
-                        $this->activitydata->ttslanguage,
-                        $this->activitydata->phonetic,
-                        $debug);
+            utils::fetch_diff(
+                $this->activitydata->passagesegments,
+                $this->activitydata->alternatives,
+                $this->aidata->transcript,
+                $this->aidata->fulltranscript,
+                $this->activitydata->ttslanguage,
+                $this->activitydata->phonetic,
+                $debug
+            );
 
         // session time
         // if we have a human eval sessiontime, use that.
@@ -384,10 +399,11 @@ class aigrade {
             }
         }
 
-        $scores = utils::processscores($sessiontime,
-                $sessionendword,
-                $errorcount,
-                $this->activitydata
+        $scores = utils::processscores(
+            $sessiontime,
+            $sessionendword,
+            $errorcount,
+            $this->activitydata
         );
 
         // save the diff and attempt analysis in the DB
