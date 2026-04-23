@@ -114,14 +114,11 @@ class mod_readaloud_mod_form extends moodleform_mod
     {
         $mform = $this->_form;
         $suffixedfields = [];
-        // Field options.
-         // completion all steps is not enabled yet TODO 20251005
-        /*
+        // All Steps Field
         $allstepsfield = $this->get_suffixed_name(constants::COMPLETION_ALLSTEPS);
-        $mform->addElement('advcheckbox', $allstepsfield, '', get_string('completionallsteps', constants::M_COMPONENT));
+        $mform->addElement('advcheckbox', $allstepsfield, '', get_string('allsteps', constants::M_COMPONENT));
         $mform->addHelpButton($allstepsfield, constants::COMPLETION_ALLSTEPS, constants::M_COMPONENT);
         $suffixedfields[] = $allstepsfield;
-        */
 
          // Min Grade Field
         $mingradefield = $this->get_suffixed_name('mingrade');
@@ -150,8 +147,7 @@ class mod_readaloud_mod_form extends moodleform_mod
     function completion_rule_enabled($data)
     {
         
-        //$completionfields = [constants::COMPLETION_ALLSTEPS, constants::COMPLETION_MINGRADE];
-        $completionfields = [constants::COMPLETION_MINGRADE];
+        $completionfields = [constants::COMPLETION_ALLSTEPS, constants::COMPLETION_MINGRADE];
         foreach ($completionfields as $field) {
             if (!empty($data[$this->get_suffixed_name($field)])) {
                 return true;

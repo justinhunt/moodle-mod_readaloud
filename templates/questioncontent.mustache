@@ -1,0 +1,17 @@
+<div class="readaloud_questionheader_contents">
+    {{^magazine}}{{#itemimage}}<div class="mod_readaloud_itemimage_cont"><img src="{{{itemimage}}}" class="mod_readaloud_itemimage"/></div>{{/itemimage}}{{/magazine}}
+    {{#itemtextarea}}<div class="mod_readaloud_itemtextarea_cont">
+            <div class="mod_readaloud_itemtextarea {{rtl}}">
+                {{#magazine}}{{#itemimage}}<div class="mod_readaloud_itemimage_cont mod_readaloud_magazine"><img src="{{{itemimage}}}" class="mod_readaloud_itemimage"/></div>{{/itemimage}}{{/magazine}}
+                {{{itemtextarea}}}
+            </div>
+        </div>
+    {{/itemtextarea}}
+    {{#itemaudio}}<div class="mod_readaloud_itemaudio_cont"><audio controls src="{{{itemaudio}}}" class="mod_readaloud_itemaudio"></audio></div>{{/itemaudio}}
+    {{#itemvideo}}<div class="mod_readaloud_itemvideo_cont"><video controls src="{{{itemvideo}}}" class="mod_readaloud_itemvideo"></video></div>{{/itemvideo}}
+    {{#itemiframe}}<div class="mod_readaloud_itemiframe_cont"><div class="mod_readaloud_iframe_responsive">{{{itemiframe}}}</div></div>{{/itemiframe}}
+    <!-- moved TTS Audio from questioncontents -> question header -->
+    {{#itemytvideoid}}<div class="mod_readaloud_itemytclip_cont"><div class="mod_readaloud_iframe_responsive">{{> mod_readaloud/youtubeclip}}</div></div>{{/itemytvideoid}}
+    {{#itemttsdialog}}<div class="mod_readaloud_itemttsdialog_cont">{{> mod_readaloud/ttsdialog}}</div>{{/itemttsdialog}}
+    {{#itemttspassage}}<div class="mod_readaloud_itemttspassage_cont">{{> mod_readaloud/ttspassage}}</div>{{/itemttspassage}}
+</div>

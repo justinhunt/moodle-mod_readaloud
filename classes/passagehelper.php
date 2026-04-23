@@ -26,7 +26,7 @@ namespace mod_readaloud;
 
 defined('MOODLE_INTERNAL') || die();
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 /**
  * passage helper class for mod_readaloud
@@ -46,16 +46,16 @@ class passagehelper {
         global $DB;
         $this->attemptid = $attemptid;
         $this->modulecontextid = $modulecontextid;
-        $attemptdata = $DB->get_record(constants::M_USERTABLE, array('id' => $attemptid));
+        $attemptdata = $DB->get_record(constants::M_USERTABLE, ['id' => $attemptid]);
         if ($attemptdata) {
             $this->attemptdata = $attemptdata;
-            $this->activitydata = $DB->get_record(constants::M_TABLE, array('id' => $attemptdata->readaloudid));
-            //ai data is useful, but if we don't got it we don't got it.
+            $this->activitydata = $DB->get_record(constants::M_TABLE, ['id' => $attemptdata->readaloudid]);
+            // ai data is useful, but if we don't got it we don't got it.
             if (utils::can_transcribe($this->activitydata)) {
-                if ($DB->record_exists(constants::M_AITABLE, array('attemptid' => $attemptid))) {
-                    $record = $DB->get_record(constants::M_AITABLE, array('attemptid' => $attemptid));
-                    //we only load aidata if we reallyhave some, the presence of ai record is no longer a good check
-                    //do we have a transcript ... is the real check
+                if ($DB->record_exists(constants::M_AITABLE, ['attemptid' => $attemptid])) {
+                    $record = $DB->get_record(constants::M_AITABLE, ['attemptid' => $attemptid]);
+                    // we only load aidata if we reallyhave some, the presence of ai record is no longer a good check
+                    // do we have a transcript ... is the real check
                     if ($record->fulltranscript != '') {
                         $this->aidata = new \stdClass();
                         $this->aidata->sessionscore = $record->sessionscore;
@@ -79,7 +79,7 @@ class passagehelper {
         $sql = "SELECT tu.*  FROM {" . constants::M_USERTABLE .
                 "} tu INNER JOIN {user} u ON tu.userid=u.id WHERE tu.readaloudid=?" .
                 " ORDER BY u.lastnamephonetic,u.firstnamephonetic,u.lastname,u.firstname,u.middlename,u.alternatename,tu.id DESC";
-        $records = $DB->get_records_sql($sql, array($this->attemptdata->readaloudid));
+        $records = $DB->get_records_sql($sql, [$this->attemptdata->readaloudid]);
         $past = false;
         $nextid = false;
         foreach ($records as $data) {
@@ -106,7 +106,7 @@ class passagehelper {
         $updatedattempt->sessionerrors = $formdata->sessionerrors;
         $updatedattempt->sessionendword = $formdata->sessionendword;
 
-        //its a little redundancy but we add error count here to make machine eval. error estimation easier
+        // its a little redundancy but we add error count here to make machine eval. error estimation easier
         $errorcount = utils::count_sessionerrors($formdata->sessionerrors);
         $updatedattempt->errorcount = $errorcount;
 
@@ -118,14 +118,14 @@ class passagehelper {
         global $DB;
         switch ($property) {
             case 'userfullname':
-                $user = $DB->get_record('user', array('id' => $this->attemptdata->userid));
+                $user = $DB->get_record('user', ['id' => $this->attemptdata->userid]);
                 $ret = fullname($user);
                 break;
             case 'passage':
                     $ret = $this->activitydata->passage;
                 break;
             case 'audiourl':
-                //we need to consider legacy client side URLs and cloud hosted ones
+                // we need to consider legacy client side URLs and cloud hosted ones
                 $ret = utils::make_audio_URL($this->attemptdata->filename, $this->modulecontextid, constants::M_COMPONENT,
                         constants::M_FILEAREA_SUBMISSIONS,
                         $this->attemptdata->id);
@@ -145,25 +145,25 @@ class passagehelper {
         return $ret;
     }
 
-    //because we may or ay not use AI data we provide a way for the correct data to be used here
-    public function formdetails($property, $force_aimode) {
-        $loading_aidata = ($force_aimode || $this->aidata && $this->attemptdata->sessiontime < 1);
+    // because we may or ay not use AI data we provide a way for the correct data to be used here
+    public function formdetails($property, $forceaimode) {
+        $loadingaidata = ($forceaimode || $this->aidata && $this->attemptdata->sessiontime < 1);
         switch ($property) {
             case 'sessiontime':
-                if ($loading_aidata) {
-                    if($this->aidata->sessiontime>0) {
+                if ($loadingaidata) {
+                    if($this->aidata->sessiontime > 0) {
                         return $this->aidata->sessiontime;
                     }else{
                         // if we have a time limit and not allowing early exit, we use the time limit
                         if ($this->activitydata->timelimit > 0 && !$this->activitydata->allowearlyexit) {
                             $sessiontime = $this->activitydata->timelimit;
-                            //else we get it from transcript (it will be stored as aidata sessiontime for next time)
+                            // else we get it from transcript (it will be stored as aidata sessiontime for next time)
                         } else {
-                            //we get the end_time attribute of the final recognised word in the fulltranscript
+                            // we get the end_time attribute of the final recognised word in the fulltranscript
                             $sessiontime = utils::fetch_duration_from_transcript($this->aidata->fulltranscript);
 
                             if ($sessiontime < 1) {
-                                //this is a guess now, We just don't know it. And should not really get here.
+                                // this is a guess now, We just don't know it. And should not really get here.
                                 $sessiontime = 60;
                             }
                         }
@@ -175,42 +175,42 @@ class passagehelper {
                 }
                 break;
             case 'sessionscore':
-                if ($loading_aidata) {
+                if ($loadingaidata) {
                     return $this->aidata->sessionscore;
                 } else {
                     return $this->attemptdetails('sessionscore');
                 }
                 break;
             case 'sessionendword':
-                if ($loading_aidata) {
+                if ($loadingaidata) {
                     return $this->aidata->sessionendword;
                 } else {
                     return $this->attemptdetails('sessionendword');
                 }
                 break;
             case 'sessionerrors':
-                if ($loading_aidata) {
+                if ($loadingaidata) {
                     return $this->aidata->sessionendword;
                 } else {
                     return $this->attemptdetails('sessionendword');
                 }
                 break;
-            //should not get here really
+            // should not get here really
             default:
                 return $this->attemptdetails($property);
 
         }
     }
 
-    public function prepare_javascript($reviewmode = false, $force_aimode = false, $readonly = false) {
+    public function prepare_javascript($reviewmode = false, $forceaimode = false, $readonly = false) {
         global $PAGE;
 
-        //if we are editing and no human has saved, we load AI data to begin with.
-        //if we only want ai data, during review screen, again we load ai data
-        $loading_aidata = ($force_aimode || $this->aidata && $this->attemptdata->sessiontime < 1);
+        // if we are editing and no human has saved, we load AI data to begin with.
+        // if we only want ai data, during review screen, again we load ai data
+        $loadingaidata = ($forceaimode || $this->aidata && $this->attemptdata->sessiontime < 1);
 
-        //here we set up any info we need to pass into javascript
-        $gradingopts = Array();
+        // here we set up any info we need to pass into javascript
+        $gradingopts = [];
         $gradingopts['reviewmode'] = $reviewmode;
         $gradingopts['enabletts'] = get_config(constants::M_COMPONENT, 'enabletts');
         $gradingopts['allowearlyexit'] = $this->activitydata->allowearlyexit ? true : false;
@@ -223,7 +223,7 @@ class passagehelper {
         $gradingopts['dontgrade'] = $this->attemptdata->dontgrade;
         $gradingopts['readonly'] = $readonly;
         $gradingopts['sessionscoremethod'] = $this->activitydata->sessionscoremethod;
-        if ($loading_aidata) {
+        if ($loadingaidata) {
             $gradingopts['sessiontime'] = $this->aidata->sessiontime;
             $gradingopts['sessionerrors'] = $this->aidata->sessionerrors;
             $gradingopts['sessionendword'] = $this->aidata->sessionendword;
@@ -239,7 +239,7 @@ class passagehelper {
             $gradingopts['accuracy'] = $this->attemptdata->accuracy;
             $gradingopts['sessionscore'] = $this->attemptdata->sessionscore;
         }
-        //even in human mode, spot checking is handy so we load ai data for that
+        // even in human mode, spot checking is handy so we load ai data for that
         if ($this->aidata) {
             $gradingopts['aidata'] = $this->aidata;
             $gradingopts['sessionmatches'] = $this->aidata->sessionmatches;
@@ -250,21 +250,21 @@ class passagehelper {
         $gradingopts['opts_id'] = 'mod_readaloud_gradenowopts';
 
         $jsonstring = json_encode($gradingopts);
-        $opts_html =
-                \html_writer::tag('input', '', array('id' => $gradingopts['opts_id'], 'type' => 'hidden', 'value' => $jsonstring));
-        $PAGE->requires->js_call_amd("mod_readaloud/gradenowhelper", 'init', array(array('id' => $gradingopts['opts_id'])));
-        $PAGE->requires->strings_for_js(array(
+        $optshtml =
+                \html_writer::tag('input', '', ['id' => $gradingopts['opts_id'], 'type' => 'hidden', 'value' => $jsonstring]);
+        $PAGE->requires->js_call_amd("mod_readaloud/gradenowhelper", 'init', [['id' => $gradingopts['opts_id']]]);
+        $PAGE->requires->strings_for_js([
                 'spotcheckbutton',
                 'gradingbutton',
                 'transcript',
                 'quickgrade',
                 'ok',
-                'ng'
-        ),
+                'ng',
+        ],
                 'mod_readaloud');
 
-        //these need to be returned and echo'ed to the page
-        return $opts_html;
+        // these need to be returned and echo'ed to the page
+        return $optshtml;
 
     }
 }

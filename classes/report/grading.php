@@ -14,11 +14,24 @@ use \mod_readaloud\utils;
 class grading extends basereport {
 
     protected $report = "grading";
-    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'wpm', 'accuracy_p', 'grade_p', 'grader', 'gradenow',
-            'timecreated', 'deletenow');
+    protected $fields = array('id', 'username', 'audiofile', 'totalattempts', 'wpm', 
+            'accuracy_p', 'readgrade_p','quizscore_p', 'grade_p', 'grader', 
+            'gradenow', 'timecreated', 'deletenow');      
     protected $headingdata = null;
     protected $qcache = array();
     protected $ucache = array();
+    protected $qenabled = true;
+
+    public function __construct($moduleinstance, $cm) {
+        parent::__construct($moduleinstance, $cm);
+        // If there is no quiz, remove quiz fields
+        if(!$this->quizhelper->quiz_enabled()){
+            $this->qenabled = false;
+            $this->fields = array_filter($this->fields, function($key) {
+                return !in_array($this->fields[$key], ['quizscore_p']);
+            }, ARRAY_FILTER_USE_KEY);
+        }
+    }
 
     public function fetch_formatted_field($field, $record, $withlinks) {
         global $DB, $CFG, $OUTPUT;
@@ -84,7 +97,7 @@ class grading extends basereport {
                 break;
 
             //grade could hold either human or ai data
-            case 'grade_p':
+            case 'readgrade_p':
                 //if not human or ai graded
                 if ($record->sessiontime == 0 && !$has_ai_grade) {
                     $ret = '';
@@ -102,6 +115,27 @@ class grading extends basereport {
                     $ret = get_string('grader_ungraded', constants::M_COMPONENT);
                 }
                 break;
+
+            // The quiz score e,g "60%"
+            case 'quizscore_p':
+                $ret = $record->qscore;
+                break;
+                
+                
+            //grade could hold either human or ai data
+            case 'grade_p':
+                //if not human or ai graded then we should not report a grade yet
+                if ($record->sessiontime == 0 && !$has_ai_grade) {
+                    $readscore = '';
+                } else {
+                    $readscore = $record->sessionscore;
+                }
+                if($this->qenabled && $readscore !== '' && !empty($record->qdetails)){
+                    $ret = round(($readscore + $record->qscore)/2,0);
+                } else {
+                    $ret = $readscore;
+                }
+                break;  
 
             case 'gradenow':
                 if ($withlinks) {

@@ -1,0 +1,36 @@
+<div id="mod_readaloud_items_cont" class="mod_readaloud_items_cont" style="display: {{display}};">
+    <form method="post">
+        <input type="hidden" name="sesskey" value="{{config.sesskey}}" />
+        <div class="mod_readaloud_bdbtn_container" id="mod_readaloud_bdbtn_container">
+            <button class="btn btn-primary d-none" tabindex="0" aria-controls="mod_readaloud_qpanel" type="button"
+                    id="mod_readaloud_deleteconfirmation" name="action" value="bulkdelete">
+                    <span>{{#str}}bulkdelete, mod_readaloud{{/str}}</span>
+            </button>
+        </div>
+    <table class="generaltable mod_readaloud_qpanel" id="{{tableid}}">
+        <thead>
+        <tr>
+                <th class="header c0" scope="col">
+                    <input id="select-all-question" name="select-all-question" type="checkbox" value="" data-action="toggle" data-toggle="master" data-togglegroup="delete-question" data-toggle-selectall="{{#str}} selectall {{/str}}" data-toggle-deselectall="{{#str}} deselectall {{/str}}">
+                    <label for="select-all-question" class="">{{#str}} selectall {{/str}}</label>
+                </th>
+                <th class="header c1 number" style="" scope="col">#</th>
+                <th class="header c2 name" style="" scope="col">{{#str}}itemname, mod_readaloud{{/str}}</th>
+                <th class="header c3 type" style="" scope="col">{{#str}}itemtype, mod_readaloud{{/str}}</th>
+                <th class="header c4 date" style="" scope="col">{{#str}}order, mod_readaloud{{/str}}</th>
+                <th class="header c5 action" style="" scope="col">{{#str}}action, mod_readaloud{{/str}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#items}}
+            {{> mod_readaloud/itemlistitem}}
+        {{/items}}
+        </tbody>
+    </table>
+    </form>
+</div>
+{{#js}}
+require(['core/checkbox-toggleall', 'mod_readaloud/bulkselect'], function(ToggleAll) {
+    ToggleAll.init();
+});
+{{/js}}

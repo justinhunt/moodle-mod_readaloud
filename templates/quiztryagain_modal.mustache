@@ -1,0 +1,19 @@
+<div class="modal fade mod_readaloud_quiztryagainmodal" id="mod_readaloud_quiztryagainmodal" tabindex="-1" aria-labelledby="listenquitmodallabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered text-center">
+        <div class="modal-content">
+            <div class="modal-body d-flex flex-column align-items-center gap-3 pb-0">
+                <span class="icon" aria-hidden="true">
+                     <img src="{{{ config.wwwroot }}}/mod/readaloud/pix/quiz.svg"/>
+                </span>
+                <h5 class="mb-0">{{#str}} reattemptquiz, mod_readaloud {{/str}}</h5>
+                <p class="mb-0">{{#str}} reallyreattemptquiz, mod_readaloud {{/str}}</p>
+            </div>
+            <div class="modal-footer border-top-0 d-flex flex-column p-3">
+                <div id="practice-actions" class="d-flex gap-3 m-auto">
+                    <button type="button" class="btn btn-secondary mrq_docancelreattempt">{{#str}} cancel {{/str}}</button>
+                    <button type="button" class="btn btn-primary mrq_doreattempt" data-action="retakequiz">{{#str}} reattempt, mod_readaloud {{/str}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

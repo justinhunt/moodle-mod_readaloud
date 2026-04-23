@@ -1,0 +1,24 @@
+{{< mod_readaloud/activity_header_inpage}}
+    {{$instructions}}
+        {{#str}} finalreporthelp, mod_readaloud {{/str}}
+    {{/instructions}}
+{{/ mod_readaloud/activity_header_inpage}}
+
+{{#fullreportdata}}
+<div id="{{fullreportcontainer}}" class='mod_readaloud_finalreport {{fullreportcontainer}}'>
+
+  {{>mod_readaloud/studentreadingattemptssummary}}
+  {{#stepsenabled.step_quiz}}
+     {{#hasquizquestions}}
+      {{>mod_readaloud/studentquizattemptssummary}}
+     {{/hasquizquestions}}
+  {{/stepsenabled.step_quiz}}
+
+
+    <div class="{{M_FEEDBACK_CONTAINER}} {{constants::M_POSTATTEMPT}}" id="{{M_FEEDBACK_CONTAINER}}">
+        <div class="box py-3 generalbox mb-3">
+            {{generalfeedback}}
+        </div>
+    </div>
+</div>
+{{/fullreportdata}}

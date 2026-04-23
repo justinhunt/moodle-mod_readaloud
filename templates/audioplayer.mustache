@@ -2,17 +2,20 @@
     <audio id='{{UNIQID}}_mod_readaloud_hiddenaudioplayer' src='{{{src}}}' class="mod_readaloud_hiddenaudioplayer nomediaplugin nopoodll" crossorigin="anonymous"></audio>
 </div>
 
-<div id="{{UNIQID}}_mod_readaloud_audioplayer" class="mod_readaloud_audioplayer">
-    <button type="button" class="mod_readaloud_audioplayer_play_button" aria-label="play audio"></button>
-    <div class="mod_readaloud_audioplayer_skip_buttons">
-        <button type="button" class="mod_readaloud_audioplayer_skip_button_back" aria-label="skip back">15</button>
-        <button type="button" class="mod_readaloud_audioplayer_skip_button_forward" aria-label="skip forward">15</button>
+<div id="{{UNIQID}}_mod_readaloud_audioplayer" class="mod_readaloud_audioplayer d-flex flex-column align-items-center gap-3 p-3 rounded">
+    <div class="d-flex align-items-center gap-3">
+        <button type="button" class="mod_readaloud_audioplayer_skip_button_back btn btn-sm" aria-label="skip back">-15s</button>
+        <button type="button" class="mod_readaloud_audioplayer_play_button control control--playbutton" aria-pressed="false" aria-label="play audio">
+            {{> mod_readaloud/play}}
+            {{> mod_readaloud/stop}}
+        </button>
+        <button type="button" class="mod_readaloud_audioplayer_skip_button_forward btn btn-sm" aria-label="skip forward">+15s</button>
     </div>
-    <div class="mod_readaloud_audioplayer_bar">
+    <div class="mod_readaloud_audioplayer_bar w-100 position-relative">
         <div class="mod_readaloud_audioplayer_bar_behind"></div>
         <div class="mod_readaloud_audioplayer_bar_front"></div>
     </div>
-    <div class="mod_readaloud_audioplayer_time" aria-label="audio time">00:00</div>
+    <div class="mod_readaloud_audioplayer_time fw-semibold" aria-label="audio time">00:00</div>
 </div>
 
 {{#js}}
@@ -74,12 +77,15 @@
                     });
                     $(this.hplayer).on('ended',function(){
                         $(that.ppbutton).attr('data-state','ended');
+                        $(that.ppbutton).attr('aria-pressed','false');
                     });
                     $(this.hplayer).on('pause play', function(e) {
                         if (e.currentTarget.paused) {
                             $(that.ppbutton).attr('data-state','paused');
+                            $(that.ppbutton).attr('aria-pressed','false');
                         } else {
                             $(that.ppbutton).attr('data-state','playing');
+                            $(that.ppbutton).attr('aria-pressed','true');
                         }
                     });
                     $(this.hplayer).on('loadedmetadata',function(){
@@ -94,12 +100,14 @@
                         this.hplayer.play().then(function(){
                             log.debug('play promise resolved');
                             $(that.ppbutton).attr('data-state','playing');
+                            $(that.ppbutton).attr('aria-pressed','true');
                         }).catch(function(){
                             log.debug('play promise rejected');
                         });
                     }else{
                         this.hplayer.pause();
                         $(that.ppbutton).attr('data-state','paused');
+                        $(that.ppbutton).attr('aria-pressed','false');
                     }
                 },
                 update_time: function(){

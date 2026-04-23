@@ -1,0 +1,24 @@
+// Import the variables and mixins.
+@import "variables";
+@import "readaloud/mixins";
+
+// Import readaloud scss.
+@import "readaloud/activityheader";
+@import "readaloud/audioplayer";
+@import "readaloud/buttons";
+@import "readaloud/finalreport";
+@import "readaloud/fonts";
+@import "readaloud/footer";
+@import "readaloud/grading";
+@import "readaloud/home";
+@import "readaloud/layout";
+@import "readaloud/modal";
+@import "readaloud/passage";
+@import "readaloud/practice";
+@import "readaloud/progress";
+@import "readaloud/quiz";
+@import "readaloud/read";
+@import "readaloud/readreport";
+@import "readaloud/stars";
+// @import "readaloud/todelete";
+@import "readaloud/typography";

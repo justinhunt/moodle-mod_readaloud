@@ -16,7 +16,7 @@ class courseattempts extends basereport {
 
     protected $report = "courseattempts";
     protected $fields = array('studentid', 'username','studentname','activityname','activitywords',
-        'errorcount','oralreadingscore_p','readingtime', 'wpm','timecreated', 'passagekey');
+        'errorcount','oralreadingscore_p','readingtime', 'wpm', 'quizscore_p', 'timecreated', 'passagekey');
     protected $headingdata = null;
     protected $qcache = array();
     protected $ucache = array();
@@ -62,6 +62,10 @@ class courseattempts extends basereport {
             case 'wpm':
                 $ret = $record->wpm;
                 break;
+
+            case 'quizscore_p':
+                $ret = $record->quizscore;
+                break;    
 
             case 'readingtime':
                 $ret = $record->sessiontime;
@@ -169,6 +173,7 @@ class courseattempts extends basereport {
                     $result->accuracy = $result->aiaccuracy;
                     $result->errorcount = $result->aierrorcount;
                     $result->sessiontime = $result->aisessiontime;
+                    $result->quizscore = $result->qscore;
                 }
             }
         }

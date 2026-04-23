@@ -1,3 +1,7 @@
+2.1.28 (Build 2026030605)
+ - New UI
+ - Removed Modal_Factory
+
 2.1.27 (Build 2025110401)
 - Added indexes on DB tables to improve performance for large installs
 
@@ -13,13 +17,18 @@
 - limited list of TTS voices for Ningxia region
 - support for lang server in Ningxia
 
-2.1.23 (Build 2024122002)
+2.1.23 (Build 2025011806)
+- added a fetch_quiz_results ajax callable web service
 - Support for Ningxia region (requires Poodll China subscription)
 
-2.1.22 (Build 2024122001)
+2.1.22x
+- Added fix for speech rec. on Polish numbers 22 - 99
+- added support for native language feedback
+- fixed bug in multichoice question that might mark a correct question incorrect
  - Support for custom cloud poodll server
  - Fixes for PHP 8.4
  - Branded icon so the app icon is not a pink smudge
+-  Added quiz
 
 2.1.21 (Build 2024122000)
  - Fix for recorded model audio clear button not working properly
@@ -363,7 +372,7 @@ Version 2.0.74 (Build 2021122200)
 
 2.0.30 (Build 2020053100)
 - layout changes
-- smallreport
+- readreport
 
 2.0.29 (Build 2020041900)
 - added aws streaming transcription to cloudpoodll

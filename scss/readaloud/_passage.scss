@@ -1,0 +1,22 @@
+.mod_readaloud_passage_cont {
+    border: $border-width solid $border-color;
+    border-radius: $border-radius-lg;
+    color: $gray-900;
+    font-size: $font-size-base * 1.125;
+    line-height: 210%;
+    padding: 1rem;
+
+    .mod_readaloud_modelaudio_activesentence {
+        @include word-highlight($yellow30);
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .mod_readaloud_passage_cont {
+        padding: 2rem;
+    }
+}

@@ -1,0 +1,62 @@
+// Import Bootstrap.
+@import "../../../../theme/boost/scss/bootstrap/functions";
+@import "../../../../theme/boost/scss/bootstrap/variables";
+@import "../../../../theme/boost/scss/bootstrap/vendor/rfs";
+@import "../../../../theme/boost/scss/bootstrap/mixins/buttons";
+
+// Readaloud button mixins.
+// Added to .btn in buttons.scss.
+@mixin readaloud-btn-size {
+    @include button-size($btn-padding-y, $btn-padding-x, $btn-font-size, $btn-border-radius);
+    line-height: normal;
+}
+
+@mixin readaloud-btn-variant($background, $border, $color) {
+    background-color: $background;
+    border-color: $border;
+    color: $color;
+    margin: 0.25rem;
+}
+
+// The listen, stop, record buttons.
+@mixin readaloud-control-btn-variant($background, $border, $color) {
+    @include readaloud-btn-variant($background, $border, $color);
+    box-shadow: 0 0 0 6px rgba($background, 0.15);
+}
+
+@mixin readaloud-passage-picture($size) {
+    height: auto;
+    width: $size;
+}
+
+@mixin word-highlight($background) {
+    background-color: $background;
+    border-radius: $border-radius;
+    padding: 0.2rem;
+}
+
+@mixin quiz-progress-item($background) {
+    align-items: center;
+    background-color: $background;
+    border-radius: 50%;
+    color: $white;
+    display: flex;
+    font-size: 20px;
+    font-weight: bold;
+    height: 30px;
+    justify-content: center;
+    width: 30px;
+    z-index: 1;
+}
+
+@mixin header-maxwidth {
+    max-width: 830px;
+    margin: 0 auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+@mixin star-styles {
+    font-size: 1.2rem;
+    margin-right: 2px;
+}

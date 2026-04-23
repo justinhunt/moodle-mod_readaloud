@@ -1,0 +1,46 @@
+<section class="mod_readaloud_attemptsummary mb-5">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <h6 class="mb-0 fw-semibold">{{#str}} readaloudresults, mod_readaloud {{/str}}</h6>
+        <div class="mod_readaloud_readreport_stars">
+            {{#attemptssummary.stars}}<i class="{{.}}"></i>{{/attemptssummary.stars}}
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12 col-md-4">
+            <div class="statbox h-100 d-flex justify-content-between align-items-center p-5 rounded border">
+                <div class="statbox-item">
+                    <div class="stat-label text-uppercase small fw-semibold">{{#str}} wpm, mod_readaloud {{/str}}</div>
+                    <div class="fw-bold fs-1">{{attemptssummary.av_wpm}}</div>
+                </div>
+                <span class="statbox-icon">
+                    {{#pix}} bolt, mod_readaloud {{/pix}}
+                </span>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="statbox h-100 d-flex justify-content-between align-items-center p-5 rounded border">
+                <div class="statbox-item">
+                    <div class="stat-label text-uppercase small fw-semibold">{{#str}} accuracy, mod_readaloud {{/str}}</div>
+                    <div class="fw-bold fs-1">{{attemptssummary.av_accuracy}}</div>
+                </div>
+                <span class="statbox-icon">
+                    {{#pix}} percent, mod_readaloud {{/pix}}
+                </span>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="statbox h-100 d-flex justify-content-between align-items-center p-5 rounded border">
+                <div class="statbox-item">
+                    <div class="stat-label text-uppercase small fw-semibold">{{#str}} totalwords, mod_readaloud {{/str}}</div>
+                    <div class="fw-bold fs-1">{{attemptssummary.av_words}}</div>
+                </div>
+                <span class="statbox-icon">
+                    {{#pix}} checkcircle, mod_readaloud {{/pix}}
+                </span>
+            </div>
+        </div>
+    </div>
+</section>

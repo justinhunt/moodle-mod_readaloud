@@ -1,0 +1,94 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/home
+
+    Home/menu page for the Read Aloud activity.
+    Displays navigation buttons for each activity step (listen, practice, read, shadow, quiz, report).
+
+    Context variables required for this template:
+    * M_HOME_CONTAINER - CSS class/ID for home container
+    * M_MENUBUTTONS_CONTAINER - CSS class/ID for menu buttons container
+    * stepsdata - Array of step objects with navigation information
+    * activityamddata - AMD/JS configuration data
+
+    Example context (json):
+    {
+        "M_HOME_CONTAINER": "mod_readaloud_home_cont",
+        "M_MENUBUTTONS_CONTAINER": "mod_readaloud_menubuttons_cont",
+        "stepsdata": [
+            {
+                "stepnumber": 1,
+                "mode": "listen",
+                "label": "Listen",
+                "classes": "step-enabled step-open",
+                "modeicon": "<svg>...</svg>",
+                "statusicon": "https://example.com/pix/incomplete.svg"
+            },
+            {
+                "stepnumber": 2,
+                "mode": "practice",
+                "label": "Practice",
+                "classes": "step-enabled step-locked",
+                "modeicon": "<svg>...</svg>",
+                "statusicon": "https://example.com/pix/locked.svg"
+            }
+        ],
+        "activityamddata": {
+            "modeview": "mod_readaloud_modeview"
+        }
+    }
+}}
+
+<div id="{{M_HOME_CONTAINER}}" class="{{M_HOME_CONTAINER}}">
+    <div class="mod_readaloud-activity-info d-flex flex-column align-items-center align-self-stretch bg-white rounded border p-3 mb-4 gap-4">
+        <div class="mod_readaloud-activity-progress-bar w-100">
+            {{> mod_readaloud/progress_bar}}
+        </div>
+
+        {{#hasdates}}
+        <div class="mod_readaloud-activity-dates d-flex align-self-start gap-4" data-region="activity-dates">
+            {{#activitydates}}
+            {{> core_course/activity_date}}
+            {{/activitydates}}
+        </div>
+        {{/hasdates}}
+    </div>
+
+    <div id="{{M_MENUBUTTONS_CONTAINER}}" class="{{M_MENUBUTTONS_CONTAINER}} w-100">
+        <ol class="main-nav list-unstyled p-0">
+            {{#stepsdata}}
+            <li class="nav-item mode-chooser {{classes}} p-3 mb-4 d-flex rounded" data-step="{{stepnumber}}">
+                <a href="javascript:void(0)" class="nav-link h6 w-100 mb-0 d-flex align-items-center justify-content-between" data-mode="{{mode}}">
+                    <div class="nav-text-group">
+                        <span class="step-icon flex-shrink-0 mr-2">
+                            {{{modeicon}}}
+                        </span>
+                        <span class="nav-label">{{label}}</span>
+                    </div>
+                    <img src="{{statusicon}}" alt="{{label}}" class="nav-status-icon ml-auto" />
+                </a>
+            </li>
+            {{/stepsdata}}
+            {{^stepsdata}}
+            <li>No steps available</li>
+            {{/stepsdata}}
+        </ol>
+    </div>
+</div>
+
+<main id="{{activityamddata.modeview}}" class="{{activityamddata.modeview}} modeview-list d-none" aria-live="polite"></main>

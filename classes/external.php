@@ -43,11 +43,11 @@ class mod_readaloud_external extends external_api {
 
     public static function check_for_results_parameters() {
         return new external_function_parameters([
-                'attemptid' => new external_value(PARAM_INT),
+                'cmid' => new external_value(PARAM_INT),
         ]);
     }
 
-    public static function check_for_results($attemptid) {
+    public static function check_for_results($cmid) {
         global $DB, $USER;
         // defaults
         $ret = ['ready' => false, 'rating' => 0, 'src' => ''];
@@ -56,10 +56,15 @@ class mod_readaloud_external extends external_api {
         $aigrade = false;
 
         $params = self::validate_parameters(self::check_for_results_parameters(),
-                ['attemptid' => $attemptid]);
+                ['cmid' => $cmid]);
 
         // fetch attempt information
-        $attempt = $DB->get_record(constants::M_USERTABLE, ['userid' => $USER->id, 'id' => $attemptid]);
+        $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+        $attempt = false;
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'id DESC');
+        if ($attempts) {
+            $attempt = reset($attempts);
+        }
         if ($attempt) {
             $readaloud = $DB->get_record('readaloud', ['id' => $attempt->readaloudid], '*', MUST_EXIST);
             $cm = get_coursemodule_from_instance('readaloud', $readaloud->id, $readaloud->course, false, MUST_EXIST);
@@ -74,9 +79,9 @@ class mod_readaloud_external extends external_api {
             $haveaieval = $aigrade && $aigrade->has_transcripts();
         }
 
-        // If no results, thats that. return.
+        // If no results, that's that. return.
         if (!$haveaieval && !$havehumaneval) {
-            // Just return defaults.
+            // Just return
             // If we got results return ratings.
         } else {
             $ret['ready'] = true;
@@ -88,6 +93,9 @@ class mod_readaloud_external extends external_api {
             $ret['wpm'] = $stats->wpm;
             $ret['acc'] = $stats->accuracy;
             $ret['totalwords'] = $stats->sessionendword;
+            $ret['sessionerrors'] = $stats->sessionerrors;
+            $ret['sessionendword'] = $stats->sessionendword;
+            $ret['sessionmatches'] = $stats->sessionmatches;
         }
         return json_encode($ret);
     }
@@ -128,7 +136,7 @@ class mod_readaloud_external extends external_api {
                 $gradeable = false;
             }
         }
-        $newattempt = utils::create_attempt($filename, $rectime, $readaloud, $gradeable);
+        $newattempt = utils::create_update_attempt($filename, $rectime, $readaloud, $gradeable);
         if ($newattempt && $newattempt->id) {
             // trigger attempt submitted event
             \mod_readaloud\event\attempt_submitted::create_from_attempt($newattempt, $modulecontext)->trigger();
@@ -308,7 +316,7 @@ class mod_readaloud_external extends external_api {
         $success = false;
         $message = '';
         $gradeable = true;
-        $newattempt = utils::create_attempt($filename, $rectime, $readaloud, $gradeable);
+        $newattempt = utils::create_update_attempt($filename, $rectime, $readaloud, $gradeable);
         if (!$newattempt || !$newattempt->id) {
             $message = "Unable to add update database with submission";
         } else {
@@ -374,4 +382,336 @@ class mod_readaloud_external extends external_api {
     public static function fetch_streaming_diffs_returns() {
         return new external_value(PARAM_RAW);
     }
+
+
+    public static function fetch_student_reading_report_parameters() {
+        return new external_function_parameters([
+                'cmid' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function fetch_student_reading_report($cmid) {
+        global $DB, $USER, $PAGE;
+        // $params = self::validate_parameters(self::fetch_student_reading_report_parameters(), ['cmid' => $cmid]);
+        $cm = get_coursemodule_from_id(constants::M_MODNAME, $cmid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        $modulecontext = context_module::instance($cmid);
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'id DESC');
+        $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
+        $report = $renderer->get_readreport_data($moduleinstance, $modulecontext, $attempts, $token);
+        return $report;
+    }
+
+    public static function fetch_student_reading_report_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    public static function delete_item_parameters() {
+        return new external_function_parameters(
+                [
+                        'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
+                        'itemid' => new external_value(PARAM_INT, 'The itemid to delete'),
+                        'formname' => new external_value(PARAM_TEXT, 'The formname'),
+                ]
+        );
+    }
+
+    public static function delete_item($contextid, $itemid, $formname) {
+        global $CFG, $DB, $USER;
+
+        // We always must pass webservice params through validate_parameters.
+        $params = self::validate_parameters(self::delete_item_parameters(),
+                ['contextid' => $contextid, 'itemid' => $itemid, 'formname' => $formname]);
+
+        $context = context::instance_by_id($params['contextid'], MUST_EXIST);
+
+        // We always must call validate_context in a webservice.
+        self::validate_context($context);
+
+        // DO DELETE
+        // get the objects we need
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        $success = \mod_readaloud\local\itemtype\item::delete_item($itemid, $context);
+
+        $ret = new \stdClass();
+        $ret->itemid = $itemid;
+        $ret->error = false;
+        return json_encode($ret);
+    }
+
+    public static function delete_item_returns() {
+        return new external_value(PARAM_RAW);
+        // return new external_value(PARAM_INT, 'group id');
+    }
+
+    public static function move_item_parameters() {
+        return new external_function_parameters(
+                [
+                        'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
+                        'itemid' => new external_value(PARAM_INT, 'The itemid to move'),
+                        'direction' => new external_value(PARAM_TEXT, 'The move direction'),
+                ]
+        );
+    }
+
+    public static function move_item($contextid, $itemid, $direction) {
+        global $CFG, $DB, $USER;
+
+        // We always must pass webservice params through validate_parameters.
+        $params = self::validate_parameters(self::move_item_parameters(),
+                ['contextid' => $contextid, 'itemid' => $itemid, 'direction' => $direction]);
+
+        $context = context::instance_by_id($params['contextid'], MUST_EXIST);
+
+        // We always must call validate_context in a webservice.
+        self::validate_context($context);
+
+        // DO move
+        // get the objects we need
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        \mod_readaloud\local\itemform\helper::move_item($moduleinstance, $itemid, $direction);
+
+        $ret = new \stdClass();
+        $ret->itemid = $itemid;
+        $ret->error = false;
+        return json_encode($ret);
+    }
+
+    public static function move_item_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    public static function duplicate_item_parameters() {
+        return new external_function_parameters(
+            [
+                'contextid' => new external_value(PARAM_INT, 'The context id for the course'),
+                'itemid' => new external_value(PARAM_INT, 'The itemid to move'),
+            ]
+        );
+    }
+
+    public static function duplicate_item($contextid, $itemid) {
+        global $CFG, $DB, $USER;
+
+        // We always must pass webservice params through validate_parameters.
+        $params = self::validate_parameters(self::duplicate_item_parameters(),
+            ['contextid' => $contextid, 'itemid' => $itemid]);
+
+        $context = context::instance_by_id($params['contextid'], MUST_EXIST);
+
+        // We always must call validate_context in a webservice.
+        self::validate_context($context);
+
+        // DO move
+        // get the objects we need
+        $cm = get_coursemodule_from_id('', $context->instanceid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        list($newitemid, $newitemname, $type, $typelabel) = \mod_readaloud\local\itemform\helper::duplicate_item($moduleinstance, $context, $itemid);
+
+        $ret = new \stdClass();
+        $ret->olditemid = $itemid;
+        $ret->newitemid = $newitemid;
+        $ret->newitemname = $newitemname;
+        $ret->type = $type;
+        $ret->typelabel = $typelabel;
+        $ret->error = false;
+        return json_encode($ret);
+    }
+
+    public static function duplicate_item_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    public static function report_quizstep_grade_parameters() {
+        return new external_function_parameters([
+                'cmid' => new external_value(PARAM_INT),
+                'step' => new external_value(PARAM_RAW),
+        ]);
+    }
+
+    public static function report_quizstep_grade($cmid, $step) {
+        $stepdata = json_decode($step);
+        list($success, $message, $returndata) = utils::update_quizstep_grade($cmid, $stepdata);
+        return $success;
+    }
+    public static function report_quizstep_grade_returns() {
+        return new external_value(PARAM_BOOL);
+    }
+
+    public static function evaluate_transcript_parameters() {
+        return new external_function_parameters(
+                ['transcript' => new external_value(PARAM_TEXT, 'The transcript of speaking or writing', VALUE_REQUIRED),
+                        'itemid' => new external_value(PARAM_INT, 'The item id in the readaloud quiz', VALUE_REQUIRED),
+                        'cmid' => new external_value(PARAM_INT, 'The cmid', VALUE_REQUIRED),
+                ]
+        );
+    }
+
+    public static function evaluate_transcript($transcript, $itemid, $cmid) {
+        global $DB;
+        $ret = utils::evaluate_transcript($transcript, $itemid, $cmid);
+        return json_encode($ret);
+    }
+
+    public static function evaluate_transcript_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    public static function fetch_quiz_results_parameters() {
+        return new external_function_parameters(
+                ['cmid' => new external_value(PARAM_INT, 'The cmid', VALUE_REQUIRED)]
+        );
+    }
+
+    public static function fetch_quiz_results($cmid) {
+        global $DB, $USER;
+        $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+        $quizhelper = new \mod_readaloud\quizhelper($cm);
+        $attempts = $DB->get_records(constants::M_USERTABLE, ['userid' => $USER->id, 'readaloudid' => $cm->instance], 'timecreated DESC');
+        $latestattempt = reset($attempts);
+        $ret = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
+        return json_encode($ret);
+    }
+
+    public static function fetch_quiz_results_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    public static function report_activitystep_completion_parameters() {
+        return new external_function_parameters([
+                'cmid' => new external_value(PARAM_INT),
+                'step' => new external_value(PARAM_INT),
+        ]);
+    }
+
+    public static function report_activitystep_completion($cmid, $step) {
+        $success = utils::update_activitystep_completion($cmid, $step);
+        return $success;
+    }
+    public static function report_activitystep_completion_returns() {
+        return new external_value(PARAM_BOOL);
+    }
+
+    public static function fetch_view_data_parameters() {
+        return new external_function_parameters([
+            'cmid' => new external_value(PARAM_INT, 'The cmid', VALUE_REQUIRED),
+            'requestedcontextitems' => new external_value(PARAM_TEXT, 'The data items to return', VALUE_REQUIRED),
+        ]);
+    }
+
+    public static function fetch_view_data($cmid, $requestedcontextitems) {
+        global $DB, $PAGE, $OUTPUT;
+        $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
+        $modulecontext = context_module::instance($cmid);
+        $config = get_config(constants::M_COMPONENT);
+
+
+        // Hacks to make sure we can call renderer without errors
+        $PAGE->set_url('/');
+        $PAGE->set_context($modulecontext);
+        $PAGE->set_cm($cm);
+        $OUTPUT->header();
+        ob_start();
+
+        $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
+        $debug=0;
+        $embed=0;
+        $reviewattempts=0;
+        $appcontext = $renderer->get_view_page_data(
+            $cm,
+            $config,
+            $debug,
+            $embed,
+            $modulecontext,
+            $moduleinstance,
+            $reviewattempts
+        );
+        $appcontextobj = (object) $appcontext;
+        // Trim it back to what was requested.
+        // First remove the html-> jsdata loader stuff.
+        unset($appcontextobj->activityamddata);
+
+        // If its "all" we return everything.
+        if ($requestedcontextitems == 'all') {
+            return $appcontextobj;
+        }
+
+        // Else we make an item array and loop it.
+        $contextitems = explode(',', $requestedcontextitems);
+        $returnobj = new stdClass();
+        foreach ($contextitems as $requestedcontextitem) {
+            $requestedcontextitem = trim($requestedcontextitem);
+            switch($requestedcontextitem){
+                case 'somedatathatneedstobedealtwith':
+                    // Do something special here
+                    break;
+                default:
+                    if (property_exists($appcontextobj, $requestedcontextitem)) {
+                        $returnobj->{$requestedcontextitem} = $appcontextobj->{$requestedcontextitem};
+                    }
+                    break;
+            }
+        }
+        ob_clean();
+        return json_encode($returnobj);
+    }
+
+    public static function fetch_view_data_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+    /**
+     * refresh token
+     * @param string $type
+     * @param string $region
+     * @return string
+     */
+    public static function refresh_token($type, $region) {
+        global $DB, $USER;
+        $fulltoken = false;
+        $params = self::validate_parameters(self::refresh_token_parameters(), [
+            'type' => $type,
+            'region' => $region]);
+        extract($params);
+
+        // Do the token refresh.
+        switch ($type) {
+            // Ms Speech gets its own token type - it uses speech assessment SDK so its not plain transcription.
+            case 'msspeech':
+                $fulltoken = utils::fetch_msspeech_token($region);
+                break;
+
+            case 'assemblyai':
+            case 'azure':
+            default:
+                // The token type that will be fetched isdetermined by the region (and other config settings).
+                // As long as its not msspeech .. it comes in here.
+                $fulltoken = utils::fetch_streaming_token($region);
+        }
+        return json_encode($fulltoken);
+    }
+
+    /**
+     * refresh token parameters
+     * @return external_function_parameters
+     */
+    public static function refresh_token_parameters() {
+        return new external_function_parameters([
+            'type' => new external_value(PARAM_TEXT),
+            'region' => new external_value(PARAM_TEXT),
+        ]);
+    }
+
+    /**
+     * refresh token returns
+     * @return external_value
+     */
+    public static function refresh_token_returns() {
+        return new external_value(PARAM_RAW);
+    }
+
+
 }

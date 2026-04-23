@@ -120,7 +120,7 @@ switch ($showreport) {
 
         /*
     case 'basic':
-        $report = new \mod_readaloud\report\basic();
+        $report = new \mod_readaloud\report\basic($moduleinstance, $cm);
         //formdata should only have simple values, not objects
         //later it gets turned into urls for the export buttons
         $formdata = new stdClass();
@@ -128,7 +128,7 @@ switch ($showreport) {
         */
 
     case 'attempts':
-        $report = new \mod_readaloud\report\attempts();
+        $report = new \mod_readaloud\report\attempts($moduleinstance, $cm);
         echo $renderer->render_hiddenaudioplayer();
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
@@ -137,7 +137,7 @@ switch ($showreport) {
         break;
 
     case 'courseattempts':
-        $report = new \mod_readaloud\report\courseattempts();
+        $report = new \mod_readaloud\report\courseattempts($moduleinstance, $cm);
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
         $formdata->courseid = $moduleinstance->course;
@@ -146,7 +146,7 @@ switch ($showreport) {
         break;
 
     case 'missedwords':
-        $report = new \mod_readaloud\report\missedwords();
+        $report = new \mod_readaloud\report\missedwords($moduleinstance, $cm);
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
         $formdata->courseid = $moduleinstance->course;
@@ -155,7 +155,7 @@ switch ($showreport) {
         break;
 
     case 'attemptssummary':
-        $report = new \mod_readaloud\report\attemptssummary();
+        $report = new \mod_readaloud\report\attemptssummary($moduleinstance, $cm);
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;
         $formdata->modulecontextid = $modulecontext->id;
@@ -163,7 +163,7 @@ switch ($showreport) {
         break;
 
     case 'grading':
-        $report = new \mod_readaloud\report\grading();
+        $report = new \mod_readaloud\report\grading($moduleinstance, $cm);
         echo $renderer->render_hiddenaudioplayer();
         $formdata = new stdClass();
         $formdata->readaloudid = $moduleinstance->id;

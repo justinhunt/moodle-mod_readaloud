@@ -32,7 +32,8 @@ use mod_readaloud\utils;
  * @copyright Justin Hunt <justin@poodll.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class custom_completion extends activity_custom_completion {
+class custom_completion extends activity_custom_completion
+{
 
     /**
      * Fetches the completion state for a given completion rule.
@@ -40,7 +41,8 @@ class custom_completion extends activity_custom_completion {
      * @param string $rule The completion rule.
      * @return int The completion state.
      */
-    public function get_state(string $rule): int {
+    public function get_state(string $rule): int
+    {
         global $DB;
 
         $this->validate_rule($rule);
@@ -54,9 +56,10 @@ class custom_completion extends activity_custom_completion {
      *
      * @return array
      */
-    public static function get_defined_custom_rules(): array {
+    public static function get_defined_custom_rules(): array
+    {
         return [
-      /*      constants::COMPLETION_ALLSTEPS, */
+            constants::COMPLETION_ALLSTEPS,
             constants::COMPLETION_MINGRADE,
         ];
     }
@@ -66,10 +69,11 @@ class custom_completion extends activity_custom_completion {
      *
      * @return array
      */
-    public function get_custom_rule_descriptions(): array {
+    public function get_custom_rule_descriptions(): array
+    {
 
         return [
-        /*    constants::COMPLETION_ALLSTEPS => get_string('completiondetail:allsteps', 'readaloud'),*/
+            constants::COMPLETION_ALLSTEPS => get_string('completiondetail:allsteps', 'readaloud'),
             constants::COMPLETION_MINGRADE => get_string('completiondetail:mingrade', 'readaloud'),
         ];
     }
@@ -79,10 +83,11 @@ class custom_completion extends activity_custom_completion {
      *
      * @return array
      */
-    public function get_sort_order(): array {
+    public function get_sort_order(): array
+    {
         return [
             'completionview',
-         /*   constants::COMPLETION_ALLSTEPS, */
+            constants::COMPLETION_ALLSTEPS,
             constants::COMPLETION_MINGRADE,
             'completionusegrade',
             'completionpassgrade',

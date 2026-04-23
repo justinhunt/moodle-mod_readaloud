@@ -1,0 +1,48 @@
+#mod_readaloud_readreport {
+    .mod_readaloud_readreport_cards {
+        .mod_readaloud_readreport_card {
+            .fs-1 {
+                font-size: $font-size-base * 2.125 !important; // Override Bootstrap fs-1.
+            }
+
+            .stat-label {
+                color: $gray-700;
+                line-height: 1.2;
+            }
+
+            .statbox-icon img.icon {
+                height: 32px;
+                max-height: 32px;
+                width: auto;
+            }
+        }
+    }
+
+    #mod_readaloud_quiztime_container {
+        background: $purple;
+
+        #quiztime_title_container {
+            color: $white;
+
+            h5 {
+                color: inherit;
+                font-weight: $font-weight-semibold;
+            }
+        }
+
+        button.mod_readaloud_takequiz_button,
+        button.mod_readaloud_quizviewreport_button {
+            @include readaloud-btn-variant($white, $white, $purple);
+            min-width: 110px;
+            white-space: nowrap;
+        }
+    }
+
+    .mod_readaloud_readingpassage_section {
+        button[data-action="readagain"] {
+            @include readaloud-btn-variant($purple, $purple, $white);
+            min-width: 110px;
+            white-space: nowrap;
+        }
+    }
+}

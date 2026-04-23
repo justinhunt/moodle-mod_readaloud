@@ -59,18 +59,17 @@ if (has_capability('mod/readaloud:viewreports', $context)) {
 
 }
 
-if(has_capability('mod/readaloud:manage',$context) && $config->enablesetuptab) {
+if(has_capability('mod/readaloud:manage', $context) && $config->enablesetuptab) {
     $row[] = new tabobject('setup', "$CFG->wwwroot/mod/readaloud/setup.php?id=$cm->id",
             get_string('setup', constants::M_COMPONENT), get_string('setup', constants::M_COMPONENT));
 }
 
 if (has_capability('mod/readaloud:manage', $context)) {
-    if(isset($CFG->readaloud_experimental) && $CFG->readaloud_experimental) {
-        $row[] = new tabobject('rsquestions', "$CFG->wwwroot/mod/readaloud/rsquestion/rsquestions.php?id=$cm->id", get_string('rsquestions', constants::M_COMPONENT), get_string('managersquestions', constants::M_COMPONENT));
-    }
-    //model audio
+    // Questions tab.
+    $row[] = new tabobject('rsquestions', "$CFG->wwwroot/mod/readaloud/rsquestion/rsquestions.php?id=$cm->id", get_string('rsquestions', constants::M_COMPONENT), get_string('managersquestions', constants::M_COMPONENT));
+    // Model audio.
     $row[] = new tabobject('modelaudio', "$CFG->wwwroot/mod/readaloud/modelaudio.php?id=$cm->id", get_string('modelaudio', constants::M_COMPONENT), get_string('modelaudio', constants::M_COMPONENT));
-    //admin tab
+    // Admin tab.
     $row[] = new tabobject('admintab', "$CFG->wwwroot/mod/readaloud/admintab.php?id=$cm->id",
         get_string('admintab', constants::M_COMPONENT), get_string('viewadmintab', constants::M_COMPONENT));
 

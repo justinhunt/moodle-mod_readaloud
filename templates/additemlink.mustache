@@ -1,0 +1,11 @@
+{{^modaleditform}}
+    <a href="{{wwwroot}}/mod/readaloud/rsquestion/managersquestions.php?id={{cmid}}&type={{type}}" {{#isbutton}}class="btn btn-secondary m-3"{{/isbutton}}>
+{{/modaleditform}}
+    <div id="mod_readaloud_qedit_{{type}}" data-qtype="{{type}}" data-id="0" data-type="edit" class="mod_readaloud_addlink mod_readaloud_link_box">
+      <div class='mod_readaloud_link_box_title'>
+        {{label}}
+      </div>
+    </div>
+{{^modaleditform}}
+    </a>
+{{/modaleditform}}

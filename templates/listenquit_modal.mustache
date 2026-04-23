@@ -1,0 +1,20 @@
+<div class="modal fade mod_readaloud_listenquitmodal" id="mod_readaloud_listenquitmodal" tabindex="-1" aria-labelledby="listenquitmodallabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex flex-column align-items-center gap-3 pb-0">
+                <span class="icon" aria-hidden="true">
+                    {{> mod_readaloud/practiceicon }}
+                </span>
+                <h5 class="mb-0">{{#str}} timetopractice, mod_readaloud {{/str}}</h5>
+                <p class="mb-0">{{#str}} listenorpractice, mod_readaloud {{/str}}</p>
+            </div>
+            <div class="modal-footer border-top-0 d-flex flex-column p-3">
+                <div id="practice-actions" class="d-flex gap-3 w-100">
+                    <button type="button" class="btn btn-secondary lqm_continue">{{#str}} keeplistening, mod_readaloud {{/str}}</button>
+                    <button type="button" class="btn btn-primary lqm_quit">{{#str}} quitlistening, mod_readaloud {{/str}}</button>
+                </div>
+                <button type="button" class="btn btn-link lqm_forget" data-bs-dismiss="modal">{{#str}} dontshowtilltheend, mod_readaloud {{/str}}</button>
+            </div>
+        </div>
+    </div>
+</div>

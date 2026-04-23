@@ -16,10 +16,9 @@
 
 namespace mod_readaloud\output;
 
-
-defined('MOODLE_INTERNAL') || die();
-
 use mod_readaloud\constants;
+use mod_readaloud\utils;
+use mod_readaloud\quizhelper;
 
 /**
  * A custom renderer class that extends the plugin_renderer_base.
@@ -28,33 +27,139 @@ use mod_readaloud\constants;
  * @copyright COPYRIGHTNOTICE
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class rsquestion_renderer extends \plugin_renderer_base {
+class rsquestion_renderer extends \plugin_renderer_base
+{
 
     /**
      * Return HTML to display add first page links
-     * @param lesson $lesson
+     * @param \context $context
+     * @param int $tableid
      * @return string
      */
-    public function add_edit_page_links($readaloud) {
+    public function add_item_links($context, $tableid)
+    {
         global $CFG;
         $itemid = 0;
+        $config = get_config(constants::M_COMPONENT);
 
-        $output = $this->output->heading(get_string("whatdonow", constants::M_COMPONENT), 3);
+        $output = $this->output->heading(get_string("whatdonow", "readaloud"), 3);
         $links = [];
-        /*
-        $addtextchoiceitemurl = new \moodle_url('/mod/readaloud/rsquestion/managersquestions.php',
-        array('id'=>$this->page->cm->id, 'itemid'=>$itemid, 'type'=>constants::TYPE_TEXTPROMPT_LONG));
-        $links[] = \html_writer::link($addtextchoiceitemurl, get_string('addtextpromptlongitem', constants::M_COMPONENT));
-        */
-        $addtextboxchoiceitemurl = new \moodle_url('/mod/readaloud/rsquestion/managersquestions.php',
-         ['id' => $this->page->cm->id, 'itemid' => $itemid, 'type' => constants::TYPE_TEXTPROMPT_SHORT]);
-        $links[] = \html_writer::link($addtextboxchoiceitemurl, get_string('addtextpromptshortitem', constants::M_COMPONENT));
-        /*
-        $addaudioresponseitemurl = new \moodle_url('/mod/readaloud/rsquestion/managersquestions.php',
-         array('id'=>$this->page->cm->id, 'itemid'=>$itemid, 'type'=>constants::TYPE_TEXTPROMPT_AUDIO));
-        $links[] = \html_writer::link($addaudioresponseitemurl, get_string('addaudioresponseitem', constants::M_COMPONENT));
-        */
-        return $this->output->box($output.'<p>'.implode('</p><p>', $links).'</p>', 'generalbox firstpageoptions');
+
+        $qtypes = [constants::TYPE_PAGE, constants::TYPE_MULTICHOICE];
+        $qtypes[] = constants::TYPE_MULTIAUDIO;
+        $qtypes[] = constants::TYPE_SHORTANSWER;
+        $qtypes[] = constants::TYPE_LGAPFILL;
+        $qtypes[] = constants::TYPE_TGAPFILL;
+        $qtypes[] = constants::TYPE_SGAPFILL;
+        $qtypes[] = constants::TYPE_FREESPEAKING;
+        $qtypes[] = constants::TYPE_FREEWRITING;
+
+        // If modaleditform is true adding and editing item types is done in a popup modal. Thats good ...
+        // but when there is a lot to be edited , a standalone page is better. The modaleditform flag is acted on on additemlink template and rsquestionmanager js
+        $modaleditform = false; // $config->modaleditform == "1";
+        foreach ($qtypes as $qtype) {
+            $data = [
+                'wwwroot' => $CFG->wwwroot,
+                'type' => $qtype,
+                'itemid' => $itemid,
+                'cmid' => $this->page->cm->id,
+                'label' => get_string('add' . $qtype . 'item', constants::M_COMPONENT),
+                'modaleditform' => $modaleditform
+            ];
+            $links[] = $this->render_from_template('mod_readaloud/additemlink', $data);
+        }
+
+        $props = ['contextid' => $context->id, 'tableid' => $tableid, 'modaleditform' => $modaleditform, 'wwwroot' => $CFG->wwwroot, 'cmid' => $this->page->cm->id];
+        $this->page->requires->js_call_amd(constants::M_COMPONENT . '/rsquestionmanager', 'init', [$props]);
+
+        return $this->output->box($output . implode("", $links), 'generalbox firstpageoptions mod_readaloud_link_box_container');
+    }
+
+    public function add_multichoice_item_link($context, $tableid)
+    {
+        global $CFG;
+        $itemid = 0;
+        $config = get_config(constants::M_COMPONENT);
+
+        // If modaleditform is true adding and editing item types is done in a popup modal. Thats good ...
+        // but when there is a lot to be edited , a standalone page is better. The modaleditform flag is acted on on additemlink template and rsquestionmanager js
+        $modaleditform = false; // $config->modaleditform == "1";
+
+        $data = [
+            'wwwroot' => $CFG->wwwroot,
+            'type' => constants::TYPE_MULTICHOICE,
+            'itemid' => $itemid,
+            'cmid' => $this->page->cm->id,
+            'isbutton' => true,
+            'label' => get_string('addquestion', constants::M_COMPONENT),
+            'modaleditform' => $modaleditform
+        ];
+
+        $output = $this->output->heading(get_string("whatdonow", "readaloud"), 3);
+        $links = [$this->render_from_template('mod_readaloud/additemlink', $data)];
+        $props = ['contextid' => $context->id, 'tableid' => $tableid, 'modaleditform' => $modaleditform, 'wwwroot' => $CFG->wwwroot, 'cmid' => $this->page->cm->id];
+        $this->page->requires->js_call_amd(constants::M_COMPONENT . '/rsquestionmanager', 'init', [$props]);
+        return $this->output->box($output . implode("", $links), 'generalbox firstpageoptions mod_readaloud_link_box_container');
+    }
+
+
+    /**
+     * Setup datatables with the given table ID.
+     *
+     * @param int $tableid The ID of the table to setup.
+     */
+    public function setup_datatables($tableid)
+    {
+        global $USER;
+
+        $tableprops = [];
+        $columns = [];
+        // for cols .. .'itemname', 'itemtype', 'itemtags','timemodified', 'action'
+        $columns[0] = ['orderable' => false];
+        $columns[1] = ['orderable' => false];
+        $columns[2] = ['orderable' => false];
+        $columns[3] = ['orderable' => false];
+        $columns[4] = ['orderable' => false];
+        $columns[5] = ['orderable' => false];
+        $tableprops['columns'] = $columns;
+        $tableprops['dom'] = 'lBfrtip';
+
+        // Default ordering.
+        $order = [];
+        $order[0] = [1, "asc"];
+        $tableprops['order'] = $order;
+
+        // Here we set up any info we need to pass into javascript.
+        $opts = [];
+        $opts['tableid'] = $tableid;
+        $opts['tableprops'] = $tableprops;
+        $this->page->requires->js_call_amd(constants::M_COMPONENT . "/datatables", 'init', [$opts]);
+        $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css'));
+        $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/buttons/3.2.0/css/buttons.dataTables.min.css'));
+        $this->page->requires->strings_for_js(['bulkdelete', 'bulkdeletequestion'], constants::M_COMPONENT);
+    }
+
+    public function show_no_items($cm, $showadditemlinks)
+    {
+        $displaytext = $this->output->box_start();
+        $displaytext .= $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
+        if ($showadditemlinks) {
+            $displaytext .= \html_writer::div(get_string('letsadditems', constants::M_COMPONENT), '', []);
+            $displaytext .= $this->output->single_button(new \moodle_url(
+                constants::M_URL . '/rsquestion/rsquestions.php',
+                ['id' => $cm->id]
+            ), get_string('additems', constants::M_COMPONENT));
+        }
+        $displaytext .= $this->output->box_end();
+        $ret = \html_writer::div($displaytext, constants::M_NOITEMS_CONT, ['id' => constants::M_NOITEMS_CONT]);
+        return $ret;
+    }
+    function show_noitems_message($itemsvisible)
+    {
+        $message = $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
+        $displayvalue = $itemsvisible ? 'none' : 'block';
+        $ret = \html_writer::div($message, constants::M_NOITEMS_CONT, ['id' => constants::M_NOITEMS_CONT, 'style' => 'display: ' . $displayvalue]);
+        return $ret;
     }
 
     /**
@@ -63,86 +168,117 @@ class rsquestion_renderer extends \plugin_renderer_base {
      * @param integer $courseid
      * @return string html of table
      */
-    function show_items_list($items, $readaloud, $cm) {
+    public function show_items_list($items, $readaloud, $cm, $visible)
+    {
 
-        if(!$items){
-            return $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
+        // new code
+        $data = [];
+        $data['tableid'] = constants::M_ITEMS_TABLE;
+        $data['display'] = $visible ? 'block' : 'none';
+        $itemsarray = [];
+        foreach (array_values($items) as $i => $item) {
+            $arrayitem = (Array) $item;
+            $arrayitem['index'] = ($i + 1);
+            // due to odd  data in the field from legacy times we need to check for empty or oddstrings
+            $arrayitem['typelabel'] = empty($arrayitem['type']) || strlen($arrayitem['type']) < 4 ? 'unknown' : get_string($arrayitem['type'], constants::M_COMPONENT);
+            $itemsarray[] = $arrayitem;
+        }
+        $data['items'] = $itemsarray;
+
+        $uppix = new \pix_icon('t/up', get_string('up'));
+        $downpix = new \pix_icon('t/down', get_string('down'));
+        $data['up'] = $uppix->export_for_pix();
+        $data['down'] = $downpix->export_for_pix();
+
+        return $this->render_from_template('mod_readaloud/itemlist', $data);
+
+    }
+
+    public function fetch_quizfinished_data($quizhelper, $moduleinstance, $latestattempt, $cm)
+    {
+        // Finished quiz results div.
+        $quizisfinished = utils::quiz_is_finished($moduleinstance, $latestattempt, $cm);
+        if ($quizisfinished) {
+            $finisheddata = utils::fetch_quiz_results($quizhelper, $latestattempt, $cm);
+            $finisheddata->isfinished = true;
+            $finisheddata->canreattemptquiz = $moduleinstance->quizreattempt ? true : false;
+            $modulecontext = \context_module::instance($cm->id);
+            $finisheddata->activityname = format_string($moduleinstance->name);
+            $finisheddata->backurl = (new \moodle_url('/mod/readaloud/view.php', ['id' => $cm->id]))->out(false);
+            $finisheddata->passagepictureurl = utils::get_passage_picture($moduleinstance, $modulecontext);
+        } else {
+            $finisheddata = new \stdClass();
+            $finisheddata->isfinished = false;
+        }
+        return $finisheddata;
+    }
+
+    /**
+     *  Show quiz container
+     */
+    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm)
+    {
+
+        // Quiz items data div.
+        $quizdata = $quizhelper->fetch_quiz_items_for_js();
+        $itemshtml = [];
+        foreach ($quizdata as $item) {
+            $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/qi_' . $item->type, $item);
         }
 
-        $table = new \html_table();
-        $table->id = constants::M_COMPONENT . '_qpanel';
-        $table->head = [
-        get_string('itemname', constants::M_COMPONENT),
-        get_string('itemtype', constants::M_COMPONENT),
-        get_string('actions', constants::M_COMPONENT),
-        ];
-        $table->headspan = [1, 1, 3];
-        $table->colclasses = [
-        'itemname', 'itemtype', 'order', 'edit', 'delete',
-        ];
+        $quizattributes = ['id' => constants::M_QUIZ_ITEMS_CONTAINER];
+        // Div style if we have a custom font use it. If quiz has results, items are by default hidden.
+        $style = '';
+        if (!empty($moduleinstance->lessonfont)) {
+            $style .= "font-family: '$moduleinstance->lessonfont', serif;";
+        }
+        $quizattributes['style'] = $style;
 
-        // sort by start date
-        // core_collator::asort_objects_by_property($items,'timecreated',core_collator::SORT_NUMERIC);
-        // core_collator::asort_objects_by_property($items,'name',core_collator::SORT_STRING);
+        // Quiz items div.
+        $quizitemsclass = constants::M_QUIZ_ITEMS_CONTAINER;
+        $quizitemsdiv = \html_writer::div(implode('', $itemshtml), $quizitemsclass, $quizattributes);
 
-        // loop through the items and add to table
-        $currentitem = 0;
-        foreach ($items as $item) {
-            $currentitem++;
-            $row = new \html_table_row();
+        $ret = $quizitemsdiv;
+        return $ret;
+    }
 
-            $itemnamecell = new \html_table_cell($item->name);
-            switch ($item->type) {
+    public function show_quiz_preview($quizhelper, $qid)
+    {
 
-                case constants::TYPE_TEXTPROMPT_LONG:
-                    $itemtype = get_string('textchoice', constants::M_COMPONENT);
-                    break;
-
-                case constants::TYPE_TEXTPROMPT_AUDIO:
-                    $itemtype = get_string('audioresponse', constants::M_COMPONENT);
-                    break;
-
-                case constants::TYPE_TEXTPROMPT_SHORT:
-                default:
-                    $itemtype = get_string('textboxchoice', constants::M_COMPONENT);
+        // quiz data
+        $quizdata = $quizhelper->fetch_quiz_items_for_js();
+        $itemshtml = [];
+        foreach ($quizdata as $item) {
+            if ($item->id == $qid) {
+                $itemshtml[] = $this->render_from_template(constants::M_COMPONENT . '/qi_' . $item->type, $item);
             }
-            $itemtypecell = new \html_table_cell($itemtype);
-
-            $actionurl = '/mod/readaloud/rsquestion/managersquestions.php';
-            $editurl = new \moodle_url($actionurl, ['id' => $cm->id, 'itemid' => $item->id]);
-            $editlink = \html_writer::link($editurl, get_string('edititem', constants::M_COMPONENT));
-            $editcell = new \html_table_cell($editlink);
-
-            $movecellcontent = '';
-            $spacer = '';
-            if ($currentitem > 1) {
-                $upurl = new \moodle_url($actionurl, ['id' => $cm->id, 'itemid' => $item->id, 'action' => 'moveup']);
-                // $uplink = \html_writer::link($upurl,  new pix_icon('t/up', get_string('up'), '', array('class' => 'iconsmall')));
-                $uplink = $this->output->action_icon($upurl, new \pix_icon('t/up', get_string('up'), '', ['class' => 'iconsmall']));
-                $movecellcontent .= $uplink;
-            } else {
-                $movecellcontent .= $spacer;
-            }
-
-            if ($currentitem < count($items)) {
-                $downurl = new \moodle_url($actionurl, ['id' => $cm->id, 'itemid' => $item->id, 'action' => 'movedown']);
-                // $downlink = \html_writer::link($downurl,  new pix_icon('t/down', get_string('down'), '', array('class' => 'iconsmall')));
-                $downlink = $this->output->action_icon($downurl, new \pix_icon('t/down', get_string('down'), '', ['class' => 'iconsmall']));
-                $movecellcontent .= $downlink;
-            }
-            $movecell = new \html_table_cell($movecellcontent);
-
-            $deleteurl = new \moodle_url($actionurl, ['id' => $cm->id, 'itemid' => $item->id, 'action' => 'confirmdelete']);
-            $deletelink = \html_writer::link($deleteurl, get_string('deleteitem', constants::M_COMPONENT));
-            $deletecell = new \html_table_cell($deletelink);
-
-            $row->cells = [
-            $itemnamecell, $itemtypecell, $movecell, $editcell, $deletecell,
-            ];
-            $table->data[] = $row;
         }
 
-        return \html_writer::table($table);
+        // Quiz items div.
+        $quizitemsdiv = \html_writer::div(implode('', $itemshtml),
+            constants::M_QUIZ_ITEMS_CONTAINER,
+            ['id' => constants::M_QUIZ_ITEMS_CONTAINER]);
 
+
+        // Quiz div
+        $quizdiv = \html_writer::div(
+            $quizitemsdiv,
+            constants::M_QUIZ_CONTAINER_WRAP,
+            ['id' => constants::M_QUIZ_CONTAINER_WRAP]
+        );
+
+        return $quizdiv;
+    }
+
+    /**
+     * Return HTML to display message about problem
+     */
+    public function show_problembox($msg)
+    {
+        $output = '';
+        $output .= $this->output->box_start(constants::M_COMPONENT . '_problembox');
+        $output .= $this->notification($msg, 'warning');
+        $output .= $this->output->box_end();
+        return $output;
     }
 }

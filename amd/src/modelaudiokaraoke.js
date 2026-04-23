@@ -1,4 +1,4 @@
-define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def) {
+define(['jquery', 'core/log','mod_readaloud/definitions'], function($, log,  def) {
   "use strict"; // jshint ;_;
   /*
   This file runs preview and shadow and L-and-R modes, highlighting text as the player reaches it.
@@ -9,9 +9,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
   return {
     controls: {},
     breaks: [],
-    endwordnumber: 0,
     currentstartbreak: false,
     modeling: false,
+    thelistenquitmodal: true,
 
     //class definitions
     cd: {
@@ -23,7 +23,10 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
       passagecontainer: def.passagecontainer,
       activesentence: def.activesentence,
       stopbutton: 'mod_readaloud_button_stop',
-      playbutton: 'mod_readaloud_button_play'
+      playbutton: 'mod_readaloud_button_play',
+      listenquitmodal: 'mod_readaloud_listenquitmodal',
+      hidelistenquitmodal: 'mod_readaloud_hidelistenquitmodal'
+
     },
 
     //init the module
@@ -41,9 +44,6 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
 
       //register the controls
       this.register_controls();
-
-      //register the end word number
-      this.endwordnumber = this.controls.eachword.length;
 
       //register the events
       this.register_events();
@@ -88,6 +88,10 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
       return this.controls.audioplayer.attr('src');
     },
 
+    fetch_endwordnumber: function() {
+        return this.controls.eachword.length;
+    },
+
     //load all the controls so we do not have to do it later
     register_controls: function() {
       this.controls.audioplayer = $('#' + this.cd.audioplayerclass);
@@ -97,6 +101,12 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
       this.controls.passagecontainer = $("." + this.cd.passagecontainer);
       this.controls.stopbutton = $('#' + this.cd.stopbutton);
       this.controls.playbutton = $('#' + this.cd.playbutton);
+      this.controls.listenquitmodal = $('#' + this.cd.listenquitmodal);
+      this.controls.hidelistenquitmodal = $('#' + this.cd.hidelistenquitmodal);
+      this.controls.lqm_quitbutton = this.controls.listenquitmodal.find('.lqm_quit');
+      this.controls.lqm_continuebutton = this.controls.listenquitmodal.find('.lqm_continue');
+      this.controls.lqm_forgetbutton = this.controls.listenquitmodal.find('.lqm_forget');
+      this.controls.stopandplay = this.controls.playbutton.closest('.control--playbutton');
     },
 
     //attach the various event handlers we need
@@ -106,13 +116,67 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
       // Get the audio element
       var aplayer = this.controls.audioplayer[0];
 
-      this.controls.playbutton.on('click', function() {
-        aplayer.play();
+      // Unbind existing events to prevent duplicates when re-registering
+      this.controls.stopandplay.off('keypress click');
+      this.controls.lqm_quitbutton.off('click');
+      this.controls.lqm_continuebutton.off('click');
+      this.controls.lqm_forgetbutton.off('click');
+      this.controls.eachwordorspace.off('click');
+
+      this.controls.stopandplay.on('keypress', function (e) {
+        if (e.which === 32 || e.which === 13) { // Space or Enter
+          var $btn = that.controls.stopandplay
+          var shouldplay = $btn.attr('aria-pressed') === 'true';
+          if (shouldplay) {
+            that.do_audio_play();
+          } else {
+            that.do_audio_stop();
+          }
+          e.stopPropagation();
+        }
       });
 
-      this.controls.stopbutton.on('click', function() {
+      // Only the icon handles the click properly, the red/green halo stopandplay does not.
+      // So we need to rely on the aria-pressed state to determine what to do.
+      this.controls.stopandplay.on('click', function(e) {
+          var $btn = that.controls.stopandplay
+          var shouldplay = $btn.attr('aria-pressed') === 'false';
+          if (shouldplay) {
+            that.do_audio_play();
+          } else {
+            that.do_audio_stop();
+          }
+          e.stopPropagation();
+      });
+
+      this.controls.lqm_quitbutton.on('click', function() {
+        //stop the audio and reset to start
+        that.hide_listenquitmodal();
         aplayer.pause();
-        aplayer.currentTime=0;
+        aplayer.currentTime = 0;
+        that.on_complete();
+        //re-enable the listenquit modal and forget button (if it was hidden)
+        that.thelistenquitmodal=true;
+        that.controls.lqm_forgetbutton.removeClass('d-none');
+      });
+
+      this.controls.lqm_continuebutton.on('click', function() {
+        //stop the audio and reset to start
+        that.hide_listenquitmodal();
+        var finishedplaying = aplayer.ended || aplayer.currentTime === aplayer.duration;
+        if(finishedplaying) {
+          aplayer.currentTime = 0;
+          //re-enable the listenquit modal and forget button (if it was hidden)
+          that.controls.lqm_forgetbutton.removeClass('d-none');
+          that.thelistenquitmodal=true;
+        }
+        that.do_audio_play();
+      });
+
+      this.controls.lqm_forgetbutton.on('click', function() {
+        $(this).addClass('d-none');
+        that.thelistenquitmodal=false;
+        that.controls.lqm_continuebutton.click();
       });
 
       //if we are not modeling we want to jump to the clicked location
@@ -135,6 +199,9 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
             aplayer.pause();
             aplayer.currentTime = nearest_start_break.audiotime;
             aplayer.play();
+            // we want to ensure the button state stays in sync with the play state
+            that.controls.stopandplay.attr('aria-pressed', 'true');
+
           }
         } //end of if not modeling
       }); //end of eachwordorspace
@@ -144,16 +211,21 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
         var currentTime = aplayer.currentTime;
         var startbreak = false;
         var nextbreak = false;
+
+        //get the end word number
+        var endwordnumber = that.controls.eachword.length;
+
+
         for (var i = 0; i < that.breaks.length; i++) {
 
           //if this is the last marked break (ie flow till end)
           if (currentTime >= that.breaks[i].audiotime && i + 1 === that.breaks.length) {
             startbreak = that.breaks[i];
             nextbreak = {
-              wordnumber: that.endwordnumber + 1,
+              wordnumber: endwordnumber + 1,
               audiotime: 0
             };
-            //if its just between two breaks (yay)
+            // If it's just between two breaks (yay).
           } else if (currentTime >= that.breaks[i].audiotime && currentTime < that.breaks[i + 1].audiotime) {
             startbreak = that.breaks[i];
             nextbreak = that.breaks[i + 1];
@@ -171,8 +243,8 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
         }
         //if the current break changed since last time, we go in here
         // (on first time through we want to flag  "changed" so that is why a false current startbreak goes to "changed"
-        //in the special case that we reached the end of the passage we need to raise the eevent
-        var islastbreak = aplayer.ended && nextbreak.audiotime===0;
+        //in the special case that we reached the end of the passage we need to raise the event
+        var islastbreak = aplayer.ended && (nextbreak.audiotime===0 || nextbreak === false);
         if (that.currentstartbreak === false || startbreak.wordnumber !== that.currentstartbreak.wordnumber || islastbreak) {
           var finishedsentence = $('.' + that.cd.activesentence).text();
           that.previousstartbreak = that.currentstartbreak;
@@ -184,7 +256,24 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
               $('#' + that.cd.spaceclass + '_' + thewordnumber).addClass((that.cd.activesentence));
               $('#' + that.cd.wordclass + '_' + thewordnumber).addClass((that.cd.activesentence));
             }
+          } else if (startbreak === false && nextbreak === false) {
+            //highlight to end in the case that there is only one sentence
+            that.controls.eachword.addClass(that.cd.activesentence);
+            that.controls.eachspace.addClass(that.cd.activesentence);
+
           }
+
+          //If it is the last break, show our Modal
+          if (islastbreak) {
+            that.show_listenquitmodal();
+            // ensure the button state stays in sync with the play state
+            // audio has ended so show the stop button
+            that.controls.stopandplay.attr('aria-pressed', 'false');
+          }
+
+        //  log.debug('Current start break:');
+        //  log.debug(that.currentstartbreak);
+        //  log.debug('finished sentence:' + finishedsentence);
           that.on_reach_audio_break(finishedsentence, that.previousstartbreak, that.currentstartbreak, that.breaks);
         }
       };
@@ -203,9 +292,49 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions'], function($, log, def
     }, //end of register events
 
 
-    on_reach_audio_break: function(sentence, oldbreak, newbreak, breaks) {
+    do_audio_play: function() {
+      var that = this;
+      that.controls.stopandplay.attr('aria-pressed',  'true');
+      var aplayer = this.controls.audioplayer[0];
+      aplayer.play();
+    },
+
+    do_audio_stop: function() {
+      var that = this;
+      that.controls.stopandplay.attr('aria-pressed',  'false');
+      var aplayer = that.controls.audioplayer[0];
+      aplayer.pause();
+
+      // If after halfway allow them to stop listening and practice
+      var afterhalfway = aplayer.currentTime > (aplayer.duration / 2);
+
+      // Should we show the modal?
+      afterhalfway = true; //for now lets not restrict it to halfway
+      var shouldshow = afterhalfway && that.thelistenquitmodal;
+      if(shouldshow) {
+        that.show_listenquitmodal();
+      }
+    },
+
+    // Callback for when the listen mode is complete, overridden by activity controller.
+    on_complete: function() {},
+
+    show_listenquitmodal: function() {
+      var that = this;
+      that.controls.hidelistenquitmodal.click();
+    },
+
+    hide_listenquitmodal: function() {
+      var that = this;
+      that.controls.hidelistenquitmodal.click();
+    },
+
+
+    on_reach_audio_break: function(sentence, oldbreak, newbreak, nextbreak, breaks) {
       log.debug(sentence);
+      log.debug('Previous/old break:');
       log.debug(oldbreak);
+      log.debug('Current/new break:');
       log.debug(newbreak);
     }
 

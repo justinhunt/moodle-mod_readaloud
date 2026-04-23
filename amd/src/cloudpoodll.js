@@ -75,7 +75,7 @@ define(['jquery', 'core/log'], function ($, log) {
             //cancel out if this div was already processed
             if(attributes.hasOwnProperty('alreadyparsed') ){
                 if(attributes['alreadyparsed']=='true'){
-                   // console.log("Can only parse a cloudpoodll element once. Cancelling.");
+                    // console.log("Can only parse a cloudpoodll element once. Cancelling.");
                     return false;
                 }
             }
@@ -84,7 +84,7 @@ define(['jquery', 'core/log'], function ($, log) {
             if(attributes.hasOwnProperty('cloudpoodllurl') ){
                 this.setBaseUrl(attributes['cloudpoodllurl']);
             }
-            
+
             //fix up default attributes if the user did not set them
             //parent
             if(!attributes.hasOwnProperty('parent') ){
@@ -229,7 +229,7 @@ define(['jquery', 'core/log'], function ($, log) {
                 //dont know how to get this and its probably not important yet
                 //fullVersion = '1.0';
 
-            // In Opera, the true version is after "Opera" or after "Version"
+                // In Opera, the true version is after "Opera" or after "Version"
             }else if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
                 browserName = "Opera";
                 //fullVersion = nAgt.substring(verOffset+6);

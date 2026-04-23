@@ -1,0 +1,35 @@
+<div id="mod_readaloud_readreport_cont" class='mod_readaloud_readreport_cont mod_readaloud_center' style="display: none">
+    <div class='mod_readaloud_readreport_heading'>
+        {{#ready}}
+            {{#showstats}}{{#str}}evaluatedmessage , mod_readaloud{{/str}}{{/showstats}}
+            {{^showstats}}{{#str}}hiddenevaluationmessage, mod_readaloud{{/str}}{{/showstats}}
+            {{#notingradebook}}{{#str}}notaddedtogradebook , mod_readaloud{{/str}}{{/notingradebook}}
+        {{/ready}}
+        {{^ready}}
+            {{#remotetranscribe}}
+                {{#str}}notgradedyet , mod_readaloud{{/str}}
+            {{/remotetranscribe}}
+            {{^remotetranscribe}}
+                {{#str}}notmanuallygradedyet , mod_readaloud{{/str}}
+            {{/remotetranscribe}}
+        {{/ready}}
+    </div>
+    {{> mod_readaloud/readreportplayer}}
+    {{> mod_readaloud/readreportrating}}
+    <div class='mod_readaloud_readreport_status'>
+            {{^ready}}
+                {{#remotetranscribe}}
+                    {{#str}}waiting , mod_readaloud{{/str}}
+                {{/remotetranscribe}}
+                {{^remotetranscribe}}
+                    {{#str}}waitingforteacher , mod_readaloud{{/str}}
+                {{/remotetranscribe}}
+            {{/ready}}
+    </div>
+    <div class='mod_readaloud_readreport_readagainbutton {{^ready}}hide{{/ready}}'>
+        <a id="{{readagainbutton}}" class="btn btn-secondary" href="#">{{#str}}readagain , mod_readaloud{{/str}}</a>
+    </div>
+    {{> mod_readaloud/fullreport}}
+    <!-- Hidden input storing JSON configuration -->
+    <input id="{{configcontrolid}}" type="hidden" value="{{configjsonstring}}" />
+</div>

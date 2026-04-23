@@ -1,0 +1,87 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/activity_body
+
+    The Read Aloud activity body.
+    Contains the home/menu navigation, hidden inputs for JS configuration,
+    recorder components, and dynamic mode view container.
+
+    Context variables required for this template:
+    * M_UPDATE_CONTROL - CSS class/ID for update control input
+    * activityamddata - AMD/JS configuration data including widgetid and jsonstring
+    * recorder - Recorder component data (optional)
+    * landr - Listen and repeat modal container flag (optional)
+
+    Example context (json):
+    {
+        "M_UPDATE_CONTROL": "mod_readaloud_update_control",
+        "activityamddata": {
+            "widgetid": "12345",
+            "jsonstring": "{\"templatecontext\":{...},\"recorderid\":\"...\"}"
+        },
+        "recorder": {
+            "recorderid": "mod_readaloud_recorder",
+            "skin": "standard"
+        },
+        "landr": true
+    }
+}}
+
+<div>
+    {{> mod_readaloud/home}}
+    {{> mod_readaloud/footernav}}
+
+    <!-- Hidden input for update control -->
+    <input id="{{M_UPDATE_CONTROL}}" type="hidden">
+
+    <!-- Hidden input storing JSON configuration -->
+    <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
+
+    {{#recorder}}
+        {{> mod_readaloud/recorder}}
+    {{/recorder}}
+
+    {{#landr}}
+        {{>mod_readaloud/modalcontainer}}
+    {{/landr}}
+
+    {{>mod_readaloud/hiddenaudioplayer}}
+
+    <!-- read report data with data for passage markup -->
+    <input id="{{readreport.configcontrolid}}" type="hidden" value="{{readreport.configjsonstring}}" />
+
+    <!--
+    {{#feedback}}
+    <div id="{{M_FEEDBACK_CONTAINER}}" class="{{M_FEEDBACK_CONTAINER}}">
+        <div class="box">
+            <div class="{{M_CLASS}}_center">
+                {{{feedback}}}
+            </div>
+        </div>
+    </div>
+    {{/feedback}}
+
+    {{#error}}
+    <div id="{{M_ERROR_CONTAINER}}" class="{{M_ERROR_CONTAINER}}">
+        <div class="box">
+            <h3 class="main">{{#str}} errorheader, mod_readaloud {{/str}}</h3>
+            <div>{{#str}} uploadconverterror, mod_readaloud {{/str}}</div>
+        </div>
+    </div>
+    {{/error}}-->
+</div>

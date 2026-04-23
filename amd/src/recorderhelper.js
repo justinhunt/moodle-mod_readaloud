@@ -1,4 +1,4 @@
-define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, log, cloudpoodll) {
+define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, log, cloudpoodllloader) {
     "use strict"; // jshint ;_;
     /*
     This file sets up the cloud poodll recorder and passes on events to registered handlers
@@ -8,7 +8,17 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
 
     return {
 
+        opts: null,
         status: 'stopped',
+
+        reset: function () {
+            //before we reset, make sure we were initialized in the first place
+            if (this.opts !== null) {
+                var container = $('#' + this.opts['recorderid']);
+                container.attr('data-alreadyparsed', 'false');
+                container.html('');
+            }
+        },
 
         init: function (opts, on_recording_start,
                         on_recording_end,
@@ -16,8 +26,9 @@ define(['jquery', 'core/log', 'mod_readaloud/cloudpoodllloader'], function ($, l
                         on_speech) {
 
             var that = this;
-            var recid=opts['recorderid'];
-            cloudpoodll.init(recid,
+            that.opts = opts;
+            var recid = opts['recorderid'];
+            cloudpoodllloader.init(recid,
                 function (message) {
                     switch (message.type) {
                         case 'recording':

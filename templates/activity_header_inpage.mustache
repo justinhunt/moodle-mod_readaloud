@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/activity_header_inpage
+
+    Inpage activity header for the Read Aloud activity.
+    Note: Activity name is NOT shown here as it's already in the page header.
+
+    Example context (json):
+    {
+        "backurl": "/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "modeinstructions": "Listen to a speaker read the passage aloud..."
+    }
+}}
+
+<div class="mod_readaloud-activity-header-inpage d-flex flex-column gap-4 mb-4">
+    <div class="mod_readaloud-activity-header-main rounded d-flex flex-nowrap align-items-center p-3 gap-3"
+        data-for="page-activity-header">
+        <a href="{{backurl}}" class="backarrow d-inline-flex align-items-center" data-action="back-to-home">
+            {{> mod_readaloud/backarrow}}
+        </a>
+        {{#passagepictureurl}}
+        <div class="mod_readaloud-activity-picture">
+            <img src="{{passagepictureurl}}" alt=""></img>
+        </div>
+        {{/passagepictureurl}}
+
+        <div class="mod_readaloud_instructions">
+            {{$instructions}} ** default instructions ** {{/instructions}}
+        </div>
+    </div>
+</div>

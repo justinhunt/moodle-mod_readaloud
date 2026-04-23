@@ -1,0 +1,20 @@
+<div id="{{M_STOPANDPLAY}}" class="d-flex flex-column align-items-center">
+    <button
+        class="control control--playbutton"
+        type="button"
+        aria-label="{{label}}"
+        aria-pressed="{{pressed}}"
+        aria-describedby="playbutton-desc"
+        data-control="{{name}}"
+    >
+        <span id="{{M_PLAY_BTN}}">
+        {{> mod_readaloud/play}}
+        </span>
+        <span id="{{M_STOP_BTN}}">
+        {{> mod_readaloud/stop}}
+        </span>
+    </button>
+    <span id="playbutton-desc" class="control-label p-2">
+        {{#str}} taptolisten, mod_readaloud {{/str}}
+    </span>
+</div>

@@ -14,10 +14,23 @@ use \mod_readaloud\utils;
 class attemptssummary extends basereport {
 
     protected $report = "attemptssummary";
-    protected $fields = array('id', 'username', 'totalattempts', 'av_wpm', 'av_accuracy_p', 'av_grade_p','h_wpm', 'h_accuracy_p', 'h_grade_p');
+    protected $fields = array('id', 'username', 'totalattempts', 'av_wpm', 'av_accuracy_p', 'av_readgrade_p',
+            'av_quizscore_p', 'h_wpm', 'h_accuracy_p', 'h_readgrade_p','h_quizscore_p');
     protected $headingdata = null;
     protected $qcache = array();
     protected $ucache = array();
+    protected $qenabled = true;
+
+    public function __construct($moduleinstance, $cm) {
+        parent::__construct($moduleinstance, $cm);
+        // If there is no quiz, remove quiz fields
+        if(!$this->quizhelper->quiz_enabled()){
+            $this->qenabled = false;
+            $this->fields = array_filter($this->fields, function($key) {
+                return !in_array($this->fields[$key], ['av_quizscore_p','h_quizscore_p']);
+            }, ARRAY_FILTER_USE_KEY);
+        }
+    }
 
     public function fetch_formatted_field($field, $record, $withlinks) {
         global $DB, $CFG, $OUTPUT;
@@ -46,22 +59,27 @@ class attemptssummary extends basereport {
                 }
                 break;
 
-            //WPM
+            // WPM.
             case 'av_wpm':
                 $ret = $record->av_wpm;
                 break;
 
-            //accuracy
+            // Accuracy.
             case 'av_accuracy_p':
                 $ret = $record->av_accuracy;
                 break;
 
-            //grade
-            case 'av_grade_p':
+            // Read grade.
+            case 'av_readgrade_p':
                 $ret = $record->av_sessionscore;
                 break;
 
-            //Highest WPM
+            // Quiz grade.
+            case 'av_quizscore_p':
+                $ret = $record->av_quizscore;
+                break;    
+
+            // Highest WPM.
             case 'h_wpm':
                 $ret = $record->h_wpm;
                 break;
@@ -72,9 +90,14 @@ class attemptssummary extends basereport {
                 break;
 
             //Highest grade
-            case 'h_grade_p':
+            case 'h_readgrade_p':
                 $ret = $record->h_sessionscore;
                 break;
+
+             //Highest grade
+             case 'h_quizscore_p':
+                $ret = $record->h_quizscore;
+                break;    
 
             default:
                 if (property_exists($record, $field)) {
@@ -202,6 +225,8 @@ class attemptssummary extends basereport {
                     $totals->h_accuracy = $thedata->accuracy;
                     $totals->total_sessionscore = $thedata->sessionscore;
                     $totals->h_sessionscore = $thedata->sessionscore;
+                    $totals->total_quizscore = $thedata->qscore;
+                    $totals->h_quizscore = $thedata->qscore;
                     $totals->totalattempts = 1;
                     $user_totals[$thedata->userid] = $totals;
                     continue;
@@ -214,6 +239,8 @@ class attemptssummary extends basereport {
                     $totals->h_accuracy = max($totals->h_accuracy, $thedata->accuracy);
                     $totals->total_sessionscore += $thedata->sessionscore;
                     $totals->h_sessionscore = max($totals->h_sessionscore, $thedata->sessionscore);
+                    $totals->total_quizscore += $thedata->qscore;
+                    $totals->h_quizscore = max($totals->h_quizscore, $thedata->qscore);
                     $totals->totalattempts++;
                     continue;
                 }
@@ -225,6 +252,7 @@ class attemptssummary extends basereport {
                $oneuser->av_wpm = round($oneuser->total_wpm / $oneuser->totalattempts,1);
                $oneuser->av_accuracy = round($oneuser->total_accuracy / $oneuser->totalattempts,1);
                $oneuser->av_sessionscore = round($oneuser->total_sessionscore / $oneuser->totalattempts,1);
+               $oneuser->av_quizscore = round($oneuser->total_quizscore / $oneuser->totalattempts,1);
                 $this->rawdata[] = $oneuser;
             }
         } else {

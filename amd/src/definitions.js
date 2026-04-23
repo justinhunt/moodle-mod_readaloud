@@ -24,6 +24,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
         //grade now
         //passagecontainer: 'mod_readaloud_grading_passagecont',
+        fullreportcontainer: 'mod_readaloud_fullreport_cont',
         passagecontainer: 'mod_readaloud_passage_cont',
         audioplayerclass: 'mod_readaloud_hiddenaudioplayer',
         wordplayerclass: 'mod_readaloud_hidden_player',
@@ -79,19 +80,52 @@ define(['jquery', 'core/log'], function ($, log) {
         modeltranscript: 'mod_readaloud_modeltranscript',
         transcriber_amazonstreaming: 4,
 
-        //small report
-        smallreportcontainer: 'mod_readaloud_smallreport_cont',
-        smallreportrating: 'mod_readaloud_smallreport_rating',
-        smallreportstars: 'mod_readaloud_smallreport_stars',
-        smallreportcards: 'mod_readaloud_smallreport_cards',
-        smallreportplayer: 'mod_readaloud_smallreport_player',
-        smallreportdummyplayer: 'mod_readaloud_smallreport_dummyplayer',
-        smallreportstatus: 'mod_readaloud_smallreport_status',
-        smallreportheading: 'mod_readaloud_smallreport_heading',
-        fullreportbutton: 'mod_readaloud_smallreport_fullreportbutton',
+        //read report
+        readreportcontainer: 'mod_readaloud_readreport_cont',
+       // readreportrating: 'mod_readaloud_readreport_rating',
+        readreportstars: 'mod_readaloud_readreport_stars',
+        readreportcards: 'mod_readaloud_readreport_cards',
+        readreportplayer: 'mod_readaloud_readreport_player',
+        readreportdummyplayer: 'mod_readaloud_readreport_dummyplayer',
+        readreportstatus: 'mod_readaloud_readreport_status',
+       // readreportheading: 'mod_readaloud_readreport_heading',
+        fullreportbutton: 'mod_readaloud_readreport_fullreportbutton',
 
-        //listen and repeat container
-        landrcontainer: 'mod_readaloud_landr_container'
+        // Read report.
+        readreportcontainer: 'mod_readaloud_readreport_cont',
+        readreportrating: 'mod_readaloud_readreport_rating',
+        readreportstars: 'mod_readaloud_readreport_stars',
+        readreportcards: 'mod_readaloud_readreport_cards',
+        readreportplayer: 'mod_readaloud_readreport_player',
+        readreportdummyplayer: 'mod_readaloud_readreport_dummyplayer',
+        readreportstatus: 'mod_readaloud_readreport_status',
+        readreportheading: 'mod_readaloud_readreport_heading',
+
+        //Practice container
+        practicecontainer: 'mod_readaloud_practice_container',
+
+         //rsquestions
+         noitemscontainer: 'mod_readaloud_noitems_cont',
+         itemscontainer: 'mod_readaloud_items_cont',
+         itemstable: 'mod_readaloud_qpanel',
+         itemrow: 'mod_readaloud_item_row',
+         movearrow: 'mod_readaloud_item_move',
+
+         // rsquestion item types
+        qtype_page: 'page',
+        qtype_multichoice: 'multichoice',
+        qtype_multiaudio: 'multiaudio',
+        qtype_shortanswer: 'shortanswer',
+        qtype_listeninggapfill: 'listeninggapfill',
+        qtype_speakinggapfill: 'speakinggapfill',
+        qtype_typinggapfill: 'typinggapfill',
+        qtype_freespeaking: 'freespeaking',
+        qtype_freewriting: 'freewriting',
+
+        
+        neural_voices: ["Amy","Emma","Brian","Olivia","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly",
+            "Salli","Joey","Justin","Kevin","Matthew","Camila","Lupe","Lucia","Gabrielle","Lea", "Vicki", "Seoyeon", "Takumi","Lucia",
+            "Lea","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila","Ida","Kazuha","Tomoko","Elin","Hala","Zayd"],
 
     };//end of return value
 });

@@ -1,0 +1,116 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/readreport
+
+    The Read Aloud read report.
+
+    Example context (json):
+    {
+    }
+}}
+
+<div id="mod_readaloud_readreport" class='mod_readaloud_readreport'>
+
+    {{< mod_readaloud/activity_header_inpage}}
+        {{$instructions}}
+            {{#str}} readreporthelp, mod_readaloud {{/str}}
+        {{/instructions}}
+    {{/ mod_readaloud/activity_header_inpage}}
+
+    {{#readreport}}
+        <div class='mod_readaloud_readreport_heading mb-3'>
+            {{#ready}}
+                <!--{{#showstats}}{{#str}}evaluatedmessage , mod_readaloud{{/str}}{{/showstats}}-->
+                <!--{{^showstats}}{{#str}}hiddenevaluationmessage, mod_readaloud{{/str}}{{/showstats}}-->
+                {{#notingradebook}}{{#str}}notaddedtogradebook , mod_readaloud{{/str}}{{/notingradebook}}
+            {{/ready}}
+            {{^ready}}
+                {{#remotetranscribe}}
+                    {{#str}}notgradedyet, mod_readaloud{{/str}}
+                {{/remotetranscribe}}
+                {{^remotetranscribe}}
+                    {{#str}}notmanuallygradedyet, mod_readaloud{{/str}}
+                {{/remotetranscribe}}
+            {{/ready}}
+        </div>
+
+        <div class="readrating d-flex align-items-center justify-content-between no-wrap mb-4">
+            <h6 class="fw-semibold mb-0">{{#str}}readaloudresults, mod_readaloud{{/str}}</h6>
+            <div class="mod_readaloud_readreport_stars">
+                {{#stars}}<i class="{{.}}"></i>{{/stars}}
+            </div>
+        </div>
+
+        <!-- Stats cards -->
+        {{#showstats}}
+            <div class="mod_readaloud_readreport_cards row g-3 mb-4">
+                {{> mod_readaloud/readreportcards}}
+            </div>
+        {{/showstats}}
+
+        {{^ready}}
+            <div class='mod_readaloud_readreport_status'>
+                {{#remotetranscribe}}
+                    {{#str}}waiting , mod_readaloud{{/str}}
+                {{/remotetranscribe}}
+                {{^remotetranscribe}}
+                    {{#str}}waitingforteacher , mod_readaloud{{/str}}
+                {{/remotetranscribe}}
+            </div>
+        {{/ready}}
+    {{/readreport}}
+
+    <!--View quiz if it has been enabled-->
+    {{#stepsenabled.step_quiz}}
+    {{#hasquizquestions}}
+    <div id="mod_readaloud_quiztime_container" class="d-flex justify-content-between p-3 my-4 rounded">
+        <div id="quiztime_title_container" class="d-flex flex-column justify-content-between">
+            <div id="quiztime_title" class="d-flex">
+                {{> mod_readaloud/quizicon}}
+                <h5 class="fw-semibold ms-2 mb-3">{{#str}}quiztime, mod_readaloud{{/str}}</h5>
+            </div>
+            <p class="mb-0">{{#str}}quiztimehelp, mod_readaloud{{/str}}</p>
+        </div>
+        <button class="mod_readaloud_takequiz_button btn btn-primary align-self-center" data-action="takequiz">{{#str}}takethequiz, mod_readaloud{{/str}}</button>
+    </div>
+    {{/hasquizquestions}}
+    {{/stepsenabled.step_quiz}}
+
+
+    <!--The audio player-->
+    {{#readreport}}
+    <div class="mod_readaloud_audioplayer_section mb-4">
+        <div class="mod_readaloud_readreport_player">
+            {{> mod_readaloud/readreportplayer}}
+        </div>
+    </div>
+    {{/readreport}}
+
+    <!--The reading passage with read again button-->
+    <div class="mod_readaloud_readingpassage_section mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            {{#readreattempt}}
+                <button class="btn btn-primary" data-action="readagain">{{#str}}readagain, mod_readaloud{{/str}}</button>
+            {{/readreattempt}}
+        </div>
+        {{#readreport.thepassage}}
+             {{>mod_readaloud/studentreadingpassage}}
+        {{/readreport.thepassage}}
+        {{! mod_readaloud/passagecontainer }}
+    </div>
+</div>

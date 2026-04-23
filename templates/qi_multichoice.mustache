@@ -1,0 +1,23 @@
+{{> mod_readaloud/questionheader}}
+    {{#imagecontent}}
+        {{> mod_readaloud/qi_multichoiceimagecontent}}
+    {{/imagecontent}}
+    {{#audiocontent}}
+        {{> mod_readaloud/qi_multichoiceaudiocontent}}
+    {{/audiocontent}}
+    {{^imagecontent}}
+        {{^audiocontent}}
+            {{> mod_readaloud/qi_multichoicetextcontent}}
+        {{/audiocontent}}
+    {{/imagecontent}}
+    <div class="mcplayrow pb-4">
+        <button type="button"
+                class="btn btn-primary readaloud_mc_confirmchoice"
+                style="display: none;">
+            <span class="readaloud_sentence">
+                {{#str}}confirmchoice, mod_readaloud{{/str}}
+            </span>
+        </button>
+    </div>
+<!--{{> mod_readaloud/resultspanel}}-->
+{{> mod_readaloud/questionfooter}}

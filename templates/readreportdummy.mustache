@@ -1,0 +1,56 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/readreportdummy
+
+    The Read Aloud read report placeholder (while its being evaluated)
+
+    Example context (json):
+    {
+    }
+}}
+
+<div id="mod_readaloud_readreport" class='mod_readaloud_readreport'>
+
+    {{< mod_readaloud/activity_header_inpage}}
+        {{$instructions}}
+            {{#str}} readreportdummyhelp, mod_readaloud {{/str}}
+        {{/instructions}}
+    {{/ mod_readaloud/activity_header_inpage}}
+
+    <div class='mod_readaloud_readreport_heading mb-3'>
+            {{#str}}nowevaluatingreading , mod_readaloud{{/str}}
+    </div>
+
+    <!--A big spinner in the centre of the page-->
+    <div class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">{{#str}}loading, core{{/str}}</span>
+        </div>
+    </div>
+
+    <!--The reading passage with read again button-->
+    <div class="mod_readaloud_readingpassage_section mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h6 class="fw-semibold mb-0">{{#str}}readingpassage, mod_readaloud{{/str}}</h6>
+            {{#readreattempt}}
+                <button class="btn btn-primary" data-action="readagain">{{#str}}readagain, mod_readaloud{{/str}}</button>
+            {{/readreattempt}}
+        </div>
+        {{> mod_readaloud/passagecontainer}}
+    </div>
+</div>

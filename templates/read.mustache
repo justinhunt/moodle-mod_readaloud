@@ -1,0 +1,109 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/read
+
+    The Read Aloud read view (recording mode).
+    Displays the activity header with custom activity instructions and full passage recording interface.
+
+    Context variables required for this template:
+    * backurl - URL to return to home/menu
+    * passagepictureurl - URL to passage picture (optional)
+    * modeinstructions - Custom activity instructions (from welcome field)
+    * recorder - Recorder component with all configuration
+    * passagesegments - Array of passage text segments
+
+    Example context (json):
+    {
+        "backurl": "/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "modeinstructions": "Read the passage aloud clearly and at a natural pace.",
+        "M_RECORDERID": "therecorderid",
+        "M_RECORDING_CONTAINER": "mod_readaloud_recording_cont",
+        "M_RECORDER_CONTAINER": "mod_readaloud_recorder_cont",
+        "M_UPDATE_CONTROL": "mod_readaloud_update_control",
+        "M_COMPONENT": "mod_readaloud",
+        "recorder": {
+            "wwwroot": "http://localhost:8001",
+            "cloudpoodllurl": "https://cloud.poodll.com",
+            "owner": "21232f297a57a5a743894a0e4a801fc3",
+            "recorder_type": "readaloud",
+            "recorder_width": "210",
+            "recorder_height": "150",
+            "timelimit": "60",
+            "transcribe": "1",
+            "language": "en-GB",
+            "expiredays": "365",
+            "region": "useast1",
+            "speechevents": "0",
+            "hints": "eyJhbGxvd2Vhcmx5ZXhpdCI6dHJ1ZSwianVzdHN0YXJ0IjoxLCJzaGFkb3dpbmciOjB9",
+            "token": "4e6032ccecc197cdf855c3335a97992d",
+            "transcribevocab": "6055f17554aa70e1574c8b46b88457329f425087"
+        },
+        "passagesegments": [
+            {"text": "This is the first sentence.", "id": 1},
+            {"text": "This is the second sentence.", "id": 2}
+        ]
+    }
+}}
+
+<section id="mod_readaloud_readmode" class="read-mode" role="region" aria-labelledby="read-title">
+    <h2 id="read-title" class="visually-hidden">{{#str}}mode_read, mod_readaloud{{/str}}</h2>
+
+    {{< mod_readaloud/activity_header_inpage}}
+        {{$instructions}}{{#str}} readhelp, mod_readaloud {{/str}}{{/instructions}}
+    {{/ mod_readaloud/activity_header_inpage}}
+
+    <div id="mod_readaloud_read_cont_wrap" class="mod_readaloud_read_cont_wrap">
+        <div id="mod_readaloud_read_inner">
+
+            {{> mod_readaloud/passagecontainer}}
+
+            {{#recorder}}
+            <div class="{{M_RECORDING_CONTAINER}}">
+                <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}} d-flex justify-content-center align-items-center">
+                    <div id="{{M_RECORDERID}}"
+                        data-id="{{M_RECORDERID}}"
+                        data-parent="{{wwwroot}}"
+                        data-localloading="true"
+                        data-localloader="/mod/readaloud/poodlllocalloader.php"
+                        data-cloudpoodllurl="{{cloudpoodllurl}}"
+                        data-media="audio"
+                        data-appid="{{M_COMPONENT}}"
+                        data-owner="{{owner}}"
+                        data-type="{{recorder_type}}"
+                        data-width="{{recorder_width}}"
+                        data-height="{{recorder_height}}"
+                        data-updatecontrol="{{M_UPDATE_CONTROL}}"
+                        data-timelimit="{{timelimit}}"
+                        data-transcode="1"
+                        data-transcribe="{{transcribe}}"
+                        data-language="{{language}}"
+                        data-expiredays="{{expiredays}}"
+                        data-region="{{region}}"
+                        data-fallback="warning"
+                        data-speechevents="{{speechevents}}"
+                        data-hints="{{hints}}"
+                        data-token="{{token}}"
+                        data-transcribevocab="{{transcribevocab}}">
+                    </div>
+                </div>
+            </div>
+            {{/recorder}}
+        </div>
+    </div>
+</section>

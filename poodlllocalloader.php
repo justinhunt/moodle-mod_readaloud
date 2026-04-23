@@ -37,10 +37,24 @@ $cloudpoodllurl = optional_param('cloudpoodllurl', 'https://cloud.poodll.com', P
             right: 0px;
         }
 
+        #AUTOID .poodll_mediarecorder_audio .poodll_mediarecorderbox_readaloud {
+            border: 0 !important;
+        }
+
+        #AUTOID .poodll_mediarecorderbox_readaloud .poodll_start-recording_readaloud,
+        #AUTOID .poodll_mediarecorderbox_readaloud .poodll_stop-recording_readaloud {
+            background-color: purple !important;
+            color: #FFF !important;
+        }
+
+        #AUTOID .poodll_mediarecorderbox_readaloud .poodll_status_readaloud {
+            font-family: "Raleway" !important;
+        }
+
         /*end*/
     </style>
 </head>
 <body>
-    <div id="AUTOID"></div>
+<div id="AUTOID"></div>
 </body>
 </html>

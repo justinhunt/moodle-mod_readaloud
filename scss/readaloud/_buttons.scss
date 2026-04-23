@@ -1,0 +1,61 @@
+body.path-mod-readaloud #page-content {
+    .btn {
+        @include readaloud-btn-size();
+    }
+
+    button.control {
+        aspect-ratio: 1/1;
+        border: none;
+        border-radius: 50%;
+        flex-shrink: 0;
+        height: $control-btn-size;
+        padding: 0.625rem;
+        width: $control-btn-size;
+
+        &.control {
+            &--playbutton {
+                @include readaloud-control-btn-variant($green, $green, $white);
+                // Show "play" by default.
+                .icon-play {
+                    display: inline-block;
+                }
+                .icon-stop {
+                    display: none;
+                }
+
+                // When aria-pressed="true" or data-state="playing" swap them.
+                &[aria-pressed="true"],
+                &[data-state="playing"] {
+                    @include readaloud-control-btn-variant($red, $red, $white);
+                    .icon-play {
+                        display: none;
+                    }
+                    .icon-stop {
+                        display: inline-block;
+                    }
+                }
+            }
+            &--recordbutton {
+                @include readaloud-control-btn-variant($purple, $purple, $white);
+                 // Show mic by default.
+                 .icon-mic {
+                    display: inline-block;
+                }
+                .icon-stop {
+                    display: none;
+                }
+
+                // When aria-pressed="true" swap them.
+                &[aria-pressed="true"] {
+                    @include readaloud-control-btn-variant($red, $red, $white);
+                    .icon-mic {
+                        display: none;
+                    }
+                    .icon-stop {
+                        display: inline-block;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -178,6 +178,61 @@ class aigrade {
         return property_exists($this->aidata, 'fulltranscript') && !empty($this->aidata->fulltranscript);
     }
 
+    // If we are re-attempting we need to clear the transcript data so that we can start fresh
+    public function clear_transcripts() {
+        global $DB;
+
+        // Clear the AI data in the database.
+        $record = new \stdClass();
+        $record->id = $this->recordid;
+        $record->transcript = '';
+        $record->fulltranscript = '';
+        $record->sessionerrors = '';
+        $record->sessionmatches = '';
+        $record->errorcount = 0;
+        $record->sessionendword = 0;
+        $record->sessiontime = null;
+        $record->sessionscore = 0;
+        $record->accuracy = 0;
+        $record->wpm = 0;
+        $record->timemodified = time();
+        $DB->update_record(constants::M_AITABLE, $record);
+
+        // Also clear the data in memory.
+        $this->aidata->transcript = '';
+        $this->aidata->fulltranscript = '';
+        $this->aidata->sessionerrors = '';
+        $this->aidata->sessionmatches = '';
+        $this->aidata->errorcount = 0;
+        $this->aidata->sessionendword = 0;
+        $this->aidata->sessiontime = null;
+        $this->aidata->sessionscore = 0;
+        $this->aidata->accuracy = 0;
+        $this->aidata->wpm = 0;
+
+        // Also clear the attempt data in the DB.
+        $attempt = new \stdClass();
+        $attempt->id = $this->attemptid;
+        $attempt->sessiontime = null;
+        $attempt->sessionendword = 0;
+        $attempt->sessionerrors = '';
+        $attempt->errorcount = 0;
+        $attempt->sessionscore = 0;
+        $attempt->accuracy = 0;
+        $attempt->wpm = 0;
+        $DB->update_record(constants::M_USERTABLE, $attempt);
+
+        // Also clear the attempt data in memory.
+        $this->attemptdata->sessiontime = null;
+        $this->attemptdata->sessionendword = 0;
+        $this->attemptdata->sessionerrors = '';
+        $this->attemptdata->errorcount = 0;
+        $this->attemptdata->sessionscore = 0;
+        $this->attemptdata->accuracy = 0;
+        $this->attemptdata->wpm = 0;
+
+    }
+
     // do we have the AI at all
     public static function is_ai_enabled($moduleinstance) {
         return utils::can_transcribe($moduleinstance);

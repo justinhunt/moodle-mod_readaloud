@@ -1,0 +1,191 @@
+.mod_readaloud_grading_player_cont {
+    color: $purple;
+    margin: 2rem 0;
+}
+
+.mod_readaloud_scorestable {
+    margin: 2rem 0;
+    text-align: center;
+
+    .table {
+        thead th {
+            background: $purple;
+            color: $white;
+        }
+
+        thead th,
+        tr td {
+            font-size: 1.2em;
+        }
+    }
+}
+
+.mod_readaloud_passage_cont {
+    .mod_readaloud_grading_passageword {
+        border-radius: $border-radius;
+        cursor: pointer;
+        margin: 2rem 0;
+        padding: 0.2rem;
+        &:hover {
+            background-color: $gray-200;
+        }
+
+        &.mod_readaloud_grading_badword {
+            background-color: $red6;
+            border-radius: $border-radius;
+            color: $red;
+            padding: 0.2rem;
+            position: relative;
+        }
+    }
+
+    .mod_readaloud_grading_passagespace {
+        &.mod_readaloud_grading_endspace {
+            background-color: $purple;
+            border-radius: $border-radius;
+            color: $purple;
+            padding: 0.2rem;
+            position: relative;
+        }
+    }
+
+    .mod_readaloud_grading_passageword,
+    .mod_readaloud_grading_passagespace  {
+        &.mod_readaloud_spotcheckmode {
+            background-color: $green6;
+        }
+        &.mod_readaloud_aiunmatched {
+            background-color: $gray-200;
+        }
+    }
+}
+
+.mod_readaloud_grading_passageactions {
+    margin: 2rem 0;
+    > button {
+        margin: 5px;
+    }
+}
+
+.mod_readaloud_grading_passagespace,
+.mod_readaloud_grading_correctionsspace {
+    padding: 0.2rem;
+}
+
+.mod_readaloud_grading_unreadword {
+    font-style: italic;
+    text-decoration: line-through;
+}
+
+.mod_readaloud_passage_finished {
+    background-color: $gray-200;
+    padding: 0.2rem;
+}
+
+.btn {
+    &.mod_readaloud_quickgrade_ok {
+        @include readaloud-btn-size;
+        @include readaloud-btn-variant($purple, $purple, $white);
+        &:hover {
+            background-color: $purpledark;
+        }
+    }
+    &.mod_readaloud_quickgrade_ng {
+        @include readaloud-btn-size;
+        @include readaloud-btn-variant($gray-800, $gray-800, $white);
+        &:hover {
+            background-color: $gray-200;
+        }
+    }
+}
+
+.collapsespaces {
+    .mod_readaloud_grading_passagespace {
+        &:not(.mod_readaloud_grading_endspace) {
+            display: none;
+        }
+    }
+
+    .mod_readaloud_grading_passageword {
+        padding: 0.2rem;
+    }
+}
+
+.mod_readaloud_postattempt {
+    .mod_readaloud_grading_unreadword {
+        background-color: $gray-200;
+        text-decoration: none;
+    }
+
+    .mod_readaloud_grading_unreadspace {
+        background-color: $gray-200;
+        padding: 0px 2px;
+    }
+}
+
+.mod_readaloud_grading_action_cont {
+    align-items: center;
+    margin-top: 1rem;
+    padding: 3px;
+}
+
+#mod_readaloud_grading_player {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.mod_readaloud_quiz_cont {
+    .mod_readaloud_postattempt {
+        .mod_readaloud_grading_unreadword {
+            background-color: lightgrey;
+            color: $red;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .mod_readaloud_grading_unreadspace {
+            background-color: lightgrey;
+            padding: 0px 2px;
+        }
+    }
+}
+
+.mod_readaloud_debug .mod_readaloud_grading_passageword,
+.mod_readaloud_debug_transcriptword{
+    &::after {
+        border: $border-width solid $purple;
+        border-radius: $border-radius;
+        content: attr(data-wordnumber);
+        font-size: $font-size-base * 0.625;
+        padding: 0.2rem;
+    }
+}
+
+// TODO: Cannot find usage. Trial removal.
+// .mod_readaloud_grading_accuracy_cont,
+// .mod_readaloud_grading_wpm_cont,
+// .mod_readaloud_grading_error_cont,
+// .mod_readaloud_grading_sessionscore_cont,
+// .mod_readaloud_grading_action_cont {
+//     color: $purple;
+//     display: flex;
+//     margin-left: 1rem;
+// }
+
+// .mod_readaloud_grading_wpm_img,
+// .mod_readaloud_grading_error_img {
+//     color: $purple;
+// }
+
+// .mod_readaloud_grading_score {
+//     color: $purple;
+//     font-size: 2em;
+//     height: 35px;
+//     line-height: 18px;
+//     margin-left: 5px;
+//     text-align: center;
+//     width: 70px;
+// }
+
+
+
+

@@ -43,20 +43,28 @@ use \mod_readaloud\constants;
  */
 abstract class basereport {
 
+    protected $moduleinstance = null;
+    protected $cm = null;
+    protected $quizhelper = null;
     protected $report = "";
     protected $head = array();
     protected $rawdata = null;
     protected $fields = array();
     protected $dbcache = array();
 
+    //Constructor
+    public function __construct($moduleinstance, $cm) {
+        $this->moduleinstance = $moduleinstance;
+        $this->cm = $cm;
+        $this->quizhelper = new \mod_readaloud\quizhelper($cm);
+    }
+
     abstract function process_raw_data($formdata);
 
     abstract function fetch_formatted_heading();
 
     public function fetch_formatted_description() {
-
         return '';
-
     }
 
     public function fetch_fields() {

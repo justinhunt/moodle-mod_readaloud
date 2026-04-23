@@ -28,15 +28,16 @@ require_once('../../../config.php');
 require_once($CFG->dirroot.'/mod/readaloud/lib.php');
 
 $id = required_param('id', PARAM_INT);
+$action = optional_param('action', null, PARAM_ALPHA);
 
 $cm = get_coursemodule_from_id('readaloud', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
 $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
 
-$comprehensiontest = new \mod_readaloud\comprehensiontest($cm);
-$items = $comprehensiontest->fetch_items();
+$quizhelper = new \mod_readaloud\quizhelper($cm);
+$items = $quizhelper->fetch_items();
 
-// mode is necessary for tabs
+// Mode is necessary for tabs.
 $mode = 'rsquestions';
 // Set page url before require login, so post login will return here
 $PAGE->set_url('/mod/readaloud/rsquestion/rsquestions.php', ['id' => $cm->id, 'mode' => $mode]);
@@ -47,20 +48,47 @@ $context = context_module::instance($cm->id);
 
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 $rsquestionrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'rsquestion');
+
+if ($action === 'bulkdelete') {
+    confirm_sesskey();
+    $questionids = optional_param_array('deletequestionid', [], PARAM_INT);
+    foreach ($questionids as $questionid) {
+        \mod_readaloud\local\itemtype\item::delete_item($questionid, $context);
+    }
+    if (!empty($questionids)) {
+        \mod_readaloud\utils::reset_item_order($moduleinstance->id);
+        redirect($PAGE->url);
+    }
+}
+
+// If we have items, Data tables will make them pretty.
+// Prepare datatable(before header printed).
+$tableid = constants::M_ITEMS_TABLE;
+$rsquestionrenderer->setup_datatables($tableid);
+
 $PAGE->navbar->add(get_string('rsquestions', constants::M_MODNAME));
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('rsquestions', constants::M_COMPONENT));
 
 
-    // We need view permission to be here
-    require_capability('mod/readaloud:itemview', $context);
+// We need view permission to be here
+require_capability('mod/readaloud:itemview', $context);
 
     // if have edit permission, show edit buttons
-if (has_capability('mod/readaloud:itemview', $context)){
-    echo $rsquestionrenderer->add_edit_page_links($moduleinstance);
+if (has_capability('mod/readaloud:itemview', $context)) {
+    // To show all the buttons - add_item_links
+    // echo $rsquestionrenderer->add_item_links($context, $tableid);
+
+    // To show just the multichoice item button - add_multichoice_item_link
+    echo $rsquestionrenderer->add_multichoice_item_link($context, $tableid);
 }
 
 // if we have items, show em
+$itemsvisible = $items && count($items);
+echo $rsquestionrenderer->show_items_list($items, $moduleinstance, $cm, $itemsvisible);
+echo $rsquestionrenderer->show_noitems_message($items, $moduleinstance, $cm, $itemsvisible);
+/*
 if ($items){
     echo $rsquestionrenderer->show_items_list($items, $moduleinstance, $cm);
 }
+    */
 echo $renderer->footer();

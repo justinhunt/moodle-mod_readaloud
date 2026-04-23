@@ -1,0 +1,14 @@
+{{> mod_readaloud/questionheader}}
+<div class="readaloud_freewriting_box">
+    <div class="ml_freewriting_resultsbox"></div>
+    <div class="ml_freewriting_pendingbox hidden"><center><i class="fa-solid fa-spinner fa-spin fa-5x"></i></center></div>
+        <div class="ml_freewriting_actionbox">
+            <div class="ml_freewriting_textareacontainer">
+                <textarea class="ml_freewriting_textarea" rows="{{textarearows}}" cols="50" placeholder="{{#str}}writehere, mod_readaloud{{/str}}"></textarea>
+            </div>
+            <a class="btn btn-primary ml_freewriting_submitbutton" href="#">{{#str}}submit, mod_readaloud{{/str}}</a>
+            <div class="timerstatus_{{uniqueid}} ml_freewriting_timerdisplay ml_recsession"></div>
+            <div class="mod_readaloud_fw_wordgoal {{^countwords}}hidden{{/countwords}} ml_recsession">{{#str}} currentwordcount , mod_readaloud {{/str}}: <span class="ml_wordcount">0</span>/{{targetwordcount}}</div>
+        </div>
+</div>
+{{> mod_readaloud/questionfooter}}
