@@ -1440,4 +1440,213 @@ class renderer extends \plugin_renderer_base {
         // Return the complete templatecontext.
         return $templatecontext;
     }
+
+    /**
+     * Takes data from the Cloud Poodll usage report web service and renders it on the page.
+     *
+     * @param object $usagedata JSON decoded response from local_cpapi_fetch_user_report
+     * @return void
+     */
+    public function display_usage_report($usagedata) {
+        $reportdata = [];
+
+        $mysubscriptions = [];
+
+        if ($usagedata->usersubs) {
+            foreach ($usagedata->usersubs as $subdata) {
+                $subscriptionname = ($subdata->subscriptionname == ' ') ? "na" : strtolower(trim($subdata->subscriptionname));
+                $mysubscriptions[] = ['name' => $subscriptionname,
+                        'start_date' => date("m-d-Y", $subdata->timemodified),
+                        'end_date' => date("m-d-Y", $subdata->expiredate)];
+            }
+        }
+
+        $reportdata['subscription_check'] = count($mysubscriptions) > 0;
+        $reportdata['subscriptions'] = $mysubscriptions;
+        $reportdata['pusers'] = [];
+        $reportdata['record'] = [];
+        $reportdata['recordmin'] = [];
+        $reportdata['recordtype'] = [];
+
+        $threesixtyfiverecordtypevideo = 0;
+        $oneeightyrecordtypevideo = 0;
+        $ninetyrecordtypevideo = 0;
+        $thirtyrecordtypevideo = 0;
+
+        $threesixtyfiverecordtypeaudio = 0;
+        $oneeightyrecordtypeaudio = 0;
+        $ninetyrecordtypeaudio = 0;
+        $thirtyrecordtypeaudio = 0;
+
+        $threesixtyfiverecordmin = 0;
+        $oneeightyrecordmin = 0;
+        $ninetyrecordmin = 0;
+        $thirtyrecordmin = 0;
+
+        $threesixtyfiverecord = 0;
+        $oneeightyrecord = 0;
+        $ninetyrecord = 0;
+        $thirtyrecord = 0;
+
+        $threesixtyfivepuser = '';
+        $oneeightypuser = '';
+        $ninetypuser = '';
+        $thirtypuser = '';
+
+        // Monthly totals (12 x 30 day buckets, most recent first).
+        $monthusertotals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $monthpusers = ['', '', '', '', '', '', '', '', '', '', '', ''];
+        $monthminutetotals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $monthrecordtotals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $monthaudiototals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $monthvideototals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        if ($usagedata->usersubs_details) {
+            foreach ($usagedata->usersubs_details as $subdatadetails) {
+                $timecreated = $subdatadetails->timecreated;
+
+                for ($x = 0; $x < 12; $x++) {
+                    $upperdays = -1 * $x * 30 . ' days';
+                    $lowerdays = -1 * ($x + 1) * 30 . ' days';
+                    if (($timecreated <= strtotime($upperdays)) && ($timecreated > strtotime($lowerdays))) {
+                        $monthminutetotals[$x] = $monthminutetotals[$x] + ($subdatadetails->audio_min + $subdatadetails->video_min);
+                        $monthaudiototals[$x] = $monthaudiototals[$x] + $subdatadetails->audio_file_count;
+                        $monthvideototals[$x] = $monthvideototals[$x] + $subdatadetails->video_file_count;
+                        $monthrecordtotals[$x] = $monthrecordtotals[$x] +
+                            $subdatadetails->video_file_count + $subdatadetails->audio_file_count;
+                        $monthvideototals[$x] = $monthvideototals[$x] + $subdatadetails->video_min;
+                        $monthpusers[$x] = $monthpusers[$x] .= $subdatadetails->pusers;
+                    }
+                }
+
+                if ($timecreated >= strtotime('-365 days')) {
+                    $threesixtyfiverecordtypevideo += $subdatadetails->video_file_count;
+                    $threesixtyfiverecordtypeaudio += $subdatadetails->audio_file_count;
+                    $threesixtyfiverecordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
+                    $threesixtyfiverecord += ($subdatadetails->video_file_count + $subdatadetails->audio_file_count);
+                    $threesixtyfivepuser .= $subdatadetails->pusers;
+                }
+
+                if ($timecreated >= strtotime('-180 days')) {
+                    $oneeightyrecordtypevideo += $subdatadetails->video_file_count;
+                    $oneeightyrecordtypeaudio += $subdatadetails->audio_file_count;
+                    $oneeightyrecordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
+                    $oneeightyrecord += ($subdatadetails->video_file_count + $subdatadetails->audio_file_count);
+                    $oneeightypuser .= $subdatadetails->pusers;
+                }
+
+                if ($timecreated >= strtotime('-90 days')) {
+                    $ninetyrecordtypevideo += $subdatadetails->video_file_count;
+                    $ninetyrecordtypeaudio += $subdatadetails->audio_file_count;
+                    $ninetyrecordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
+                    $ninetyrecord += ($subdatadetails->video_file_count + $subdatadetails->audio_file_count);
+                    $ninetypuser .= $subdatadetails->pusers;
+                }
+
+                if ($timecreated >= strtotime('-30 days')) {
+                    $thirtyrecordtypevideo += $subdatadetails->video_file_count;
+                    $thirtyrecordtypeaudio += $subdatadetails->audio_file_count;
+                    $thirtyrecordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
+                    $thirtyrecord += ($subdatadetails->video_file_count + $subdatadetails->audio_file_count);
+                    $thirtypuser .= $subdatadetails->pusers;
+                }
+            }
+        }
+
+        // Calc max month totals.
+        $maxmonthpusers = 0;
+        $maxmonthminutes = 0;
+        $maxmonthaudio = 0;
+        $maxmonthvideo = 0;
+        $maxmonthrecordings = 0;
+        for ($x = 0; $x < 12; $x++) {
+            $monthusertotals[$x] = $this->count_pusers($monthpusers[$x]);
+            if ($maxmonthpusers < $monthusertotals[$x]) {
+                $maxmonthpusers = $monthusertotals[$x];
+            }
+            if ($maxmonthminutes < $monthminutetotals[$x]) {
+                $maxmonthminutes = $monthminutetotals[$x];
+            }
+            if ($maxmonthaudio < $monthaudiototals[$x]) {
+                $maxmonthaudio = $monthaudiototals[$x];
+            }
+            if ($maxmonthvideo < $monthvideototals[$x]) {
+                $maxmonthvideo = $monthvideototals[$x];
+            }
+            if ($maxmonthrecordings < $monthrecordtotals[$x]) {
+                $maxmonthrecordings = $monthrecordtotals[$x];
+            }
+        }
+
+        // Calculate report summaries.
+        $reportdata['pusers'] = [
+                ['name' => '30', 'value' => $this->count_pusers($thirtypuser)],
+                ['name' => '90', 'value' => $this->count_pusers($ninetypuser)],
+                ['name' => '180', 'value' => $this->count_pusers($oneeightypuser)],
+                ['name' => '365', 'value' => $this->count_pusers($threesixtyfivepuser)],
+                ['name' => 'maxmonth', 'value' => $maxmonthpusers],
+        ];
+
+        $reportdata['record'] = [
+                ['name' => '30', 'value' => $thirtyrecord],
+                ['name' => '90', 'value' => $ninetyrecord],
+                ['name' => '180', 'value' => $oneeightyrecord],
+                ['name' => '365', 'value' => $threesixtyfiverecord],
+                ['name' => 'maxmonth', 'value' => $maxmonthrecordings],
+        ];
+
+        $reportdata['recordmin'] = [
+                ['name' => '30', 'value' => $thirtyrecordmin],
+                ['name' => '90', 'value' => $ninetyrecordmin],
+                ['name' => '180', 'value' => $oneeightyrecordmin],
+                ['name' => '365', 'value' => $threesixtyfiverecordmin],
+                ['name' => 'maxmonth', 'value' => $maxmonthminutes],
+        ];
+
+        $reportdata['recordtype'] = [
+                ['name' => '30', 'video' => $thirtyrecordtypevideo, 'audio' => $thirtyrecordtypeaudio],
+                ['name' => '90', 'video' => $ninetyrecordtypevideo, 'audio' => $ninetyrecordtypeaudio],
+                ['name' => '180', 'video' => $oneeightyrecordtypevideo, 'audio' => $oneeightyrecordtypeaudio],
+                ['name' => '365', 'video' => $threesixtyfiverecordtypevideo, 'audio' => $threesixtyfiverecordtypeaudio],
+                ['name' => 'maxmonth', 'video' => $maxmonthvideo, 'audio' => $maxmonthaudio],
+        ];
+
+        // Tally usage per plugin for the pie chart.
+        $plugintypes = [];
+        if ($usagedata->usersubs_details) {
+            foreach ($usagedata->usersubs_details as $subdatadetails) {
+                $jsonarr = json_decode($subdatadetails->file_by_app, true);
+                foreach ($jsonarr as $key => $val) {
+                    $val = $jsonarr[$key]['audio'] + $jsonarr[$key]['video'];
+                    if (isset($plugintypes[$key])) {
+                        $plugintypes[$key] += $val;
+                    } else {
+                        $plugintypes[$key] = $val;
+                    }
+                }
+            }
+        }
+
+        echo $this->output->render_from_template(constants::M_COMPONENT . '/mysubscriptionreport', $reportdata);
+
+        if ($reportdata['subscription_check'] == true) {
+            $pluginseries = new \core\chart_series('Plugin Usage', array_values($plugintypes));
+            $pchart = new \core\chart_pie();
+            $pchart->add_series($pluginseries);
+            $pchart->set_labels(array_keys($plugintypes));
+            echo $this->output->heading(get_string('per_plugin', constants::M_COMPONENT), 4);
+            echo $this->output->render($pchart);
+        }
+    }
+
+    /**
+     * Count the unique users from a CSV list of users. Used by display_usage_report.
+     *
+     * @param string $pusers CSV list of user identifiers
+     * @return int
+     */
+    public function count_pusers($pusers) {
+        $pusers = trim($pusers);
+        return count(array_unique(explode(',', $pusers)));
+    }
 }
