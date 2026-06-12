@@ -17,8 +17,6 @@
 /**
  * Defines the version of readaloud
  *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
  *
  * @package    mod_readaloud
  * @copyright  2015 Justin Hunt (poodllsupport@gmail.com)
@@ -27,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026030607;
+$plugin->version = 2026061300;
 $plugin->requires = 2025041400;      // Requires Moodle 5.0
 $plugin->component = 'mod_readaloud';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.1.28 (Build 2026030607)';
+$plugin->release = '2.1.29 (Build 2026061300)';

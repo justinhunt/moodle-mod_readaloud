@@ -1,3 +1,6 @@
+2.1.29 (Build 2026061300)
+ - Fixed issue where backups made on older ReadAlouds were not upgraded in the restore process
+
 2.1.28 (Build 2026030605)
  - New UI
  - Removed Modal_Factory
