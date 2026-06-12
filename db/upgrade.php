@@ -1013,6 +1013,28 @@ function xmldb_readaloud_upgrade($oldversion)
         upgrade_mod_savepoint(true, 2026030606, 'readaloud');
     }
 
+    // Repair activities with steps = 0. These come from old (pre 2026030604) backups restored
+    // onto a site already running a newer version, where the restore did not migrate the legacy
+    // step flags. steps = 0 is never a valid state, so recompute it from the legacy flags,
+    // exactly as the 2026030604 step did for in-place upgrades.
+    if ($oldversion < 2026030607) {
+        $readalouds = $DB->get_records(constants::M_TABLE, ['steps' => 0]);
+        foreach ($readalouds as $ra) {
+            $steps = 0;
+            $steps += $ra->enablepreview ? constants::STEP_LISTEN : 0;
+            $steps += $ra->enablelandr ? constants::STEP_PRACTICE : 0;
+            $steps += $ra->enableshadow ? constants::STEP_SHADOW : 0;
+            // Reading could not be omitted. So we add it by default.
+            $steps += constants::STEP_READ;
+            $steps += $ra->showquiz ? constants::STEP_QUIZ : 0;
+            $DB->set_field(constants::M_TABLE, 'steps', $steps, ['id' => $ra->id]);
+
+            // Attempts at these activities were submitted readings, so all steps are complete.
+            $DB->set_field(constants::M_USERTABLE, 'status', $steps, ['readaloudid' => $ra->id]);
+        }
+        upgrade_mod_savepoint(true, 2026030607, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

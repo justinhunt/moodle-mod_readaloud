@@ -32,6 +32,9 @@ use \mod_readaloud\constants;
  */
 class restore_readaloud_activity_structure_step extends restore_activity_structure_step {
 
+    /** @var int steps bitmask of the restored activity, used to set attempt status for old backups */
+    protected $activitysteps = 0;
+
     protected function define_structure() {
 
         $paths = array();
@@ -89,6 +92,21 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
             $data->viewend = $this->apply_date_offset($data->viewend);
         }
 
+        // Backups made before the steps migration (plugin version 2026030604) have no steps field,
+        // and restore does not run db/upgrade.php. Derive the steps bitmask from the legacy
+        // enablepreview / enablelandr / enableshadow flags, as the upgrade does for in-place upgrades.
+        if ($this->task->get_old_moduleversion() < 2026030604 && empty($data->steps)) {
+            $steps = 0;
+            $steps += !empty($data->enablepreview) ? constants::STEP_LISTEN : 0;
+            $steps += !empty($data->enablelandr) ? constants::STEP_PRACTICE : 0;
+            $steps += !empty($data->enableshadow) ? constants::STEP_SHADOW : 0;
+            // Reading could not be omitted in old versions, so it is always enabled.
+            $steps += constants::STEP_READ;
+            $steps += !empty($data->showquiz) ? constants::STEP_QUIZ : 0;
+            $data->steps = $steps;
+        }
+        $this->activitysteps = empty($data->steps) ? 0 : $data->steps;
+
         // insert the activity record
         $newitemid = $DB->insert_record(constants::M_TABLE, $data);
         // immediately after inserting "activity" record, call this
@@ -119,6 +137,14 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->userid = $this->get_mappingid('user', $data->userid);
         $data->{constants::M_MODNAME . 'id'} = $this->get_new_parentid(constants::M_MODNAME);
+
+        // Attempt status in backups made before the steps migration (plugin version 2026030604)
+        // uses the old status semantics. An attempt only exists once the reading was submitted,
+        // so mark all steps complete, as db/upgrade.php does for in-place upgrades.
+        if ($this->task->get_old_moduleversion() < 2026030604 && !empty($this->activitysteps)) {
+            $data->status = $this->activitysteps;
+        }
+
         $newitemid = $DB->insert_record(constants::M_USERTABLE, $data);
 
         // Mapping without files

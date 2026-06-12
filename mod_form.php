@@ -173,6 +173,11 @@ class mod_readaloud_mod_form extends moodleform_mod
                 $errors['viewend'] = "End date should be after Start Date";
             }
         }
+
+        // At least one step must be enabled.
+        if (utils::pack_steps((object) $data) == 0) {
+            $errors['steps'] = get_string('error_nosteps', constants::M_COMPONENT);
+        }
         return $errors;
     }
 
