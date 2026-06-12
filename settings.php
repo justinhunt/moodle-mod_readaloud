@@ -377,12 +377,14 @@ if ($hassiteconfig) {
     ));
 
     // Native Language Setting
+    /*
     $mainsettings->add(new admin_setting_configcheckbox(
         constants::M_COMPONENT . '/setnativelanguage',
         get_string('enablenativelanguage', constants::M_COMPONENT),
         get_string('enablenativelanguage_details', constants::M_COMPONENT),
         1
     ));
+    */
 
 
     // St Dashboard Id.
