@@ -40,9 +40,11 @@ if ($hassiteconfig) {
     );
     $ADMIN->add('modsettings', $readaloudcat);
 
-    // Create main settings page
+    // Create main settings page.
+    // The page name must be 'modsettingreadaloud' (the section name core expects for this module)
+    // so that the settings link shows on admin/plugins.php. This is how mod_quiz does it too.
     $pagetitle = get_string('generalsettings', 'admin');
-    $mainsettings = new admin_settingpage('modsettingreadaloudmain', $pagetitle, 'moodle/site:config');
+    $mainsettings = new admin_settingpage('modsettingreadaloud', $pagetitle, 'moodle/site:config');
 
     $mainsettings->add(new admin_setting_configtextarea(
         constants::M_COMPONENT . '/defaultwelcome',
@@ -437,6 +439,16 @@ if ($hassiteconfig) {
 
     // Add other API keys settings page to readaloud category.
     $ADMIN->add('modsettingsreadaloudcat', $otherapikeysettings);
+
+    // Account Dashboard.
+    // The page name is prefixed with the component because admin tree node names are global
+    // and filter_poodll already registers a page named 'accountdashboard'.
+    $accountdashboard = new admin_externalpage(
+        'mod_readaloud_accountdashboard',
+        get_string('accountdashboard', constants::M_COMPONENT),
+        $CFG->wwwroot . constants::M_URL . '/accountdashboard.php'
+    );
+    $ADMIN->add('modsettingsreadaloudcat', $accountdashboard);
 
 }
 

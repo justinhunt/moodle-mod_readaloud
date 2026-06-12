@@ -1,0 +1,120 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/mysubscriptionreport
+
+    Renders the Cloud Poodll subscription and usage report on the account dashboard page.
+
+    Context variables required for this template:
+    * subscription_check - whether the account has any subscriptions
+    * subscriptions - array of {name, start_date, end_date}
+    * pusers - array of {name, value} user counts per period
+    * record - array of {name, value} recording counts per period
+    * recordmin - array of {name, value} recording minutes per period
+    * recordtype - array of {name, video, audio} recording type counts per period
+
+    Example context (json):
+    {
+        "subscription_check": true,
+        "subscriptions": [{"name": "gold", "start_date": "01-01-2026", "end_date": "12-31-2026"}],
+        "pusers": [{"name": "30", "value": 5}],
+        "record": [{"name": "30", "value": 100}],
+        "recordmin": [{"name": "30", "value": 60}],
+        "recordtype": [{"name": "30", "video": 10, "audio": 90}]
+    }
+}}
+{{#subscription_check}}
+<table class="table table-bordered">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">{{#str}}subscription,mod_readaloud{{/str}}</th>
+      <th scope="col" colspan=2>{{#str}}start,mod_readaloud{{/str}}</th>
+      <th scope="col" colspan=3>{{#str}}end,mod_readaloud{{/str}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#subscriptions}}
+    <tr>
+      <td>{{name}}</td>
+      <td colspan=2>{{start_date}}</td>
+      <td colspan=3>{{end_date}}</td>
+    </tr>
+    {{/subscriptions}}
+
+<tr class="thead-light">
+      <th scope="col">&nbsp;</th>
+      <th scope="col">{{#str}}thirty_days,mod_readaloud{{/str}}</th>
+      <th scope="col">{{#str}}ninety_days,mod_readaloud{{/str}}</th>
+      <th scope="col">{{#str}}oneeighty_days,mod_readaloud{{/str}}</th>
+      <th scope="col">{{#str}}threehundredsixtyfive_days,mod_readaloud{{/str}}</th>
+      <th scope="col">{{#str}}maxmonth,mod_readaloud{{/str}}</th>
+</tr>
+
+   <tr>
+    <td>{{#str}}poodll_users,mod_readaloud{{/str}}</td>
+        {{#pusers}}
+            <td>{{value}}</td>
+        {{/pusers}}
+   </tr>
+
+   <tr>
+    <td>{{#str}}recordings,mod_readaloud{{/str}}</td>
+        {{#record}}
+            <td>{{value}}</td>
+        {{/record}}
+   </tr>
+
+   <tr>
+    <td>{{#str}}recording_min,mod_readaloud{{/str}}</td>
+        {{#recordmin}}
+            <td>{{value}}</td>
+        {{/recordmin}}
+   </tr>
+
+
+   <tr>
+    <td>{{#str}}per_recording_type,mod_readaloud{{/str}}</td>
+        {{#recordtype}}
+        <td style="white-space:nowrap">
+             <div>
+                <div style="display:inline-block; float: none;">{{#str}}video,mod_readaloud{{/str}}: {{video}}</div>
+             </div>
+             <div>
+                 <div style="display:inline-block; float: none;">{{#str}}audio,mod_readaloud{{/str}}: {{audio}}</div>
+             </div>
+        </td>
+        {{/recordtype}}
+   </tr>
+  </tbody>
+</table>
+{{/subscription_check}}
+{{^subscription_check}}
+<table class="table table-bordered">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">{{#str}}subscription,mod_readaloud{{/str}}</th>
+      <th scope="col" colspan=2>{{#str}}start,mod_readaloud{{/str}}</th>
+      <th scope="col" colspan=2>{{#str}}end,mod_readaloud{{/str}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="5">{{#str}}no_subscriptions,mod_readaloud{{/str}}</td>
+    </tr>
+  </tbody>
+</table>
+{{/subscription_check}}
