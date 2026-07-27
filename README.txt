@@ -1,26 +1,17 @@
 Read Aloud Module for Moodle
 =============
 
-ReadAloud is an online testing system designed to assist teachers in evaluating their students reading fluency as WPM(Words Per Minute) scores.
+Poodll ReadAloud is a guided reading-fluency and reading-comprehension activity for Moodle. The
+teacher sets a passage; the student listens to it, practices it line by line, reads it aloud, and
+can then take a follow-up quiz about it. Reading attempts are graded automatically for words per
+minute and accuracy using speech recognition, with AI evaluation and feedback available.
 
-The teacher assigns a reading passage and the student is required to record themselves reading the passage aloud. Read Aloud incorporates AI features so that student attempts can be evaluated automatically. The teacher can later grade/re-grade passages manually via the online interface. The student is able to see both their scores and the words that were marked as incorrectly spoken.
+Read Aloud requires a Cloud Poodll API username and secret from https://poodll.com
+See here: https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret
 
-Read Aloud requires a Cloud Poodll API username and secret from https://poodll.com. See here: https://poodll.freshdesk.com/solution/articles/19000083076-cloud-poodll-api-secret
+See README.md in this folder for the full documentation: features, installation, site settings,
+the student journey (listen/practice/read/quiz), grading options and developer notes.
 
 
 Justin Hunt
 poodllsupport@gmail.com
-
-
-// TODO: Remove notes.
-For mode journey:
-const modes = [
-  { name: "Listen", completed: true },
-  { name: "Practice", completed: true },
-  { name: "Shadow", completed: false },
-  { name: "Read", completed: false },
-  { name: "Quiz", completed: false },
-  { name: "Reported", completed: false }
-];
-
-Tooltip content: {mode.completed ? "Completed" : `Next: ${modes[index + 1]?.name || "End"}`}
