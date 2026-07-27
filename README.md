@@ -130,7 +130,7 @@ recording/transcript URLs. The plugin implements the Moodle Privacy API for expo
 ## Support
 
 - Documentation and how-tos: https://support.poodll.com
-- Account and subscriptions: https://poodll.com/member
+- Account and subscriptions: https://member.poodll.com
 - Contact: poodllsupport@gmail.com
 
 ## License
