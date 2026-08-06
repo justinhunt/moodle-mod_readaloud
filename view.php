@@ -33,18 +33,6 @@ $reviewattempts = optional_param('reviewattempts', 0, PARAM_INT);
 $debug = optional_param('debug', 0, PARAM_INT);
 $embed = optional_param('embed', 0, PARAM_INT);
 
-// Allow login through an authentication token.
-$userid = optional_param('user_id', null, PARAM_ALPHANUMEXT);
-$secret  = optional_param('secret', null, PARAM_RAW);
-
-if (!empty($userid) && !empty($secret) ) {
-    if (mobile_auth::has_valid_token($userid, $secret)) {
-        $user = get_complete_user_data('id', $userid);
-        complete_user_login($user);
-        $embed = 2;
-    }
-}
-
 if ($id) {
     $cm = get_coursemodule_from_id('readaloud', $id, 0, false, MUST_EXIST);
     $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
@@ -92,7 +80,7 @@ $PAGE->set_heading(format_string($course->fullname));
 $PAGE->requires->css(new moodle_url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css'));
 
 // I think we can use scss now. Uncomment if we need it.
-//$PAGE->requires->css('/mod/readaloud/scss/styles.css');
+// $PAGE->requires->css('/mod/readaloud/scss/styles.css');
 
 // If we need a non standard font we can do that from here.
 if (!empty($moduleinstance->customfont)) {
