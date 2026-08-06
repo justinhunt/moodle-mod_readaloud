@@ -38,22 +38,6 @@ class mobile {
         global $DB, $CFG, $OUTPUT, $USER;
 
         $cmid = $args['cmid'];
-        if (empty($CFG->allowframembedding) && !\core_useragent::is_moodle_app()) {
-            $context = \context_system::instance();
-            if (has_capability('moodle/site:config', $context)) {
-                $template = 'mod_readaloud/mobile_no_iframe_embedding';
-            } else {
-                $template = 'mod_readaloud/mobile_contact_siteadmin';
-            }
-            return [
-                'templates' => [
-                    [
-                        'id' => 'noiframeembedding',
-                        'html' => $OUTPUT->render_from_template($template, []),
-                    ],
-                ],
-            ];
-        }
 
         // Verify course context.
         $cm = get_coursemodule_from_id('readaloud', $cmid);
@@ -68,32 +52,10 @@ class mobile {
         $context = context_module::instance($cm->id);
         require_capability('mod/readaloud:view', $context);
 
-        list($token, $secret) = mobile_auth::create_embed_auth_token();
-
-        // Store secret in database.
-        $auth = $DB->get_record(constants::M_AUTHTABLE, [
-            'user_id' => $USER->id,
-        ]);
-        $currenttimestamp = time();
-        if ($auth) {
-            $DB->update_record(constants::M_AUTHTABLE, [
-                'id'         => $auth->id,
-                'secret'     => $token,
-                'created_at' => $currenttimestamp,
-            ]);
-        } else {
-            $DB->insert_record(constants::M_AUTHTABLE, [
-                'user_id'    => $USER->id,
-                'secret'     => $token,
-                'created_at' => $currenttimestamp,
-            ]);
-        }
-
         $data = [
             'cmid'    => $cmid,
             'wwwroot' => $CFG->wwwroot,
-            'user_id' => $USER->id,
-            'secret'  => urlencode($secret),
+            'userid' => $USER->id,
         ];
 
         return [

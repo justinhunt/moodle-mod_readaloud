@@ -32,6 +32,7 @@ $n = optional_param('n', 0, PARAM_INT);  // Readaloud instance ID - it should be
 $reviewattempts = optional_param('reviewattempts', 0, PARAM_INT);
 $debug = optional_param('debug', 0, PARAM_INT);
 $embed = optional_param('embed', 0, PARAM_INT);
+$userid = optional_param('userid', 0, PARAM_INT);
 
 if ($id) {
     $cm = get_coursemodule_from_id('readaloud', $id, 0, false, MUST_EXIST);
@@ -51,6 +52,7 @@ $PAGE->set_url('/mod/readaloud/view.php', [
     'id' => $cm->id,
     'reviewattempts' => $reviewattempts,
     'embed' => $embed,
+    'userid' => $userid,
 ]);
 require_login($course, true, $cm);
 
