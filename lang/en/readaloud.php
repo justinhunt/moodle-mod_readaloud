@@ -647,11 +647,32 @@ $string['disableshadowgrading'] = "Disable shadow mode grading";
 $string['disableshadowgrading_details'] = "If checked, attempts made in shadow mode will be evaluated, but no entry passed to the gradebook.";
 $string['developer'] = "Developer";
 
-$string['freetrial'] = "Get Cloud Poodll API credentials and a free trial";
-$string['freetrial_desc'] = "A dialog should appear that allows you to register for a free trial with Poodll. After registering you should login to the members dashboard to get your API user and secret. And to register your site URL.";
+$string['freetrial'] = "Get a Poodll free trial";
+$string['freetrial_desc'] = "Poodll ReadAloud is a premium Moodle plugin. A free trial can be set up in a couple of minutes without leaving your Moodle site. For details on pricing visit <a href='https://poodll.com/pricing'>Poodll.com</a>. ";
 // $string['memberdashboard'] = "Member Dashboard";
 // $string['memberdashboard_desc'] = "";
 $string['fillcredentials'] = "Set API user and secret with existing credentials";
+
+// In-app management of the Poodll API credentials (see classes/cbcredentials.php).
+$string['cbsetupheading'] = "Set up your Poodll API credentials";
+$string['cbsetupintro'] = "Poodll ReadAloud cannot run until the Poodll API user and secret have been set for this site. They are site wide settings, so you only need to do this once.";
+$string['cbsetupfound'] = "Another Poodll plugin on this site already has credentials. You can copy them across with the button below, then save them.";
+$string['cbsetupnotfound'] = "No Poodll credentials were found anywhere on this site. If you do not have them yet you can take a free trial, and your API user and secret will be emailed to you.";
+$string['cbsavecredentials'] = "Save credentials";
+$string['cbgotosettings'] = "Go to the ReadAloud settings page";
+$string['cbcredentialssaved'] = "Your Poodll API credentials were saved and accepted.";
+$string['cbnocredentialsset'] = "ReadAloud cannot run yet because the Poodll API user and secret have not been set for this site.";
+$string['cbaskadmin'] = "Please ask your site administrator to set up the Poodll API credentials for this site.";
+$string['nocredentialsentered'] = "No API user and secret were entered.";
+$string['cbgetfreetrial'] = "Get free trial";
+$string['cbtrialstep1'] = "Click the \"Get free trial\" button below and fill in the Poodll checkout form. There is nothing to pay and no credit card is required.";
+$string['cbtrialstep2'] = "Check your email. Your Poodll API user and secret will arrive there a moment after you register.";
+$string['cbtrialstep3'] = "Return to the tab you came from, paste the API user and secret into the form there, and save.";
+$string['cbtrialsiteurl'] = "Your subscription will be registered for the site URL:";
+$string['cbtrialsiteurl_desc'] = "If that is not the address your users visit this Moodle site on, register the correct URL in the members dashboard at member.poodll.com after signing up.";
+$string['cbaftercheckout'] = "Almost done: check your email";
+$string['cbaftercheckout_desc'] = "Your Poodll API user and secret are on their way by email. When they arrive, return to the tab you came from, paste them into the credentials form and save.";
+$string['cbtrialfailed'] = "The Poodll signup form could not be loaded. Please check your internet connection and try again, or sign up at member.poodll.com instead.";
 $string['viewstart'] = "Activity open";
 $string['viewend'] = "Activity close";
 $string['viewstart_help'] = "If set, prevents a student from entering the activity before the start date/time.";

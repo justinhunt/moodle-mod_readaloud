@@ -26,6 +26,10 @@ class constants {
 
     const M_PLUGINSETTINGS = '/admin/settings.php?section=modsettingreadaloud';
 
+    // Chargebee details for the in-app free trial (see fetchcbpage.php).
+    const M_CB_SITE = 'poodllcom';
+    const M_CB_TRIAL_PRICEID = 'Poodll-Free-Trial-USD-Daily';
+
     const M_NEURALVOICES = array("Amy","Emma","Brian","Arthur","Olivia","Aria","Ayanda","Ivy","Joanna","Kendra","Kimberly",
         "Salli","Joey","Justin","Kevin","Matthew","Camila","Lupe","Pedro", "Gabrielle", "Vicki", "Seoyeon","Takumi", "Lucia",
         "Lea","Remi","Bianca","Laura","Kajal","Suvi","Liam","Daniel","Hannah","Camila","Ida","Kazuha","Tomoko","Elin","Hala","Zayd","Lisa");

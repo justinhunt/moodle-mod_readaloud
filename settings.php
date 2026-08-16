@@ -86,49 +86,12 @@ if ($hassiteconfig) {
         $showbelowapisecret = $tokeninfo;
         // If we have no API user and secret we show a "fetch from elsewhere on site" or "take a free trial" link.
     } else {
-        $amddata = ['apppath' => $CFG->wwwroot . '/' . constants::M_URL];
-        $cpcomponents = [
-            'filter_poodll',
-            'qtype_cloudpoodll',
-            'mod_wordcards',
-            'mod_solo',
-            'mod_minilesson',
-            'mod_englishcentral',
-            'mod_pchat',
-            'atto_cloudpoodll',
-            'tinymce_cloudpoodll',
-            'assignsubmission_cloudpoodll',
-            'assignfeedback_cloudpoodll'
-        ];
-        foreach ($cpcomponents as $cpcomponent) {
-            switch ($cpcomponent) {
-                case 'filter_poodll':
-                    $apiusersetting = 'cpapiuser';
-                    $apisecretsetting = 'cpapisecret';
-                    break;
-                case 'mod_englishcentral':
-                    $apiusersetting = 'poodllapiuser';
-                    $apisecretsetting = 'poodllapisecret';
-                    break;
-                default:
-                    $apiusersetting = 'apiuser';
-                    $apisecretsetting = 'apisecret';
-            }
-            $cloudpoodllapiuser = get_config($cpcomponent, $apiusersetting);
-            if (!empty($cloudpoodllapiuser)) {
-                $cloudpoodllapisecret = get_config($cpcomponent, $apisecretsetting);
-                if (!empty($cloudpoodllapisecret)) {
-                    $amddata['apiuser'] = $cloudpoodllapiuser;
-                    $amddata['apisecret'] = $cloudpoodllapisecret;
-                    break;
-                }
-                if (is_object($OUTPUT)) {
-                    $showbelowapisecret = $OUTPUT->render_from_template(constants::M_COMPONENT . '/managecreds', $amddata);
-                }
-            }
-            if (is_object($OUTPUT)) {
-                $showbelowapisecret = $OUTPUT->render_from_template(constants::M_COMPONENT . '/managecreds', $amddata);
-            }
+        $amddata = \mod_readaloud\cbcredentials::export_buttons_data(
+            '#id_s_mod_readaloud_apiuser',
+            '#id_s_mod_readaloud_apisecret'
+        );
+        if (is_object($OUTPUT)) {
+            $showbelowapisecret = $OUTPUT->render_from_template(constants::M_COMPONENT . '/cbmanagecreds', $amddata);
         }
     }
     $mainsettings->add(new admin_setting_configtext(

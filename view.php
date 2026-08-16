@@ -112,6 +112,22 @@ if ($moduleinstance->foriframe == 1 || $embed == 1) {
 
 $renderer = $PAGE->get_renderer('mod_readaloud');
 
+// Without working Poodll API credentials this activity cannot run. Administrators get an in page
+// setup panel, everybody else gets an explanation. This happens before the activity is built.
+$credentialserror = $embed == 0 ? \mod_readaloud\cbcredentials::credentials_error() : '';
+if (!empty($credentialserror)) {
+    echo $renderer->header(
+        $moduleinstance,
+        $cm,
+        'view',
+        null,
+        get_string('view', constants::M_COMPONENT)
+    );
+    echo $renderer->show_cbcredentials_setup($PAGE->url, $credentialserror);
+    echo $renderer->footer();
+    die;
+}
+
 // Render the page.
 echo $renderer->header(
     $moduleinstance,
