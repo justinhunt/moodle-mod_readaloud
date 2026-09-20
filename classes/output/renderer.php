@@ -391,7 +391,7 @@ class renderer extends \plugin_renderer_base {
             'language' => $moduleinstance->ttslanguage,
             'region' => $moduleinstance->region,
             'waveheight' => 75,
-            'maxtime' => 15000,
+            'maxtime' => 15,
             'asrurl' => utils::fetch_lang_server_url($moduleinstance->region, 'transcribe'),
             'rtl' => in_array($moduleinstance->ttslanguage, [
                 constants::M_LANG_ARAE,
