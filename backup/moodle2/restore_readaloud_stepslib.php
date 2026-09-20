@@ -76,6 +76,35 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         return $this->prepare_activity_structure($paths);
     }
 
+    /**
+     * Replace null values with the column default, for any column the schema on THIS site
+     * declares NOT NULL with a default.
+     *
+     * A backup can legitimately carry nulls for columns that are NOT NULL here, because
+     * db/install.xml and db/upgrade.php have not always agreed on nullability (readaloud.viewstart
+     * and readaloud.viewend, for example, became nullable on upgraded sites but stayed NOT NULL on
+     * freshly installed ones). Restore never runs db/upgrade.php, so such a record would fail to
+     * insert with a dml_write_exception on a database in strict mode. Falling back to the column
+     * default lets the backup restore whichever schema it was produced on.
+     *
+     * @param string $table the table the record is about to be inserted into
+     * @param stdClass $data the record about to be inserted
+     * @return stdClass the record, with nulls replaced by column defaults
+     */
+    protected function replace_nulls_with_defaults($table, $data) {
+        global $DB;
+
+        foreach ($DB->get_columns($table) as $columnname => $column) {
+            if (!$column->not_null || !$column->has_default) {
+                continue;
+            }
+            if (property_exists($data, $columnname) && is_null($data->$columnname)) {
+                $data->$columnname = $column->default_value;
+            }
+        }
+        return $data;
+    }
+
     protected function process_readaloud($data) {
         global $DB;
 
@@ -108,6 +137,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $this->activitysteps = empty($data->steps) ? 0 : $data->steps;
 
         // insert the activity record
+        $data = $this->replace_nulls_with_defaults(constants::M_TABLE, $data);
         $newitemid = $DB->insert_record(constants::M_TABLE, $data);
         // immediately after inserting "activity" record, call this
         $this->apply_activity_instance($newitemid);
@@ -123,6 +153,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 
 
         $data->{constants::M_MODNAME .'id'} = $this->get_new_parentid(constants::M_MODNAME);
+        $data = $this->replace_nulls_with_defaults(constants::M_QTABLE, $data);
         $newquestionid = $DB->insert_record(constants::M_QTABLE, $data);
         $this->set_mapping(constants::M_QTABLE, $oldid, $newquestionid, true); // Mapping with files
     }
@@ -145,6 +176,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
             $data->status = $this->activitysteps;
         }
 
+        $data = $this->replace_nulls_with_defaults(constants::M_USERTABLE, $data);
         $newitemid = $DB->insert_record(constants::M_USERTABLE, $data);
 
         // Mapping without files
@@ -164,6 +196,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->{constants::M_MODNAME . 'id'} = $this->get_new_parentid(constants::M_MODNAME);
         $data->attemptid = $this->get_new_parentid(constants::M_USERTABLE);
+        $data = $this->replace_nulls_with_defaults(constants::M_AITABLE, $data);
         $newitemid = $DB->insert_record(constants::M_AITABLE, $data);
 
         // Mapping without files

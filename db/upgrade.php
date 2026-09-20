@@ -1035,6 +1035,59 @@ function xmldb_readaloud_upgrade($oldversion)
         upgrade_mod_savepoint(true, 2026030607, 'readaloud');
     }
 
+    // Repair schema drift between db/install.xml and db/upgrade.php.
+    //
+    // readaloud.viewstart / readaloud.viewend were added NOT NULL at 2022020100, but the 2022040200
+    // step re-declared them without XMLDB_NOTNULL in order to change their default. On MySQL,
+    // change_field_default() rewrites the entire column definition, so that step silently dropped
+    // NOT NULL and activities saved since then can hold nulls. install.xml still declared them
+    // NOT NULL, so a backup taken from an upgraded site failed to restore onto a fresh install.
+    //
+    // The rsquestions tts/layout fields drifted the other way: 2026030603 adds them NOT NULL, while
+    // install.xml declared them nullable and omitted itemttsautoplay altogether, so freshly
+    // installed sites disagreed with upgraded ones. Settle both on the NOT NULL definitions.
+    if ($oldversion < 2026090400) {
+        // Restore NOT NULL on the activity open/close dates.
+        $table = new xmldb_table(constants::M_TABLE);
+
+        $fields = [];
+        $fields[] = new xmldb_field('viewstart', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('viewend', XMLDB_TYPE_INTEGER, 10, XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+
+        foreach ($fields as $field) {
+            if ($dbman->field_exists($table, $field)) {
+                // A column cannot be made NOT NULL while it still holds nulls.
+                $select = $field->getName() . ' IS NULL';
+                $DB->set_field_select(constants::M_TABLE, $field->getName(), $field->getDefault(), $select);
+                $dbman->change_field_notnull($table, $field);
+            }
+        }
+
+        // Align the rsquestions fields with the definitions used since 2026030603.
+        $questiontable = new xmldb_table(constants::M_QTABLE);
+        $layoutauto = constants::LAYOUT_AUTO;
+        $ttsnormal = constants::TTS_NORMAL;
+
+        $fields = [];
+        $fields[] = new xmldb_field('itemttsautoplay', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
+        $fields[] = new xmldb_field('layout', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, $layoutauto);
+        $fields[] = new xmldb_field('itemttsvoice', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, 'Amy');
+        $fields[] = new xmldb_field('itemttsoption', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, $ttsnormal);
+
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($questiontable, $field)) {
+                // Missing entirely on sites installed fresh from the incomplete install.xml.
+                $dbman->add_field($questiontable, $field);
+            } else {
+                $select = $field->getName() . ' IS NULL';
+                $DB->set_field_select(constants::M_QTABLE, $field->getName(), $field->getDefault(), $select);
+                $dbman->change_field_notnull($questiontable, $field);
+            }
+        }
+
+        upgrade_mod_savepoint(true, 2026090400, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }
