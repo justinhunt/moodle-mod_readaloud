@@ -33,6 +33,12 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class utils {
+    /**
+     * A cached streaming speech token is only handed out if it has at least this many seconds left. A token about
+     * to expire would make the page refresh it almost at once, and again when the refresh hands back the same
+     * cached token, and each refresh costs the recording audio.
+     */
+    const STREAMING_TOKEN_MINLIFE = 2 * MINSECS;
 
     // Get the Cloud Poodll Server URL
     public static function get_cloud_poodll_server() {
@@ -1527,7 +1533,7 @@ class utils {
         $now = time();
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get('azuretoken'. '_' . $apiregion);
-        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now) {
+        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now + self::STREAMING_TOKEN_MINLIFE) {
             // For js we set the valid number of seconds.
             $tokenobject->validseconds = $tokenobject->validuntil - $now;
             return $tokenobject;
@@ -1635,7 +1641,7 @@ class utils {
 
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get('msspeechtoken' . '_' . $msregion);
-        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now) {
+        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now + self::STREAMING_TOKEN_MINLIFE) {
             // For js we set the valid number of seconds
             $tokenobject->validseconds = $tokenobject->validuntil - $now;
             return $tokenobject;
@@ -3922,7 +3928,7 @@ class utils {
         $now = time();
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::M_COMPONENT, 'token');
         $tokenobject = $cache->get($tokentype . 'token' . '_' . $poodllregion);
-        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now) {
+        if ($tokenobject && isset($tokenobject->validuntil) && $tokenobject->validuntil > $now + self::STREAMING_TOKEN_MINLIFE) {
             // For js we set the valid number of seconds
             $tokenobject->validseconds = $tokenobject->validuntil - $now;
             return $tokenobject;

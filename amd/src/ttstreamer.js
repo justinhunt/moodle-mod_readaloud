@@ -29,6 +29,13 @@ define(['jquery', 'core/log'], function ($, log) {
         turnbase: 0,
         //highest turn_order seen on the current socket generation.
         maxturn: -1,
+        //the current socket generation: {epoch, sessionoffset, turnbase, maxturn}. Each socket keeps its own, so a
+        //socket that is still flushing after a token refresh files its last turn under its own numbering and timing.
+        generation: null,
+        //bumped by init() and cancel(), so a socket still flushing from an earlier recording cannot write into this one.
+        epoch: 0,
+        //turn slots left free after a generation, for a turn the old socket starts while it is flushing.
+        turngap: 5,
         //set while finish() waits for the server to flush its last turn, see finish().
         onterminated: null,
         //how long finish() waits for the server's Termination message before giving up, in ms.
@@ -50,6 +57,8 @@ define(['jquery', 'core/log'], function ($, log) {
             this.sessionoffset = 0;
             this.turnbase = 0;
             this.maxturn = -1;
+            this.generation = null;
+            this.epoch++;
             this.preparesocket();
         },
 
@@ -61,8 +70,17 @@ define(['jquery', 'core/log'], function ($, log) {
         * turns (they get overwritten) and every word timing after the refresh points back at the start of the audio.
          */
         rollgeneration: function () {
-            this.sessionoffset = this.audioseconds;
-            this.turnbase = this.turnbase + this.maxturn + 1;
+            var previous = this.generation;
+            this.generation = {
+                epoch: this.epoch,
+                sessionoffset: this.audioseconds,
+                //leave a few free turn slots after the previous generation: it may still be flushing, see updatetoken()
+                turnbase: previous ? previous.turnbase + previous.maxturn + 1 + this.turngap : 0,
+                maxturn: -1
+            };
+            //the flat fields mirror the current generation, for anything reading them
+            this.sessionoffset = this.generation.sessionoffset;
+            this.turnbase = this.generation.turnbase;
             this.maxturn = -1;
             log.debug('TT Streamer new generation. offset=' + this.sessionoffset + 's turnbase=' + this.turnbase);
         },
@@ -104,6 +122,11 @@ define(['jquery', 'core/log'], function ($, log) {
             log.debug('TT Streamer socket prepared');
 
 
+            //These handlers must only act on their own socket and generation. After a token refresh the old socket
+            //is still open for a moment, flushing its last turn, while the new one is already in place.
+            var thissocket = this.socket;
+            var thisgeneration = this.generation;
+
             // handle incoming messages which contain the transcription
             this.socket.onmessage = function (message) {
                 try {    
@@ -117,11 +140,14 @@ define(['jquery', 'core/log'], function ($, log) {
                             break;
 
                         case 'Turn':
-                            that.handlefinalresponse(payload);
+                            //a socket still flushing from an earlier recording has nothing to add to this one
+                            if (thisgeneration.epoch === that.epoch) {
+                                that.handlefinalresponse(payload, thisgeneration);
+                            }
                             break;
                         case 'Termination':
                             //the server has sent everything it is going to send, see finish()
-                            if (that.onterminated) {
+                            if (that.socket === thissocket && that.onterminated) {
                                 that.onterminated();
                             }
                             break;
@@ -142,10 +168,8 @@ define(['jquery', 'core/log'], function ($, log) {
                 that.audiohelper.onSocketReady('fromsocketopen');
             };
 
-            //These handlers must only act on their own socket. After a token refresh the old socket's close event
-            //arrives once the new socket is already in place, and clearing that.socket then would silently stop
-            //everything after the refresh from being transcribed.
-            var thissocket = this.socket;
+            //Clearing that.socket from an old socket's close event would silently stop everything after a refresh
+            //from being transcribed, hence the checks.
             this.socket.onerror = (event) => {
                 log.debug(event);
                 if (that.socket === thissocket) {
@@ -167,10 +191,35 @@ define(['jquery', 'core/log'], function ($, log) {
             };
         },
 
+        /*
+        * Move to a new socket with a fresh token. The old socket is asked to Terminate but left open, so the server
+        * can still send the turn that was in progress: closing it straight away lost the end of whatever the student
+        * was saying at the moment of the refresh. New audio goes to the new socket, buffered until its session begins.
+         */
         updatetoken: function (newtoken) {
             var that = this;
-            if (that.socket) {
-                that.doclosesocket();
+            var oldsocket = that.socket;
+            that.socket = null;
+            if (oldsocket) {
+                if (oldsocket.readyState === WebSocket.OPEN) {
+                    try {
+                        oldsocket.send(JSON.stringify({type: 'Terminate'}));
+                    } catch (error) {
+                        log.debug('TT Streamer could not Terminate the old socket: ' + error);
+                    }
+                    //the server closes it after its Termination message, but do not rely on that
+                    setTimeout(function () {
+                        if (oldsocket.readyState === WebSocket.OPEN || oldsocket.readyState === WebSocket.CONNECTING) {
+                            oldsocket.close();
+                        }
+                    }, that.terminatetimeout);
+                } else {
+                    try {
+                        oldsocket.close();
+                    } catch (error) {
+                        log.debug('TT Streamer could not close the old socket: ' + error);
+                    }
+                }
             }
             that.speechtoken = newtoken;
             that.preparesocket();
@@ -272,6 +321,7 @@ define(['jquery', 'core/log'], function ($, log) {
         cancel: function () {
             //a pending finish() must not deliver a transcript after we have been cancelled
             this.onterminated = null;
+            this.epoch++;
             this.ready = false;
             this.earlyaudio = [];
             this.finals = [];
@@ -321,20 +371,24 @@ define(['jquery', 'core/log'], function ($, log) {
         },
 
 
-        handlefinalresponse: function (payload) {
+        handlefinalresponse: function (payload, generation) {
             var that = this;
             var thistranscript = payload.transcript || "";
+            generation = generation || that.generation;
 
             //turn_order is per session, so shift it past any earlier socket generation
             var turnorder = payload.turn_order || 0;
-            if (turnorder > that.maxturn) {
-                that.maxturn = turnorder;
+            if (turnorder > generation.maxturn) {
+                generation.maxturn = turnorder;
+                if (generation === that.generation) {
+                    that.maxturn = turnorder;
+                }
             }
-            var turnindex = that.turnbase + turnorder;
+            var turnindex = generation.turnbase + turnorder;
 
              //process finals
             that.finals[turnindex] = thistranscript;
-            that.finalwords[turnindex] = that.extractwords(payload);
+            that.finalwords[turnindex] = that.extractwords(payload, generation);
             that.finaltext = this.buildtranscript();
             that.audiohelper.oninterimspeechcapture(thistranscript);
             log.debug('TT Streamer final transcript update (turn ' + turnindex + '): ' + thistranscript);
@@ -346,9 +400,10 @@ define(['jquery', 'core/log'], function ($, log) {
         * to get times relative to the start of the recording, which is what the audio file and the grading
         * UI are indexed against.
          */
-        extractwords: function (payload) {
+        extractwords: function (payload, generation) {
             var that = this;
             var words = [];
+            var sessionoffset = (generation || that.generation).sessionoffset;
             if (!payload.words || !payload.words.length) {
                 return words;
             }
@@ -360,8 +415,8 @@ define(['jquery', 'core/log'], function ($, log) {
                 }
                 words.push({
                     content: text,
-                    start_time: that.sessionoffset + ((w.start || 0) / 1000),
-                    end_time: that.sessionoffset + ((w.end || 0) / 1000),
+                    start_time: sessionoffset + ((w.start || 0) / 1000),
+                    end_time: sessionoffset + ((w.end || 0) / 1000),
                     confidence: typeof w.confidence === 'number' ? w.confidence : 1
                 });
             }
