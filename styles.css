@@ -882,6 +882,45 @@ body#page-mod-readaloud-view #topofscroll.main-inner {
   padding: 0.2rem;
 }
 
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer {
+  margin: auto;
+  max-width: 260px;
+  padding-top: 15px;
+  position: relative;
+  width: 100%;
+}
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer canvas.mod_readaloud_ttrec_waveForm {
+  background-color: transparent;
+  height: 46px;
+  width: 100%;
+}
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer button.mod_readaloud_ttrec_waveButton {
+  font-size: 24px;
+  position: absolute;
+}
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer .control-label {
+  text-align: center;
+}
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_timer {
+  text-align: center;
+}
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_timerprogress {
+  height: 5px;
+  margin-bottom: 4px;
+}
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_timerprogress .progress-bar {
+  background-color: #8F8E94;
+  transition: width 1s linear;
+}
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_timerprogress.ra_timer_warning .progress-bar {
+  background-color: #FF0000;
+}
+#mod_readaloud_readmode .mod_readaloud_ttrec_waveButtonContainer .mod_readaloud_ttrec_timerdisplay {
+  color: #8F8E94;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
 #mod_readaloud_readreport .mod_readaloud_readreport_cards .mod_readaloud_readreport_card .fs-1 {
   font-size: 2.125rem !important;
 }
@@ -967,4 +1006,5 @@ body.path-mod-readaloud #page-content .font-sm {
   font-weight: 600;
   line-height: normal;
 }
+
 /*# sourceMappingURL=styles.css.map */

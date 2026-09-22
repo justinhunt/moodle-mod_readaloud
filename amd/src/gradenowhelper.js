@@ -459,11 +459,17 @@ define(['jquery', 'core/log', 'mod_readaloud/definitions', 'mod_readaloud/popove
 
             //either in or out of review mode we want these
             //modebutton: turn on spotchecking
-            this.controls.spotcheckbutton.click(function () {
-                that.undoCurrentMode();
-                that.doSpotCheckMode();
-                that.updateButtonStates();
-            });
+            //hide it entirely when this attempt's transcript carried no word timings. spot check would
+            //otherwise play every word from the start of the audio, which looks broken rather than absent.
+            if (this.options.canspotcheck === false) {
+                this.controls.spotcheckbutton.hide();
+            } else {
+                this.controls.spotcheckbutton.click(function () {
+                    that.undoCurrentMode();
+                    that.doSpotCheckMode();
+                    that.updateButtonStates();
+                });
+            }
 
             //modebutton: turn on transcript checking
             this.controls.transcriptcheckbutton.click(function () {

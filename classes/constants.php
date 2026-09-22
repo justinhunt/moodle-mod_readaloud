@@ -232,6 +232,8 @@ class constants {
     const M_START_BUTTON_CONTAINER = 'mod_readaloud_start_button_cont';
     const M_STOP_BUTTON_CONTAINER = 'mod_readaloud_stop_button_cont';
     const M_RECORDERID = 'therecorderid';
+    // The in page streaming recorder used by the read step, in place of the cloud poodll iframe.
+    const M_READ_TTRECORDER = 'readaloud_read_ttrecorder';
     const M_RECORDING_CONTAINER = 'mod_readaloud_recording_cont';
     const M_RECORDER_CONTAINER = 'mod_readaloud_recorder_cont';
     const M_DUMMY_RECORDER = 'mod_readaloud_dummy_recorder';

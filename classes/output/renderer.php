@@ -375,6 +375,110 @@ class renderer extends \plugin_renderer_base {
     }
 
     /**
+     * Should the read step use the in page streaming recorder rather than the cloud poodll iframe?
+     *
+     * Only when the activity is set to Open STT (the guided transcriber needs the server side upload path,
+     * it steers the transcript towards the passage), and only when we could actually get a streaming token.
+     *
+     * @param object $moduleinstance The module instance.
+     * @return bool True if the read step should stream in the browser.
+     */
+    public static function can_stream_read($moduleinstance) {
+
+        // Guided transcription has no streaming equivalent, so those activities keep the iframe recorder.
+        if (!utils::do_strict_transcribe($moduleinstance)) {
+            return false;
+        }
+
+        // No point streaming if we are not transcribing at all.
+        if (!utils::can_transcribe($moduleinstance)) {
+            return false;
+        }
+
+        // Site admin can turn the whole thing off.
+        if (!get_config(constants::M_COMPONENT, 'streamingread')) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get read step streaming recorder data for template rendering.
+     *
+     * This is the in page recorder used in place of the cloud poodll iframe when the activity streams.
+     * It differs from the practice recorder in three ways that matter: it saves the media (the teacher
+     * grading page and spot check need the audio), it forces streaming (browser speech recognition returns
+     * no word timings, and on android it cannot record audio at all), and it takes its time limit from the
+     * activity rather than a fixed 15 seconds.
+     *
+     * @param object $moduleinstance The module instance.
+     * @param string $token The cloud poodll token, used for the media upload.
+     * @return array The read recorder data, or an empty array if streaming is not available.
+     */
+    public function show_read_recorder($moduleinstance, $token) {
+        global $CFG, $USER;
+
+        if (!self::can_stream_read($moduleinstance)) {
+            return [];
+        }
+
+        $tokenobject = utils::fetch_streaming_token($moduleinstance->region);
+        if (!$tokenobject) {
+            // Without a streaming token there is nothing to stream with, fall back to the iframe.
+            return [];
+        }
+
+        // A time limit of 0 means no limit, and the timer treats it that way too.
+        $maxtime = $moduleinstance->timelimit > 0 ? $moduleinstance->timelimit : 0;
+
+        return [
+            'uniqueid' => constants::M_READ_TTRECORDER,
+            'language' => $moduleinstance->ttslanguage,
+            'region' => $moduleinstance->region,
+            'waveheight' => 75,
+            'maxtime' => $maxtime,
+            'asrurl' => utils::fetch_lang_server_url($moduleinstance->region, 'transcribe'),
+            'rtl' => in_array($moduleinstance->ttslanguage, [
+                constants::M_LANG_ARAE,
+                constants::M_LANG_ARSA,
+                constants::M_LANG_FAIR,
+                constants::M_LANG_HEIL,
+            ]),
+            'name' => 'recordbutton',
+            'label' => get_string('recordbutton', constants::M_COMPONENT),
+            'pressed' => 'false',
+            // Show the countdown. With a time limit it counts down and fills a bar, without one it just
+            // counts the reading up so the student can see how long they have been going.
+            'showtimer' => true,
+            'hastimelimit' => $maxtime > 0,
+            'passagehash' => '',
+            'speechtoken' => $tokenobject->token,
+            'speechtokenregion' => $tokenobject->region,
+            'speechtokenvalidseconds' => $tokenobject->validseconds,
+            'speechtokentype' => $tokenobject->tokentype,
+            // Browser speech recognition gives us no word timings and cannot record audio on android,
+            // and we need both here, so never let the recorder choose it.
+            'forcestreaming' => true,
+            // The read step must keep the audio: teachers grade against it and spot check plays from it.
+            'savemedia' => 1,
+            'savemediaregion' => $moduleinstance->region,
+            'cloudpoodlltoken' => $token,
+            'wwwroot' => $CFG->wwwroot,
+            'appid' => constants::M_COMPONENT,
+            'owner' => hash('md5', $USER->username),
+            'transcode' => 1,
+            // Have the cloud transcribe the saved audio too. It is never read when streaming recognition
+            // works, because aigrade only fetches a transcript when it does not already have one. It is there
+            // so an attempt whose streaming transcript failed can still be recovered and graded.
+            'transcribemedia' => 1,
+            'expiredays' => $moduleinstance->expiredays,
+            'mediatype' => 'audio',
+            'cloudpoodllurl' => utils::get_cloud_poodll_server(),
+        ];
+    }
+
+    /**
      * Get practice recorder data for template rendering.
      * Returns data array instead of pre-rendered HTML to support dynamic template rendering.
      *
@@ -603,6 +707,11 @@ class renderer extends \plugin_renderer_base {
         // Recorder html ids.
         $adata['recordercontainer'] = constants::M_RECORDER_CONTAINER;
         $adata['recorderid'] = constants::M_RECORDERID;
+        $adata['readttrecorderid'] = constants::M_READ_TTRECORDER;
+        // Whether the read step streams in the browser, or uses the cloud poodll iframe. This has to be the
+        // same answer the template acted on, otherwise js goes looking for a recorder that was never rendered.
+        // can_stream_read() is not enough on its own, because show_read_recorder() also needs a streaming token.
+        $adata['readstreaming'] = !empty($templatecontext['readstreaming']);
         $adata['recordingcontainer'] = constants::M_RECORDING_CONTAINER;
 
         // Activity html ids.
@@ -1374,6 +1483,9 @@ class renderer extends \plugin_renderer_base {
         // Get practice recorder data.
         $practicedata = $this->show_practice($moduleinstance, $token);
 
+        // Get the read step streaming recorder data. Empty when the activity keeps the iframe recorder.
+        $readrecorder = $this->show_read_recorder($moduleinstance, $token);
+
         $canpreview = has_capability('mod/readaloud:preview', $modulecontext);
         $feedback = !empty($moduleinstance->feedback) ? $moduleinstance->feedback : null;
         $instructions = !empty($moduleinstance->welcome) ? $moduleinstance->welcome : null;
@@ -1434,6 +1546,8 @@ class renderer extends \plugin_renderer_base {
             'quizfinisheddata' => $quizfinisheddata,
             'reviewattempts' => $reviewattempts,
             'recorder' => $recorder,
+            'readrecorder' => $readrecorder ? $readrecorder : false,
+            'readstreaming' => $readrecorder ? true : false,
             'readreport' => $readreport,
             'steps' => constants::STEPS,
             'stepscomplete' => $stepscomplete,

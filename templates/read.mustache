@@ -24,7 +24,9 @@
     * backurl - URL to return to home/menu
     * passagepictureurl - URL to passage picture (optional)
     * modeinstructions - Custom activity instructions (from welcome field)
-    * recorder - Recorder component with all configuration
+    * readstreaming - True to use the in page streaming recorder instead of the iframe recorder
+    * readrecorder - Streaming recorder configuration, present when readstreaming is true
+    * recorder - Iframe recorder component with all configuration
     * passagesegments - Array of passage text segments
 
     Example context (json):
@@ -73,6 +75,19 @@
 
             {{> mod_readaloud/passagecontainer}}
 
+            {{#readstreaming}}
+            {{! In page streaming recorder. Transcribes as the student reads, so results are immediate. }}
+            <div class="{{M_RECORDING_CONTAINER}}">
+                <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}} d-flex justify-content-center align-items-center">
+                    {{#readrecorder}}
+                        {{> mod_readaloud/ttrecorder}}
+                    {{/readrecorder}}
+                </div>
+            </div>
+            {{/readstreaming}}
+
+            {{^readstreaming}}
+            {{! Cloud Poodll iframe recorder. Audio is uploaded and transcribed server side. }}
             {{#recorder}}
             <div class="{{M_RECORDING_CONTAINER}}">
                 <div id="{{M_RECORDER_CONTAINER}}" class="{{M_RECORDER_CONTAINER}} d-flex justify-content-center align-items-center">
@@ -104,6 +119,7 @@
                 </div>
             </div>
             {{/recorder}}
+            {{/readstreaming}}
         </div>
     </div>
 </section>

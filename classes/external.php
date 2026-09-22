@@ -297,14 +297,16 @@ class mod_readaloud_external extends external_api {
                 'filename' => new external_value(PARAM_TEXT),
                 'rectime' => new external_value(PARAM_INT),
                 'awsresults' => new external_value(PARAM_RAW),
+                'shadowing' => new external_value(PARAM_INT, 'whether this was a shadowed reading', VALUE_DEFAULT, 0),
         ]);
     }
 
-    public static function submit_streaming_attempt($cmid, $filename, $rectime, $awsresults) {
+    public static function submit_streaming_attempt($cmid, $filename, $rectime, $awsresults, $shadowing = 0) {
         global $DB;
 
         $params = self::validate_parameters(self::submit_streaming_attempt_parameters(),
-                ['cmid' => $cmid, 'filename' => $filename, 'rectime' => $rectime, 'awsresults' => $awsresults]);
+                ['cmid' => $cmid, 'filename' => $filename, 'rectime' => $rectime, 'awsresults' => $awsresults,
+                 'shadowing' => $shadowing]);
         extract($params);
 
         $cm = get_coursemodule_from_id('readaloud', $cmid, 0, false, MUST_EXIST);
@@ -312,20 +314,43 @@ class mod_readaloud_external extends external_api {
         $readaloud = $DB->get_record('readaloud', ['id' => $cm->instance], '*', MUST_EXIST);
         $modulecontext = context_module::instance($cm->id);
 
+        // This is a write call that grades the user, so confirm the session really has access here.
+        self::validate_context($modulecontext);
+        require_capability('mod/readaloud:view', $modulecontext);
+
         // make database items and adhoc tasks
         $success = false;
         $message = '';
+
+        // By default we are gradeable unless its shadowing and they turned off shadow grading.
         $gradeable = true;
+        if ($shadowing) {
+            $config = get_config(constants::M_COMPONENT);
+            if ($config->disableshadowgrading) {
+                $gradeable = false;
+            }
+        }
+
         $newattempt = utils::create_update_attempt($filename, $rectime, $readaloud, $gradeable);
         if (!$newattempt || !$newattempt->id) {
             $message = "Unable to add update database with submission";
         } else {
+            // Trigger attempt submitted event, as the non streaming path does.
+            \mod_readaloud\event\attempt_submitted::create_from_attempt($newattempt, $modulecontext)->trigger();
             $success = true;
         }
 
         if ($success) {
+            // An empty word list still parses, and grades as a zero, which is what a silent reading deserves
+            // and what the upload transcriber path does with the same audio. Only genuinely malformed input
+            // fails to parse, and we substitute an empty result for that too: the media is uploaded with
+            // transcribe off, so there is no server side transcript coming for this attempt, ever. Leaving it
+            // ungraded would leave the student's report checking for a result that can never arrive.
             $processedawsresults = utils::parse_streaming_results($awsresults);
-            $aigrade = new \mod_readaloud\aigrade($newattempt->id, $modulecontext->id, $processedawsresults);
+            if (!$processedawsresults) {
+                $processedawsresults = utils::parse_streaming_results('[]');
+            }
+            $aigrade = new \mod_readaloud\aigrade($newattempt->id, $modulecontext->id, $processedawsresults, $rectime);
             if ($aigrade) {
                 if (!$aigrade->has_attempt()) {
                     $message = 'No attempt could be found when processing transcript';

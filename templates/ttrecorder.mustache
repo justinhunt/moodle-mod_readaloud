@@ -23,6 +23,7 @@
          data-appid="{{appid}}"
          data-owner="{{owner}}"
          data-transcode="{{transcode}}"
+         data-transcribemedia="{{transcribemedia}}"
          data-expiredays="{{expiredays}}"
          data-mediatype="{{mediatype}}"
          data-cloudpoodllurl="{{cloudpoodllurl}}"
@@ -46,4 +47,21 @@
     <span id="recordbutton-desc" class="control-label p-2">
         {{#str}} taptospeak, mod_readaloud {{/str}}
     </span>
+    {{#showtimer}}
+    {{! Countdown, driven by the recorder's own timer in ttrecorder.js. Opt in, so recorders that do not
+        want a visible countdown (practice, the speaking quiz items) are unaffected. }}
+    <div class="mod_readaloud_ttrec_timer w-100">
+        {{#hastimelimit}}
+        <div class="timerprogress_{{uniqueid}} progress mod_readaloud_ttrec_timerprogress"
+             role="progressbar"
+             aria-label="{{#str}} timeremaining, mod_readaloud {{/str}}"
+             aria-valuemin="0"
+             aria-valuenow="0"
+             aria-valuemax="{{maxtime}}">
+            <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        {{/hastimelimit}}
+        <div class="timerdisplay_{{uniqueid}} mod_readaloud_ttrec_timerdisplay" aria-live="off"></div>
+    </div>
+    {{/showtimer}}
 </div>

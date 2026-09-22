@@ -14,11 +14,21 @@ define(['jquery', 'core/log'], function ($, log) {
         earlyaudio: [],
         partials: [],
         finals: [],
+        finalwords: [],
         ready: false,
         finaltext: '',
         region: 'westeurope',
         apidomain: 'microsoft.com',
         lang: 'en-US',
+        //samplerate of the pcm we send. ttaudiohelper builds the AudioContext at this rate.
+        samplerate: 16000,
+        //azure reports offsets in 100 nanosecond ticks, so this many ticks to the second.
+        tickspersecond: 10000000,
+        //total audio sent since recording started, in seconds. our clock, and it survives a reconnect.
+        audioseconds: 0,
+        //the audio clock reading when the current socket generation opened. word offsets arrive
+        //relative to the session, so we add this to get times relative to the whole recording.
+        sessionoffset: 0,
 
         //for making multiple instances
         clone: function () {
@@ -31,6 +41,11 @@ define(['jquery', 'core/log'], function ($, log) {
             this.audiohelper = theaudiohelper;
             this.lang = theaudiohelper.therecorder.lang;
             this.sentHeader = false; // Track if WAV header was sent
+            this.finals = [];
+            this.finalwords = [];
+            this.finaltext = '';
+            this.audioseconds = 0;
+            this.sessionoffset = 0;
             // If region starts with "china" set aipdomain to azure.cn
             if(this.region.startsWith('china')) {
                 this.apidomain = 'azure.cn';
@@ -44,8 +59,19 @@ define(['jquery', 'core/log'], function ($, log) {
 
         preparesocket: async function () {
             var that = this;
+
+            //a socket generation is one azure session. a token refresh closes the socket and opens a new one,
+            //and the new session restarts its offsets at zero. park the audio clock so word timings from the
+            //incoming session get shifted back onto the recording's timeline. the ms speech sdk does the same
+            //thing internally (DetailedSpeechPhrase.updateOffsets applies a baseOffset per connection).
+            this.sessionoffset = this.audioseconds;
+
             var url = `wss://${this.region}.stt.speech.${this.apidomain}/speech/recognition/conversation/cognitiveservices/v1?language=${this.lang}`;
-            url += `&format=simple`;
+            //detailed format puts results in NBest, and wordLevelTimestamps adds the per word Offset/Duration
+            //that readaloud needs for wpm and for spot check playback. ConnectionFactoryBase in the ms speech
+            //sdk maps SpeechServiceResponse_RequestWordLevelTimestamps onto this same query parameter.
+            url += `&format=detailed`;
+            url += `&wordLevelTimestamps=true`;
             // Using the token as a query param is the only easy way without headers
             url += `&Authorization=Bearer ${this.speechtoken}`;
 
@@ -81,10 +107,16 @@ define(['jquery', 'core/log'], function ($, log) {
                         }
                         else if (headerSection.includes('Path:speech.phrase')) {
                             if (res.RecognitionStatus === 'Success') {
-                                let msg = res.DisplayText;
-                                that.finaltext += ' ' + msg;
-                                that.audiohelper.oninterimspeechcapture(that.finaltext);
-                                console.debug('Azure final: ' + msg);
+                                //detailed format puts the text in NBest[0].Display. fall back to DisplayText
+                                //so we still work if the service ignores the detailed request.
+                                var best = (res.NBest && res.NBest.length) ? res.NBest[0] : null;
+                                let msg = (best && best.Display) ? best.Display : res.DisplayText;
+                                if (msg) {
+                                    that.finaltext += ' ' + msg;
+                                    that.finalwords.push(that.extractwords(best));
+                                    that.audiohelper.oninterimspeechcapture(that.finaltext);
+                                    log.debug('Azure final: ' + msg);
+                                }
                             }
                         }
                     } catch (e) {
@@ -112,6 +144,49 @@ define(['jquery', 'core/log'], function ($, log) {
             };
         },
 
+        /*
+        * Pull word timings out of an NBest entry. Azure reports Offset and Duration in 100 nanosecond ticks
+        * relative to the start of the session, so convert to seconds and add the generation offset to land on
+        * the recording's timeline, which is what the audio file and the grading ui are indexed against.
+         */
+        extractwords: function (best) {
+            var that = this;
+            var words = [];
+            if (!best || !best.Words || !best.Words.length) {
+                return words;
+            }
+            for (var i = 0; i < best.Words.length; i++) {
+                var w = best.Words[i];
+                var text = (w.Word || '').trim();
+                if (text === '') {
+                    continue;
+                }
+                var start = (w.Offset || 0) / that.tickspersecond;
+                var duration = (w.Duration || 0) / that.tickspersecond;
+                words.push({
+                    content: text,
+                    start_time: that.sessionoffset + start,
+                    end_time: that.sessionoffset + start + duration,
+                    confidence: typeof w.Confidence === 'number' ? w.Confidence : 1
+                });
+            }
+            return words;
+        },
+
+        /*
+        * The flat, ordered word list for the whole recording, in the same shape ttstreamer produces.
+         */
+        buildwords: function () {
+            var all = [];
+            for (var i = 0; i < this.finalwords.length; i++) {
+                var phrasewords = this.finalwords[i];
+                if (phrasewords && phrasewords.length) {
+                    all = all.concat(phrasewords);
+                }
+            }
+            return all;
+        },
+
         updatetoken: function (newtoken) {
             var that = this;
             if (that.socket) {
@@ -124,6 +199,10 @@ define(['jquery', 'core/log'], function ($, log) {
         audioprocess: function (stereodata) {
             var that = this;
             const base64data = this.binarytobase64(stereodata[0]);
+
+            //advance the audio clock. we count every buffer we are handed, including the ones held as
+            //earlyaudio, so the clock tracks the recording rather than the socket.
+            this.audioseconds += stereodata[0].length / this.samplerate;
 
             if (this.ready === undefined || !this.ready) {
                 this.earlyaudio.push(base64data);
@@ -250,7 +329,9 @@ define(['jquery', 'core/log'], function ($, log) {
             }
             var that = this;
             setTimeout(function () {
-                that.audiohelper.onfinalspeechcapture(that.finaltext);
+                var finalwords = that.buildwords();
+                log.debug('TT Azure Streamer final capture with ' + finalwords.length + ' timed words');
+                that.audiohelper.onfinalspeechcapture(that.finaltext, finalwords);
                 that.cleanup();
             }, 1000);
         },
@@ -258,6 +339,8 @@ define(['jquery', 'core/log'], function ($, log) {
         cancel: function () {
             this.ready = false;
             this.earlyaudio = [];
+            this.finals = [];
+            this.finalwords = [];
             this.finaltext = '';
             if (this.socket) {
                 this.socket.close();

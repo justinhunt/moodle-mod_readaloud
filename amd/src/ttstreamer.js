@@ -13,9 +13,22 @@ define(['jquery', 'core/log'], function ($, log) {
         audiohelper: null,
         earlyaudio: [],
         finals: [],
+        finalwords: [],
         ready: false,
         finaltext: '',
         lang: 'en-US',
+        //samplerate of the pcm we send. ttaudiohelper builds the AudioContext at this rate.
+        samplerate: 16000,
+        //total audio sent to the streamer since recording started, in seconds.
+        //this is our audio clock, and it does not reset when the socket does.
+        audioseconds: 0,
+        //the audio clock reading at the moment the current socket generation opened.
+        //word timings arrive relative to session start, so we add this to get passage-relative times.
+        sessionoffset: 0,
+        //turns are numbered per session, so we shift them past any earlier generation's turns.
+        turnbase: 0,
+        //highest turn_order seen on the current socket generation.
+        maxturn: -1,
 
         //for making multiple instances
         clone: function () {
@@ -26,11 +39,34 @@ define(['jquery', 'core/log'], function ($, log) {
             this.speechtoken = speechtoken;
             this.audiohelper = theaudiohelper;
             this.lang = theaudiohelper.therecorder.lang;
+            this.finals = [];
+            this.finalwords = [];
+            this.finaltext = '';
+            this.audioseconds = 0;
+            this.sessionoffset = 0;
+            this.turnbase = 0;
+            this.maxturn = -1;
             this.preparesocket();
+        },
+
+        /*
+        * A socket generation is one AssemblyAI session. A token refresh closes the socket and opens a new one,
+        * and the new session restarts turn_order and word timings at zero. So before each new socket we park
+        * the current audio clock as the offset for the incoming session, and push turn numbering past whatever
+        * the previous generation used. Without this a reading longer than the token lifetime loses its earlier
+        * turns (they get overwritten) and every word timing after the refresh points back at the start of the audio.
+         */
+        rollgeneration: function () {
+            this.sessionoffset = this.audioseconds;
+            this.turnbase = this.turnbase + this.maxturn + 1;
+            this.maxturn = -1;
+            log.debug('TT Streamer new generation. offset=' + this.sessionoffset + 's turnbase=' + this.turnbase);
         },
 
         preparesocket: function () {
             var that = this;
+
+            this.rollgeneration();
 
             // establish wss with AssemblyAI Universal Streaming at 16000 sample rate
             var basehost = 'wss://streaming.assemblyai.com';
@@ -94,8 +130,8 @@ define(['jquery', 'core/log'], function ($, log) {
 
             this.socket.onopen = (event) => {
                 log.debug('TT Streamer socket opened');
-                that.finaltext = '';
-                that.finals = [];
+                //note: we deliberately do NOT clear finals/finaltext here. On a token refresh this fires
+                //again mid-reading, and clearing would discard everything read so far. init() does the reset.
                 that.audiohelper.onSocketReady('fromsocketopen');
             };
 
@@ -122,6 +158,10 @@ define(['jquery', 'core/log'], function ($, log) {
         audioprocess: function (stereodata) {
             var that = this;
             var int16data = this.convertflattoint16(stereodata[0]);
+
+            //advance the audio clock. we count every buffer we are handed, including the ones we buffer
+            //as earlyaudio, so the clock tracks the recording rather than the socket.
+            this.audioseconds += stereodata[0].length / this.samplerate;
 
             //this would be an event that occurs after recorder has stopped or before we are ready
             //session opening can be slower than socket opening, so store audio data until session is open
@@ -182,8 +222,9 @@ define(['jquery', 'core/log'], function ($, log) {
             log.debug('setting time out to build transcript');
             setTimeout(function () {
                 var finaltranscript = that.buildtranscript();
-                log.debug('sending final speech capture event');
-                that.audiohelper.onfinalspeechcapture(finaltranscript);
+                var finalwords = that.buildwords();
+                log.debug('sending final speech capture event with ' + finalwords.length + ' timed words');
+                that.audiohelper.onfinalspeechcapture(finaltranscript, finalwords);
                 that.cleanup();
             }, 1000);
         },
@@ -191,7 +232,8 @@ define(['jquery', 'core/log'], function ($, log) {
         cancel: function () {
             this.ready = false;
             this.earlyaudio = [];
-            this.finals = {};
+            this.finals = [];
+            this.finalwords = [];
             this.finaltext = '';
             if (this.socket) {
                 this.doclosesocket();
@@ -240,11 +282,63 @@ define(['jquery', 'core/log'], function ($, log) {
         handlefinalresponse: function (payload) {
             var that = this;
             var thistranscript = payload.transcript || "";
+
+            //turn_order is per session, so shift it past any earlier socket generation
+            var turnorder = payload.turn_order || 0;
+            if (turnorder > that.maxturn) {
+                that.maxturn = turnorder;
+            }
+            var turnindex = that.turnbase + turnorder;
+
              //process finals
-            that.finals[payload.turn_order] = thistranscript;
+            that.finals[turnindex] = thistranscript;
+            that.finalwords[turnindex] = that.extractwords(payload);
             that.finaltext = this.buildtranscript();
             that.audiohelper.oninterimspeechcapture(thistranscript);
-            log.debug('TT Streamer final transcript update: ' + thistranscript);
+            log.debug('TT Streamer final transcript update (turn ' + turnindex + '): ' + thistranscript);
+        },
+
+        /*
+        * Pull word level timings out of a Turn payload. AssemblyAI v3 gives us start/end in milliseconds
+        * relative to the start of the current session, so we convert to seconds and add the generation offset
+        * to get times relative to the start of the recording, which is what the audio file and the grading
+        * UI are indexed against.
+         */
+        extractwords: function (payload) {
+            var that = this;
+            var words = [];
+            if (!payload.words || !payload.words.length) {
+                return words;
+            }
+            for (var i = 0; i < payload.words.length; i++) {
+                var w = payload.words[i];
+                var text = (w.text || '').trim();
+                if (text === '') {
+                    continue;
+                }
+                words.push({
+                    content: text,
+                    start_time: that.sessionoffset + ((w.start || 0) / 1000),
+                    end_time: that.sessionoffset + ((w.end || 0) / 1000),
+                    confidence: typeof w.confidence === 'number' ? w.confidence : 1
+                });
+            }
+            return words;
+        },
+
+        /*
+        * The flat, ordered word list for the whole recording. This is what gets posted to Moodle and
+        * reshaped into the transcript json that utils::fetch_audio_points_json expects.
+         */
+        buildwords: function () {
+            var all = [];
+            for (var i = 0; i < this.finalwords.length; i++) {
+                var turnwords = this.finalwords[i];
+                if (turnwords && turnwords.length) {
+                    all = all.concat(turnwords);
+                }
+            }
+            return all;
         },
 
 

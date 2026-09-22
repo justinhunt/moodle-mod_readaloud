@@ -2027,33 +2027,61 @@ class utils {
         return $currentattempt;
     }
 
-    // streaming results are not the same format as non streaming, we massage the streaming to look like a non streaming
-    // to our code that will go on to process it.
+    /**
+     * Massage word level results from the streaming recogniser into the same json shape that the
+     * non streaming (upload) transcriber returns, so that the rest of the grading pipeline
+     * (fetch_audio_points_json, fetch_duration_from_transcript_json, fetch_diff) needs no special case.
+     *
+     * The client sends a flat, ordered array of timed words, each: {content, start_time, end_time, confidence}.
+     * Times are in seconds, relative to the start of the recording.
+     *
+     * An empty word list is a valid result, not an error: it means the recogniser heard nothing, which is
+     * what happens when a student submits silence. We still return a transcript structure so the attempt is
+     * graded as a zero and the student gets a report, which is how the upload transcriber path behaves for
+     * the same reading. Returning false here instead would leave the attempt with no transcript forever.
+     *
+     * @param string $streamingresults json array of timed words from the streaming recogniser.
+     * @return string|false json in upload transcriber shape, or false if the input was unusable.
+     */
     public static function parse_streaming_results($streamingresults) {
-        $results = json_decode($streamingresults);
-        $alltranscript = '';
-        $allitems = [];
-        foreach($results as $result){
-            foreach($result as $completion) {
-                foreach ($completion->Alternatives as $alternative) {
-                    $alltranscript .= $alternative->Transcript . ' ';
-                    foreach ($alternative->Items as $item) {
-                        $processeditem = new \stdClass();
-                        $processeditem->alternatives = [['content' => $item->Content, 'confidence' => "1.0000"]];
-                        $processeditem->end_time = "" . round($item->EndTime, 3);
-                        $processeditem->start_time = "" . round($item->StartTime, 3);
-                        $processeditem->type = $item->Type;
-                        $allitems[] = $processeditem;
-                    }
-                }
-            }
+
+        if (!self::is_json($streamingresults)) {
+            return false;
         }
+        $words = json_decode($streamingresults);
+        if (!is_array($words)) {
+            return false;
+        }
+
+        $transcriptbits = [];
+        $allitems = [];
+        foreach ($words as $word) {
+            if (!isset($word->content)) {
+                continue;
+            }
+            $content = trim($word->content);
+            if ($content === '') {
+                continue;
+            }
+            $transcriptbits[] = $content;
+
+            $processeditem = new \stdClass();
+            // Confidence is a string in the upload transcriber output, so match that.
+            $confidence = isset($word->confidence) ? (float) $word->confidence : 1;
+            $processeditem->alternatives = [['content' => $content, 'confidence' => sprintf('%.4f', $confidence)]];
+            $processeditem->start_time = '' . round(isset($word->start_time) ? (float) $word->start_time : 0, 3);
+            $processeditem->end_time = '' . round(isset($word->end_time) ? (float) $word->end_time : 0, 3);
+            // The streaming recogniser only hands back spoken words, never punctuation items.
+            $processeditem->type = 'pronunciation';
+            $allitems[] = $processeditem;
+        }
+
         $ret = new \stdClass();
         $ret->jobName = "streaming";
         $ret->accountId = "streaming";
         $ret->results = [];
         $ret->status = 'COMPLETED';
-        $ret->results['transcripts'] = [['transcript' => $alltranscript]];
+        $ret->results['transcripts'] = [['transcript' => implode(' ', $transcriptbits)]];
         $ret->results['items'] = $allitems;
 
         return json_encode($ret);

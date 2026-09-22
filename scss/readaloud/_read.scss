@@ -1,1 +1,58 @@
-// Read mode styles will go here when needed.
+// Read mode styles.
+
+#mod_readaloud_readmode {
+    // The in page streaming recorder, used when the read step streams rather than using the iframe.
+    // Without these the canvas falls back to its intrinsic 300x150, which leaves a large gap between
+    // the waveform and the record button. The drawing code works in a coordinate space of
+    // (css width * 2) by (waveheight * 2), so the canvas is always scaled by css rather than sized in html.
+    // Same arrangement as the practice step: the record button is taken out of flow so it sits over the
+    // waveform rather than below it. The trace is drawn across the middle of the canvas with half the box
+    // empty above and below it, so a button left in flow always looks stranded a long way beneath the wave.
+    .mod_readaloud_ttrec_waveButtonContainer {
+        margin: auto;
+        max-width: 260px;
+        padding-top: 15px;
+        position: relative;
+        width: 100%;
+
+        canvas.mod_readaloud_ttrec_waveForm {
+            background-color: transparent;
+            height: 46px;
+            width: 100%;
+        }
+
+        button.mod_readaloud_ttrec_waveButton {
+            font-size: 24px;
+            position: absolute;
+        }
+
+        .control-label {
+            text-align: center;
+        }
+
+        // Countdown. Driven by the recorder's own timer, see ttrecorder.js update_timer_display().
+        .mod_readaloud_ttrec_timer {
+            text-align: center;
+        }
+
+        .mod_readaloud_ttrec_timerprogress {
+            height: 5px;
+            margin-bottom: 4px;
+
+            .progress-bar {
+                background-color: $gray-600;
+                transition: width 1s linear;
+            }
+
+            &.ra_timer_warning .progress-bar {
+                background-color: $red;
+            }
+        }
+
+        .mod_readaloud_ttrec_timerdisplay {
+            color: $gray-600;
+            font-size: 0.9rem;
+            font-variant-numeric: tabular-nums;
+        }
+    }
+}

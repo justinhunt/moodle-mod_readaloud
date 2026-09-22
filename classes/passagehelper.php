@@ -247,6 +247,11 @@ class passagehelper {
             $gradingopts['aidata'] = false;
             $gradingopts['sessionmatches'] = false;
         }
+        // Spot check plays a slice of the attempt audio, which needs word timings in the matches. Some
+        // transcripts arrive without them, and then every word would play from 0.0, which looks broken.
+        // Decide from this attempt's own data, not from the activity settings, because the transcriber may
+        // have been changed after the student read.
+        $gradingopts['canspotcheck'] = self::has_audio_points($gradingopts['sessionmatches']);
         $gradingopts['opts_id'] = 'mod_readaloud_gradenowopts';
 
         $jsonstring = json_encode($gradingopts);
@@ -266,5 +271,31 @@ class passagehelper {
         // these need to be returned and echo'ed to the page
         return $optshtml;
 
+    }
+
+    /**
+     * Does this attempt's match data carry usable audio positions?
+     *
+     * fetch_audio_points() zeroes every position when the full transcript has no word timings, so a set of
+     * matches that are all zero means spot check has nothing to play.
+     *
+     * @param string $sessionmatches The json encoded matches from the ai result record.
+     * @return bool True if at least one match has a real audio position.
+     */
+    public static function has_audio_points($sessionmatches) {
+
+        if (empty($sessionmatches) || !utils::is_json($sessionmatches)) {
+            return false;
+        }
+        $matches = json_decode($sessionmatches);
+        if (empty($matches)) {
+            return false;
+        }
+        foreach ($matches as $match) {
+            if (!empty($match->audioend) && $match->audioend > 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }

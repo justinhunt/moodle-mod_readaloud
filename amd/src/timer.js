@@ -89,6 +89,21 @@ define(['jquery', 'core/log'], function ($, log) {
             return display_time;
         },
 
+        //A shorter mm:ss readout, for places where hh:mm:ss is more precision than the activity needs.
+        //fetch_display_time() is left alone because other recorders display its format already.
+        fetch_short_display_time: function (someseconds) {
+            if (!someseconds && someseconds !== 0) {
+                someseconds = this.seconds;
+            }
+            if (someseconds < 0) {
+                someseconds = 0;
+            }
+            var theMinutes = parseInt(someseconds / 60);
+            var theSeconds = '00' + parseInt(someseconds % 60);
+            theSeconds = theSeconds.substr(theSeconds.length - 2, 2);
+            return theMinutes + ':' + theSeconds;
+        },
+
         stop: function () {
             clearTimeout(this.intervalhandle.id);
         },

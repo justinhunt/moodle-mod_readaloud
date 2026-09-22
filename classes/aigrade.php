@@ -67,8 +67,9 @@ class aigrade {
      * @param int $attemptid The ID of the attempt
      * @param int $modulecontextid The ID of the module context (optional)
      * @param bool $streamingresults Whether to process streaming results (optional)
+     * @param int $rectime The recorded length in seconds, used as a session time fallback (optional)
      */
-    public function __construct($attemptid, $modulecontextid = 0, $streamingresults=false) {
+    public function __construct($attemptid, $modulecontextid = 0, $streamingresults=false, $rectime = 0) {
         global $DB;
         $this->attemptid = $attemptid;
         $this->modulecontextid = $modulecontextid;
@@ -89,7 +90,7 @@ class aigrade {
             if (!$this->has_transcripts()) {
                 if ($streamingresults) {
                     // If we do not have transcripts we try to fetch them.
-                    $success = $this->process_streaming_transcripts($streamingresults);
+                    $success = $this->process_streaming_transcripts($streamingresults, $rectime);
                 } else {
                     // If we do not have transcripts we try to fetch them.
                     $success = $this->fetch_transcripts();
@@ -257,7 +258,46 @@ class aigrade {
         return $recordid;
     }
 
-    public function process_streaming_transcripts($streamingresults) {
+    /**
+     * Clean a raw transcript and apply the language specific conversions needed before we can diff it
+     * against the passage.
+     *
+     * Both transcript sources (the upload transcriber, and the streaming recogniser in the browser) must run
+     * this, otherwise the same reading scores differently depending on which recorder the student used. For
+     * example a passage containing "1995" only matches once the spoken number words have been converted.
+     *
+     * @param string $transcript The raw transcript text.
+     * @return string The cleaned and converted transcript.
+     */
+    public function clean_and_convert_transcript($transcript) {
+
+        $cleantranscript = diff::cleanText($transcript);
+        $shortlang = utils::fetch_short_lang($this->activitydata->ttslanguage);
+        switch ($shortlang) {
+            case 'ja':
+                // probably needs segmented transcript, more testing needed here and from external
+                $cleantranscript = alphabetconverter::words_to_suji_convert($this->activitydata->passagesegments, $transcript);
+                break;
+            case 'en':
+            default:
+                // find digits in original passage, and convert number words to digits in the target passage
+                $cleantranscript = alphabetconverter::words_to_numbers_convert(
+                    $this->activitydata->passagesegments,
+                    $cleantranscript,
+                    $shortlang
+                );
+        }
+
+        // for eszetts we need special processing
+        if ($shortlang == 'de') {
+            // find eszetts in original passage, and convert ss words to eszetts in the target passage
+            $cleantranscript = alphabetconverter::ss_to_eszett_convert($this->activitydata->passagesegments, $cleantranscript);
+        }
+
+        return $cleantranscript;
+    }
+
+    public function process_streaming_transcripts($streamingresults, $rectime = 0) {
         global $DB;
         $success = false;
         $transcript = false;
@@ -268,18 +308,32 @@ class aigrade {
         }
 
         $streaming = json_decode($streamingresults);
+        if (!isset($streaming->results->transcripts[0]->transcript)) {
+            return $success;
+        }
         $transcript = $streaming->results->transcripts[0]->transcript;
         $fulltranscript = $streamingresults;
 
         if ($fulltranscript) {
+            $cleantranscript = $this->clean_and_convert_transcript($transcript);
+
             $record = new \stdClass();
             $record->id = $this->recordid;
-            $record->transcript = diff::cleanText($transcript);
+            $record->transcript = $cleantranscript;
             $record->fulltranscript = $fulltranscript;
+            // The browser timed the recording, so store that as the true length of the reading. It replaces the
+            // time limit that create_record guessed at, and do_diff falls back to it when the transcript carries
+            // no word timings. Without it wpm would be calculated against a hard coded 60 seconds.
+            if ($rectime > 0) {
+                $record->sessiontime = $rectime;
+            }
             $success = $DB->update_record(constants::M_AITABLE, $record);
 
-            $this->aidata->transcript = $transcript;
+            $this->aidata->transcript = $cleantranscript;
             $this->aidata->fulltranscript = $fulltranscript;
+            if ($rectime > 0) {
+                $this->aidata->sessiontime = $rectime;
+            }
         }
         return $success;
     }
@@ -309,24 +363,7 @@ class aigrade {
         if ($fulltranscript) {
             $record = new \stdClass();
             $record->id = $this->recordid;
-            $cleantranscript = diff::cleanText($transcript);
-            $shortlang = utils::fetch_short_lang($this->activitydata->ttslanguage);
-            switch ($shortlang){
-                case 'ja':
-                    // probably needs segmented transcript, more testing needed here and from external
-                    $cleantranscript = alphabetconverter::words_to_suji_convert($this->activitydata->passagesegments, $transcript);
-                    break;
-                case 'en':
-                default:
-                    // find digits in original passage, and convert number words to digits in the target passage
-                    $cleantranscript = alphabetconverter::words_to_numbers_convert($this->activitydata->passagesegments, $cleantranscript, $shortlang );
-            }
-
-            // for eszetts we need special processing
-            if($shortlang == 'de') {
-                // find eszetts in original passage, and convert ss words to eszetts in the target passage
-                $cleantranscript = alphabetconverter::ss_to_eszett_convert($this->activitydata->passagesegments, $cleantranscript);
-            }
+            $cleantranscript = $this->clean_and_convert_transcript($transcript);
 
             $record->transcript = $cleantranscript;
             $record->fulltranscript = $fulltranscript;
@@ -378,8 +415,14 @@ class aigrade {
                 $sessiontime = utils::fetch_duration_from_transcript($this->aidata->fulltranscript);
 
                 if ($sessiontime < 1) {
-                    // this is a guess now, We just don't know it. And should not really get here.
-                    $sessiontime = 60;
+                    // No word timings in the transcript. If we stored a recorded length (streaming attempts
+                    // do) use that, it is the real duration of the reading.
+                    if (!empty($this->aidata->sessiontime)) {
+                        $sessiontime = $this->aidata->sessiontime;
+                    } else {
+                        // this is a guess now, We just don't know it. And should not really get here.
+                        $sessiontime = 60;
+                    }
                 }
             }
         }

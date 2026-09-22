@@ -63,7 +63,7 @@ define(['jquery', 'core/log', 'mod_readaloud/ttwavencoder', 'mod_readaloud/ttstr
             onStream: function () { },
             onSocketReady: function () { },
             onError: function () { },
-            onfinalspeechcapture: function (speechtext) { },
+            onfinalspeechcapture: function (speechtext, wordresults) { },
             oninterimspeechcapture: function (speechtext) { },
 
 

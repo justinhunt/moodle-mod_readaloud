@@ -302,8 +302,15 @@ define([
 				};
 
 				readreporthelper.update_filename(eventdata.mediaurl);
+				// A streaming attempt was already graded before we got here, so there is nothing to wait for.
+				// The upload path still needs time for the audio to reach the cloud and be transcribed.
+				var firstwait = dd.activitydata.readstreaming ? 1 : 15;
 				// Commence a loop checking for results
-				readreporthelper.start_check_for_results();
+				readreporthelper.start_check_for_results(firstwait);
+				// Play the local recording while the cloud copy is still uploading and transcoding.
+				if (eventdata.bloburl) {
+					readreporthelper.show_local_audio(eventdata.bloburl);
+				}
 				// Send user to the  read report immediately though it will be a dummy
 				dd.dodummyreadreportlayout();
 				// Set flag in read report data so if user comes in off menu,

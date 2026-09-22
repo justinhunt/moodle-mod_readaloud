@@ -197,6 +197,13 @@ if ($hassiteconfig) {
         0
     ));
 
+    $mainsettings->add(new admin_setting_configcheckbox(
+        constants::M_COMPONENT . '/streamingread',
+        get_string('streamingread', constants::M_COMPONENT),
+        get_string('streamingread_details', constants::M_COMPONENT),
+        0
+    ));
+
     // Activity Step settings
     $stepoptions = [
         constants::STEP_LISTEN => new lang_string('enablepreview', constants::M_COMPONENT),
