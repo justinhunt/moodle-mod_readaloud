@@ -108,24 +108,27 @@ discarded. Azure needs `&format=detailed&wordLevelTimestamps=true` on the socket
 reports `Offset`/`Duration` in 100-nanosecond ticks inside `NBest[0].Words`. Both are rebased
 onto the recording timeline before being handed out.
 
-### Tracked item: back-port to mod_minilesson
+### Back-port to mod_minilesson — done 2026-09-22
 
-**mod_minilesson has the reconnect bug today.** `minilesson/amd/src/ttstreamer.js:95-100`:
+Fixed on branch `fix-streamer-reconnect` in mod_minilesson (version 2026092200).
 
-```js
-this.socket.onopen = () => {
-    that.finaltext = '';
-    that.finals = [];        // wipes everything on a token refresh
-```
+The bug was in `ttstreamer.js` only, and the failure mode is worse than truncation. Driving the
+committed code through a refresh: turns "I went to the shop" / "and bought some milk",
+interrupted, then "then I walked home", came back as **"then I walked home and bought some
+milk"** — a plausible sentence the student never said, which PassageReading then scores against
+the passage. Silent and convincing, which is what makes it worth fixing despite being rare.
 
-No `turnbase`, no `sessionoffset`. PassageReading recordings are short so it rarely fires, but
-the defect is real and silent when it does. `ttazure.js` there is functionally identical to
-readaloud's pre-fix version too.
+Scope was narrower than first assumed, and this is the useful lesson for the next port:
 
-Back-port `ttstreamer.js` and `ttazure.js` from readaloud as a small standalone change,
-independent of any Solo work. Minilesson does not need the word timings (PassageReading scores
-by comparing text, not by audio position) but it does need the reconnect fix, and the two are
-in the same edit.
+- **Only `ttstreamer.js` needed changing.** `ttazure.js` accumulates into `finaltext` with `+=`
+  and never clears it on open, so Azure text already survived a refresh. Check before porting
+  rather than assuming the two streamers share the defect.
+- **The word timing work was deliberately left out.** Nothing in minilesson uses audio
+  positions, so `audioseconds` and `sessionoffset` earn nothing there. Only `turnbase` /
+  `maxturn` and moving the reset into `init()` were needed.
+
+So the reconnect fix and the word timings are separable, even though they arrived together in
+readaloud. Port whichever the target plugin actually needs.
 
 ---
 
