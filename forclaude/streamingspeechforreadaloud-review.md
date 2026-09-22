@@ -2,6 +2,11 @@
 
 Review of `forclaude/streamingspeechforreadaloud.md`. Written 2026-09-20.
 
+**Porting this to another plugin?** Start with `streaming-port-learnings.md` in this folder —
+the transferable checklist, the fixes that must travel with the streaming stack, the
+mod_minilesson back-port, and a reconnaissance of mod_solo. This document is the
+readaloud-specific account behind it.
+
 ## Summary of position
 
 - The spec's VTT premise is incorrect. There is no `.vtt` anywhere in the plugin. The real
