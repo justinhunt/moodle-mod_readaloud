@@ -812,6 +812,13 @@ define([
 			var m = this;
 			modelaudiokaraoke.modeling = false;
 			m.renderMode("practice", null, true);
+			// If practice is optional, just visiting it counts as completing it.
+			if (
+				m.activitydata.optionalprepsteps &&
+				m.activitydata.stepscomplete.step_practice !== true
+			) {
+				m.update_activity_step(m.activitydata.steps.step_practice);
+			}
 		},
 
 		// Read mode (read / shadow).

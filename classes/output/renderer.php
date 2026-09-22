@@ -722,6 +722,7 @@ class renderer extends \plugin_renderer_base {
         $adata['stepsenabled'] = utils::get_steps_enabled_state($moduleinstance);
         $adata['stepscomplete'] = utils::get_steps_complete_state($moduleinstance, $latestattempt);
         $adata['stepsopen'] = utils::get_steps_open_state($moduleinstance, $latestattempt, $hasquizquestions);
+        $adata['optionalprepsteps'] = !empty($moduleinstance->optionalprepsteps);
         $adata['quizreattempt'] = $moduleinstance->quizreattempt ? true : false;
         $adata['readreattempt'] = $moduleinstance->readreattempt ? true : false;
         $adata['errorcontainer'] = constants::M_ERROR_CONTAINER;

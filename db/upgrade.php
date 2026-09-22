@@ -1088,6 +1088,16 @@ function xmldb_readaloud_upgrade($oldversion)
         upgrade_mod_savepoint(true, 2026090400, 'readaloud');
     }
 
+    // Add optionalprepsteps to readaloud table.
+    if ($oldversion < 2026092200) {
+        $table = new xmldb_table(constants::M_TABLE);
+        $field = new xmldb_field('optionalprepsteps', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0, 'steps');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026092200, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }

@@ -115,6 +115,7 @@ class backup_readaloud_activity_structure_step extends backup_activity_structure
                         'qfinishscreen',
                         'qcustomscreen',
                         'steps',
+                        'optionalprepsteps',
                         'quizreattempt',
                         'readreattempt',
                         'completionallsteps',

@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026092000;
+$plugin->version = 2026092200;
 $plugin->requires = 2025041400;      // Requires Moodle 5.0
 $plugin->component = 'mod_readaloud';
 $plugin->maturity = MATURITY_STABLE;

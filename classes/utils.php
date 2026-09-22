@@ -2783,6 +2783,12 @@ class utils {
             $mform->setDefault($stepname, in_array($value, $stepdefaults));
         }
 
+        // Optional prep steps: listen, practice and shadow do not need to be completed to unlock read/quiz.
+        $mform->addElement('advcheckbox', 'optionalprepsteps', get_string('optionalprepsteps', constants::M_COMPONENT),
+                get_string('optionalprepsteps_details', constants::M_COMPONENT));
+        $mform->setDefault('optionalprepsteps', 0);
+        $mform->addHelpButton('optionalprepsteps', 'optionalprepsteps', constants::M_COMPONENT);
+
         // Attempts
         $attemptoptions = [0 => get_string('unlimited', constants::M_COMPONENT),
                 1 => '1', 2 => '2', 3 => '3', 4 => '4', 5 => '5'];
@@ -3868,16 +3874,25 @@ class utils {
 
     }
 
+    // Is a specific activity step optional (always open, and not required to open later steps)?
+    public static function is_step_optional($step, $moduleinstance) {
+        $prepsteps = [constants::STEP_LISTEN, constants::STEP_PRACTICE, constants::STEP_SHADOW];
+        return !empty($moduleinstance->optionalprepsteps) && in_array($step, $prepsteps);
+    }
+
     // Is a specific attempt step open (or not opened yet)
     public static function is_step_open($step, $moduleinstance, $attempt) {
+        if (self::is_step_optional($step, $moduleinstance)) {
+            return true;
+        }
         $prevstepcomplete = true;
         foreach (constants::STEPS as $stepname => $onestep) {
             // If it's the current step, then we are done and the value of prev step is what we want.
             if ($onestep == $step) {
                 break;
             }
-            // If the step is enabled, then it is the current prev_step candidate, check its completion.
-            if (self::is_step_enabled($onestep, $moduleinstance)) {
+            // If the step is enabled and required, then it is the current prev_step candidate, check its completion.
+            if (self::is_step_enabled($onestep, $moduleinstance) && !self::is_step_optional($onestep, $moduleinstance)) {
                 $prevstepcomplete = $attempt && self::is_step_complete($onestep, $attempt);
             }
         }
