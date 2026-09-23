@@ -715,22 +715,66 @@ as silence, so the student would get a silent zero.
 
 ### What was done
 
-`can_streaming_transcribe()` rewritten with current coverage and wired into `can_stream_read()`,
-so an unsupported language falls back to the iframe recorder rather than streaming badly.
+`can_streaming_transcribe()` rewritten with current coverage. It takes an optional `$tokentype`,
+which matters: a site can have an Azure key configured that does not work, in which case
+`fetch_azure_token()` returns false and `fetch_streaming_token()` quietly falls back to AssemblyAI.
+Guessing the engine from config alone would then wave a Japanese activity through to a model that
+cannot read it. So the engine is confirmed from the token actually received.
 
-It takes an optional `$tokentype`. This matters: a site can have an Azure key configured that does
-not work, in which case `fetch_azure_token()` returns false and `fetch_streaming_token()` quietly
-falls back to AssemblyAI. Guessing the engine from config alone would then wave a Japanese
-activity through to a model that cannot read it. So `can_stream_read()` does the cheap config
-based guess, and `show_read_recorder()` re-checks against the token type it actually received
-before committing.
+**Language gates the streaming token, not the recorder.** This is the important distinction, and it
+changed once browser recognition was enabled (section 13). The in page recorder picks its own
+engine, and only one of those engines is language limited:
 
-The other two call sites were left alone. `show_practice()` being English-only and the quiz items
-having their check disabled are both pre-existing and out of scope here, but they are inconsistent
-with each other and worth a decision.
+- streaming — English plus Spanish, French, German, Italian, Portuguese on AssemblyAI; wide on Azure
+- browser speech recognition — whatever the browser supports, which is a lot
+- upload transcriber — Poodll's own ASR, server side
 
-### Browser recognition
+So an unsupported language simply gets no streaming token, and `ttrecorder` falls through to one of
+the other two. Withholding the token is what prevents the real failure, which is that streaming does
+not error on a language it cannot read — it returns nothing, and an empty transcript grades as
+silence.
 
-The read step does not use browser speech recognition, unlike practice and MiniLesson
-PassageReading. That is deliberate but no longer clear cut. See
-`read-step-browser-recognition-plan.md`.
+`show_practice()` now uses the same rule. It previously gated on `if ($isenglish)`, which left every
+non English activity without a token. That did not stop practice working, because the fallbacks
+covered it, but it did mean non English activities never reached the streaming path even where the
+engine supports them.
+
+The quiz item types still use `if ($isenglish || true)`, i.e. the check is disabled. Pre-existing and
+left alone, but inconsistent with the other two and worth a decision.
+
+---
+
+## 13. Browser speech recognition in the read step
+
+Decided and implemented 2026-09-23. Option A from
+`read-step-browser-recognition-plan.md`: mirror MiniLesson and let `ttrecorder` choose, preferring
+browser speech recognition where it works.
+
+`forcestreaming` is now false for the read step, so the preference order is browser recognition,
+then streaming, then the upload transcriber — the same as practice and PassageReading. On android
+browser recognition is skipped automatically, because `savemedia` is set and the platform recogniser
+takes the microphone.
+
+**Accepted cost:** browser recognition returns no word timings, so on desktop Chrome — the common
+case — spot check is hidden and wpm comes from the recorded length rather than the transcript. Both
+degrade cleanly rather than breaking, but it is a real reduction in what teachers get on those
+attempts.
+
+### A bug this surfaced
+
+Enabling it exposed a defect that would have scored most readings as zero.
+
+`read.js` kept only `message.speechresults` — the word timings — and threw away
+`message.capturedspeech`, the actual text. That was harmless while streaming was forced, because
+streaming always supplies timings. Under browser recognition there are none, so the submission
+carried an empty word list and the server graded silence.
+
+Fixed on both sides:
+
+- `read.js` now sends `{"text": "...", "words": [...]}` rather than a bare word array
+- `parse_streaming_results()` accepts either shape, and falls back to the plain text when there are
+  no timed words, still accepting the old flat array
+
+Verified across all five shapes the client can now produce: timed words, text without timings from
+browser recognition, text without timings from the upload transcriber, true silence, and the legacy
+flat array.

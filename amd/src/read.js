@@ -22,6 +22,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
         mediaurl: false,
         bloburl: false,
         speechresults: false,
+        speechtext: '',
         submitted: false,
         //class definitions
         cd: {
@@ -36,6 +37,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.mediaurl = false;
             this.bloburl = false;
             this.speechresults = false;
+            this.speechtext = '';
             this.submitted = false;
             this.init_strings();
             this.register_controls();
@@ -193,9 +195,12 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
 
                     case 'speech':
                         log.debug('Read: speech captured');
-                        // speechresults holds the word level timings. It is false if the recogniser did not
-                        // give us any, which is fine, the server copes with a transcript that has no timings.
+                        // speechresults holds the word level timings, and is false when the recogniser gave
+                        // us none. Browser speech recognition and the upload transcriber both return text
+                        // only, so keep the text as well - without it the server has nothing to diff and
+                        // would score the reading as silence.
                         dd.speechresults = message.speechresults ? message.speechresults : [];
+                        dd.speechtext = message.capturedspeech ? message.capturedspeech : '';
                         dd.maybe_submit();
                         break;
                 }
@@ -254,12 +259,12 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             // Unlike the iframe path, the attempt is graded during this call. So only move the student on
             // once it has returned, otherwise the read report checks for a result that is not saved yet and
             // then sits through its retry delay for nothing.
-            dd.send_streaming_submission(dd.mediaurl, rectime, dd.speechresults, function () {
+            dd.send_streaming_submission(dd.mediaurl, rectime, dd.speechresults, dd.speechtext, function () {
                 dd.on_complete({mediaurl: dd.mediaurl, bloburl: dd.bloburl});
             });
         },
 
-        send_streaming_submission: function (filename, rectime, speechresults, onfinished) {
+        send_streaming_submission: function (filename, rectime, speechresults, speechtext, onfinished) {
             var that = this;
             var shadowing = (that.opts.stepshadow_enabled && that.opts.letsshadow) ? 1 : 0;
             var finished = false;
@@ -281,7 +286,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
                     cmid: that.opts.cmid,
                     filename: filename,
                     rectime: rectime,
-                    awsresults: JSON.stringify(speechresults),
+                    awsresults: JSON.stringify({text: speechtext, words: speechresults}),
                     shadowing: shadowing
                 },
                 done: function (ajaxresult) {
@@ -355,6 +360,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.mediaurl = false;
             this.bloburl = false;
             this.speechresults = false;
+            this.speechtext = '';
             this.submitted = false;
 
             // The streaming recorder lives in the read template, which is re-rendered on the way back in,

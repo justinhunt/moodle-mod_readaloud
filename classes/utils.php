@@ -2052,7 +2052,14 @@ class utils {
      * graded as a zero and the student gets a report, which is how the upload transcriber path behaves for
      * the same reading. Returning false here instead would leave the attempt with no transcript forever.
      *
-     * @param string $streamingresults json array of timed words from the streaming recogniser.
+     * Accepts either shape the client may send:
+     *   - a flat array of timed words, from the streaming recogniser
+     *   - {"text": "...", "words": [...]}, where words may be empty
+     * The second shape exists because browser speech recognition and the upload transcriber return
+     * text with no word timings at all. Their text still has to reach the diff, or the reading would
+     * be scored as silence.
+     *
+     * @param string $streamingresults json from the client, in either shape above.
      * @return string|false json in upload transcriber shape, or false if the input was unusable.
      */
     public static function parse_streaming_results($streamingresults) {
@@ -2060,8 +2067,16 @@ class utils {
         if (!self::is_json($streamingresults)) {
             return false;
         }
-        $words = json_decode($streamingresults);
-        if (!is_array($words)) {
+        $decoded = json_decode($streamingresults);
+
+        $plaintext = '';
+        if (is_array($decoded)) {
+            // Flat array of timed words.
+            $words = $decoded;
+        } else if (is_object($decoded)) {
+            $words = isset($decoded->words) && is_array($decoded->words) ? $decoded->words : [];
+            $plaintext = isset($decoded->text) ? trim($decoded->text) : '';
+        } else {
             return false;
         }
 
@@ -2088,12 +2103,17 @@ class utils {
             $allitems[] = $processeditem;
         }
 
+        // With no timed words, fall back to whatever plain text the recogniser gave us. There are then
+        // no items, so there are no audio positions, and spot check is hidden for this attempt and
+        // the session time comes from the recorded length instead of the transcript.
+        $transcript = empty($transcriptbits) ? $plaintext : implode(' ', $transcriptbits);
+
         $ret = new \stdClass();
         $ret->jobName = "streaming";
         $ret->accountId = "streaming";
         $ret->results = [];
         $ret->status = 'COMPLETED';
-        $ret->results['transcripts'] = [['transcript' => implode(' ', $transcriptbits)]];
+        $ret->results['transcripts'] = [['transcript' => $transcript]];
         $ret->results['items'] = $allitems;
 
         return json_encode($ret);

@@ -1,6 +1,9 @@
 # Plan: browser speech recognition in the read step
 
-Written 2026-09-23. Not implemented — this is for a decision before any code.
+Written 2026-09-23. **Decision taken the same day: option A, implemented.** See section 13 of
+`streamingspeechforreadaloud-review.md` for what was done and what it cost. The analysis below is
+kept because it records why, and because the trade-off it describes is still live — if spot check
+turns out to matter more than expected, option B is the way back.
 
 ## How MiniLesson does it
 

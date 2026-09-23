@@ -377,10 +377,12 @@ class renderer extends \plugin_renderer_base {
     /**
      * Should the read step use the in page streaming recorder rather than the cloud poodll iframe?
      *
-     * Only when the activity is set to Open STT (the guided transcriber needs the server side upload path,
-     * it steers the transcript towards the passage), only when the streaming recogniser covers the
-     * activity language, and only when we could actually get a streaming token. Anything else falls back
-     * to the iframe recorder.
+     * Only when the activity is set to Open STT, because the guided transcriber needs the server side
+     * upload path - it steers the transcript towards the passage.
+     *
+     * Language is not checked here. The in page recorder picks its own engine, and only one of those
+     * engines is language limited, so language decides whether we hand it a streaming token rather than
+     * whether it can be used at all. See show_read_recorder().
      *
      * @param object $moduleinstance The module instance.
      * @return bool True if the read step should stream in the browser.
@@ -394,13 +396,6 @@ class renderer extends \plugin_renderer_base {
 
         // No point streaming if we are not transcribing at all.
         if (!utils::can_transcribe($moduleinstance)) {
-            return false;
-        }
-
-        // The streaming recogniser only covers some languages, and it fails quietly on the rest:
-        // it returns nothing rather than erroring, which would be graded as silence. Anything it
-        // cannot handle keeps the iframe recorder, which transcribes server side.
-        if (!utils::can_streaming_transcribe($moduleinstance)) {
             return false;
         }
 
@@ -432,17 +427,17 @@ class renderer extends \plugin_renderer_base {
             return [];
         }
 
+        // Only offer a streaming token when the streaming recogniser can actually handle this language.
+        // Without one, ttrecorder falls through to browser speech recognition, or to the upload
+        // transcriber, both of which cover far more languages. Handing it a token for a language the
+        // engine cannot read would be worse than either: streaming does not error on an unsupported
+        // language, it just returns nothing, and an empty transcript is graded as silence.
+        //
+        // The engine is confirmed from the token we actually received, not guessed from config: a site
+        // with an Azure key that does not work falls back to AssemblyAI, which covers far less.
         $tokenobject = utils::fetch_streaming_token($moduleinstance->region);
-        if (!$tokenobject) {
-            // Without a streaming token there is nothing to stream with, fall back to the iframe.
-            return [];
-        }
-
-        // Now we know which engine we actually got, confirm it can handle this language. A site with
-        // an Azure key that does not work falls back to AssemblyAI here, and AssemblyAI covers far
-        // fewer languages, so the config based guess in can_stream_read() is not the final word.
-        if (!utils::can_streaming_transcribe($moduleinstance, $tokenobject->tokentype)) {
-            return [];
+        if ($tokenobject && !utils::can_streaming_transcribe($moduleinstance, $tokenobject->tokentype)) {
+            $tokenobject = false;
         }
 
         // A time limit of 0 means no limit, and the timer treats it that way too.
@@ -469,13 +464,15 @@ class renderer extends \plugin_renderer_base {
             'showtimer' => true,
             'hastimelimit' => $maxtime > 0,
             'passagehash' => '',
-            'speechtoken' => $tokenobject->token,
-            'speechtokenregion' => $tokenobject->region,
-            'speechtokenvalidseconds' => $tokenobject->validseconds,
-            'speechtokentype' => $tokenobject->tokentype,
-            // Browser speech recognition gives us no word timings and cannot record audio on android,
-            // and we need both here, so never let the recorder choose it.
-            'forcestreaming' => true,
+            'speechtoken' => $tokenobject ? $tokenobject->token : '',
+            'speechtokenregion' => $tokenobject ? $tokenobject->region : '',
+            'speechtokenvalidseconds' => $tokenobject ? $tokenobject->validseconds : 0,
+            'speechtokentype' => $tokenobject ? $tokenobject->tokentype : '',
+            // Let ttrecorder choose its engine, preferring browser speech recognition where it works,
+            // as practice and MiniLesson PassageReading do. Browser recognition returns no word timings,
+            // so spot check is hidden for those attempts and the session time comes from the recorded
+            // length. On android it is skipped automatically, because saving the media needs the mic.
+            'forcestreaming' => false,
             // The read step must keep the audio: teachers grade against it and spot check plays from it.
             'savemedia' => 1,
             'savemediaregion' => $moduleinstance->region,
@@ -529,24 +526,36 @@ class renderer extends \plugin_renderer_base {
         ];
 
         // Do we need a streaming token?
+        //
+        // This used to be gated on the activity being in English, which left every other language
+        // without a token. That did not stop practice working - ttrecorder falls through to browser
+        // speech recognition, or to the upload transcriber, and both handle far more languages than
+        // streaming does - but it did mean non English activities never got the streaming path even
+        // where the engine supports them.
+        //
+        // So the gate is now what the streaming engine can actually read. Everything else still gets
+        // a recorder, just not a streaming one.
         $alternatestreaming = get_config(constants::M_COMPONENT, 'alternatestreaming');
-        $isenglish = strpos($moduleinstance->ttslanguage, 'en') === 0;
-        if ($isenglish) {
-            $tokenobject = utils::fetch_streaming_token($moduleinstance->region);
-            if ($tokenobject) {
-                $data['speechtoken'] = $tokenobject->token;
-                $data['speechtokenregion'] = $tokenobject->region;
-                $data['speechtokenvalidseconds'] = $tokenobject->validseconds;
-                $data['speechtokentype'] = $tokenobject->tokentype;
-            } else {
-                $data['speechtoken'] = false;
-                $data['speechtokenregion'] = '';
-                $data['speechtokenvalidseconds'] = 0;
-                $data['speechtokentype'] = '';
-            }
+        $tokenobject = utils::fetch_streaming_token($moduleinstance->region);
+        if ($tokenobject && !utils::can_streaming_transcribe($moduleinstance, $tokenobject->tokentype)) {
+            $tokenobject = false;
+        }
+        if ($tokenobject) {
+            $data['speechtoken'] = $tokenobject->token;
+            $data['speechtokenregion'] = $tokenobject->region;
+            $data['speechtokenvalidseconds'] = $tokenobject->validseconds;
+            $data['speechtokentype'] = $tokenobject->tokentype;
+
+            // Forcing streaming only makes sense when we have a token to stream with. Without one it
+            // would disable browser recognition and leave nothing but the upload transcriber.
             if ($alternatestreaming) {
                 $data['forcestreaming'] = true;
             }
+        } else {
+            $data['speechtoken'] = false;
+            $data['speechtokenregion'] = '';
+            $data['speechtokenvalidseconds'] = 0;
+            $data['speechtokentype'] = '';
         }
 
         // Extract passagehash if applicable.
