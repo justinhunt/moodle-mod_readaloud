@@ -59,6 +59,9 @@ define(['jquery', 'core/log'], function ($, log) {
         passagefillscreen: 'mod_readaloud_passage_fillscreen',
         containerfillscreen: 'mod_readaloud_fillscreen_container',
         readingcontainer: 'mod_readaloud_readingcontainer',
+        // The two recorder wrappers in the read template. read.js reveals one of them.
+        inpagerecorder: 'mod_readaloud_inpagerecorder',
+        iframerecorder: 'mod_readaloud_iframerecorder',
 
         spotcheckbutton: 'mod_readaloud_spotcheckbutton',
         transcriptcheckbutton: 'mod_readaloud_transcriptcheckbutton',

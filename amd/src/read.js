@@ -1,7 +1,8 @@
 define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
-        'core/templates','core/notification','mod_readaloud/recorderhelper','mod_readaloud/ttrecorder'],
+        'core/templates','core/notification','mod_readaloud/recorderhelper','mod_readaloud/ttrecorder',
+        'mod_readaloud/ttbrowserrec'],
     function ($, log, def, str, Ajax,
-              templates, notification, recorderhelper, ttrecorder) {
+              templates, notification, recorderhelper, ttrecorder, browserRec) {
     "use strict"; // jshint ;_;
     /*
     This file handle the reading step
@@ -134,18 +135,81 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
 
             // Init the recorder.
             var activitydata = dd.activitycontroller.get_activity_data();
-            dd.streaming = activitydata.readstreaming ? true : false;
+            dd.streaming = dd.choose_recorder(activitydata);
 
             if (dd.streaming) {
                 dd.init_streaming_recorder(activitydata, on_recording_start, on_recording_end);
             } else {
-                recorderhelper.init(activitydata,
+                dd.init_iframe_recorder(activitydata,
                     on_recording_start,
                     on_recording_end,
                     on_audio_processing,
-                    on_speech,
+                    on_speech
                 );
             }
+        },
+
+        /*
+        * Decide which of the two recorders on the page to use, and reveal it.
+        *
+        * Php renders both when the in page recorder is a candidate, because the deciding fact is only
+        * available here: whether this browser has speech recognition. ttrecorder has three engines and
+        * only two of them can transcribe a passage reading. Browser recognition restarts itself and
+        * accumulates, and streaming rebases across token refreshes, so both cope. The third, the upload
+        * transcriber, posts the whole recording in one request and is limited to around 30 seconds, so
+        * it must never be what we land on. It is reached only when there is no browser recognition and
+        * no streaming token, and that is exactly the case we hand to the iframe instead.
+         */
+        choose_recorder: function (activitydata) {
+            var inpage = $('.' + def.inpagerecorder);
+            var iframe = $('.' + def.iframerecorder);
+
+            // Php did not offer the in page recorder at all, so there is nothing to choose.
+            if (inpage.length === 0) {
+                return false;
+            }
+
+            // The read step always saves the media for teacher grading. On android the platform
+            // recogniser takes the microphone for itself, so browser recognition and a saved recording
+            // cannot both happen, and ttrecorder skips browser recognition there.
+            var isandroid = navigator.userAgent.indexOf('Android') > -1;
+            var canbrowserrec = browserRec.will_work_ok() && !isandroid;
+
+            // A streaming token is only issued when the engine can read this activity's language.
+            var button = $('#' + activitydata.readttrecorderid + '_recorderbutton');
+            var hastoken = !!button.data('speechtoken');
+
+            var useinpage = canbrowserrec || hastoken;
+            log.debug('Read: browser rec ' + canbrowserrec + ', streaming token ' + hastoken +
+                ' -> ' + (useinpage ? 'in page recorder' : 'iframe recorder'));
+
+            if (useinpage) {
+                iframe.addClass('d-none');
+                inpage.removeClass('d-none');
+            } else {
+                inpage.addClass('d-none');
+                iframe.removeClass('d-none');
+            }
+            return useinpage;
+        },
+
+        /*
+        * The cloud poodll iframe recorder. Only initialise it once its markup is on the page, because
+        * read.init() also runs at page load, before the read template has been rendered, and
+        * CloudPoodll.createRecorder() resolves its container by id.
+         */
+        init_iframe_recorder: function (activitydata, on_recording_start, on_recording_end,
+                                        on_audio_processing, on_speech) {
+            if ($('#' + activitydata.recorderid).length === 0) {
+                log.debug('Read: iframe recorder not on the page yet, waiting for the read template');
+                return;
+            }
+            recorderhelper.init(activitydata,
+                on_recording_start,
+                on_recording_end,
+                on_audio_processing,
+                on_speech
+            );
         },
 
         /*
@@ -363,7 +427,7 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             this.speechtext = '';
             this.submitted = false;
 
-            // The streaming recorder lives in the read template, which is re-rendered on the way back in,
+            // The in page recorder lives in the read template, which is re-rendered on the way back in,
             // and init() will build a fresh one. Nothing to reset here.
             if (this.streaming) {
                 this.ttr = null;

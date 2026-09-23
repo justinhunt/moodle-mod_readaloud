@@ -52,9 +52,9 @@
     <!-- Hidden input storing JSON configuration -->
     <input id="amdopts_{{activityamddata.widgetid}}" type="hidden" value="{{activityamddata.jsonstring}}">
 
-    {{#recorder}}
-        {{> mod_readaloud/recorder}}
-    {{/recorder}}
+    {{! The iframe recorder is rendered by the read template, not here. A second copy in this body
+        gave two elements with id therecorderid, and CloudPoodll.createRecorder() resolves by id, so
+        which one got the iframe depended on template order. }}
 
     {{#landr}}
         {{>mod_readaloud/modalcontainer}}

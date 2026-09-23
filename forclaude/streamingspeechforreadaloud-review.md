@@ -775,16 +775,11 @@ is **not** the iframe recorder — that uploads to S3 and is transcribed asynchr
 duration limit, which is why the iframe always works.
 
 `ttrecorder` only reaches the upload transcriber when browser recognition is unavailable **and**
-there is no streaming token, and the server cannot know whether a browser has speech recognition.
-So the only way to keep that path out of reach in the read step is to insist on a streaming token:
-with one, an engine that can cope is always available. `show_read_recorder()` therefore returns
-empty — falling back to the iframe — when no usable token can be had.
+there is no streaming token. Whether a browser has speech recognition cannot be known in php, so
+this is settled in the client — see section 14.
 
-The cost is that a language the streaming engine cannot read gets the iframe even on Chrome, where
-browser recognition would have worked. That is deliberate: it is the only option that cannot
-silently truncate a reading at 30 seconds.
-
-Practice keeps the looser behaviour, because its recordings are capped at 15 seconds.
+Practice keeps the looser behaviour, because its recordings are capped at 15 seconds, well inside
+the upload transcriber's limit.
 
 ### A bug this surfaced
 
@@ -804,3 +799,62 @@ Fixed on both sides:
 Verified across all five shapes the client can now produce: timed words, text without timings from
 browser recognition, text without timings from the upload transcriber, true silence, and the legacy
 flat array.
+---
+
+## 14. Client side recorder probe
+
+Added 2026-09-23. Replaces the server side guess about which recorder the read step should use.
+
+### The problem it solves
+
+Whether the in page recorder is usable depends on something php cannot see: whether this browser
+has the Web Speech API. Guessing conservatively meant a Danish activity on Chrome got the iframe,
+even though browser recognition would have handled it perfectly. Guessing optimistically risked
+landing on the upload transcriber and truncating a reading at 30 seconds.
+
+### How it works
+
+When `can_stream_read()` is true, php now renders **both** recorders in the read template — the in
+page one visible, the iframe one hidden — and `read.js::choose_recorder()` decides:
+
+```
+browser speech recognition available, and not android   -> in page
+else a streaming token was issued                       -> in page
+else                                                    -> iframe
+```
+
+Both in page outcomes cope with a long reading: browser recognition restarts itself on `onend` and
+accumulates, streaming rebases across token refreshes. The upload transcriber is then unreachable,
+which is the point. Android is excluded from browser recognition because the read step always saves
+the media and the platform recogniser holds the microphone.
+
+Rendering both costs nothing, because `CloudPoodll.createRecorder()` is explicit — the iframe div is
+inert markup until something asks for it. Confirmed: zero iframes exist until the probe picks that
+branch.
+
+### Verified
+
+| Case | Result |
+|---|---|
+| Chrome, token available | in page, `using browser rec` |
+| No Web Speech API, token available | in page, `using audio helper and streaming rec` |
+| No Web Speech API, no token | **iframe**, 1 iframe created, upload transcriber not reached |
+
+The third case was produced by blanking the token in the page config on the way through, since the
+test site has an Azure key and would otherwise always issue one.
+
+### Duplicate element id, fixed at the same time
+
+`activity_body.mustache` rendered a second, hidden copy of the iframe recorder
+(`templates/recorder.mustache`, `.d-none`), so whenever the read template rendered its own there
+were **two elements with `id="therecorderid"`** on the page. `CloudPoodll.createRecorder()` resolves
+by id and takes the first match, so which one received the iframe depended entirely on template
+order. It happened to be correct, because the mode view precedes the body copy, but it was one
+reordering away from breaking — and at page load, before the read template exists, the hidden copy
+was the only match, so an iframe could be created inside it and wasted.
+
+The body copy is gone, `read.js` now guards iframe init on the markup being present the way the in
+page path already did, and the count is 1. `templates/recorder.mustache` is left in place but is no
+longer included anywhere. `templates/recordbutton.mustache` was already unused, and declares the
+same `id="recordbutton-desc"` as the ttrecorder partial, so it is worth deleting before someone
+includes it.

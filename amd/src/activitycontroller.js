@@ -302,9 +302,11 @@ define([
 				};
 
 				readreporthelper.update_filename(eventdata.mediaurl);
-				// A streaming attempt was already graded before we got here, so there is nothing to wait for.
-				// The upload path still needs time for the audio to reach the cloud and be transcribed.
-				var firstwait = dd.activitydata.readstreaming ? 1 : 15;
+				// An in page attempt was already graded before we got here, so there is nothing to wait
+				// for. The iframe path still needs time for the audio to reach the cloud and be
+				// transcribed. read.streaming is what read.js actually settled on, which is not known
+				// until it has probed the browser.
+				var firstwait = read.streaming ? 1 : 15;
 				// Commence a loop checking for results
 				readreporthelper.start_check_for_results(firstwait);
 				// Play the local recording while the cloud copy is still uploading and transcoding.
