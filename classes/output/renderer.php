@@ -380,9 +380,9 @@ class renderer extends \plugin_renderer_base {
      * Only when the activity is set to Open STT, because the guided transcriber needs the server side
      * upload path - it steers the transcript towards the passage.
      *
-     * Language is not checked here. The in page recorder picks its own engine, and only one of those
-     * engines is language limited, so language decides whether we hand it a streaming token rather than
-     * whether it can be used at all. See show_read_recorder().
+     * Language is not checked here, because it depends on which streaming engine the site actually
+     * gets. show_read_recorder() does that check against the real token, and falls back to the iframe
+     * recorder when the language cannot be streamed.
      *
      * @param object $moduleinstance The module instance.
      * @return bool True if the read step should stream in the browser.
@@ -427,17 +427,29 @@ class renderer extends \plugin_renderer_base {
             return [];
         }
 
-        // Only offer a streaming token when the streaming recogniser can actually handle this language.
-        // Without one, ttrecorder falls through to browser speech recognition, or to the upload
-        // transcriber, both of which cover far more languages. Handing it a token for a language the
-        // engine cannot read would be worse than either: streaming does not error on an unsupported
-        // language, it just returns nothing, and an empty transcript is graded as silence.
+        // A usable streaming token is required here, unlike in practice.
+        //
+        // ttrecorder picks one of three engines: browser speech recognition, streaming, or the upload
+        // transcriber. The first two handle a long passage reading - browser recognition restarts
+        // itself on end and accumulates, and streaming rebases across token refreshes.
+        //
+        // The upload transcriber does not. It posts the whole recording in one request to the Poodll
+        // lang server (fetch_lang_server_url, https://<region>.ls.poodll.com/transcribe), which is
+        // limited to around 30 seconds - fine for a practice line, but shorter than most passage
+        // readings. Note this is not the iframe recorder, which uploads to S3 and is transcribed
+        // asynchronously with no such limit.
+        //
+        // ttrecorder only reaches the upload transcriber when browser recognition is unavailable and
+        // there is no streaming token, and the server cannot know whether the browser has speech
+        // recognition. So the only way to keep that path out of reach is to insist on a token: with
+        // one, an engine that can cope is always available. Without one, fall back to the iframe
+        // recorder, which transcribes server side and has no duration problem.
         //
         // The engine is confirmed from the token we actually received, not guessed from config: a site
         // with an Azure key that does not work falls back to AssemblyAI, which covers far less.
         $tokenobject = utils::fetch_streaming_token($moduleinstance->region);
-        if ($tokenobject && !utils::can_streaming_transcribe($moduleinstance, $tokenobject->tokentype)) {
-            $tokenobject = false;
+        if (!$tokenobject || !utils::can_streaming_transcribe($moduleinstance, $tokenobject->tokentype)) {
+            return [];
         }
 
         // A time limit of 0 means no limit, and the timer treats it that way too.
@@ -464,10 +476,10 @@ class renderer extends \plugin_renderer_base {
             'showtimer' => true,
             'hastimelimit' => $maxtime > 0,
             'passagehash' => '',
-            'speechtoken' => $tokenobject ? $tokenobject->token : '',
-            'speechtokenregion' => $tokenobject ? $tokenobject->region : '',
-            'speechtokenvalidseconds' => $tokenobject ? $tokenobject->validseconds : 0,
-            'speechtokentype' => $tokenobject ? $tokenobject->tokentype : '',
+            'speechtoken' => $tokenobject->token,
+            'speechtokenregion' => $tokenobject->region,
+            'speechtokenvalidseconds' => $tokenobject->validseconds,
+            'speechtokentype' => $tokenobject->tokentype,
             // Let ttrecorder choose its engine, preferring browser speech recognition where it works,
             // as practice and MiniLesson PassageReading do. Browser recognition returns no word timings,
             // so spot check is hidden for those attempts and the session time comes from the recorded

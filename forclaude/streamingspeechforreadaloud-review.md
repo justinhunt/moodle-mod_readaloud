@@ -760,6 +760,32 @@ case — spot check is hidden and wpm comes from the recorded length rather than
 degrade cleanly rather than breaking, but it is a real reduction in what teachers get on those
 attempts.
 
+### Read mode requires a streaming token, even though practice does not
+
+`ttrecorder` has three engines, and only two of them can handle a passage reading:
+
+| Engine | Long recording? |
+|---|---|
+| Browser speech recognition | Yes. `continuous = true`, and `onend` restarts it, accumulating into `final_transcript` |
+| Streaming | Yes. Turn order and timings rebase across token refreshes (section 5) |
+| Upload transcriber | **No.** One synchronous POST of the whole recording to the Poodll lang server (`https://<region>.ls.poodll.com/transcribe`), which is limited to around 30 seconds |
+
+The upload transcriber is fine for a 15 second practice line and wrong for a one minute reading. It
+is **not** the iframe recorder — that uploads to S3 and is transcribed asynchronously, with no
+duration limit, which is why the iframe always works.
+
+`ttrecorder` only reaches the upload transcriber when browser recognition is unavailable **and**
+there is no streaming token, and the server cannot know whether a browser has speech recognition.
+So the only way to keep that path out of reach in the read step is to insist on a streaming token:
+with one, an engine that can cope is always available. `show_read_recorder()` therefore returns
+empty — falling back to the iframe — when no usable token can be had.
+
+The cost is that a language the streaming engine cannot read gets the iframe even on Chrome, where
+browser recognition would have worked. That is deliberate: it is the only option that cannot
+silently truncate a reading at 30 seconds.
+
+Practice keeps the looser behaviour, because its recordings are capped at 15 seconds.
+
 ### A bug this surfaced
 
 Enabling it exposed a defect that would have scored most readings as zero.
