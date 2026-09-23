@@ -1007,4 +1007,9 @@ body.path-mod-readaloud #page-content .font-sm {
   line-height: normal;
 }
 
+.mod_readaloud_rtl {
+  direction: rtl;
+  text-align: right;
+}
+
 /*# sourceMappingURL=styles.css.map */

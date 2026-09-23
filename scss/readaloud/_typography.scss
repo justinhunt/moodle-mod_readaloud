@@ -38,3 +38,9 @@ body.path-mod-readaloud #page-content {
     }
 }
 
+
+// Right to left languages (Arabic, Farsi, Hebrew).
+.mod_readaloud_rtl {
+    direction: rtl;
+    text-align: right;
+}
