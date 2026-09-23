@@ -365,6 +365,16 @@ class constants {
 
     const TTS_NONE='ttsnone';
 
+    // Realtime transcription: which recogniser to prefer. Stored in the alternatestreaming setting,
+    // whose values are unchanged from when it was a checkbox.
+    const REALTIME_AUTO = 0;
+    const REALTIME_THIRDPARTY = 1;
+
+    // Realtime transcription: which activity steps it applies to. Stored in the streamingread
+    // setting, whose values are unchanged from when it was a checkbox.
+    const REALTIMESTEPS_PRACTICE = 0;
+    const REALTIMESTEPS_PRACTICEREAD = 1;
+
     const TRANSCRIBER_GUIDED = 0;
     const TRANSCRIBER_STRICT = 1;
 

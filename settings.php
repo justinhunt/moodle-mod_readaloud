@@ -190,18 +190,28 @@ if ($hassiteconfig) {
         $options
     ));
 
-    $mainsettings->add(new admin_setting_configcheckbox(
+    $realtimeoptions = [
+        constants::REALTIME_AUTO => get_string('realtime_auto', constants::M_COMPONENT),
+        constants::REALTIME_THIRDPARTY => get_string('realtime_thirdparty', constants::M_COMPONENT),
+    ];
+    $mainsettings->add(new admin_setting_configselect(
         constants::M_COMPONENT . '/alternatestreaming',
         get_string('alternatestreaming', constants::M_COMPONENT),
         get_string('alternatestreaming_details', constants::M_COMPONENT),
-        0
+        constants::REALTIME_AUTO,
+        $realtimeoptions
     ));
 
-    $mainsettings->add(new admin_setting_configcheckbox(
+    $realtimestepoptions = [
+        constants::REALTIMESTEPS_PRACTICE => get_string('realtimesteps_practice', constants::M_COMPONENT),
+        constants::REALTIMESTEPS_PRACTICEREAD => get_string('realtimesteps_practiceread', constants::M_COMPONENT),
+    ];
+    $mainsettings->add(new admin_setting_configselect(
         constants::M_COMPONENT . '/streamingread',
         get_string('streamingread', constants::M_COMPONENT),
         get_string('streamingread_details', constants::M_COMPONENT),
-        0
+        constants::REALTIMESTEPS_PRACTICE,
+        $realtimestepoptions
     ));
 
     // Activity Step settings

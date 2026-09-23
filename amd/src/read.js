@@ -172,15 +172,21 @@ define(['jquery', 'core/log','mod_readaloud/definitions','core/str','core/ajax',
             // The read step always saves the media for teacher grading. On android the platform
             // recogniser takes the microphone for itself, so browser recognition and a saved recording
             // cannot both happen, and ttrecorder skips browser recognition there.
+            //
+            // forcestreaming is the site saying third party recognition only, so ttrecorder will not
+            // choose browser recognition even where it works. We have to agree with it here, or we
+            // would hand it a recording it can only send to the upload transcriber.
+            var button = $('#' + activitydata.readttrecorderid + '_recorderbutton');
             var isandroid = navigator.userAgent.indexOf('Android') > -1;
-            var canbrowserrec = browserRec.will_work_ok() && !isandroid;
+            var thirdpartyonly = button.data('forcestreaming') === 1 || button.data('forcestreaming') === true;
+            var canbrowserrec = browserRec.will_work_ok() && !isandroid && !thirdpartyonly;
 
             // A streaming token is only issued when the engine can read this activity's language.
-            var button = $('#' + activitydata.readttrecorderid + '_recorderbutton');
             var hastoken = !!button.data('speechtoken');
 
             var useinpage = canbrowserrec || hastoken;
-            log.debug('Read: browser rec ' + canbrowserrec + ', streaming token ' + hastoken +
+            log.debug('Read: browser rec ' + canbrowserrec + ' (third party only ' + thirdpartyonly +
+                '), streaming token ' + hastoken +
                 ' -> ' + (useinpage ? 'in page recorder' : 'iframe recorder'));
 
             if (useinpage) {

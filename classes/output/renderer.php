@@ -400,7 +400,7 @@ class renderer extends \plugin_renderer_base {
         }
 
         // Site admin can turn the whole thing off.
-        if (!get_config(constants::M_COMPONENT, 'streamingread')) {
+        if (get_config(constants::M_COMPONENT, 'streamingread') != constants::REALTIMESTEPS_PRACTICEREAD) {
             return false;
         }
 
@@ -477,7 +477,10 @@ class renderer extends \plugin_renderer_base {
             // as practice and MiniLesson PassageReading do. Browser recognition returns no word timings,
             // so spot check is hidden for those attempts and the session time comes from the recorded
             // length. On android it is skipped automatically, because saving the media needs the mic.
-            'forcestreaming' => false,
+            //
+            // Unless the site has asked for third party recognition only, which means never browser.
+            'forcestreaming' => get_config(constants::M_COMPONENT, 'alternatestreaming')
+                == constants::REALTIME_THIRDPARTY,
             // The read step must keep the audio: teachers grade against it and spot check plays from it.
             'savemedia' => 1,
             'savemediaregion' => $moduleinstance->region,
@@ -553,7 +556,7 @@ class renderer extends \plugin_renderer_base {
 
             // Forcing streaming only makes sense when we have a token to stream with. Without one it
             // would disable browser recognition and leave nothing but the upload transcriber.
-            if ($alternatestreaming) {
+            if ($alternatestreaming == constants::REALTIME_THIRDPARTY) {
                 $data['forcestreaming'] = true;
             }
         } else {

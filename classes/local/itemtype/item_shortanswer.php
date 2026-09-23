@@ -89,7 +89,7 @@ class item_shortanswer extends item {
                 $testitem->speechtokenvalidseconds = 0;
                 $testitem->speechtokentype = '';
             }
-            if ($alternatestreaming) {
+            if ($alternatestreaming == constants::REALTIME_THIRDPARTY) {
                 $testitem->forcestreaming = true;
             }
         }
