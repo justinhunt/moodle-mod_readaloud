@@ -228,41 +228,47 @@ class utils {
         }
     }
 
-    public static function can_streaming_transcribe($instance) {
+    /**
+     * Can this activity's language be transcribed by the streaming recogniser?
+     *
+     * Which engine we get is decided by fetch_streaming_token(): Azure when the site has its own
+     * Azure key, otherwise AssemblyAI. The two have very different language coverage, so the answer
+     * depends on which one this site will actually use.
+     *
+     * Callers should fall back to the upload (iframe) recorder when this returns false. Sending an
+     * unsupported language to the streaming recogniser does not error, it just returns nothing
+     * useful, which would score the reading as silence.
+     *
+     * @param object $instance The activity instance.
+     * @param string|null $tokentype The engine we will actually use, from a fetched token. Pass it
+     *                               whenever a token is already in hand, because a configured Azure
+     *                               key that does not work falls back to AssemblyAI, and guessing
+     *                               from config alone would then allow a language AssemblyAI cannot
+     *                               handle. Null means guess from config.
+     * @return bool True if the instance language can be streamed.
+     */
+    public static function can_streaming_transcribe($instance, $tokentype = null) {
 
-        $ret = false;
-
-        // The instance languages
-        switch($instance->ttslanguage){
-            case constants::M_LANG_ENAU:
-            case constants::M_LANG_ENGB:
-            case constants::M_LANG_ENUS:
-            case constants::M_LANG_ESUS:
-            case constants::M_LANG_FRFR:
-            case constants::M_LANG_FRCA:
-                $ret = true;
-                break;
-            default:
-                $ret = false;
+        if ($tokentype === null) {
+            // No token in hand, so guess from config. fetch_streaming_token() prefers Azure when a
+            // key is set. This is only good enough for a cheap pre-check; confirm against the real
+            // token type before committing to the streaming recorder.
+            $conf = get_config(constants::M_COMPONENT);
+            $tokentype = (!empty($conf->azureapikey) && !empty($conf->azureapiregion)) ? 'azure' : 'assemblyai';
         }
 
-        // The supported regions
-        if($ret) {
-            switch ($instance->region) {
-                case "useast1":
-                case "useast2":
-                case "uswest2":
-                case "sydney":
-                case "dublin":
-                case "ottawa":
-                    $ret = true;
-                    break;
-                default:
-                    $ret = false;
-            }
+        // Azure speech covers a wide range of locales, and an admin who configured a key has opted
+        // into using it, so let the instance language through.
+        if ($tokentype === 'azure') {
+            return true;
         }
 
-        return $ret;
+        // Otherwise it is AssemblyAI universal streaming. ttstreamer picks the english model for
+        // en-*, and the multilingual model for everything else. The multilingual model covers
+        // Spanish, French, German, Italian and Portuguese, and nothing beyond that. An unsupported
+        // language does not error, it just returns nothing, which would be graded as silence.
+        $shortlang = self::fetch_short_lang($instance->ttslanguage);
+        return in_array($shortlang, ['en', 'es', 'fr', 'de', 'it', 'pt']);
     }
 
     // we might use AWS Transcribe if its strict or no hash(why)

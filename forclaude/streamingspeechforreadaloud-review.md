@@ -683,3 +683,54 @@ There is no browser available in this session and no headless browser installed,
 visual work here was checked by looking at it — it was reasoned from the css and the drawing
 code, and confirmed by the person testing. That is worth knowing when reading the layout
 reasoning above: the mechanism is real, but the first two attempts at applying it were wrong.
+
+---
+
+## 12. Streaming language coverage
+
+Added 2026-09-23.
+
+### What is actually supported
+
+Which engine a site gets is decided by `utils::fetch_streaming_token()`: Azure when the site has
+its own Azure key that works, otherwise AssemblyAI.
+
+| Engine | Coverage |
+|---|---|
+| AssemblyAI | `ttstreamer` selects `universal-streaming-english` for `en-*`, and `universal-streaming-multilingual` for everything else. The multilingual model covers **Spanish, French, German, Italian and Portuguese**, and nothing beyond that. |
+| Azure | `ttazure` passes the activity language straight to the endpoint, and Azure speech covers a wide range of locales. Only available when an admin has configured `azureapikey` and `azureapiregion`. |
+
+The activity itself offers 63 languages, so on the AssemblyAI path most of them are outside what
+streaming can do. An unsupported language does not error — it returns nothing, which now grades
+as silence, so the student would get a silent zero.
+
+### The gates were inconsistent
+
+- `utils::can_streaming_transcribe()` held a whitelist of en-AU/GB/US, es-US, fr-FR, fr-CA plus
+  six regions, and **was never called by anything**. It predated the multilingual model.
+- `show_practice()` gates on `if ($isenglish)`, so practice streaming is English only.
+- The quiz item types use `if ($isenglish || true)`, i.e. the check is disabled.
+- `show_read_recorder()` had **no language check at all**, which was a gap introduced with the
+  read step work.
+
+### What was done
+
+`can_streaming_transcribe()` rewritten with current coverage and wired into `can_stream_read()`,
+so an unsupported language falls back to the iframe recorder rather than streaming badly.
+
+It takes an optional `$tokentype`. This matters: a site can have an Azure key configured that does
+not work, in which case `fetch_azure_token()` returns false and `fetch_streaming_token()` quietly
+falls back to AssemblyAI. Guessing the engine from config alone would then wave a Japanese
+activity through to a model that cannot read it. So `can_stream_read()` does the cheap config
+based guess, and `show_read_recorder()` re-checks against the token type it actually received
+before committing.
+
+The other two call sites were left alone. `show_practice()` being English-only and the quiz items
+having their check disabled are both pre-existing and out of scope here, but they are inconsistent
+with each other and worth a decision.
+
+### Browser recognition
+
+The read step does not use browser speech recognition, unlike practice and MiniLesson
+PassageReading. That is deliberate but no longer clear cut. See
+`read-step-browser-recognition-plan.md`.

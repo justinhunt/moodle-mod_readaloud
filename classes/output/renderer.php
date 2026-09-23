@@ -378,7 +378,9 @@ class renderer extends \plugin_renderer_base {
      * Should the read step use the in page streaming recorder rather than the cloud poodll iframe?
      *
      * Only when the activity is set to Open STT (the guided transcriber needs the server side upload path,
-     * it steers the transcript towards the passage), and only when we could actually get a streaming token.
+     * it steers the transcript towards the passage), only when the streaming recogniser covers the
+     * activity language, and only when we could actually get a streaming token. Anything else falls back
+     * to the iframe recorder.
      *
      * @param object $moduleinstance The module instance.
      * @return bool True if the read step should stream in the browser.
@@ -392,6 +394,13 @@ class renderer extends \plugin_renderer_base {
 
         // No point streaming if we are not transcribing at all.
         if (!utils::can_transcribe($moduleinstance)) {
+            return false;
+        }
+
+        // The streaming recogniser only covers some languages, and it fails quietly on the rest:
+        // it returns nothing rather than erroring, which would be graded as silence. Anything it
+        // cannot handle keeps the iframe recorder, which transcribes server side.
+        if (!utils::can_streaming_transcribe($moduleinstance)) {
             return false;
         }
 
@@ -426,6 +435,13 @@ class renderer extends \plugin_renderer_base {
         $tokenobject = utils::fetch_streaming_token($moduleinstance->region);
         if (!$tokenobject) {
             // Without a streaming token there is nothing to stream with, fall back to the iframe.
+            return [];
+        }
+
+        // Now we know which engine we actually got, confirm it can handle this language. A site with
+        // an Azure key that does not work falls back to AssemblyAI here, and AssemblyAI covers far
+        // fewer languages, so the config based guess in can_stream_read() is not the final word.
+        if (!utils::can_streaming_transcribe($moduleinstance, $tokenobject->tokentype)) {
             return [];
         }
 
