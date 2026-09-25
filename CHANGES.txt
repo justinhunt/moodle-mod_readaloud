@@ -1,3 +1,8 @@
+2.1.31 (Build 2026092500)
+- Added streaming speech recognition for read mode
+- Fixed DB column setting inconsistencies on upgraded sites
+- Moved some admin settings around
+
 2.1.30 (Build 2026081600)
  - Added in-plugin free trial set up
 

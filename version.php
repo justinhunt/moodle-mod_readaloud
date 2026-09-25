@@ -29,4 +29,4 @@ $plugin->version = 2026092500;
 $plugin->requires = 2025041400;      // Requires Moodle 5.0
 $plugin->component = 'mod_readaloud';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '2.1.34 (Build 2026092500)';
+$plugin->release = '2.1.31 (Build 2026092500)';
