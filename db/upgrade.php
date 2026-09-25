@@ -1098,6 +1098,22 @@ function xmldb_readaloud_upgrade($oldversion)
         upgrade_mod_savepoint(true, 2026092200, 'readaloud');
     }
 
+    // The 2018060900 step created these AI result columns as NOT NULL DEFAULT 0, but install.xml has always
+    // declared them nullable with no default. Sites upgraded from then fail with a dmlwriteexception on
+    // reattempt, when clear_transcripts() writes a null sessiontime. Bring them in line with install.xml.
+    if ($oldversion < 2026092500) {
+        $table = new xmldb_table(constants::M_AITABLE);
+        $fieldnames = ['wpm', 'accuracy', 'sessionscore', 'sessiontime', 'sessionendword'];
+        foreach ($fieldnames as $fieldname) {
+            $field = new xmldb_field($fieldname, XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, null);
+            if ($dbman->field_exists($table, $field)) {
+                $dbman->change_field_notnull($table, $field);
+                $dbman->change_field_default($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2026092500, 'readaloud');
+    }
+
     // Final return of upgrade result (true, all went good) to Moodle.
     return true;
 }
