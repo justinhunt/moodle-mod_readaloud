@@ -46,28 +46,6 @@ if ($hassiteconfig) {
     $pagetitle = get_string('generalsettings', 'admin');
     $mainsettings = new admin_settingpage('modsettingreadaloud', $pagetitle, 'moodle/site:config');
 
-    $mainsettings->add(new admin_setting_configtextarea(
-        constants::M_COMPONENT . '/defaultwelcome',
-        get_string('welcomelabel', constants::M_COMPONENT),
-        get_string('welcomelabel_details', constants::M_COMPONENT),
-        get_string('defaultwelcome', constants::M_COMPONENT),
-        PARAM_TEXT
-    ));
-    $mainsettings->add(new admin_setting_configtextarea(
-        constants::M_COMPONENT . '/defaultfeedback',
-        get_string('feedbacklabel', constants::M_COMPONENT),
-        get_string('feedbacklabel_details', constants::M_COMPONENT),
-        get_string('defaultfeedback', constants::M_COMPONENT),
-        PARAM_TEXT
-    ));
-
-    $mainsettings->add(new admin_setting_configtext(
-        constants::M_COMPONENT . '/targetwpm',
-        get_string('targetwpm', constants::M_COMPONENT),
-        get_string('targetwpm_details', constants::M_COMPONENT),
-        100,
-        PARAM_INT
-    ));
 
     $mainsettings->add(new admin_setting_configtext(
         constants::M_COMPONENT . '/apiuser',
@@ -111,30 +89,20 @@ if ($hassiteconfig) {
         PARAM_URL
     ));
 
-    $mainsettings->add(new admin_setting_configcheckbox(
-        constants::M_COMPONENT . '/enableai',
-        get_string('enableai', constants::M_COMPONENT),
-        get_string('enableai_details', constants::M_COMPONENT),
-        1
-    ));
-
-    // We removed this to simplify things, can bring back as feature later.
-    $accadjustoptions = \mod_readaloud\utils::get_accadjust_options();
+    // Language options
+    $name = 'ttslanguage';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = get_string($name . '_details', constants::M_COMPONENT);
+    $default = constants::M_LANG_ENUS;
+    $options = \mod_readaloud\utils::get_lang_options();
     $mainsettings->add(new admin_setting_configselect(
-        constants::M_COMPONENT . '/accadjustmethod',
-        get_string('accadjustmethod', constants::M_COMPONENT),
-        get_string('accadjustmethod_details', constants::M_COMPONENT),
-        constants::ACCMETHOD_NONE,
-        $accadjustoptions
+        constants::M_COMPONENT . "/$name",
+        $label,
+        $details,
+        $default,
+        $options
     ));
 
-    $mainsettings->add(new admin_setting_configtext(
-        constants::M_COMPONENT . '/accadjust',
-        get_string('accadjust', constants::M_COMPONENT),
-        get_string('accadjust_details', constants::M_COMPONENT),
-        0,
-        PARAM_INT
-    ));
 
     $regions = \mod_readaloud\utils::get_region_options();
     $mainsettings->add(new admin_setting_configselect(
@@ -190,6 +158,18 @@ if ($hassiteconfig) {
         $options
     ));
 
+     $realtimestepoptions = [
+        constants::REALTIMESTEPS_PRACTICE => get_string('realtimesteps_practice', constants::M_COMPONENT),
+        constants::REALTIMESTEPS_PRACTICEREAD => get_string('realtimesteps_practiceread', constants::M_COMPONENT),
+     ];
+     $mainsettings->add(new admin_setting_configselect(
+        constants::M_COMPONENT . '/streamingread',
+        get_string('streamingread', constants::M_COMPONENT),
+        get_string('streamingread_details', constants::M_COMPONENT),
+        constants::REALTIMESTEPS_PRACTICE,
+        $realtimestepoptions
+     ));
+
     $realtimeoptions = [
         constants::REALTIME_AUTO => get_string('realtime_auto', constants::M_COMPONENT),
         constants::REALTIME_THIRDPARTY => get_string('realtime_thirdparty', constants::M_COMPONENT),
@@ -202,17 +182,7 @@ if ($hassiteconfig) {
         $realtimeoptions
     ));
 
-    $realtimestepoptions = [
-        constants::REALTIMESTEPS_PRACTICE => get_string('realtimesteps_practice', constants::M_COMPONENT),
-        constants::REALTIMESTEPS_PRACTICEREAD => get_string('realtimesteps_practiceread', constants::M_COMPONENT),
-    ];
-    $mainsettings->add(new admin_setting_configselect(
-        constants::M_COMPONENT . '/streamingread',
-        get_string('streamingread', constants::M_COMPONENT),
-        get_string('streamingread_details', constants::M_COMPONENT),
-        constants::REALTIMESTEPS_PRACTICE,
-        $realtimestepoptions
-    ));
+
 
     // Activity Step settings
     $stepoptions = [
@@ -220,7 +190,7 @@ if ($hassiteconfig) {
         constants::STEP_PRACTICE => new lang_string('enablelandr', constants::M_COMPONENT),
         constants::STEP_SHADOW => new lang_string('enableshadow', constants::M_COMPONENT),
         constants::STEP_READ => new lang_string('enableread', constants::M_COMPONENT),
-        constants::STEP_QUIZ => new lang_string('enablequiz', constants::M_COMPONENT)
+        constants::STEP_QUIZ => new lang_string('enablequiz', constants::M_COMPONENT),
     ];
 
     $stepdefaults =
@@ -248,73 +218,6 @@ if ($hassiteconfig) {
 
 
 
-    // session score method
-    $name = 'sessionscoremethod';
-    $label = get_string($name, constants::M_COMPONENT);
-    $details = get_string($name . '_details', constants::M_COMPONENT);
-    $default = constants::SESSIONSCORE_NORMAL;
-    $options = \mod_readaloud\utils::get_sessionscore_options();
-    $mainsettings->add(new admin_setting_configselect(
-        constants::M_COMPONENT . "/$name",
-        $label,
-        $details,
-        $default,
-        $options
-    ));
-
-
-    // machine grade method
-    $name = 'machinegrademethod';
-    $label = get_string($name, constants::M_COMPONENT);
-    $details = get_string($name . '_details', constants::M_COMPONENT);
-    $default = constants::MACHINEGRADE_HYBRID;
-    $options = \mod_readaloud\utils::get_machinegrade_options();
-    $mainsettings->add(new admin_setting_configselect(
-        constants::M_COMPONENT . "/$name",
-        $label,
-        $details,
-        $default,
-        $options
-    ));
-
-    // Evaluation view (what students see after an attempt)
-    $name = 'humanpostattempt';
-    $label = get_string('evaluationview', constants::M_COMPONENT);
-    $details = get_string('evaluationview_details', constants::M_COMPONENT);
-    $default = constants::POSTATTEMPT_EVALERRORS;
-    $options = \mod_readaloud\utils::get_postattempt_options();
-    $mainsettings->add(new admin_setting_configselect(
-        constants::M_COMPONENT . "/$name",
-        $label,
-        $details,
-        $default,
-        $options
-    ));
-    /*
-    $mainsettings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/machinepostattempt',
-        get_string('machinepostattempt', constants::M_COMPONENT),
-        get_string('machinepostattempt_details',constants::M_COMPONENT),
-        constants::POSTATTEMPT_EVAL, $postattempt_options));
-    */
-
-    /*
-    $mainsettings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enabletts',
-    get_string('enabletts', constants::M_COMPONENT), get_string('enabletts_details',constants::M_COMPONENT), 0));
-    */
-
-    // Language options
-    $name = 'ttslanguage';
-    $label = get_string($name, constants::M_COMPONENT);
-    $details = get_string($name . '_details', constants::M_COMPONENT);
-    $default = constants::M_LANG_ENUS;
-    $options = \mod_readaloud\utils::get_lang_options();
-    $mainsettings->add(new admin_setting_configselect(
-        constants::M_COMPONENT . "/$name",
-        $label,
-        $details,
-        $default,
-        $options
-    ));
 
     // TTS voice
     $name = 'ttsvoice';
@@ -330,12 +233,124 @@ if ($hassiteconfig) {
         $options
     ));
 
-    // Items per page options
+
+    // Add main settings page to readaloud category.
+    $ADMIN->add('modsettingsreadaloudcat', $mainsettings);
+
+    // Miscelleneous
+    $pagetitle = get_string('miscelleneous', constants::M_COMPONENT);
+    $miscelleneoussettings = new admin_settingpage('modsettingreadaloudmiscelleneous', $pagetitle, 'moodle/site:config');
+
+    $miscelleneoussettings->add(new admin_setting_configtextarea(
+        constants::M_COMPONENT . '/defaultwelcome',
+        get_string('welcomelabel', constants::M_COMPONENT),
+        get_string('welcomelabel_details', constants::M_COMPONENT),
+        get_string('defaultwelcome', constants::M_COMPONENT),
+        PARAM_TEXT
+    ));
+    $miscelleneoussettings->add(new admin_setting_configtextarea(
+        constants::M_COMPONENT . '/defaultfeedback',
+        get_string('feedbacklabel', constants::M_COMPONENT),
+        get_string('feedbacklabel_details', constants::M_COMPONENT),
+        get_string('defaultfeedback', constants::M_COMPONENT),
+        PARAM_TEXT
+    ));
+
+    $miscelleneoussettings->add(new admin_setting_configtext(
+        constants::M_COMPONENT . '/targetwpm',
+        get_string('targetwpm', constants::M_COMPONENT),
+        get_string('targetwpm_details', constants::M_COMPONENT),
+        100,
+        PARAM_INT
+    ));
+
+
+      $miscelleneoussettings->add(new admin_setting_configcheckbox(
+        constants::M_COMPONENT . '/enableai',
+        get_string('enableai', constants::M_COMPONENT),
+        get_string('enableai_details', constants::M_COMPONENT),
+        1
+      ));
+
+    // We removed this to simplify things, can bring back as feature later.
+    $accadjustoptions = \mod_readaloud\utils::get_accadjust_options();
+    $miscelleneoussettings->add(new admin_setting_configselect(
+        constants::M_COMPONENT . '/accadjustmethod',
+        get_string('accadjustmethod', constants::M_COMPONENT),
+        get_string('accadjustmethod_details', constants::M_COMPONENT),
+        constants::ACCMETHOD_NONE,
+        $accadjustoptions
+    ));
+
+    $miscelleneoussettings->add(new admin_setting_configtext(
+        constants::M_COMPONENT . '/accadjust',
+        get_string('accadjust', constants::M_COMPONENT),
+        get_string('accadjust_details', constants::M_COMPONENT),
+        0,
+        PARAM_INT
+    ));
+
+
+    // session score method
+    $name = 'sessionscoremethod';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = get_string($name . '_details', constants::M_COMPONENT);
+    $default = constants::SESSIONSCORE_NORMAL;
+    $options = \mod_readaloud\utils::get_sessionscore_options();
+    $miscelleneoussettings->add(new admin_setting_configselect(
+        constants::M_COMPONENT . "/$name",
+        $label,
+        $details,
+        $default,
+        $options
+    ));
+
+
+    // machine grade method
+    $name = 'machinegrademethod';
+    $label = get_string($name, constants::M_COMPONENT);
+    $details = get_string($name . '_details', constants::M_COMPONENT);
+    $default = constants::MACHINEGRADE_HYBRID;
+    $options = \mod_readaloud\utils::get_machinegrade_options();
+    $miscelleneoussettings->add(new admin_setting_configselect(
+        constants::M_COMPONENT . "/$name",
+        $label,
+        $details,
+        $default,
+        $options
+    ));
+
+    // Evaluation view (what students see after an attempt)
+    $name = 'humanpostattempt';
+    $label = get_string('evaluationview', constants::M_COMPONENT);
+    $details = get_string('evaluationview_details', constants::M_COMPONENT);
+    $default = constants::POSTATTEMPT_EVALERRORS;
+    $options = \mod_readaloud\utils::get_postattempt_options();
+    $miscelleneoussettings->add(new admin_setting_configselect(
+        constants::M_COMPONENT . "/$name",
+        $label,
+        $details,
+        $default,
+        $options
+    ));
+    /*
+    $miscelleneoussettings->add(new admin_setting_configselect(constants::M_COMPONENT .  '/machinepostattempt',
+        get_string('machinepostattempt', constants::M_COMPONENT),
+        get_string('machinepostattempt_details',constants::M_COMPONENT),
+        constants::POSTATTEMPT_EVAL, $postattempt_options));
+    */
+
+    /*
+    $mainsettings->add(new admin_setting_configcheckbox(constants::M_COMPONENT .  '/enabletts',
+    get_string('enabletts', constants::M_COMPONENT), get_string('enabletts_details',constants::M_COMPONENT), 0));
+    */
+
+       // Items per page options
     $name = 'itemsperpage';
     $label = get_string($name, constants::M_COMPONENT);
     $details = get_string($name . '_details', constants::M_COMPONENT);
     $default = 10;
-    $mainsettings->add(new admin_setting_configtext(
+    $miscelleneoussettings->add(new admin_setting_configtext(
         constants::M_COMPONENT . "/$name",
         $label,
         $details,
@@ -344,14 +359,14 @@ if ($hassiteconfig) {
     ));
 
 
-    $mainsettings->add(new admin_setting_configcheckbox(
+    $miscelleneoussettings->add(new admin_setting_configcheckbox(
         constants::M_COMPONENT . '/disableshadowgrading',
         get_string('disableshadowgrading', constants::M_COMPONENT),
         get_string('disableshadowgrading_details', constants::M_COMPONENT),
         0
     ));
 
-    $mainsettings->add(new admin_setting_configcheckbox(
+    $miscelleneoussettings->add(new admin_setting_configcheckbox(
         constants::M_COMPONENT . '/enablesetuptab',
         get_string('enablesetuptab', constants::M_COMPONENT),
         get_string('enablesetuptab_details', constants::M_COMPONENT),
@@ -360,7 +375,7 @@ if ($hassiteconfig) {
 
     // Native Language Setting
     /*
-    $mainsettings->add(new admin_setting_configcheckbox(
+    $miscelleneoussettings->add(new admin_setting_configcheckbox(
         constants::M_COMPONENT . '/setnativelanguage',
         get_string('enablenativelanguage', constants::M_COMPONENT),
         get_string('enablenativelanguage_details', constants::M_COMPONENT),
@@ -374,7 +389,7 @@ if ($hassiteconfig) {
     $label = get_string($name, constants::M_COMPONENT);
     $details = get_string($name . '_details', constants::M_COMPONENT);
     $default = 0;
-    $mainsettings->add(new admin_setting_configtext(
+    $miscelleneoussettings->add(new admin_setting_configtext(
         constants::M_COMPONENT . "/$name",
         $label,
         $details,
@@ -382,8 +397,8 @@ if ($hassiteconfig) {
         PARAM_INT
     ));
 
-    // Add main settings page to readaloud category.
-    $ADMIN->add('modsettingsreadaloudcat', $mainsettings);
+    // Add miscelleneous settings page to readaloud category.
+    $ADMIN->add('modsettingsreadaloudcat', $miscelleneoussettings);
 
 
     // Other API Keys (BYOK)
