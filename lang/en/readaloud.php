@@ -27,98 +27,20 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'Poodll ReadAloud';
-$string['modulename_help'] =
-        'ReadAloud gives students practice and feedback reading passages aloud. It can be entirely automatically graded and helps teachers assess and understand their students second language reading ability. The process is as follows:
-        
-1. Students LISTEN to a passage, set by the teacher.
-        
-2. Students PRACTICE reading line by line using their microphone.
-        
-3. Students READ the entire passage aloud.
-        
-4. Students and teachers can see the FEEDBACK and RESULTS.';
-$string['modulenameplural'] = 'Poodll ReadAlouds';
 $string['readaloudfieldset'] = 'Custom example fieldset';
-$string['readaloudname'] = 'Poodll ReadAloud';
-$string['readaloudname_help'] =
-        'This is the content of the help tooltip associated with the readaloudname field. Markdown syntax is supported.';
 // $string['readaloud'] = 'readaloud';
 $string['activitylink'] = 'Link to next activity';
 $string['activitylink_help'] = 'To provide a link after the attempt to another activity in the course, select the activity from the dropdown list.';
 $string['activitylinkname'] = 'Continue to next activity: {$a}';
-$string['pluginadministration'] = 'ReadAloud Administration';
-$string['pluginname'] = 'Poodll ReadAloud';
-$string['readaloud:addinstance'] = 'Add a new Read Aloud';
-$string['readaloud:view'] = 'View Read Aloud';
-$string['readaloud:view'] = 'Preview Read Aloud';
-$string['readaloud:itemview'] = 'View items';
-$string['readaloud:itemedit'] = 'Edit items';
 $string['readaloud:tts'] = 'Can use Text To Speech(tts)';
-$string['readaloud:manageattempts'] = 'Can manage Read Aloud attempts';
-$string['readaloud:manage'] = 'Can manage Read Aloud instances';
-$string['readaloud:preview'] = 'Can preview Read Aloud activities';
-$string['readaloud:submit'] = 'Can submit Read Aloud attempts';
-$string['readaloud:viewreports'] = 'Can view Read Aloud grades and reports';
-$string['readaloud:pushtoclones'] = 'Can push settings to clones';
-$string['privacy:metadata'] = 'The Poodll Read Aloud plugin does store personal data.';
 
-$string['id'] = 'ID';
-$string['name'] = 'Name';
-$string['timecreated'] = 'Time Created';
-$string['basicheading'] = 'Basic Report';
-$string['attemptsheading'] = 'Attempts Report';
 // $string['attemptsbyuserheading'] = 'User Attempts Report';
-$string['attemptssummaryheading'] = 'Attempts Summary Report';
-$string['gradingheading'] = 'Grading latest attempts for each user.';
-$string['machinegradingheading'] = 'Machine evaluated latest attempt for each user.';
-$string['gradingbyuserheading'] = 'Grading all attempts for: {$a}';
-$string['machinegradingbyuserheading'] = 'Machine evaluated attempts for: {$a}';
-$string['totalattempts'] = 'Attempts';
 $string['overview'] = 'Overview';
-$string['overview_help'] = 'Overview Help';
-$string['view'] = 'View';
-$string['preview'] = 'Preview';
-$string['viewreports'] = 'View Reports';
-$string['reports'] = 'Reports';
-$string['viewgrading'] = 'View Grading';
-$string['grading'] = 'Grading';
-$string['gradenow'] = 'Grade Now';
-$string['cannotgradenow'] = ' - ';
 // $string['gradenowtitle'] = 'Grading: {$a}';
-$string['showingattempt'] = 'Showing attempt for: {$a}';
-$string['showingmachinegradedattempt'] = 'Machine evaluated attempt for: {$a}';
-$string['basicreport'] = 'Basic Report';
-$string['returntoreports'] = 'Return to Reports';
-$string['returntogradinghome'] = 'Return to Grading Top';
-$string['returntomachinegradinghome'] = 'Return to Machine Evaluations Top';
-$string['exportexcel'] = 'Export to CSV';
 // $string['mingradedetails'] = 'The minimum Read Aloud grade(%) required to "complete" this activity.';
-$string['mingrade'] = 'Minimum Grade';
-$string['deletealluserdata'] = 'Delete all user data';
-$string['maxattempts'] = 'Max. Attempts';
-$string['unlimited'] = 'unlimited';
-$string['gradeoptions'] = 'Grade Options';
-$string['gradeoptions_help'] =
-        'When there are multiple attempts by a user on a reading, this setting determines which attempt to use when grading';
-$string['gradeoptions_details'] =
-        'NB This determines the gradebook entry. The ReadAloud grading page is not affected and will display the latest attempt.';
-$string['gradenone'] = 'No grade';
 $string['gradelowest'] = 'lowest scoring attempt';
-$string['gradehighest'] = 'highest scoring attempt';
-$string['gradelatest'] = 'score of latest attempt';
 $string['gradeaverage'] = 'average score of all attempts';
 // $string['defaultsettings'] = 'Default Settings';
-$string['exceededattempts'] = 'You have completed the maximum {$a} attempts.';
-$string['exceededallattempts'] = "You have used all of your attempts.";
-$string['readaloudtask'] = 'Read Aloud Task';
-$string['passagelabel'] = 'Reading Passage';
-$string['welcomelabel'] = 'Default instructions';
-$string['welcomelabel_details'] = 'The default instructions. Can be edited when creating a new Read Aloud activity.';
-$string['feedbacklabel'] = 'Default Feedback';
-$string['feedbacklabel_details'] = 'The default text to show in the feedback field when creating a new Read Aloud activity.';
-$string['welcomelabel'] = 'Pre-attempt instructions';
-$string['feedbacklabel'] = 'Post-attempt instructions';
 $string['alternatives'] = 'Alternatives';
 $string['alternatives_descr'] =
         'Specify matching options for specific passage words. 1 word set per line. e.g their|there|they\'re See <a href="https://support.poodll.com/support/solutions/articles/19000096937-tuning-your-read-aloud-activity">docs</a> for more details.';
@@ -316,7 +238,6 @@ $string['en-au'] = 'English (Aus.)';
 $string['en-ph'] = 'English (Phil.)';
 $string['en-gb'] = 'English (GB)';
 $string['fr-ca'] = 'French (Can.)';
-$string['fr-fr'] = 'French (FR)';
 $string['it-it'] = 'Italian (IT)';
 $string['pt-br'] = 'Portuguese (BR)';
 $string['en-in'] = 'English (IN)';
@@ -697,7 +618,6 @@ $string['apply_site'] = "this site activities";
 $string['corpusrange'] = "Corpus range";
 $string['corpusrange_course'] = "This course";
 $string['corpusrange_site'] = "This site";
-$string['guidedtrans_corpus'] = "Use corpus (all ReadAloud passages)";
 $string['guidedtrans_passage'] = "Use this activity passage";
 $string['guidedtransinstructions'] = "When using guided transcription the transcriber will steer the transcript towards the guide, i.e the words/phrases in this activity's passage, or the words/phrases in the full corpus of ReadAloud passages. Using the full corpus of ReadAloud passages will pick up more reading errors.";
 $string['pushcorpus_details'] = "The course/site corpus will be updated automatically, but you can use the button below to update and push the corpus if you need to. This will generate a guide from the corpus range, and it will set all ReadAloud activities(using guided transcription) within the range to use the guide.";
@@ -863,7 +783,6 @@ $string['listenorread_listen'] = 'audio players + dots';
 $string['listenorread_listenandread'] = 'audio players + plain text';
 $string['listenorread_image'] = 'images + plain text';
 $string['confirmchoice_formlabel'] = "Must attempt (no skip)";
-$string['continue'] = "Continue <i class='fa fa-arrow-right'></i>";
 $string['confirmchoice'] = "Check";
 $string['listeninggapfill'] = 'Listening gapfill';
 $string['speakinggapfill'] = 'Speaking gapfill';
@@ -907,7 +826,6 @@ $string['reattemptbody'] = "Do you want to reattempt this quiz?";
 $string['questiontext'] = "Question";
 $string['check'] = "Check";
 $string['skip'] = "Skip";
-$string['start'] = "Start";
 $string['score'] = "Score";
 $string['currentwordcount'] = "Word count";
 $string['showcorrections'] = "Show inline corrections";
@@ -1030,32 +948,19 @@ $string['itemsperpage_details'] = 'This sets the number of rows to be shown on r
 $string['stdashboardid_details'] = 'If the student dashboard block is installed, put the id of the block here.';
 
 // Duplicate strings.
-$string['readaloud:view'] = 'Preview Read Aloud';
 $string['readaloud:view'] = 'View Read Aloud';
-$string['readaloud:itemedit'] = 'Edit questions';
 $string['readaloud:itemedit'] = 'Edit items';
-$string['readaloud:itemview'] = 'View questions';
 $string['readaloud:itemview'] = 'View items';
 $string['timecreated'] = 'Time created';
-$string['timecreated'] = 'Time created';
-$string['welcomelabel'] = 'Default instructions';
 $string['welcomelabel'] = 'Pre-attempt instructions';
-$string['feedbacklabel'] = 'Post-attempt instructions';
 $string['feedbacklabel'] = 'Default feedback';
-$string['nodataavailable'] = 'No data available';
 $string['nodataavailable'] = 'No data available yet';
 $string['transcriber'] = 'Practice step transcriber';
-$string['transcriber_details'] = 'The transcription engine to use';
 $string['transcriber_details'] = 'The transcription engine to use for line by line reading.';
 $string['correct'] = 'Correct';
-$string['correct'] = 'Correct';
-$string['itemtype'] = 'Item type';
 $string['itemtype'] = 'Item type';
 $string['deleteitem'] = 'Delete item';
-$string['deleteitem'] = 'Delete item';
-$string['guidedtrans_corpus'] = "Use corpus texts";
 $string['guidedtrans_corpus'] = "Use corpus (all ReadAloud passages)";
-$string['reattemptquiz'] = 'Reattempt quiz';
 $string['reattemptquiz'] = 'Reattempt the quiz?';
 $string['addtextarea_instructions'] = 'Enter the text you want to show in the lesson item.';
 $string['addttsaudio_instructions'] = 'Enter the text you want to be spoken by the TTS engine.';
