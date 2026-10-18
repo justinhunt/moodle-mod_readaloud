@@ -2698,7 +2698,10 @@ class utils {
         $mform->addHelpButton('timelimit', 'timelimit', constants::M_COMPONENT);
 
         // Text Generator Form
-        $textutilsdata = ['cloudpoodlltoken' => self::fetch_token($config->apiuser, $config->apisecret)];
+        $textutilsdata = [
+            'cloudpoodlltoken' => self::fetch_token($config->apiuser, $config->apisecret),
+            'cloudpoodllserver' => self::get_cloud_poodll_server(),
+        ];
         $textutils  = $OUTPUT->render_from_template( constants::M_COMPONENT . '/textutils', $textutilsdata);
         $mform->addElement('static', 'textutils', '',
                 $textutils);
