@@ -25,35 +25,22 @@
     * passagepictureurl - URL to passage picture (optional)
     * instructions - Preview/listen mode instructions text
     * playbutton - Play button configuration
-    * passagesegments - Array of passage text segments
+    * passagehtml - The passage (HTML)
 
     Example context (json):
     {
-        "backurl": "/mod/readaloud/view.php?id=42",
-        "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "backurl": "https://moodle.example.com/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://moodle.example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
         "instructions": "Listen to a speaker read the passage aloud. You do not need to read aloud.",
-        "passagesegments": [
-            {"text": "This is the first sentence.", "id": 1},
-            {"text": "This is the second sentence.", "id": 2}
-        ],
+        "passagehtml": "<p>Polar bears live in the Arctic.</p>",
         "playbutton": {
             "name": "playbutton",
             "label": "Play",
             "pressed": "false"
         },
-        "listenquit_modal": {
-            "id": "mod_readaloud_listenquitmodal",
-            "title": "Quit Listening?",
-            "body": "Are you sure you want to stop listening?",
-            "confirmbutton": {
-                "label": "Yes",
-                "action": "quitListening()"
-            },
-            "cancelbutton": {
-                "label": "Cancel",
-                "action": "closeModal()"
-            }
-        }
+        "M_STOPANDPLAY": "mod_readaloud_stopandplay",
+        "M_PLAY_BTN": "mod_readaloud_button-play",
+        "M_STOP_BTN": "mod_readaloud_button-stop"
     }
 }}
 

@@ -1,3 +1,53 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/qi_freespeakingresults
+
+    Results of a free speaking quiz item after AI evaluation.
+
+    Context variables required for this template:
+    * stats - Statistics: sentences, words, wordsunique, ideacount, relevance
+    * markeduppassage - What the student said, marked up (HTML)
+    * markedupcorrections - Corrected version, marked up (HTML)
+    * percentscore - Score as a percentage
+    * feedback - List of feedback strings
+    * rtl - CSS class for right-to-left languages, or empty
+    * noreattempt - Hide the reattempt button
+
+    Example context (json):
+    {
+        "stats": {
+            "sentences": 4,
+            "words": 52,
+            "wordsunique": 38,
+            "ideacount": 3,
+            "relevance": 90
+        },
+        "markeduppassage": "<span class=\"mod_readaloud_mu_word\">Polar</span> <span class=\"mod_readaloud_mu_word\">bear</span> live in the Arctic.",
+        "markedupcorrections": "Polar <del class=\"mod_readaloud_mu_original_preword\">bear</del> <ins>bears</ins> live in the Arctic.",
+        "percentscore": 80,
+        "feedback": [
+            "Good use of vocabulary.",
+            "Check subject and verb agreement."
+        ],
+        "rtl": "",
+        "noreattempt": false
+    }
+}}
 <div class="ml_freespeaking_results">
 <div class="ml_freespeaking_results_summaries">
   <div class="ml_fs_results_summary">

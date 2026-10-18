@@ -28,26 +28,29 @@
 
     Example context (json):
     {
+        "percentagevalue": 50,
+        "percentlabelvalue": "50%",
         "M_HOME_CONTAINER": "mod_readaloud_home_cont",
         "M_MENUBUTTONS_CONTAINER": "mod_readaloud_menubuttons_cont",
         "stepsdata": [
             {
                 "stepnumber": 1,
-                "mode": "listen",
+                "mode": "preview",
                 "label": "Listen",
-                "classes": "step-enabled step-open",
-                "modeicon": "<svg>...</svg>",
-                "statusicon": "https://example.com/pix/incomplete.svg"
+                "classes": "complete",
+                "modeicon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>",
+                "statusicon": "https://moodle.example.com/theme/image.php/boost/mod_readaloud/1/checked"
             },
             {
                 "stepnumber": 2,
-                "mode": "practice",
+                "mode": "landr",
                 "label": "Practice",
-                "classes": "step-enabled step-locked",
-                "modeicon": "<svg>...</svg>",
-                "statusicon": "https://example.com/pix/locked.svg"
+                "classes": "current",
+                "modeicon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>",
+                "statusicon": "https://moodle.example.com/theme/image.php/boost/mod_readaloud/1/current"
             }
         ],
+        "hasdates": false,
         "activityamddata": {
             "modeview": "mod_readaloud_modeview"
         }

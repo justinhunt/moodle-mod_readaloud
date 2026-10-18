@@ -17,10 +17,30 @@
 {{!
     @template mod_readaloud/quizresult
 
-    TODO describe template quizresult
+    The result for each quiz question in the quiz results.
 
     Example context (json):
     {
+        "results": [
+            {
+                "questext": "Where do polar bears live?",
+                "grade": 100,
+                "correctans": [
+                    {
+                        "sentence": "In the Arctic"
+                    }
+                ]
+            },
+            {
+                "questext": "What do polar bears eat?",
+                "grade": 0,
+                "correctans": [
+                    {
+                        "sentence": "Seals"
+                    }
+                ]
+            }
+        ]
     }
 }}
 

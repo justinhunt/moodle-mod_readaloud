@@ -1,3 +1,42 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/qi_typinggapfill
+
+    Typing gap fill quiz item. JavaScript builds the questions from the item data.
+
+    Context variables required for this template:
+    * uniqueid - Unique id of the item, used to build element ids
+    * itemtext - Question text (HTML)
+    * rtl - CSS class for right-to-left languages, or empty
+    * horizontal - Whether the item content uses the two column layout
+
+    Example context (json):
+    {
+        "id": 20,
+        "number": 10,
+        "type": "typinggapfill",
+        "name": "Polar bears 10",
+        "uniqueid": "typinggapfill10",
+        "itemtext": "<p>Listen and answer the question about polar bears.</p>",
+        "rtl": "",
+        "horizontal": false
+    }
+}}
 {{> mod_readaloud/questionheader}}
 <div class="readaloud_tgapfill_player_box gapfill-container">
     <div style="display:none;" class="tgapfill_results">{{#str}}gapfill_results, mod_readaloud{{/str}}</div>

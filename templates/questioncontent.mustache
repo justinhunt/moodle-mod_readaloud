@@ -1,3 +1,41 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/questioncontent
+
+    Media and text content of a quiz item (image, text area, audio, video or iframe).
+
+    Context variables required for this template:
+    * itemimage - Image URL
+    * itemtextarea - Text passage (HTML)
+    * itemaudio - Audio URL
+    * itemvideo - Video URL
+    * itemiframe - Embed code (HTML)
+    * magazine - Use the magazine layout
+    * rtl - CSS class for right-to-left languages, or empty
+
+    Example context (json):
+    {
+        "itemimage": "https://moodle.example.com/pluginfile.php/25/mod_readaloud/mediaquestion/11/bear.jpg",
+        "itemtextarea": "<p>Polar bears live in the Arctic.</p>",
+        "magazine": false,
+        "rtl": ""
+    }
+}}
 <div class="readaloud_questionheader_contents">
     {{^magazine}}{{#itemimage}}<div class="mod_readaloud_itemimage_cont"><img src="{{{itemimage}}}" class="mod_readaloud_itemimage"/></div>{{/itemimage}}{{/magazine}}
     {{#itemtextarea}}<div class="mod_readaloud_itemtextarea_cont">

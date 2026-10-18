@@ -1,3 +1,59 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/quizfinished
+
+    Quiz results, shown when the student finishes the quiz.
+
+    Context variables required for this template:
+    * stars - CSS classes of the rating stars
+    * total - Total score as a percentage
+    * canreattemptquiz - Whether the student may reattempt the quiz
+    * showfullresults - Whether to show the result for each question
+    * results - Per question results (see quizresult)
+
+    Example context (json):
+    {
+        "stars": [
+            "fa-solid fa-star text-warning",
+            "fa-solid fa-star text-warning",
+            "fa-solid fa-star text-warning",
+            "fa-solid fa-star-half-stroke text-warning",
+            "fa-solid fa-star text-muted"
+        ],
+        "total": 80,
+        "canreattemptquiz": true,
+        "showfullresults": true,
+        "config": {
+            "wwwroot": "https://moodle.example.com"
+        },
+        "results": [
+            {
+                "questext": "Where do polar bears live?",
+                "grade": 100,
+                "correctans": [
+                    {
+                        "sentence": "In the Arctic"
+                    }
+                ]
+            }
+        ]
+    }
+}}
 <div class="quizrating d-flex align-items-center justify-content-between no-wrap mb-4">
     <h6 class="fw-semibold mb-0">{{#str}}quizresults, mod_readaloud{{/str}}</h6>
     <div class="mod_readaloud_quizresult_rating">

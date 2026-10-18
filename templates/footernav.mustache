@@ -1,3 +1,53 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/footernav
+
+    Menu listing the activity steps with their completion status.
+
+    Context variables required for this template:
+    * stepsdata - List of steps: stepnumber, mode, classes, statusicon, label, modeicon (SVG)
+    * M_FOOTERNAV_CONTAINER - CSS id/class of the menu container
+    * M_MENUBUTTONS_CONTAINER - CSS id/class of the buttons container
+
+    Example context (json):
+    {
+        "M_FOOTERNAV_CONTAINER": "mod_readaloud_footernav_container",
+        "M_MENUBUTTONS_CONTAINER": "mod_readaloud_menubuttons_container",
+        "stepsdata": [
+            {
+                "stepnumber": 1,
+                "mode": "preview",
+                "classes": "complete",
+                "label": "Listen",
+                "statusicon": "https://moodle.example.com/theme/image.php/boost/mod_readaloud/1/checked",
+                "modeicon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>"
+            },
+            {
+                "stepnumber": 8,
+                "mode": "startnoshadow",
+                "classes": "current",
+                "label": "Read",
+                "statusicon": "https://moodle.example.com/theme/image.php/boost/mod_readaloud/1/current",
+                "modeicon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>"
+            }
+        ]
+    }
+}}
 <div id="{{M_FOOTERNAV_CONTAINER}}" class="{{M_FOOTERNAV_CONTAINER}}">
     <div id="{{M_MENUBUTTONS_CONTAINER}}" class="{{M_MENUBUTTONS_CONTAINER}} w-100">
         <ol class="main-nav list-unstyled p-0">

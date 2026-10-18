@@ -1,3 +1,66 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/ttrecorder
+
+    Speech recorder button with a waveform, used in the practice and read steps and in speaking quiz
+    items.
+
+    Context variables required for this template:
+    * uniqueid - Unique id for this recorder
+    * language - Speech recognition language
+    * region - Cloud Poodll region
+    * maxtime - Maximum recording time in seconds
+    * showtimer - Show the countdown timer
+    * hastimelimit - Show the time limit progress bar
+    * (other fields) - Speech token, Cloud Poodll and media settings passed through to JavaScript
+
+    Example context (json):
+    {
+        "uniqueid": "readaloud_read_ttrecorder",
+        "showtimer": true,
+        "hastimelimit": true,
+        "passagehash": "en-US|abc123def456",
+        "waveheight": 75,
+        "region": "useast1",
+        "language": "en-US",
+        "asrurl": "https://useast.ls.poodll.com/transcribe",
+        "speechtoken": "speech-token-value",
+        "speechtokenregion": "useast1",
+        "speechtokentype": "assemblyai",
+        "speechtokenvalidseconds": 600,
+        "forcestreaming": false,
+        "maxtime": 60,
+        "savemedia": 1,
+        "savemediaregion": "useast1",
+        "cloudpoodlltoken": "cloudpoodll-token-value",
+        "wwwroot": "https://moodle.example.com",
+        "appid": "mod_readaloud",
+        "owner": "owner-hash-value",
+        "transcode": 1,
+        "transcribemedia": 1,
+        "expiredays": 365,
+        "mediatype": "audio",
+        "cloudpoodllurl": "https://cloud.poodll.com",
+        "name": "recordbutton",
+        "label": "Record",
+        "pressed": "false"
+    }
+}}
 <div id="ttrec_container_{{uniqueid}}" class="mod_readaloud_ttrec_waveButtonContainer d-flex flex-column align-items-center" tabindex="0">
 
     <canvas id="{{uniqueid}}_waveform" class="mod_readaloud_ttrec_waveForm"></canvas>

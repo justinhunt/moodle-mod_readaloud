@@ -1,3 +1,63 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/qi_multichoice
+
+    Multiple choice quiz item. The answers are shown as text, images or audio.
+
+    Context variables required for this template:
+    * uniqueid - Unique id of the item, used to build element ids
+    * itemtext - Question text (HTML)
+    * rtl - CSS class for right-to-left languages, or empty
+    * horizontal - Whether the item content uses the two column layout
+    * sentences - List of answers: index, indexplusone, prompt, mediaurl (image answers)
+    * imagecontent - Answers are images
+    * audiocontent - Answers are audio
+
+    Example context (json):
+    {
+        "id": 11,
+        "number": 1,
+        "type": "multichoice",
+        "name": "Polar bears 1",
+        "uniqueid": "multichoice1",
+        "itemtext": "<p>Listen and answer the question about polar bears.</p>",
+        "rtl": "",
+        "horizontal": false,
+        "sentences": [
+            {
+                "index": 0,
+                "indexplusone": 1,
+                "sentence": "Polar bears live in the Arctic.",
+                "prompt": "Polar bears live in the Arctic.",
+                "mediaurl": "https://moodle.example.com/pluginfile.php/25/mod_readaloud/fileanswer1/11/bear.jpg"
+            },
+            {
+                "index": 1,
+                "indexplusone": 2,
+                "sentence": "Polar bears live in the desert.",
+                "prompt": "Polar bears live in the desert.",
+                "mediaurl": "https://moodle.example.com/pluginfile.php/25/mod_readaloud/fileanswer2/11/desert.jpg"
+            }
+        ],
+        "imagecontent": false,
+        "audiocontent": false
+    }
+}}
 {{> mod_readaloud/questionheader}}
     {{#imagecontent}}
         {{> mod_readaloud/qi_multichoiceimagecontent}}

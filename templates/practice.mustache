@@ -23,27 +23,35 @@
     Context variables required for this template:
     * backurl - URL to return to home/menu
     * passagepictureurl - URL to passage picture (optional)
-    * modeinstructions - Practice/listen and repeat mode instructions text
     * M_PRACTICE_CONTAINER_WRAP - CSS class for practice container
     * practice - Practice recorder configuration
     * practice_rtl - RTL flag for right-to-left languages
-    * passagesegments - Array of passage text segments
+    * passagehtml - The passage (HTML)
 
     Example context (json):
     {
-        "backurl": "/mod/readaloud/view.php?id=42",
-        "passagepictureurl": "https://example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
-        "modeinstructions": "Listen to the speaker. Repeat after each sentence and check your pronunciation.",
+        "backurl": "https://moodle.example.com/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://moodle.example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
         "M_PRACTICE_CONTAINER_WRAP": "mod_readaloud_practice_cont_wrap",
+        "passagehtml": "<p>Polar bears live in the Arctic.</p>",
         "practice": {
-            "recorderid": "mod_readaloud_practice_recorder",
-            "skin": "bmr"
+            "uniqueid": "readaloud_ttrecorder",
+            "language": "en-US",
+            "region": "useast1",
+            "waveheight": 75,
+            "maxtime": 15,
+            "asrurl": "https://useast.ls.poodll.com/transcribe",
+            "name": "recordbutton",
+            "label": "Record",
+            "pressed": "false",
+            "passagehash": "fe4091148870b6c08e9c3d26185a79fb8c1f7869",
+            "speechtoken": "speech-token-value",
+            "speechtokentype": "assemblyai",
+            "speechtokenregion": "useast1",
+            "speechtokenvalidseconds": 600,
+            "forcestreaming": false
         },
-        "practice_rtl": false,
-        "passagesegments": [
-            {"text": "This is the first sentence.", "id": 1},
-            {"text": "This is the second sentence.", "id": 2}
-        ]
+        "practice_rtl": false
     }
 }}
 

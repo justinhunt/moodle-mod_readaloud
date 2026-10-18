@@ -17,10 +17,30 @@
 {{!
     @template mod_readaloud/quizreport
 
-    Quiz container
+    The quiz step after the quiz is finished: the quiz results and the reading passage.
 
     Example context (json):
     {
+        "backurl": "https://moodle.example.com/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://moodle.example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "M_QUIZ_CONTAINER": "mod_readaloud_quiz_cont",
+        "M_QUIZ_CONTAINER_WRAP": "mod_readaloud_quiz_cont_wrap",
+        "M_QUIZ_FINISHED": "mod_readaloud_quiz_finished",
+        "quizfinisheddata": {
+            "stars": [
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star-half-stroke text-warning",
+                "fa-solid fa-star text-muted"
+            ],
+            "total": 80,
+            "canreattemptquiz": false,
+            "showfullresults": false
+        },
+        "readreport": {
+            "thepassage": "<p>Polar bears live in the <span class=\"mod_readaloud_grading_passageword\">Arctic</span>.</p>"
+        }
     }
 }}
 <section id="mod_readaloud_quizmode" class="quiz-mode" role="region" aria-labelledby="quiz-title">

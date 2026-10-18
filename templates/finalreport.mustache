@@ -1,3 +1,67 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/finalreport
+
+    Final report step: summary of the reading attempts and, if the quiz step is enabled, the quiz
+    result.
+
+    Context variables required for this template:
+    * fullreportdata - Report data: fullreportcontainer, attemptssummary and generalfeedback
+    * stepsenabled - Which steps are enabled, keyed by step name
+    * hasquizquestions - Whether the activity has quiz questions
+    * M_FEEDBACK_CONTAINER - CSS id/class of the feedback container
+
+    Example context (json):
+    {
+        "activityname": "Reading about Polar Bears",
+        "fullreportdata": {
+            "fullreportcontainer": "mod_readaloud_fullreport_container",
+            "hasattemptsummary": true,
+            "attemptssummary": {
+                "totalattempts": 2,
+                "av_wpm": 104,
+                "av_accuracy": 86,
+                "av_words": 120,
+                "stars": [
+                    "fa-solid fa-star text-warning",
+                    "fa-solid fa-star text-warning",
+                    "fa-solid fa-star text-warning",
+                    "fa-solid fa-star-half-stroke text-warning",
+                    "fa-solid fa-star text-muted"
+                ]
+            },
+            "generalfeedback": "Thanks for reading.",
+            "total": 80,
+            "stars": [
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star-half-stroke text-warning",
+                "fa-solid fa-star text-muted"
+            ]
+        },
+        "stepsenabled": {
+            "step_quiz": true
+        },
+        "hasquizquestions": true,
+        "M_FEEDBACK_CONTAINER": "mod_readaloud_feedback_container"
+    }
+}}
 {{< mod_readaloud/activity_header_inpage}}
     {{$instructions}}
         {{#str}} finalreporthelp, mod_readaloud {{/str}}

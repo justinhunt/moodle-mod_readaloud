@@ -1,4 +1,51 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
 
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/qi_multichoiceaudiocontent
+
+    Multiple choice answers that are played as audio.
+
+    Context variables required for this template:
+    * sentences - List of answers: index, indexplusone, prompt
+    * uniqueid - Unique id of the item
+    * rtl - CSS class for right-to-left languages, or empty
+
+    Example context (json):
+    {
+        "uniqueid": "multichoice1",
+        "rtl": "",
+        "sentences": [
+            {
+                "index": 0,
+                "indexplusone": 1,
+                "sentence": "Polar bears live in the Arctic.",
+                "prompt": "Polar bears live in the Arctic.",
+                "mediaurl": "https://moodle.example.com/pluginfile.php/25/mod_readaloud/fileanswer1/11/bear.jpg"
+            },
+            {
+                "index": 1,
+                "indexplusone": 2,
+                "sentence": "Polar bears live in the desert.",
+                "prompt": "Polar bears live in the desert.",
+                "mediaurl": "https://moodle.example.com/pluginfile.php/25/mod_readaloud/fileanswer2/11/desert.jpg"
+            }
+        ]
+    }
+}}
   {{#sentences}}
       <div class="row mcplayrow">
           <div class="col-md-1 mcaudioplayer_{{indexplusone}}">

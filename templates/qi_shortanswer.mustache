@@ -1,3 +1,67 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/qi_shortanswer
+
+    Short answer quiz item where the student speaks the answer.
+
+    Context variables required for this template:
+    * uniqueid - Unique id of the item, used to build element ids
+    * itemtext - Question text (HTML)
+    * rtl - CSS class for right-to-left languages, or empty
+    * horizontal - Whether the item content uses the two column layout
+    * (recorder fields) - See ttrecorder
+
+    Example context (json):
+    {
+        "id": 18,
+        "number": 8,
+        "type": "shortanswer",
+        "name": "recordbutton",
+        "uniqueid": "shortanswer8",
+        "itemtext": "<p>Listen and answer the question about polar bears.</p>",
+        "rtl": "",
+        "horizontal": false,
+        "passagehash": "en-US|abc123def456",
+        "waveheight": 75,
+        "region": "useast1",
+        "language": "en-US",
+        "asrurl": "https://useast.ls.poodll.com/transcribe",
+        "speechtoken": "speech-token-value",
+        "speechtokenregion": "useast1",
+        "speechtokentype": "assemblyai",
+        "speechtokenvalidseconds": 600,
+        "forcestreaming": false,
+        "maxtime": 60,
+        "savemedia": 1,
+        "savemediaregion": "useast1",
+        "cloudpoodlltoken": "cloudpoodll-token-value",
+        "wwwroot": "https://moodle.example.com",
+        "appid": "mod_readaloud",
+        "owner": "owner-hash-value",
+        "transcode": 1,
+        "transcribemedia": 1,
+        "expiredays": 365,
+        "mediatype": "audio",
+        "cloudpoodllurl": "https://cloud.poodll.com",
+        "label": "Record",
+        "pressed": "false"
+    }
+}}
 {{> mod_readaloud/questionheader}}
 
 <div id="{{uniqueid}}_correctanswer" class="mod_readaloud_spokenandcorrect {{rtl}}" > ---- </div>

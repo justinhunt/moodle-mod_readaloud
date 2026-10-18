@@ -1,3 +1,39 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/mediapromptfieldset
+
+    Opening of a fieldset for one media prompt in the quiz item form. The fieldset is closed by the form
+    code after its fields are added.
+
+    Context variables required for this template:
+    * mediatype - Media prompt type
+    * keyfield - Name of the form field that holds the prompt
+    * legend - Fieldset legend
+    * instructions - Instructions for this prompt
+
+    Example context (json):
+    {
+        "mediatype": "addmedia",
+        "keyfield": "addmedia",
+        "legend": "Image, audio or video",
+        "instructions": "Upload an image, audio or video file to show with the question."
+    }
+}}
 <fieldset id='ra_mediaprompt_panel_{{mediatype}}' class='ra_mediaprompt_panel border p-2' data-mediaprompt="{{mediatype}}"
           data-keyfield="{{keyfield}}" style='display: none'>
   <legend class='w-auto'>{{legend}}</legend>

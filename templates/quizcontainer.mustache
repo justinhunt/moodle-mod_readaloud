@@ -17,10 +17,18 @@
 {{!
     @template mod_readaloud/quizcontainer
 
-    Quiz container
+    The quiz step. JavaScript renders the quiz items into it.
 
     Example context (json):
     {
+        "backurl": "https://moodle.example.com/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://moodle.example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "M_QUIZ_CONTAINER": "mod_readaloud_quiz_cont",
+        "M_QUIZ_CONTAINER_WRAP": "mod_readaloud_quiz_cont_wrap",
+        "quizhtml": "<div class=\"readaloud_quizitems\"></div>",
+        "readreport": {
+            "thepassage": "<p>Polar bears live in the <span class=\"mod_readaloud_grading_passageword\">Arctic</span>.</p>"
+        }
     }
 }}
 <section id="mod_readaloud_quizmode" class="quiz-mode" role="region" aria-labelledby="quiz-title">

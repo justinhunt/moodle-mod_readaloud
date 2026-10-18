@@ -17,10 +17,36 @@
 {{!
     @template mod_readaloud/readreport
 
-    The Read Aloud read report.
+    The report shown after a reading attempt: rating stars, statistics, audio playback and the marked up passage.
 
     Example context (json):
     {
+        "backurl": "https://moodle.example.com/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://moodle.example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "hasquizquestions": true,
+        "stepsenabled": {
+            "step_quiz": true
+        },
+        "readreattempt": true,
+        "readreport": {
+            "ready": true,
+            "showstats": true,
+            "remotetranscribe": true,
+            "notingradebook": false,
+            "stars": [
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star text-warning",
+                "fa-solid fa-star-half-stroke text-warning",
+                "fa-solid fa-star text-muted"
+            ],
+            "wpm": 104,
+            "acc": 86,
+            "totalwords": 120,
+            "UNIQID": "ra_player_1",
+            "src": "https://moodle.example.com/pluginfile.php/42/mod_readaloud/submission/5/attempt.mp3",
+            "thepassage": "<p>Polar bears live in the <span class=\"mod_readaloud_grading_passageword\">Arctic</span>.</p>"
+        }
     }
 }}
 

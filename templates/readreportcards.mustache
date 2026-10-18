@@ -1,3 +1,38 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/readreportcards
+
+    Statistic cards for a reading attempt: words per minute, accuracy and total words.
+
+    Context variables required for this template:
+    * ready - Whether the attempt has been evaluated
+    * wpm - Words per minute
+    * acc - Accuracy (percent)
+    * totalwords - Number of words read
+
+    Example context (json):
+    {
+        "ready": true,
+        "wpm": 104,
+        "acc": 86,
+        "totalwords": 120
+    }
+}}
 {{! We have a result !! }}
 {{#ready }}
     <div class="col-4">

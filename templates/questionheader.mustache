@@ -1,3 +1,46 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_readaloud/questionheader
+
+    Start of a quiz item: opens the item container and shows the title, question text and content. The
+    container is closed by questionfooter.
+
+    Context variables required for this template:
+    * uniqueid - Unique id of the item, used to build element ids
+    * itemtext - Question text (HTML)
+    * rtl - CSS class for right-to-left languages, or empty
+    * horizontal - Whether the item content uses the two column layout
+    * title - Item title (HTML)
+    * itemttsaudio - Text to read aloud with TTS
+
+    Example context (json):
+    {
+        "id": 11,
+        "number": 1,
+        "type": "multichoice",
+        "name": "Polar bears 1",
+        "uniqueid": "multichoice1",
+        "itemtext": "<p>Listen and answer the question about polar bears.</p>",
+        "rtl": "",
+        "horizontal": false,
+        "title": "Polar bears"
+    }
+}}
 <div id="{{uniqueid}}_container" class="readaloud_questioncontainer" style="display: none">
 
     {{> mod_readaloud/quiz_progress}}

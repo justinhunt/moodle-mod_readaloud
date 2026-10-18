@@ -29,16 +29,44 @@
 
     Example context (json):
     {
+        "backurl": "https://moodle.example.com/mod/readaloud/view.php?id=42",
+        "passagepictureurl": "https://moodle.example.com/pluginfile.php/42/mod_readaloud/passagepicture/0/picture.png",
+        "percentagevalue": 50,
+        "percentlabelvalue": "50%",
         "M_UPDATE_CONTROL": "mod_readaloud_update_control",
+        "M_HOME_CONTAINER": "mod_readaloud_home_cont",
+        "M_MENUBUTTONS_CONTAINER": "mod_readaloud_menubuttons_cont",
+        "M_FOOTERNAV_CONTAINER": "mod_readaloud_footernav_cont",
+        "M_HIDDEN_PLAYER": "mod_readaloud_hidden_player",
         "activityamddata": {
             "widgetid": "12345",
-            "jsonstring": "{\"templatecontext\":{...},\"recorderid\":\"...\"}"
+            "modeview": "mod_readaloud_modeview",
+            "jsonstring": "{\"recorderid\":\"mod_readaloud_recorder\"}"
         },
-        "recorder": {
-            "recorderid": "mod_readaloud_recorder",
-            "skin": "standard"
-        },
-        "landr": true
+        "stepsdata": [
+            {
+                "stepnumber": 1,
+                "mode": "preview",
+                "label": "Listen",
+                "classes": "complete",
+                "modeicon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>",
+                "statusicon": "https://moodle.example.com/theme/image.php/boost/mod_readaloud/1/checked"
+            },
+            {
+                "stepnumber": 2,
+                "mode": "landr",
+                "label": "Practice",
+                "classes": "current",
+                "modeicon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\"><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg>",
+                "statusicon": "https://moodle.example.com/theme/image.php/boost/mod_readaloud/1/current"
+            }
+        ],
+        "landr": true,
+        "containertag": "modalcontainer",
+        "readreport": {
+            "configcontrolid": "mod_readaloud_readreport_config",
+            "configjsonstring": "{\"cmid\":42}"
+        }
     }
 }}
 
