@@ -37,10 +37,10 @@
     }
 }}
 <div class="readaloud_questionheader_contents">
-    {{^magazine}}{{#itemimage}}<div class="mod_readaloud_itemimage_cont"><img src="{{{itemimage}}}" class="mod_readaloud_itemimage"/></div>{{/itemimage}}{{/magazine}}
+    {{^magazine}}{{#itemimage}}<div class="mod_readaloud_itemimage_cont"><img src="{{{itemimage}}}" class="mod_readaloud_itemimage" alt=""/></div>{{/itemimage}}{{/magazine}}
     {{#itemtextarea}}<div class="mod_readaloud_itemtextarea_cont">
             <div class="mod_readaloud_itemtextarea {{rtl}}">
-                {{#magazine}}{{#itemimage}}<div class="mod_readaloud_itemimage_cont mod_readaloud_magazine"><img src="{{{itemimage}}}" class="mod_readaloud_itemimage"/></div>{{/itemimage}}{{/magazine}}
+                {{#magazine}}{{#itemimage}}<div class="mod_readaloud_itemimage_cont mod_readaloud_magazine"><img src="{{{itemimage}}}" class="mod_readaloud_itemimage" alt=""/></div>{{/itemimage}}{{/magazine}}
                 {{{itemtextarea}}}
             </div>
         </div>

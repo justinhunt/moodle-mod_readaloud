@@ -1,0 +1,8 @@
+# Settings for moodle-plugin-ci (used by .github/workflows/ci.yml).
+filter-mustache:
+  # Partial templates that are only valid HTML when combined with the templates that include them.
+  notNames:
+    - questionheader.mustache       # Opens the item container that questionfooter closes.
+    - questionfooter.mustache
+    - mediapromptfieldset.mustache  # The form code closes the fieldset after adding its fields.
+    - itemlistitem.mustache         # A table row, rendered inside itemlist's table.
