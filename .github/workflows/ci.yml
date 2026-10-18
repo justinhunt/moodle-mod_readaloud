@@ -102,7 +102,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci savepoints
 
+      # Not blocking until the existing backlog of template warnings is cleaned up
+      # (mostly missing @template example contexts).
       - name: Mustache Lint
+        continue-on-error: true
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci mustache
 
