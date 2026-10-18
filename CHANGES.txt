@@ -1,3 +1,10 @@
+2.1.33 (Build 2026101801)
+- Add missing lang string for the managequestions capability
+- Load recorder scripts from the configured Cloud Poodll server
+- Fix HTML validation problems in templates
+- Remove duplicate language string definitions
+- Fix mismatched upgrade savepoint version for 2021090300 block
+
 2.1.32 (Build 2026101800)
 - Fixed broken text generation and simplification
 
