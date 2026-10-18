@@ -33,13 +33,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Oldest supported Moodle with its lowest PHP, the development target, and the newest stable.
+          # Oldest supported Moodle with its lowest PHP, the development target, the branch the CAMP
+          # registry tests releases on, and the newest stable.
           - moodle-branch: 'MOODLE_500_STABLE'
             php: '8.2'
             database: pgsql
           - moodle-branch: 'MOODLE_501_STABLE'
             php: '8.3'
             database: mariadb
+          - moodle-branch: 'MOODLE_502_STABLE'
+            php: '8.3'
+            database: pgsql
           - moodle-branch: 'MOODLE_503_STABLE'
             php: '8.4'
             database: pgsql

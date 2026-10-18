@@ -1,0 +1,32 @@
+# camp listing manifest — the descriptive content for this plugin's page on
+# camp-registry.org. Edit and commit as normal; camp ingests and hash-pins it
+# at each tagged release. Schema: https://camp-registry.org/schema/listing.schema.json
+name: Poodll ReadAloud
+summary: Guided reading-fluency and comprehension practice, graded automatically for speed and accuracy by speech recognition and AI.
+description: |
+  The teacher sets a reading passage. The student works through a structured journey: listen to
+  the passage, practice it line by line, shadow the model reading, read the whole passage aloud,
+  then optionally take a quiz about it. Steps can be switched on or off per activity.
+
+  **Automatic grading:** each reading is scored for words per minute and accuracy using speech
+  recognition, with the errors marked on the passage. Teachers can review and adjust the grade,
+  listen to the recording, and send the score to the Moodle gradebook.
+
+  **Quiz step:** multiple choice (text or audio), short answer, listening, typing and speaking gap
+  fills, free writing and free speaking with AI feedback, and content pages.
+
+  **Also supported:** text to speech model readings in many voices and languages, the Moodle
+  mobile app, and per-student and per-activity reports.
+
+  **Requires a Cloud Poodll account.** Audio recording, text to speech, speech recognition and AI
+  grading run through the Cloud Poodll service, so the activity needs an API user and secret from
+  https://poodll.com to function.
+labels:
+  - paid-service
+  - external-account
+  - commercial-support-available
+category: activity
+links:
+  docs: https://support.poodll.com
+  issues: https://github.com/justinhunt/moodle-mod_readaloud/issues
+  changelog: https://github.com/justinhunt/moodle-mod_readaloud/blob/master/CHANGES.txt
