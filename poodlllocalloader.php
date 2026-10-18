@@ -18,8 +18,8 @@ require_once('../../config.php');
 header("Pragma: no-cache");
 header("Expires: -1");
 header("Cache-Control: no-cache");
-// Get cloud poodll url from cp parameter to this page.
-$cloudpoodllurl = optional_param('cloudpoodllurl', 'https://cloud.poodll.com', PARAM_URL);
+// Use server url from config.
+$cloudpoodllurl = s(\mod_readaloud\utils::get_cloud_poodll_server());
 ?>
 <!DOCTYPE html>
 <html>
