@@ -1,9 +1,0 @@
-<div id="{{uniqueid}}_container" class="readaloud_questioncontainer" style="display: none">
-  {{> mod_readaloud/quiz_progress}}
-  <audio id="{{uniqueid}}_player"></audio>
-  <!-- @@CLOUDPOODLLTOKEN@@ -->
-  <!-- title + instructions -->
-    {{#title}}<div class="readaloud_questionheader"><b>{{#str}}d_question, mod_readaloud{{/str}} {{number}}: {{{title}}}</b></div>{{/title}}
-    <div class="mod_readaloud_itemtext">{{{text}}}</div>
-    <!-- Content -->
-    {{> mod_readaloud/questioncontent}}
