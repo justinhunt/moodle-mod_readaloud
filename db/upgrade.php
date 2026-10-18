@@ -629,7 +629,7 @@ function xmldb_readaloud_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_mod_savepoint(true, 2021093000, 'readaloud');
+        upgrade_mod_savepoint(true, 2021090300, 'readaloud');
     }
 
     if ($oldversion < 2021112100) {
