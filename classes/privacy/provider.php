@@ -36,15 +36,13 @@ use mod_readaloud\constants;
 
 defined('MOODLE_INTERNAL') || die();
 
-//3.3 user_provider not backported so we use this switch to avoid errors when using same codebase for 3.3 and higher
+// 3.3 user_provider not backported so we use this switch to avoid errors when using same codebase for 3.3 and higher
 if (interface_exists('\core_privacy\local\request\core_userlist_provider')) {
     interface the_user_provider extends \core_privacy\local\request\core_userlist_provider {
     }
 } else {
     interface the_user_provider {
-    }
-
-    ;
+    };
 }
 
 /**
@@ -55,12 +53,11 @@ if (interface_exists('\core_privacy\local\request\core_userlist_provider')) {
  */
 class provider implements
         // This plugin does store personal user data.
-        \core_privacy\local\metadata\provider,
+    \core_privacy\local\metadata\provider,
         // This plugin is a core_user_data_provider.
-        \core_privacy\local\request\plugin\provider,
-        //user provider 3.4 and above
-        the_user_provider {
-
+    \core_privacy\local\request\plugin\provider,
+        // user provider 3.4 and above
+    the_user_provider {
     use \core_privacy\local\legacy_polyfill;
 
     /**
@@ -83,7 +80,7 @@ class provider implements
                 'sessionerrors' => 'privacy:metadata:sessionerrors',
                 'sessionendword' => 'privacy:metadata:sessionendword',
                 'errorcount' => 'privacy:metadata:errorcount',
-                'timemodified' => 'privacy:metadata:timemodified'
+                'timemodified' => 'privacy:metadata:timemodified',
         ];
         $collection->add_database_table(constants::M_USERTABLE, $userdetail, 'privacy:metadata:attempttable');
 
@@ -99,12 +96,12 @@ class provider implements
                 'errorcount' => 'privacy:metadata:errorcount',
                 'transcript' => 'privacy:metadata:transcriptpurpose',
                 'fulltranscript' => 'privacy:metadata:fulltranscriptpurpose',
-                'timemodified' => 'privacy:metadata:timemodified'
+                'timemodified' => 'privacy:metadata:timemodified',
         ];
         $collection->add_database_table(constants::M_AITABLE, $aidetail, 'privacy:metadata:aitable');
 
         $collection->add_external_location_link('cloud.poodll.com', [
-                'userid' => 'privacy:metadata:cloudpoodllcom:userid'
+                'userid' => 'privacy:metadata:cloudpoodllcom:userid',
         ], 'privacy:metadata:cloudpoodllcom');
         return $collection;
     }
@@ -127,7 +124,7 @@ class provider implements
         $params = [
                 'contextlevel' => CONTEXT_MODULE,
                 'modname' => constants::M_MODNAME,
-                'theuserid' => $userid
+                'theuserid' => $userid,
         ];
 
         $contextlist = new contextlist();
@@ -165,7 +162,6 @@ class provider implements
         ];
 
         $userlist->add_from_sql('userid', $sql, $params);
-
     }
 
     /**
@@ -183,7 +179,7 @@ class provider implements
         }
 
         $user = $contextlist->get_user();
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $sql = "SELECT usert.id as attemptid,
                        cm.id AS cmid,
@@ -212,7 +208,7 @@ class provider implements
         $params = [
                         'userid' => $user->id,
                         'modulename' => constants::M_MODNAME,
-                        'contextlevel' => CONTEXT_MODULE
+                        'contextlevel' => CONTEXT_MODULE,
                 ] + $contextparams;
 
         $attempts = $DB->get_recordset_sql($sql, $params);
@@ -287,17 +283,20 @@ class provider implements
         $userid = $contextlist->get_user()->id;
         foreach ($contextlist->get_contexts() as $context) {
             if ($context->contextlevel == CONTEXT_MODULE) {
-
                 $instanceid = $DB->get_field('course_modules', 'instance', ['id' => $context->instanceid], MUST_EXIST);
 
-                $entries = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $instanceid, 'userid' => $userid],
-                        '', 'id');
+                $entries = $DB->get_records(
+                    constants::M_USERTABLE,
+                    ['readaloudid' => $instanceid, 'userid' => $userid],
+                    '',
+                    'id'
+                );
 
                 if (!$entries) {
                     continue;
                 }
 
-                list($insql, $inparams) = $DB->get_in_or_equal(array_keys($entries), SQL_PARAMS_NAMED);
+                [$insql, $inparams] = $DB->get_in_or_equal(array_keys($entries), SQL_PARAMS_NAMED);
                 // Delete related entry aliases.
                 $DB->delete_records_list(constants::M_AITABLE, 'attemptid', array_keys($entries));
 
@@ -318,7 +317,7 @@ class provider implements
         $context = $userlist->get_context();
         $userids = $userlist->get_userids();
         $instanceid = $DB->get_field('course_modules', 'instance', ['id' => $context->instanceid], MUST_EXIST);
-        list($userinsql, $userinparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        [$userinsql, $userinparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
 
         $attemptswhere = "readaloudid = :instanceid AND userid {$userinsql}";
         $userinstanceparams = $userinparams + ['instanceid' => $instanceid];

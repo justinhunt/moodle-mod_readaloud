@@ -29,7 +29,6 @@ use renderable;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class item_multichoice extends item {
-
     // the item type
     public const ITEMTYPE = constants::TYPE_MULTICHOICE;
 
@@ -141,9 +140,8 @@ class item_multichoice extends item {
         $keycols['int3'] = ['jsonname' => 'confirmchoice', 'type' => 'boolean', 'optional' => true, 'default' => 0, 'dbname' => constants::CONFIRMCHOICE];
         $keycols['int2'] = ['jsonname' => 'listenorread', 'type' => 'int', 'optional' => true, 'default' => 0, 'dbname' => constants::LISTENORREAD]; // not boolean ..
         for ($i = 1; $i <= constants::MAXANSWERS; $i++) {
-            $keycols['fileanswer'.($i + constants::MAXANSWERS)] = ['jsonname' => constants::FILEANSWER.$i, 'type' => 'anonymousfile', 'optional' => true, 'default' => null, 'dbname' => false];
+            $keycols['fileanswer' . ($i + constants::MAXANSWERS)] = ['jsonname' => constants::FILEANSWER . $i, 'type' => 'anonymousfile', 'optional' => true, 'default' => null, 'dbname' => false];
         }
         return $keycols;
     }
-
 }

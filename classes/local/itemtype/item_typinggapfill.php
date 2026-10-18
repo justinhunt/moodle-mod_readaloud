@@ -28,9 +28,8 @@ use renderable;
  * @copyright  2023 Justin Hunt <justin@poodll.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class  item_typinggapfill extends item {
-
-    //the item type
+class item_typinggapfill extends item {
+    // the item type
     public const ITEMTYPE = constants::TYPE_TGAPFILL;
 
 
@@ -40,7 +39,7 @@ class  item_typinggapfill extends item {
      * @param \renderer_base $output renderer to be used to render the action bar elements.
      * @return array
      */
-    public function export_for_template(\renderer_base $output){
+    public function export_for_template(\renderer_base $output) {
 
         $testitem = new \stdClass();
         $testitem = $this->get_common_elements($testitem);
@@ -49,7 +48,7 @@ class  item_typinggapfill extends item {
 
         // Sentences.
         $sentences = [];
-        if(isset($testitem->customtext1)) {
+        if (isset($testitem->customtext1)) {
             $sentences = explode(PHP_EOL, $testitem->customtext1);
         }
 
@@ -74,7 +73,7 @@ class  item_typinggapfill extends item {
             return $error;
         }
 
-        //return false to indicate no error
+        // return false to indicate no error
         return false;
     }
 
@@ -82,12 +81,11 @@ class  item_typinggapfill extends item {
     * This is for use with importing, telling import class each column's is, db col name, readaloud specific data type
     */
     public static function get_keycolumns() {
-        //get the basic key columns and customize a little for instances of this item type
+        // get the basic key columns and customize a little for instances of this item type
         $keycols = parent::get_keycolumns();
         $keycols['int3'] = ['jsonname' => 'allowretry', 'type' => 'boolean', 'optional' => true, 'default' => 0, 'dbname' => constants::GAPFILLALLOWRETRY];
         $keycols['text1'] = ['jsonname' => 'sentences', 'type' => 'stringarray', 'optional' => true, 'default' => [], 'dbname' => 'customtext1'];
         $keycols['int5'] = ['jsonname' => 'hidestartpage', 'type' => 'boolean', 'optional' => true, 'default' => 0, 'dbname' => constants::GAPFILLHIDESTARTPAGE];
         return $keycols;
     }
-
 }

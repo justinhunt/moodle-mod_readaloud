@@ -33,7 +33,6 @@ use mod_readaloud\constants;
  * @package mod_readaloud
  */
 class mobile_auth {
-
     /**
      * Time factor that determines how long the token is valid.
      *
@@ -83,8 +82,8 @@ class mobile_auth {
     public static function validate_embed_auth_token($token, $secret) {
         $timefactor = self::get_time_factor();
         // Splitting into two halves and allowing both allows for fractions roundup in the time factor.
-        list($generatedtoken) = self::create_embed_auth_token($secret, $timefactor);
-        list($generatedtoken2) = self::create_embed_auth_token($secret, $timefactor - 1);
+        [$generatedtoken] = self::create_embed_auth_token($secret, $timefactor);
+        [$generatedtoken2] = self::create_embed_auth_token($secret, $timefactor - 1);
 
         return $token === $generatedtoken || $token === $generatedtoken2;
     }

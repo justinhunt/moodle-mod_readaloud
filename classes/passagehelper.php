@@ -126,9 +126,13 @@ class passagehelper {
                 break;
             case 'audiourl':
                 // we need to consider legacy client side URLs and cloud hosted ones
-                $ret = utils::make_audio_URL($this->attemptdata->filename, $this->modulecontextid, constants::M_COMPONENT,
-                        constants::M_FILEAREA_SUBMISSIONS,
-                        $this->attemptdata->id);
+                $ret = utils::make_audio_URL(
+                    $this->attemptdata->filename,
+                    $this->modulecontextid,
+                    constants::M_COMPONENT,
+                    constants::M_FILEAREA_SUBMISSIONS,
+                    $this->attemptdata->id
+                );
 
                 break;
             case 'somedetails':
@@ -151,9 +155,9 @@ class passagehelper {
         switch ($property) {
             case 'sessiontime':
                 if ($loadingaidata) {
-                    if($this->aidata->sessiontime > 0) {
+                    if ($this->aidata->sessiontime > 0) {
                         return $this->aidata->sessiontime;
-                    }else{
+                    } else {
                         // if we have a time limit and not allowing early exit, we use the time limit
                         if ($this->activitydata->timelimit > 0 && !$this->activitydata->allowearlyexit) {
                             $sessiontime = $this->activitydata->timelimit;
@@ -169,7 +173,6 @@ class passagehelper {
                         }
                         return $sessiontime;
                     }
-
                 } else {
                     return $this->attemptdetails('sessiontime');
                 }
@@ -198,7 +201,6 @@ class passagehelper {
             // should not get here really
             default:
                 return $this->attemptdetails($property);
-
         }
     }
 
@@ -258,19 +260,20 @@ class passagehelper {
         $optshtml =
                 \html_writer::tag('input', '', ['id' => $gradingopts['opts_id'], 'type' => 'hidden', 'value' => $jsonstring]);
         $PAGE->requires->js_call_amd("mod_readaloud/gradenowhelper", 'init', [['id' => $gradingopts['opts_id']]]);
-        $PAGE->requires->strings_for_js([
+        $PAGE->requires->strings_for_js(
+            [
                 'spotcheckbutton',
                 'gradingbutton',
                 'transcript',
                 'quickgrade',
                 'ok',
                 'ng',
-        ],
-                'mod_readaloud');
+            ],
+            'mod_readaloud'
+        );
 
         // these need to be returned and echo'ed to the page
         return $optshtml;
-
     }
 
     /**

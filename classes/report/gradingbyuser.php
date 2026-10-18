@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Created by PhpStorm.
  * User: ishineguy
@@ -8,24 +23,23 @@
 
 namespace mod_readaloud\report;
 
-use \mod_readaloud\constants;
-use \mod_readaloud\utils;
+use mod_readaloud\constants;
+use mod_readaloud\utils;
 
 class gradingbyuser extends basereport {
-
     protected $report = "gradingbyuser";
-    protected $fields = array('id', 'audiofile', 'wpm', 'accuracy_p', 'readgrade_p','quizscore_p', 'grade_p', 'grader', 'timecreated', 'gradenow', 'deletenow');
+    protected $fields = ['id', 'audiofile', 'wpm', 'accuracy_p', 'readgrade_p', 'quizscore_p', 'grade_p', 'grader', 'timecreated', 'gradenow', 'deletenow'];
     protected $headingdata = null;
-    protected $qcache = array();
-    protected $ucache = array();
+    protected $qcache = [];
+    protected $ucache = [];
     protected $qenabled = true;
 
     public function __construct($moduleinstance, $cm) {
         parent::__construct($moduleinstance, $cm);
         // If there is no quiz, remove quiz fields
-        if(!$this->quizhelper->quiz_enabled()){
+        if (!$this->quizhelper->quiz_enabled()) {
             $this->qenabled = false;
-            $this->fields = array_filter($this->fields, function($key) {
+            $this->fields = array_filter($this->fields, function ($key) {
                 return !in_array($this->fields[$key], ['quizscore_p']);
             }, ARRAY_FILTER_USE_KEY);
         }
@@ -39,7 +53,6 @@ class gradingbyuser extends basereport {
         }
         $user = $this->fetch_cache('user', $record->userid);
         return get_string('gradingbyuserheading', constants::M_COMPONENT, fullname($user));
-
     }
 
     public function fetch_formatted_field($field, $record, $withlinks) {
@@ -58,17 +71,19 @@ class gradingbyuser extends basereport {
                     $ret = html_writer::tag('audio','',
                             array('controls'=>'','src'=>$record->audiourl));
                         */
-                    $ret = \html_writer::div('<i class="fa fa-play-circle"></i>', constants::M_HIDDEN_PLAYER_BUTTON,
-                            array('data-audiosource' => $record->audiourl));
-
+                    $ret = \html_writer::div(
+                        '<i class="fa fa-play-circle"></i>',
+                        constants::M_HIDDEN_PLAYER_BUTTON,
+                        ['data-audiosource' => $record->audiourl]
+                    );
                 } else {
                     $ret = get_string('submitted', constants::M_COMPONENT);
                 }
                 break;
 
-            //WPM could hold either human or AI data
+            // WPM could hold either human or AI data
             case 'wpm':
-                //if not human or ai graded
+                // if not human or ai graded
                 if ($record->sessiontime == 0 && !$has_ai_grade) {
                     $ret = '';
                 } else {
@@ -76,9 +91,9 @@ class gradingbyuser extends basereport {
                 }
                 break;
 
-            //accuracy could hold either human or ai data
+            // accuracy could hold either human or ai data
             case 'accuracy_p':
-                //if not human or ai graded
+                // if not human or ai graded
                 if ($record->sessiontime == 0 && !$has_ai_grade) {
                     $ret = '';
                 } else {
@@ -86,36 +101,35 @@ class gradingbyuser extends basereport {
                 }
                 break;
 
-            //grade could hold either human or ai data
+            // grade could hold either human or ai data
             case 'readgrade_p':
-                //if not human or ai graded
+                // if not human or ai graded
                 if ($record->sessiontime == 0 && !$has_ai_grade) {
                     $ret = '';
                 } else {
                     $ret = $record->sessionscore;
                 }
-                break;   
+                break;
 
              // The quiz score e.g. 60%
-             case 'quizscore_p':
+            case 'quizscore_p':
                 $ret = $record->qscore;
                 break;
-   
 
-            //grade could hold either human or ai data
+            // grade could hold either human or ai data
             case 'grade_p':
-                //if not human or ai graded then we should not report a grade yet
+                // if not human or ai graded then we should not report a grade yet
                 if ($record->sessiontime == 0 && !$has_ai_grade) {
                     $readscore = '';
                 } else {
                     $readscore = $record->sessionscore;
                 }
-                if($this->qenabled && $readscore !== '' && !empty($record->qdetails)) {
-                    $ret = round(($readscore + $record->qscore)/2,0);
+                if ($this->qenabled && $readscore !== '' && !empty($record->qdetails)) {
+                    $ret = round(($readscore + $record->qscore) / 2, 0);
                 } else {
                     $ret = $readscore;
                 }
-                break;   
+                break;
 
             case 'grader':
                 if ($record->sessiontime == 0 && $has_ai_grade) {
@@ -129,8 +143,10 @@ class gradingbyuser extends basereport {
 
             case 'gradenow':
                 if ($withlinks) {
-                    $link = new \moodle_url(constants::M_URL . '/grading.php',
-                            array('action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id));
+                    $link = new \moodle_url(
+                        constants::M_URL . '/grading.php',
+                        ['action' => 'gradenow', 'n' => $record->readaloudid, 'attemptid' => $record->id]
+                    );
                     $ret = \html_writer::link($link, get_string('gradenow', constants::M_COMPONENT));
                 } else {
                     $ret = get_string('cannotgradenow', constants::M_COMPONENT);
@@ -143,9 +159,11 @@ class gradingbyuser extends basereport {
 
             case 'deletenow':
                 if ($withlinks) {
-                    $url = new \moodle_url(constants::M_URL . '/manageattempts.php',
-                            array('action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id,
-                                    'source' => $this->report));
+                    $url = new \moodle_url(
+                        constants::M_URL . '/manageattempts.php',
+                        ['action' => 'delete', 'n' => $record->readaloudid, 'attemptid' => $record->id,
+                        'source' => $this->report]
+                    );
                     $btn = new \single_button($url, get_string('delete'), 'post');
                     $btn->add_confirm_action(get_string('deleteattemptconfirm', constants::M_COMPONENT));
                     $ret = $OUTPUT->render($btn);
@@ -162,28 +180,27 @@ class gradingbyuser extends basereport {
                 }
         }
         return $ret;
-
     } //end of function
 
     public function process_raw_data($formdata) {
         global $DB;
 
-        //heading data
+        // heading data
         $this->headingdata = new \stdClass();
         $this->rawdata = [];
 
-        //heading data
+        // heading data
         $this->headingdata->userid = $formdata->userid;
 
-        $emptydata = array();
+        $emptydata = [];
 
-        //if we are not machine grading the SQL is simpler
+        // if we are not machine grading the SQL is simpler
         $human_sql = "SELECT tu.*, false as fulltranscript  FROM {" . constants::M_USERTABLE . "} tu " .
                 "WHERE tu.readaloudid=? " .
                 "AND tu.userid=?  AND tu.dontgrade = 0 " .
                 "ORDER BY tu.id DESC";
 
-        //if we are machine grading we need to fetch human and machine so we can get WPM etc from either
+        // if we are machine grading we need to fetch human and machine so we can get WPM etc from either
         $hybrid_sql =
                 "SELECT tu.*,tai.accuracy as aiaccuracy,tai.wpm as aiwpm, tai.sessionscore as aisessionscore, tai.fulltranscript as fulltranscript  FROM {" .
                 constants::M_USERTABLE . "} tu " .
@@ -192,17 +209,19 @@ class gradingbyuser extends basereport {
                 "AND tu.userid=? AND tu.dontgrade = 0 " .
                 "ORDER BY tu.id DESC";
 
-        //we need a module instance to know which scoring method we are using.
-        $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $formdata->readaloudid));
+        // we need a module instance to know which scoring method we are using.
+        $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $formdata->readaloudid]);
         $cantranscribe = utils::can_transcribe($moduleinstance);
 
-        //run the sql and match up WPM/ accuracy and sessionscore if we need to
-        if (($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
-                        $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY)
-                && $cantranscribe){
-            $alldata = $DB->get_records_sql($hybrid_sql, array($formdata->readaloudid, $formdata->userid));
+        // run the sql and match up WPM/ accuracy and sessionscore if we need to
+        if (
+            ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
+                        $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY) &&
+                $cantranscribe
+        ) {
+            $alldata = $DB->get_records_sql($hybrid_sql, [$formdata->readaloudid, $formdata->userid]);
             if ($alldata) {
-                //sessiontime is our indicator that a human grade has been saved.
+                // sessiontime is our indicator that a human grade has been saved.
                 foreach ($alldata as $result) {
                     if (!$result->sessiontime) {
                         $result->wpm = $result->aiwpm;
@@ -212,21 +231,24 @@ class gradingbyuser extends basereport {
                 }
             }
         } else {
-            $alldata = $DB->get_records_sql($human_sql, array($formdata->readaloudid, $formdata->userid));
+            $alldata = $DB->get_records_sql($human_sql, [$formdata->readaloudid, $formdata->userid]);
         }
 
         if ($alldata) {
             foreach ($alldata as $thedata) {
                 $thedata->audiourl =
-                        \mod_readaloud\utils::make_audio_URL($thedata->filename, $formdata->modulecontextid, constants::M_COMPONENT,
-                                constants::M_FILEAREA_SUBMISSIONS, $thedata->id);
+                        \mod_readaloud\utils::make_audio_URL(
+                            $thedata->filename,
+                            $formdata->modulecontextid,
+                            constants::M_COMPONENT,
+                            constants::M_FILEAREA_SUBMISSIONS,
+                            $thedata->id
+                        );
                 $this->rawdata[] = $thedata;
             }
-
         } else {
             $this->rawdata = $emptydata;
         }
         return true;
     }//end of function
-
 }

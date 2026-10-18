@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -26,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 require_once($CFG->dirroot . '/mod/readaloud/backup/moodle2/backup_readaloud_stepslib.php');
 
@@ -34,7 +33,6 @@ require_once($CFG->dirroot . '/mod/readaloud/backup/moodle2/backup_readaloud_ste
  * Provides all the settings and steps to perform one complete backup of readaloud activity
  */
 class backup_readaloud_activity_task extends backup_activity_task {
-
     /**
      * No specific settings for this activity
      */
@@ -54,7 +52,7 @@ class backup_readaloud_activity_task extends backup_activity_task {
      * @param string $content some HTML text that eventually contains URLs to the activity instance scripts
      * @return string the content with the URLs encoded
      */
-    static public function encode_content_links($content) {
+    public static function encode_content_links($content) {
         global $CFG;
 
         $base = preg_quote($CFG->wwwroot, "/");
@@ -63,7 +61,7 @@ class backup_readaloud_activity_task extends backup_activity_task {
         $search = "/(" . $base . "\/mod\/readaloud\/index.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@READALOUDINDEX*$2@$', $content);
 
-        //Link to view.pphp by moduleid
+        // Link to view.pphp by moduleid
         $search = "/(" . $base . "\/mod\/readaloud\/view.php\?id\=)([0-9]+)/";
         $content = preg_replace($search, '$@READALOUDVIEWBYID*$2@$', $content);
 

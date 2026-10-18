@@ -25,7 +25,7 @@
 use mod_readaloud\constants;
 
 require_once('../../../config.php');
-require_once($CFG->dirroot.'/mod/readaloud/lib.php');
+require_once($CFG->dirroot . '/mod/readaloud/lib.php');
 
 $id = required_param('id', PARAM_INT);
 $action = optional_param('action', null, PARAM_ALPHA);

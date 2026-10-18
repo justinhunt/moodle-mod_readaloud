@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Created by PhpStorm.
  * User: ishineguy
@@ -8,15 +23,14 @@
 
 namespace mod_readaloud\report;
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 class basic extends basereport {
-
     protected $report = "basic";
-    protected $fields = array('id', 'name', 'timecreated');
+    protected $fields = ['id', 'name', 'timecreated'];
     protected $headingdata = null;
-    protected $qcache = array();
-    protected $ucache = array();
+    protected $qcache = [];
+    protected $ucache = [];
 
     public function fetch_formatted_field($field, $record, $withlinks) {
         global $DB;
@@ -50,17 +64,16 @@ class basic extends basereport {
             return $ret;
         }
         return get_string('basicheading', constants::M_COMPONENT);
-
     }
 
     public function process_raw_data($formdata) {
         global $DB;
 
-        //heading data
+        // heading data
         $this->headingdata = new \stdClass();
 
-        $emptydata = array();
-        $alldata = $DB->get_records(constants::M_TABLE, array());
+        $emptydata = [];
+        $alldata = $DB->get_records(constants::M_TABLE, []);
         if ($alldata) {
             $this->rawdata = $alldata;
         } else {
@@ -68,5 +81,4 @@ class basic extends basereport {
         }
         return true;
     }
-
 }

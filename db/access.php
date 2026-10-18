@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -47,125 +46,124 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
+$capabilities = [
 
-        'mod/readaloud:addinstance' => array(
+        'mod/readaloud:addinstance' => [
                 'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
+                'archetypes' => [
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
-        'mod/readaloud:manage' => array(
+                        'manager' => CAP_ALLOW,
+                ],
+                'clonepermissionsfrom' => 'moodle/course:manageactivities',
+        ],
+        'mod/readaloud:manage' => [
                 'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
+                'archetypes' => [
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
+                        'manager' => CAP_ALLOW,
+                ],
+                'clonepermissionsfrom' => 'moodle/course:manageactivities',
+        ],
 
-        'mod/readaloud:manageattempts' => array(
+        'mod/readaloud:manageattempts' => [
                 'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
+                'archetypes' => [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/grade:viewall'
-        ),
-        'mod/readaloud:preview' => array(
+                        'manager' => CAP_ALLOW,
+                ],
+                'clonepermissionsfrom' => 'moodle/grade:viewall',
+        ],
+        'mod/readaloud:preview' => [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
+                'archetypes' => [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/grade:viewall'
-        ),
-        'mod/readaloud:viewreports' => array(
+                        'manager' => CAP_ALLOW,
+                ],
+                'clonepermissionsfrom' => 'moodle/grade:viewall',
+        ],
+        'mod/readaloud:viewreports' => [
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
+                'archetypes' => [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/grade:viewall'
-        ),
+                        'manager' => CAP_ALLOW,
+                ],
+                'clonepermissionsfrom' => 'moodle/grade:viewall',
+        ],
 
-        'mod/readaloud:view' => array(
+        'mod/readaloud:view' => [
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
+                'archetypes' => [
                         'guest' => CAP_ALLOW,
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-        ),
-        'mod/readaloud:submit' => array(
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
+        'mod/readaloud:submit' => [
                 'riskbitmask' => RISK_SPAM,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array(
-                        'student' => CAP_ALLOW
-                ),
-        ),
-        'mod/readaloud:itemedit' => array(
+                'archetypes' => [
+                        'student' => CAP_ALLOW,
+                ],
+        ],
+        'mod/readaloud:itemedit' => [
                 'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
+                'archetypes' => [
                         'editingteacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
+                        'manager' => CAP_ALLOW,
+                ],
+                'clonepermissionsfrom' => 'moodle/course:manageactivities',
+        ],
 
-        'mod/readaloud:itemview' => array(
+        'mod/readaloud:itemview' => [
                 'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_COURSE,
-                'archetypes' => array(
+                'archetypes' => [
                         'editingteacher' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ),
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
-        ),
+                        'manager' => CAP_ALLOW,
+                ],
+                'clonepermissionsfrom' => 'moodle/course:manageactivities',
+        ],
 
-        'mod/readaloud:pushtoclones' => array(
+        'mod/readaloud:pushtoclones' => [
             'riskbitmask' => RISK_XSS,
             'captype' => 'write',
             'contextlevel' => CONTEXT_COURSE,
-            'archetypes' => array(
-                'manager' => CAP_ALLOW
-            ),
-            'clonepermissionsfrom' => 'moodle/site:approvecourse'
-        ),
+            'archetypes' => [
+                'manager' => CAP_ALLOW,
+            ],
+            'clonepermissionsfrom' => 'moodle/site:approvecourse',
+        ],
 
-        'mod/readaloud:managequestions' => array(
+        'mod/readaloud:managequestions' => [
             'riskbitmask' => RISK_SPAM | RISK_XSS,
             'captype' => 'write',
             'contextlevel' => CONTEXT_MODULE,
-            'archetypes' => array(
+            'archetypes' => [
                     'editingteacher' => CAP_ALLOW,
-                    'manager' => CAP_ALLOW
-            ),
-            'clonepermissionsfrom' => 'moodle/course:manageactivities'
-    ),
+                    'manager' => CAP_ALLOW,
+            ],
+            'clonepermissionsfrom' => 'moodle/course:manageactivities',
+        ],
 
 
 
-);
-
+];

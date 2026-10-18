@@ -1,7 +1,4 @@
 <?php
-
-namespace mod_readaloud\report;
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,6 +14,8 @@ namespace mod_readaloud\report;
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_readaloud\report;
+
 /**
  *  Report Classes.
  *
@@ -27,7 +26,7 @@ namespace mod_readaloud\report;
 
 defined('MOODLE_INTERNAL') || die();
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 /**
  * Classes for Reports
@@ -42,17 +41,16 @@ use \mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class basereport {
-
     protected $moduleinstance = null;
     protected $cm = null;
     protected $quizhelper = null;
     protected $report = "";
-    protected $head = array();
+    protected $head = [];
     protected $rawdata = null;
-    protected $fields = array();
-    protected $dbcache = array();
+    protected $fields = [];
+    protected $dbcache = [];
 
-    //Constructor
+    // Constructor
     public function __construct($moduleinstance, $cm) {
         $this->moduleinstance = $moduleinstance;
         $this->cm = $cm;
@@ -72,7 +70,7 @@ abstract class basereport {
     }
 
     public function fetch_head() {
-        $head = array();
+        $head = [];
         foreach ($this->fields as $field) {
             $head[] = get_string($field, constants::M_COMPONENT);
         }
@@ -97,17 +95,17 @@ abstract class basereport {
     public function fetch_cache($table, $rowid) {
         global $DB;
         if (!array_key_exists($table, $this->dbcache)) {
-            $this->dbcache[$table] = array();
+            $this->dbcache[$table] = [];
         }
         if (!array_key_exists($rowid, $this->dbcache[$table])) {
-            $this->dbcache[$table][$rowid] = $DB->get_record($table, array('id' => $rowid));
+            $this->dbcache[$table][$rowid] = $DB->get_record($table, ['id' => $rowid]);
         }
         return $this->dbcache[$table][$rowid];
     }
 
     public function fetch_formatted_time($seconds) {
 
-        //return empty string if the timestamps are not both present.
+        // return empty string if the timestamps are not both present.
         if (!$seconds) {
             return '';
         }
@@ -117,7 +115,7 @@ abstract class basereport {
 
     public function fetch_time_difference($starttimestamp, $endtimestamp) {
 
-        //return empty string if the timestamps are not both present.
+        // return empty string if the timestamps are not both present.
         if (!$starttimestamp || !$endtimestamp) {
             return '';
         }
@@ -136,7 +134,7 @@ abstract class basereport {
     public function fetch_formatted_rows($withlinks = true, $paging = false) {
         $records = $this->rawdata;
         $fields = $this->fields;
-        $returndata = array();
+        $returndata = [];
         if ($paging) {
             $startrecord = ($paging->perpage * $paging->pageno) + 1;
             $endrecord = $startrecord + $paging->perpage - 1;
@@ -176,5 +174,4 @@ abstract class basereport {
         }
         return $ret;
     }
-
 }

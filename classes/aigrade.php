@@ -35,7 +35,6 @@ defined('MOODLE_INTERNAL') || die();
  * @package mod_readaloud
  */
 class aigrade {
-
     /**
      * @var int The ID of the attempt
      */
@@ -69,7 +68,7 @@ class aigrade {
      * @param bool $streamingresults Whether to process streaming results (optional)
      * @param int $rectime The recorded length in seconds, used as a session time fallback (optional)
      */
-    public function __construct($attemptid, $modulecontextid = 0, $streamingresults=false, $rectime = 0) {
+    public function __construct($attemptid, $modulecontextid = 0, $streamingresults = false, $rectime = 0) {
         global $DB;
         $this->attemptid = $attemptid;
         $this->modulecontextid = $modulecontextid;
@@ -116,7 +115,6 @@ class aigrade {
                             }
                         }
                     }
-
                 }
             }
         } else {
@@ -231,7 +229,6 @@ class aigrade {
         $this->attemptdata->sessionscore = 0;
         $this->attemptdata->accuracy = 0;
         $this->attemptdata->wpm = 0;
-
     }
 
     // do we have the AI at all
@@ -387,14 +384,16 @@ class aigrade {
         *
         *
         */
-        list($sessionmatches, $sessionendword, $sessionerrors, $errorcount, $debugsequences) =
-                utils::fetch_diff($this->activitydata->passagesegments,
-                        $this->activitydata->alternatives,
-                        $this->aidata->transcript,
-                        $this->aidata->fulltranscript,
-                        $this->activitydata->ttslanguage,
-                        $this->activitydata->phonetic,
-                        $debug);
+        [$sessionmatches, $sessionendword, $sessionerrors, $errorcount, $debugsequences] =
+                utils::fetch_diff(
+                    $this->activitydata->passagesegments,
+                    $this->activitydata->alternatives,
+                    $this->aidata->transcript,
+                    $this->aidata->fulltranscript,
+                    $this->activitydata->ttslanguage,
+                    $this->activitydata->phonetic,
+                    $debug
+                );
 
         // session time
         // if we have a human eval sessiontime, use that.
@@ -427,10 +426,11 @@ class aigrade {
             }
         }
 
-        $scores = utils::processscores($sessiontime,
-                $sessionendword,
-                $errorcount,
-                $this->activitydata
+        $scores = utils::processscores(
+            $sessiontime,
+            $sessionendword,
+            $errorcount,
+            $this->activitydata
         );
 
         // save the diff and attempt analysis in the DB
@@ -460,5 +460,4 @@ class aigrade {
             return $debugsequences;
         }
     }
-
 }

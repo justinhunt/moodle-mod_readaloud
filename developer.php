@@ -24,7 +24,7 @@
  */
 
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
 use mod_readaloud\constants;
 use mod_readaloud\utils;
@@ -49,8 +49,10 @@ if ($id) {
     print_error(0, 'You must specify a course_module ID or an instance ID');
 }
 
-$PAGE->set_url(constants::M_URL . '/developer.php',
-    ['id' => $cm->id, 'action' => $action]);
+$PAGE->set_url(
+    constants::M_URL . '/developer.php',
+    ['id' => $cm->id, 'action' => $action]
+);
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -76,22 +78,25 @@ $header = $renderer->header($moduleinstance, $cm, $mode, null, get_string('devel
 
 // Process Actions.
 
-switch ($action){
-
-
+switch ($action) {
     case 'generatedata':
-
-        $attempts = $DB->get_records(constants::M_USERTABLE,
-            ['readaloudid' => $moduleinstance->id], 'timemodified DESC', '*', 0, 1);
-        if(!$attempts){
+        $attempts = $DB->get_records(
+            constants::M_USERTABLE,
+            ['readaloudid' => $moduleinstance->id],
+            'timemodified DESC',
+            '*',
+            0,
+            1
+        );
+        if (!$attempts) {
                echo $header;
             echo '<h3>No attempt to generate data from</h3>';
                echo $renderer->footer();
                return;
-        }else{
+        } else {
             $latestattempt = array_shift($attempts);
             $ai = $DB->get_record(constants::M_AITABLE, ['attemptid' => $latestattempt->id]);
-            if(!$ai) {
+            if (!$ai) {
                 echo $header;
                 echo '<h3>No AI for the latest attempt</h3>';
                 echo $renderer->footer();
@@ -103,13 +108,13 @@ switch ($action){
             // reindex array
             $users = array_values($users);
             $created = 0;
-            for($x = 0; $x < count($users); $x++){
+            for ($x = 0; $x < count($users); $x++) {
                 copyAttempt($latestattempt, $ai, $users[$x]);
-
             }//end of user loop
-            redirect(new \moodle_url(constants::M_URL . '/developer.php',
-            ['id' => $cm->id]), 'Created Attempts:' . $created);
-
+            redirect(new \moodle_url(
+                constants::M_URL . '/developer.php',
+                ['id' => $cm->id]
+            ), 'Created Attempts:' . $created);
         }
 
         return;
@@ -124,12 +129,14 @@ echo $header;
 echo "<div>Generate random attempts from the last attempt in the table, 1 for each enrolled user</div>";
 $sb = new \single_button(
     new \moodle_url(constants::M_URL . '/developer.php', ['action' => 'generatedata', 'id' => $cm->id, 'n' => $moduleinstance->id]),
-    "Generate Attempt Data", 'get');
+    "Generate Attempt Data",
+    'get'
+);
 echo $OUTPUT->render($sb);
 
 echo $renderer->footer();
 
-function copyattempt($attempt, $ai, $user ) {
+function copyattempt($attempt, $ai, $user) {
     global $DB;
     $newatt = $attempt;
     $newai = $ai;
@@ -140,14 +147,17 @@ function copyattempt($attempt, $ai, $user ) {
     $newatt->timecreated = time();
     $newatt->userid = $user->id;
     $attemptid = $DB->insert_record(constants::M_USERTABLE, $newatt);
-    if(!$attemptid){return false;}
+    if (!$attemptid) {
+        return false;
+    }
 
     // ai
     $newai->id  = null;
     $newai->timemodified = time();
     $newai->attemptid = $attemptid;
     $aiid = $DB->insert_record(constants::M_AITABLE, $newai);
-    if(!$aiid){return false;
+    if (!$aiid) {
+        return false;
     }
 
     // return true

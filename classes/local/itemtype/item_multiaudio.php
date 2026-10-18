@@ -29,7 +29,6 @@ use renderable;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class item_multiaudio extends item {
-
     // the item type
     public const ITEMTYPE = constants::TYPE_MULTIAUDIO;
 
@@ -38,7 +37,7 @@ class item_multiaudio extends item {
      * The class constructor.
      *
      */
-    public function __construct($itemrecord, $moduleinstance=false, $context=false) {
+    public function __construct($itemrecord, $moduleinstance = false, $context = false) {
         parent::__construct($itemrecord, $moduleinstance, $context);
         $this->needs_speechrec = true;
     }
@@ -59,17 +58,17 @@ class item_multiaudio extends item {
 
         // sentences
         $sentences = [];
-        for($anumber = 1; $anumber <= constants::MAXANSWERS; $anumber++) {
-            if(!empty(trim($this->itemrecord->{constants::TEXTANSWER . $anumber}))) {
+        for ($anumber = 1; $anumber <= constants::MAXANSWERS; $anumber++) {
+            if (!empty(trim($this->itemrecord->{constants::TEXTANSWER . $anumber}))) {
                 $sentences[] = $this->itemrecord->{constants::TEXTANSWER . $anumber};
             }
         }
 
         // build sentence objects containing display and phonetic text
         $testitem->phonetic = $this->itemrecord->phonetic;
-        if(!empty($testitem->phonetic)) {
+        if (!empty($testitem->phonetic)) {
             $phonetics = explode(PHP_EOL, $testitem->phonetic);
-        }else{
+        } else {
             $phonetics = [];
         }
         $isssml = $testitem->voiceoption == constants::TTS_SSML;
@@ -118,7 +117,6 @@ class item_multiaudio extends item {
             $this->itemrecord->customtext1 = utils::remove_accents_and_poormatchchars($this->itemrecord->customtext1, $this->moduleinstance->ttslanguage);
             $this->itemrecord->customtext1 = utils::remove_accents_and_poormatchchars($this->itemrecord->customtext1, $this->moduleinstance->ttslanguage);
             $this->itemrecord->customtext1 = utils::remove_accents_and_poormatchchars($this->itemrecord->customtext1, $this->moduleinstance->ttslanguage);
-
     }
 
     public function update_create_langmodel($olditemrecord) {
@@ -137,7 +135,6 @@ class item_multiaudio extends item {
             if ($newpassagehash) {
                 // check if it has changed, if its a brand new one, if so register a langmodel
                 if (!$olditemrecord || $olditemrecord->passagehash != ($this->region . '|' . $newpassagehash)) {
-
                     // build a lang model
                     $ret = utils::fetch_lang_model($passage, $this->language, $this->region);
 
@@ -153,7 +150,7 @@ class item_multiaudio extends item {
             }
             // if we get here just set the new passage hash to the existing one
             $this->itemrecord->passagehash = $olditemrecord->passagehash;
-        }else{
+        } else {
             // I think this will never get here
             $this->itemrecord->passagehash = '';
         }
@@ -165,9 +162,9 @@ class item_multiaudio extends item {
         // if we have an old item, set the default return value to the current phonetic value
         // we will update it if the text has changed
         $newitem = $this->itemrecord;
-        if($olditemrecord) {
+        if ($olditemrecord) {
             $thephonetics = $olditemrecord->phonetic;
-        }else{
+        } else {
             $thephonetics = '';
         }
 
@@ -176,30 +173,28 @@ class item_multiaudio extends item {
             $newpassage .= PHP_EOL . $newitem->customtext3;
             $newpassage .= PHP_EOL . $newitem->customtext4;
 
-        if($olditemrecord !== false) {
+        if ($olditemrecord !== false) {
             $oldpassage = $olditemrecord->customtext1;
             $oldpassage .= PHP_EOL . $olditemrecord->customtext2;
             $oldpassage .= PHP_EOL . $olditemrecord->customtext3;
             $oldpassage .= PHP_EOL . $olditemrecord->customtext4;
-
-        }else{
+        } else {
             $oldpassage = '';
         }
 
         if ($newpassage !== $oldpassage) {
-
             $segmented = true;
             $sentences = explode(PHP_EOL, $newpassage);
             $allphonetics = [];
-            foreach($sentences as $sentence) {
-                list($thephones)  = utils::fetch_phones_and_segments($sentence, $this->language, 'tokyo', $segmented);
-                if(!empty($thephones)) {
+            foreach ($sentences as $sentence) {
+                [$thephones]  = utils::fetch_phones_and_segments($sentence, $this->language, 'tokyo', $segmented);
+                if (!empty($thephones)) {
                     $allphonetics[] = $thephones;
                 }
             }
 
             // build the final phonetics
-            if(count($allphonetics) > 0) {
+            if (count($allphonetics) > 0) {
                 $thephonetics = implode(PHP_EOL, $allphonetics);
             }
         }
@@ -228,18 +223,18 @@ class item_multiaudio extends item {
         $error->col = '';
         $error->message = '';
 
-        if($newrecord->customtext1 == ''){
+        if ($newrecord->customtext1 == '') {
             $error->col = 'customtext1';
             $error->message = get_string('error:emptyfield', constants::M_COMPONENT);
             return $error;
         }
-        if($newrecord->customtext2 == ''){
+        if ($newrecord->customtext2 == '') {
             $error->col = 'customtext2';
             $error->message = get_string('error:emptyfield', constants::M_COMPONENT);
             return $error;
         }
 
-        if(!isset($newrecord->{'customtext' . $newrecord->correctanswer}) || $newrecord->{'customtext' . $newrecord->correctanswer} == ''){
+        if (!isset($newrecord->{'customtext' . $newrecord->correctanswer}) || $newrecord->{'customtext' . $newrecord->correctanswer} == '') {
             $error->col = 'correctanswer';
             $error->message = get_string('error:correctanswer', constants::M_COMPONENT);
             return $error;
@@ -248,5 +243,4 @@ class item_multiaudio extends item {
         // return false to indicate no error
         return false;
     }
-
 }

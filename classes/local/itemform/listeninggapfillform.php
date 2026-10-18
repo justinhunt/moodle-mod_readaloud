@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Created by PhpStorm.
  * User: ishineguy
@@ -11,7 +26,6 @@ namespace mod_readaloud\local\itemform;
 use mod_readaloud\constants;
 
 class listeninggapfillform extends baseform {
-
     public $type = constants::TYPE_LGAPFILL;
 
     public function custom_definition() {
@@ -21,8 +35,13 @@ class listeninggapfillform extends baseform {
         $nossml = true;
         $hideiffield = false;
         $hideifvalue = false;
-        $this->add_voiceoptions(constants::POLLYOPTION, get_string('choosevoiceoption', constants::M_COMPONENT),
-         $hideiffield, $hideifvalue, $nossml);
+        $this->add_voiceoptions(
+            constants::POLLYOPTION,
+            get_string('choosevoiceoption', constants::M_COMPONENT),
+            $hideiffield,
+            $hideifvalue,
+            $nossml
+        );
 
         $this->add_static_text('instructions', '', get_string('listeninggapfillitemsdesc', constants::M_COMPONENT));
         $this->add_textarearesponse(1, get_string('sentenceprompts', constants::M_COMPONENT), true);

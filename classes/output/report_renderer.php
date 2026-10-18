@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Created by PhpStorm.
  * User: ishineguy
@@ -8,14 +23,13 @@
 
 namespace mod_readaloud\output;
 
-use \mod_readaloud\constants;
-use \mod_readaloud\utils;
+use mod_readaloud\constants;
+use mod_readaloud\utils;
 
 class report_renderer extends \plugin_renderer_base {
-
     public function render_reportmenu($moduleinstance, $cm) {
         $reports = [];
-/*
+        /*
         $basic = new \single_button(
                 new \moodle_url(constants::M_URL . '/reports.php',
                         array('report' => 'basic', 'id' => $cm->id, 'n' => $moduleinstance->id)),
@@ -27,42 +41,56 @@ class report_renderer extends \plugin_renderer_base {
                         array('report' => 'attempts', 'id' => $cm->id, 'n' => $moduleinstance->id)),
                 get_string('attemptsreport', constants::M_COMPONENT), 'get');
         $reports[]=$this->render($attempts);
-*/
+        */
 
         $attemptssummary = new \single_button(
-                new \moodle_url(constants::M_URL . '/reports.php',
-                        array('report' => 'attemptssummary', 'id' => $cm->id, 'n' => $moduleinstance->id)),
-                get_string('attemptssummaryreport', constants::M_COMPONENT), 'get');
-        $reports[]=$this->render($attemptssummary);
-        $reports[] = array('button'=>$this->render($attemptssummary),
-            'text'=>get_string('attemptssummary_explanation', constants::M_COMPONENT));
+            new \moodle_url(
+                constants::M_URL . '/reports.php',
+                ['report' => 'attemptssummary', 'id' => $cm->id, 'n' => $moduleinstance->id]
+            ),
+            get_string('attemptssummaryreport', constants::M_COMPONENT),
+            'get'
+        );
+        $reports[] = $this->render($attemptssummary);
+        $reports[] = ['button' => $this->render($attemptssummary),
+            'text' => get_string('attemptssummary_explanation', constants::M_COMPONENT)];
 
         $missedwords = new \single_button(
-            new \moodle_url(constants::M_URL . '/reports.php',
-                array('report' => 'missedwords', 'id' => $cm->id, 'n' => $moduleinstance->id)),
-            get_string('missedwordsreport', constants::M_COMPONENT), 'get');
-        $reports[]=$this->render($missedwords);
-        $reports[] = array('button'=>$this->render($missedwords),
-            'text'=>get_string('missedwords_explanation', constants::M_COMPONENT));
+            new \moodle_url(
+                constants::M_URL . '/reports.php',
+                ['report' => 'missedwords', 'id' => $cm->id, 'n' => $moduleinstance->id]
+            ),
+            get_string('missedwordsreport', constants::M_COMPONENT),
+            'get'
+        );
+        $reports[] = $this->render($missedwords);
+        $reports[] = ['button' => $this->render($missedwords),
+            'text' => get_string('missedwords_explanation', constants::M_COMPONENT)];
 
         $courseattempts = new \single_button(
-            new \moodle_url(constants::M_URL . '/reports.php',
-                array('report' => 'courseattempts', 'id' => $cm->id, 'n' => $moduleinstance->id)),
-            get_string('courseattemptsreport', constants::M_COMPONENT), 'get');
-        $reports[]=$this->render($courseattempts);
-        $reports[] = array('button'=>$this->render($courseattempts),
-            'text'=>get_string('courseattempts_explanation', constants::M_COMPONENT));
+            new \moodle_url(
+                constants::M_URL . '/reports.php',
+                ['report' => 'courseattempts', 'id' => $cm->id, 'n' => $moduleinstance->id]
+            ),
+            get_string('courseattemptsreport', constants::M_COMPONENT),
+            'get'
+        );
+        $reports[] = $this->render($courseattempts);
+        $reports[] = ['button' => $this->render($courseattempts),
+            'text' => get_string('courseattempts_explanation', constants::M_COMPONENT)];
 
-        $data=['reports' => $reports];
-        $ret= $this->render_from_template('mod_readaloud/reportsmenu', $data);
+        $data = ['reports' => $reports];
+        $ret = $this->render_from_template('mod_readaloud/reportsmenu', $data);
 
         return $ret;
     }
 
     public function render_delete_allattempts($cm) {
         $deleteallbutton = new \single_button(
-                new \moodle_url(constants::M_URL . '/manageattempts.php', array('id' => $cm->id, 'action' => 'confirmdeleteall')),
-                get_string('deleteallattempts', constants::M_COMPONENT), 'get');
+            new \moodle_url(constants::M_URL . '/manageattempts.php', ['id' => $cm->id, 'action' => 'confirmdeleteall']),
+            get_string('deleteallattempts', constants::M_COMPONENT),
+            'get'
+        );
         $ret = \html_writer::div($this->render($deleteallbutton), constants::M_CLASS . '_actionbuttons');
         return $ret;
     }
@@ -79,27 +107,31 @@ class report_renderer extends \plugin_renderer_base {
     }
 
     public function render_exportbuttons_html($cm, $formdata, $showreport) {
-        //convert formdata to array
+        // convert formdata to array
         $formdata = (array) $formdata;
         $formdata['id'] = $cm->id;
         $formdata['report'] = $showreport;
         $formdata['format'] = 'csv';
         $excel = new \single_button(
-                new \moodle_url(constants::M_URL . '/reports.php', $formdata),
-                get_string('exportexcel', constants::M_COMPONENT), 'get');
+            new \moodle_url(constants::M_URL . '/reports.php', $formdata),
+            get_string('exportexcel', constants::M_COMPONENT),
+            'get'
+        );
 
         return \html_writer::div($this->render($excel), constants::M_CLASS . '_actionbuttons');
     }
 
     public function render_grading_exportbuttons_html($cm, $formdata, $action) {
-        //convert formdata to array
+        // convert formdata to array
         $formdata = (array) $formdata;
         $formdata['id'] = $cm->id;
         $formdata['action'] = $action;
         $formdata['format'] = 'csv';
         $excel = new \single_button(
-                new \moodle_url(constants::M_URL . '/grading.php', $formdata),
-                get_string('exportexcel', constants::M_COMPONENT), 'get');
+            new \moodle_url(constants::M_URL . '/grading.php', $formdata),
+            get_string('exportexcel', constants::M_COMPONENT),
+            'get'
+        );
 
         return \html_writer::div($this->render($excel), constants::M_CLASS . '_actionbuttons');
     }
@@ -110,20 +142,20 @@ class report_renderer extends \plugin_renderer_base {
         $name = clean_param($sectiontitle, PARAM_FILE);
         $name = preg_replace("/[^A-Z0-9]+/i", "_", utils::super_trim($name));
         $quote = '"';
-        $delim = ",";//"\t";
+        $delim = ",";// "\t";
         $newline = "\r\n";
 
         header("Content-Disposition: attachment; filename=$name.csv");
         header("Content-Type: text/comma-separated-values");
 
-        //echo header
+        // echo header
         $heading = "";
         foreach ($head as $headfield) {
             $heading .= $quote . $headfield . $quote . $delim;
         }
         echo $heading . $newline;
 
-        //echo data rows
+        // echo data rows
         foreach ($rows as $row) {
             $datarow = "";
             foreach ($fields as $field) {
@@ -140,15 +172,15 @@ class report_renderer extends \plugin_renderer_base {
             return $this->render_empty_section_html($sectiontitle);
         }
 
-        //set up our table and head attributes
-        $tableattributes = array('class' => 'generaltable ' . constants::M_CLASS . '_table');
+        // set up our table and head attributes
+        $tableattributes = ['class' => 'generaltable ' . constants::M_CLASS . '_table'];
 
         $htmltable = new \html_table();
         $tableid = \html_writer::random_id(constants::M_COMPONENT);
         $htmltable->id = $tableid;
         $htmltable->attributes = $tableattributes;
 
-        $headcells=[];
+        $headcells = [];
         foreach ($head as $headcell) {
             $headcells[] = new \html_table_cell($headcell);
         }
@@ -156,11 +188,11 @@ class report_renderer extends \plugin_renderer_base {
 
         foreach ($rows as $row) {
             $htr = new \html_table_row();
-            //set up descrption cell
-            $cells = array();
+            // set up descrption cell
+            $cells = [];
             foreach ($fields as $field) {
                 $cell = new \html_table_cell($row->{$field});
-                $cell->attributes = array('class' => constants::M_CLASS . '_cell_' . $report . '_' . $field);
+                $cell->attributes = ['class' => constants::M_CLASS . '_cell_' . $report . '_' . $field];
                 $htr->cells[] = $cell;
             }
 
@@ -170,18 +202,18 @@ class report_renderer extends \plugin_renderer_base {
         $html .= $this->output->heading($sectiondescription, 5);
         $html .= \html_writer::table($htmltable);
 
-        //if datatables set up datatables
-        if(constants::M_USE_DATATABLES) {
+        // if datatables set up datatables
+        if (constants::M_USE_DATATABLES) {
             $dtlang = [];
             $dtlang['search'] = get_string('datatables_search', constants::M_COMPONENT);
             $dtlang['emptyTable'] = get_string('datatables_emptytable', constants::M_COMPONENT);
             $dtlang['zeroRecords'] = get_string('datatables_zerorecords', constants::M_COMPONENT);
-            $dtlang['paginate']=[];
+            $dtlang['paginate'] = [];
             $dtlang['paginate']['first'] = get_string('datatables_paginate_first', constants::M_COMPONENT);
             $dtlang['paginate']['last'] = get_string('datatables_paginate_last', constants::M_COMPONENT);
             $dtlang['paginate']['next'] = get_string('datatables_paginate_next', constants::M_COMPONENT);
             $dtlang['paginate']['previous'] = get_string('datatables_paginate_previous', constants::M_COMPONENT);
-            $dtlang['aria']=[];
+            $dtlang['aria'] = [];
             $dtlang['aria']['sortAscending'] = get_string('datatables_aria_sortascending', constants::M_COMPONENT);
             $dtlang['aria']['sortDescending'] = get_string('datatables_aria_sortdescending', constants::M_COMPONENT);
             $dtlang['info'] = get_string('datatables_info', constants::M_COMPONENT);
@@ -189,29 +221,30 @@ class report_renderer extends \plugin_renderer_base {
             $dtlang['lengthMenu'] = get_string('datatables_lengthmenu', constants::M_COMPONENT);
 
             $tableprops = [];
-            $tableprops['paging']=true;
-            $tableprops['pageLength']=10;
-            $tableprops['language']=$dtlang;
-            $opts = Array();
+            $tableprops['paging'] = true;
+            $tableprops['pageLength'] = 10;
+            $tableprops['language'] = $dtlang;
+            $opts = [];
             $opts['tableid'] = $tableid;
             $opts['tableprops'] = $tableprops;
-            $this->page->requires->js_call_amd(constants::M_COMPONENT . "/datatables", 'init', array($opts));
+            $this->page->requires->js_call_amd(constants::M_COMPONENT . "/datatables", 'init', [$opts]);
         }
         return $html;
-
     }
 
     function show_reports_footer($moduleinstance, $cm, $formdata, $showreport) {
         // print's a popup link to your custom page
-        $link = new \moodle_url(constants::M_URL . '/reports.php',
-                array('report' => 'menu', 'id' => $cm->id, 'n' => $moduleinstance->id));
+        $link = new \moodle_url(
+            constants::M_URL . '/reports.php',
+            ['report' => 'menu', 'id' => $cm->id, 'n' => $moduleinstance->id]
+        );
         $ret = \html_writer::link($link, get_string('returntoreports', constants::M_COMPONENT));
         $ret .= $this->render_exportbuttons_html($cm, $formdata, $showreport);
         return $ret;
     }
 
     function show_perpage_selector($url, $paging) {
-        $options = array('5' => 5, '10' => 10, '20' => 20, '40' => 40, '80' => 80, '150' => 150);
+        $options = ['5' => 5, '10' => 10, '20' => 20, '40' => 40, '80' => 80, '150' => 150];
         $selector = new \single_select($url, 'perpage', $options, $paging->perpage);
         $selector->set_label(get_string('attemptsperpage', constants::M_COMPONENT));
         return $this->render($selector);
@@ -227,8 +260,8 @@ class report_renderer extends \plugin_renderer_base {
      */
     function show_paging_bar($totalcount, $paging, $baseurl) {
         $pagevar = "pageno";
-        //add paging params to url (NOT pageno)
-        $baseurl->params(array('perpage' => $paging->perpage, 'sort' => $paging->sort));
+        // add paging params to url (NOT pageno)
+        $baseurl->params(['perpage' => $paging->perpage, 'sort' => $paging->sort]);
         return $this->output->paging_bar($totalcount, $paging->pageno, $paging->perpage, $baseurl, $pagevar);
     }
 
@@ -237,7 +270,7 @@ class report_renderer extends \plugin_renderer_base {
             return $this->show_machinegrading_footer($moduleinstance, $cm);
         }
         // takes you back to home
-        $link = new \moodle_url(constants::M_URL . '/grading.php', array('id' => $cm->id, 'n' => $moduleinstance->id));
+        $link = new \moodle_url(constants::M_URL . '/grading.php', ['id' => $cm->id, 'n' => $moduleinstance->id]);
         $ret = \html_writer::link($link, get_string('returntogradinghome', constants::M_COMPONENT));
         return $ret;
     }
@@ -254,10 +287,11 @@ class report_renderer extends \plugin_renderer_base {
 
     function show_machinegrading_footer($moduleinstance, $cm) {
         // takes you back to home
-        $link = new \moodle_url(constants::M_URL . '/grading.php',
-                array('id' => $cm->id, 'n' => $moduleinstance->id, 'action' => 'machinegrading'));
+        $link = new \moodle_url(
+            constants::M_URL . '/grading.php',
+            ['id' => $cm->id, 'n' => $moduleinstance->id, 'action' => 'machinegrading']
+        );
         $ret = \html_writer::link($link, get_string('returntomachinegradinghome', constants::M_COMPONENT));
         return $ret;
     }
-
 }

@@ -40,15 +40,13 @@ use mod_readaloud\constants;
  * @param int $oldversion
  * @return bool
  */
-function xmldb_readaloud_upgrade($oldversion)
-{
+function xmldb_readaloud_upgrade($oldversion) {
     global $DB;
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
 
     // Add allowearlyexit field
     if ($oldversion < 2015071501) {
-
         // Define field introformat to be added to readaloud
         $table = new xmldb_table('readaloud');
         $field = new xmldb_field('allowearlyexit', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
@@ -62,7 +60,6 @@ function xmldb_readaloud_upgrade($oldversion)
 
     // Add allowearlyexit field
     if ($oldversion < 2015071502) {
-
         // Define field grade to be added to readaloud
         $table = new xmldb_table('readaloud');
         $field = new xmldb_field('grade', XMLDB_TYPE_INTEGER, '3', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
@@ -76,7 +73,6 @@ function xmldb_readaloud_upgrade($oldversion)
 
     // Add wcpm field
     if ($oldversion < 2015072201) {
-
         // Define field wpcm to be added to readaloud_attempt
         $table = new xmldb_table('readaloud_attempt');
         $field = new xmldb_field('wpm', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
@@ -90,7 +86,6 @@ function xmldb_readaloud_upgrade($oldversion)
 
     // Add accuracy and targetwpm fields
     if ($oldversion < 2015072701) {
-
         // Define field wpcm to be added to readaloud_attempt
         $table = new xmldb_table('readaloud_attempt');
         $field = new xmldb_field('accuracy', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
@@ -112,7 +107,6 @@ function xmldb_readaloud_upgrade($oldversion)
     }
     // Rename fedbackformat to feedbackformat
     if ($oldversion < 2016022102) {
-
         // Define field wpcm to be added to readaloud_attempt
         $table = new xmldb_table('readaloud');
         $field = new xmldb_field('fedbackformat', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
@@ -455,7 +449,6 @@ function xmldb_readaloud_upgrade($oldversion)
     }
 
     if ($oldversion < 2021032600) {
-
         $table = new xmldb_table('readaloud');
 
         // Adding fields to table tool_dataprivacy_contextlist.
@@ -471,7 +464,6 @@ function xmldb_readaloud_upgrade($oldversion)
             }
         }
         upgrade_mod_savepoint(true, 2021032600, 'readaloud');
-
     }
 
     if ($oldversion < 2021032902) {
@@ -641,7 +633,6 @@ function xmldb_readaloud_upgrade($oldversion)
     }
 
     if ($oldversion < 2021112100) {
-
         $table = new xmldb_table(constants::M_USERTABLE);
 
         $field = new xmldb_field('dontgrade', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, 0);
@@ -808,7 +799,6 @@ function xmldb_readaloud_upgrade($oldversion)
     }
 
     if ($oldversion < 2025110401) {
-
         // Search for duplicates.
         // Stream duplicate ids to avoid loading all into memory.
         $rs = $DB->get_recordset_sql("
@@ -823,14 +813,14 @@ function xmldb_readaloud_upgrade($oldversion)
         foreach ($rs as $rec) {
             $batch[] = $rec->id;
             if (count($batch) >= 1000) {
-                list($insql, $params) = $DB->get_in_or_equal($batch, SQL_PARAMS_NAMED);
+                [$insql, $params] = $DB->get_in_or_equal($batch, SQL_PARAMS_NAMED);
                 $DB->delete_records_select(constants::M_AITABLE, "id $insql", $params);
                 $batch = [];
             }
         }
         $rs->close();
         if (!empty($batch)) {
-            list($insql, $params) = $DB->get_in_or_equal($batch, SQL_PARAMS_NAMED);
+            [$insql, $params] = $DB->get_in_or_equal($batch, SQL_PARAMS_NAMED);
             $DB->delete_records_select(constants::M_AITABLE, "id $insql", $params);
         }
 

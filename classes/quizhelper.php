@@ -25,7 +25,6 @@ namespace mod_readaloud;
 
 
 class quizhelper {
-
     protected $cm;
     protected $context;
     protected $mod;
@@ -74,25 +73,28 @@ class quizhelper {
         global $DB;
 
         $attempts = $DB->get_records(constants::M_USERTABLE, ['readaloudid' => $this->mod->id, 'userid' => $userid], 'id DESC');
-        if($attempts){
+        if ($attempts) {
             $attempt = array_shift($attempts);
             return $attempt;
-        }else{
+        } else {
             return false;
         }
     }
 
     /* return the test items suitable for js to use */
-    public function fetch_quiz_items_for_js($renderer=false) {
+    public function fetch_quiz_items_for_js($renderer = false) {
         global $CFG, $USER, $OUTPUT;
 
         $items = $this->fetch_items();
 
         // first confirm we are authorised before we try to get the token
         $config = get_config(constants::M_COMPONENT);
-        if (empty($config->apiuser) || empty($config->apisecret)){
-            $errormessage = get_string('nocredentials', constants::M_COMPONENT,
-                    $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+        if (empty($config->apiuser) || empty($config->apisecret)) {
+            $errormessage = get_string(
+                'nocredentials',
+                constants::M_COMPONENT,
+                $CFG->wwwroot . constants::M_PLUGINSETTINGS
+            );
             // return error?
             $token = false;
         } else {
@@ -116,7 +118,8 @@ class quizhelper {
             $titem->set_token($token);
             $titem->set_currentnumber($currentitem);
             // add our item to test
-            if(!$renderer){$renderer = $OUTPUT;
+            if (!$renderer) {
+                $renderer = $OUTPUT;
             }
             $testitems[] = $titem->export_for_template($renderer);
         }//end of loop
@@ -137,28 +140,28 @@ class quizhelper {
                 }
             }
         }
-        if($score == 0 || count($items) == 0){
+        if ($score == 0 || count($items) == 0) {
             return 0;
-        }else{
+        } else {
             return floor(100 * $score / count($items));
         }
     }
 
-    public static function render_passage($passage, $markuptype='passage') {
+    public static function render_passage($passage, $markuptype = 'passage') {
         // load the HTML document
-        $doc = new \DOMDocument;
+        $doc = new \DOMDocument();
         // it will assume ISO-8859-1  encoding, so we need to hint it:
         // see: http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
 
-        //The old way ... throws errors on PHP 8.2+
-        //$safepassage = mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8');
-        //@$doc->loadHTML($safepassage, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+        // The old way ... throws errors on PHP 8.2+
+        // $safepassage = mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8');
+        // @$doc->loadHTML($safepassage, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
 
-        //This could work, but on some occasions the doc has a meta header already .. hmm
-        //$safepassage = mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8');
-        //@$doc->loadHTML('<?xml encoding="utf-8" ? >' . $safepassage, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+        // This could work, but on some occasions the doc has a meta header already .. hmm
+        // $safepassage = mb_convert_encoding($passage, 'HTML-ENTITIES', 'UTF-8');
+        // @$doc->loadHTML('<?xml encoding="utf-8" ? >' . $safepassage, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
 
-        //The new way .. incomprehensible but works
+        // The new way .. incomprehensible but works
         $safepassage = htmlspecialchars($passage, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
         @$doc->loadHTML(mb_encode_numericentity($safepassage, [0x80, 0x10FFFF, 0, ~0], 'UTF-8'));
 
@@ -168,8 +171,8 @@ class quizhelper {
 
         // Base CSS class.
         // We will add _mu_passage_word and _mu_passage_space. Can be customized though
-        $cssword = constants::M_CLASS . '_mu_' .$markuptype . '_word';
-        $cssspace = constants::M_CLASS . '_mu_' .$markuptype . '_space';
+        $cssword = constants::M_CLASS . '_mu_' . $markuptype . '_word';
+        $cssspace = constants::M_CLASS . '_mu_' . $markuptype . '_space';
 
         // original CSS classes
         // The original classes are to show the original passage word before or after the corrections word
@@ -226,7 +229,6 @@ class quizhelper {
                     $originalprenode->setAttribute('id', $cssoriginalpreword . '_' . $wordcount);
                     $originalprenode->setAttribute('data-wordnumber', $wordcount);
                     $originalprenode->setAttribute('class', $cssoriginalpreword);
-
                 }
                 // Original post node.
                 if ($markuptype !== 'passage') {
@@ -234,7 +236,6 @@ class quizhelper {
                     $originalpostnode->setAttribute('id', $cssoriginalpostword . '_' . $wordcount);
                     $originalpostnode->setAttribute('data-wordnumber', $wordcount);
                     $originalpostnode->setAttribute('class', $cssoriginalpostword);
-
                 }
                 // add nodes to doc
                 if ($markuptype == 'passage') {
@@ -256,26 +257,24 @@ class quizhelper {
         $usepassage = str_replace('<p>', '', $usepassage);
         $usepassage = str_replace('</p>', '', $usepassage);
 
-        if($markuptype == 'passage') {
+        if ($markuptype == 'passage') {
             $ret = \html_writer::div($usepassage, constants::M_CLASS . '_original ' . constants::M_CLASS . '_summarytranscriptplaceholder');
-        }else{
+        } else {
             $ret = \html_writer::div($usepassage, constants::M_CLASS . '_corrections ');
         }
         return $ret;
     }
- /*
+    /*
     * Turn a passage with text "lines" into html "brs"
     *
     * @param String The passage of text to convert
     * @param String An optional pad on each replacement (needed for processing when marking up words as spans in passage)
     * @return String The converted passage of text
     */
-    public static function lines_to_brs($passage, $seperator='') {
+    public static function lines_to_brs($passage, $seperator = '') {
         // See https://stackoverflow.com/questions/5946114/how-to-replace-newline-or-r-n-with-br .
         return str_replace("\r\n", $seperator . '<br>' . $seperator, $passage);
         // This is better but we can not pad the replacement and we need that.
         /* return nl2br($passage); */
     }
-
-
 }//end of class

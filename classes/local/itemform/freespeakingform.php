@@ -26,7 +26,6 @@ namespace mod_readaloud\local\itemform;
 use mod_readaloud\constants;
 
 class freespeakingform extends baseform {
-
     public $type = constants::TYPE_FREESPEAKING;
 
     public function custom_definition() {
@@ -45,13 +44,17 @@ class freespeakingform extends baseform {
         $this->add_textarearesponse(constants::AIGRADE_FEEDBACK, get_string('aigrade_feedback', constants::M_COMPONENT), true);
         $mform->setDefault(constants::AIGRADE_FEEDBACK, get_string('freespeaking_default_aigradefeedback', constants::M_COMPONENT));
         // Feedback language.
-        $this->add_languageselect(constants::AIGRADE_FEEDBACK_LANGUAGE,
+        $this->add_languageselect(
+            constants::AIGRADE_FEEDBACK_LANGUAGE,
             get_string('aigrade_feedback_language', constants::M_COMPONENT),
             constants::M_LANG_ENUS
         );
 
-        $this->add_relevanceoptions(constants::RELEVANCE, get_string('relevancetype', constants::M_COMPONENT),
-        constants::RELEVANCETYPE_NONE);
+        $this->add_relevanceoptions(
+            constants::RELEVANCE,
+            get_string('relevancetype', constants::M_COMPONENT),
+            constants::RELEVANCETYPE_NONE
+        );
         $this->add_textarearesponse(constants::AIGRADE_MODELANSWER, get_string('aigrade_modelanswer', constants::M_COMPONENT), false);
         $m35 = $CFG->version >= 2018051700;
         if ($m35) {
@@ -59,7 +62,7 @@ class freespeakingform extends baseform {
         } else {
             $mform->disabledIf(constants::AIGRADE_MODELANSWER, constants::RELEVANCE, 'neq', constants::RELEVANCETYPE_MODELANSWER);
         }
-        
+
         $this->add_timelimit(constants::TIMELIMIT, get_string(constants::TIMELIMIT, constants::M_COMPONENT));
     }
 }

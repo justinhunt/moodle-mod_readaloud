@@ -29,15 +29,13 @@ use mod_readaloud\quizhelper;
  */
 class rsquestion_renderer extends \plugin_renderer_base
 {
-
     /**
      * Return HTML to display add first page links
      * @param \context $context
      * @param int $tableid
      * @return string
      */
-    public function add_item_links($context, $tableid)
-    {
+    public function add_item_links($context, $tableid) {
         global $CFG;
         $itemid = 0;
         $config = get_config(constants::M_COMPONENT);
@@ -64,7 +62,7 @@ class rsquestion_renderer extends \plugin_renderer_base
                 'itemid' => $itemid,
                 'cmid' => $this->page->cm->id,
                 'label' => get_string('add' . $qtype . 'item', constants::M_COMPONENT),
-                'modaleditform' => $modaleditform
+                'modaleditform' => $modaleditform,
             ];
             $links[] = $this->render_from_template('mod_readaloud/additemlink', $data);
         }
@@ -75,8 +73,7 @@ class rsquestion_renderer extends \plugin_renderer_base
         return $this->output->box($output . implode("", $links), 'generalbox firstpageoptions mod_readaloud_link_box_container');
     }
 
-    public function add_multichoice_item_link($context, $tableid)
-    {
+    public function add_multichoice_item_link($context, $tableid) {
         global $CFG;
         $itemid = 0;
         $config = get_config(constants::M_COMPONENT);
@@ -92,7 +89,7 @@ class rsquestion_renderer extends \plugin_renderer_base
             'cmid' => $this->page->cm->id,
             'isbutton' => true,
             'label' => get_string('addquestion', constants::M_COMPONENT),
-            'modaleditform' => $modaleditform
+            'modaleditform' => $modaleditform,
         ];
 
         $output = $this->output->heading(get_string("whatdonow", "readaloud"), 3);
@@ -108,8 +105,7 @@ class rsquestion_renderer extends \plugin_renderer_base
      *
      * @param int $tableid The ID of the table to setup.
      */
-    public function setup_datatables($tableid)
-    {
+    public function setup_datatables($tableid) {
         global $USER;
 
         $tableprops = [];
@@ -139,8 +135,7 @@ class rsquestion_renderer extends \plugin_renderer_base
         $this->page->requires->strings_for_js(['bulkdelete', 'bulkdeletequestion'], constants::M_COMPONENT);
     }
 
-    public function show_no_items($cm, $showadditemlinks)
-    {
+    public function show_no_items($cm, $showadditemlinks) {
         $displaytext = $this->output->box_start();
         $displaytext .= $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
         if ($showadditemlinks) {
@@ -154,8 +149,7 @@ class rsquestion_renderer extends \plugin_renderer_base
         $ret = \html_writer::div($displaytext, constants::M_NOITEMS_CONT, ['id' => constants::M_NOITEMS_CONT]);
         return $ret;
     }
-    function show_noitems_message($itemsvisible)
-    {
+    function show_noitems_message($itemsvisible) {
         $message = $this->output->heading(get_string('noitems', constants::M_COMPONENT), 3, 'main');
         $displayvalue = $itemsvisible ? 'none' : 'block';
         $ret = \html_writer::div($message, constants::M_NOITEMS_CONT, ['id' => constants::M_NOITEMS_CONT, 'style' => 'display: ' . $displayvalue]);
@@ -168,8 +162,7 @@ class rsquestion_renderer extends \plugin_renderer_base
      * @param integer $courseid
      * @return string html of table
      */
-    public function show_items_list($items, $readaloud, $cm, $visible)
-    {
+    public function show_items_list($items, $readaloud, $cm, $visible) {
 
         // new code
         $data = [];
@@ -177,7 +170,7 @@ class rsquestion_renderer extends \plugin_renderer_base
         $data['display'] = $visible ? 'block' : 'none';
         $itemsarray = [];
         foreach (array_values($items) as $i => $item) {
-            $arrayitem = (Array) $item;
+            $arrayitem = (array) $item;
             $arrayitem['index'] = ($i + 1);
             // due to odd  data in the field from legacy times we need to check for empty or oddstrings
             $arrayitem['typelabel'] = empty($arrayitem['type']) || strlen($arrayitem['type']) < 4 ? 'unknown' : get_string($arrayitem['type'], constants::M_COMPONENT);
@@ -191,11 +184,9 @@ class rsquestion_renderer extends \plugin_renderer_base
         $data['down'] = $downpix->export_for_pix();
 
         return $this->render_from_template('mod_readaloud/itemlist', $data);
-
     }
 
-    public function fetch_quizfinished_data($quizhelper, $moduleinstance, $latestattempt, $cm)
-    {
+    public function fetch_quizfinished_data($quizhelper, $moduleinstance, $latestattempt, $cm) {
         // Finished quiz results div.
         $quizisfinished = utils::quiz_is_finished($moduleinstance, $latestattempt, $cm);
         if ($quizisfinished) {
@@ -216,8 +207,7 @@ class rsquestion_renderer extends \plugin_renderer_base
     /**
      *  Show quiz container
      */
-    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm)
-    {
+    public function show_quiz($quizhelper, $moduleinstance, $latestattempt, $cm) {
 
         // Quiz items data div.
         $quizdata = $quizhelper->fetch_quiz_items_for_js();
@@ -242,8 +232,7 @@ class rsquestion_renderer extends \plugin_renderer_base
         return $ret;
     }
 
-    public function show_quiz_preview($quizhelper, $qid)
-    {
+    public function show_quiz_preview($quizhelper, $qid) {
 
         // quiz data
         $quizdata = $quizhelper->fetch_quiz_items_for_js();
@@ -255,10 +244,11 @@ class rsquestion_renderer extends \plugin_renderer_base
         }
 
         // Quiz items div.
-        $quizitemsdiv = \html_writer::div(implode('', $itemshtml),
+        $quizitemsdiv = \html_writer::div(
+            implode('', $itemshtml),
             constants::M_QUIZ_ITEMS_CONTAINER,
-            ['id' => constants::M_QUIZ_ITEMS_CONTAINER]);
-
+            ['id' => constants::M_QUIZ_ITEMS_CONTAINER]
+        );
 
         // Quiz div
         $quizdiv = \html_writer::div(
@@ -273,8 +263,7 @@ class rsquestion_renderer extends \plugin_renderer_base
     /**
      * Return HTML to display message about problem
      */
-    public function show_problembox($msg)
-    {
+    public function show_problembox($msg) {
         $output = '';
         $output .= $this->output->box_start(constants::M_COMPONENT . '_problembox');
         $output .= $this->notification($msg, 'warning');

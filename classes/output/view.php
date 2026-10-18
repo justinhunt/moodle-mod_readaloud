@@ -75,7 +75,7 @@ class view implements renderable, templatable {
         $modulecontext,
         $moduleinstance,
         $reviewattempts
-        ) {
+    ) {
         $this->cm = $cm;
         $this->config = $config;
         $this->debug = $debug;

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -33,14 +32,14 @@ require_once(dirname(__FILE__) . '/lib.php');
 
 $id = required_param('id', PARAM_INT);   // course
 
-$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
+$course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 require_course_login($course);
 
 
 $coursecontext = context_course::instance($course->id);
 
-$PAGE->set_url('/mod/readaloud/index.php', array('id' => $id));
+$PAGE->set_url('/mod/readaloud/index.php', ['id' => $id]);
 $PAGE->set_title(format_string($course->fullname));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($coursecontext);
@@ -48,37 +47,39 @@ $PAGE->set_context($coursecontext);
 echo $OUTPUT->header();
 
 if (!$readalouds = get_all_instances_in_course('readaloud', $course)) {
-    notice(get_string('noreadalouds', 'readaloud'), new moodle_url('/course/view.php', array('id' => $course->id)));
+    notice(get_string('noreadalouds', 'readaloud'), new moodle_url('/course/view.php', ['id' => $course->id]));
 }
 
 $table = new html_table();
 if ($course->format == 'weeks') {
-    $table->head = array(get_string('week'), get_string('name'));
-    $table->align = array('center', 'left');
+    $table->head = [get_string('week'), get_string('name')];
+    $table->align = ['center', 'left'];
 } else if ($course->format == 'topics') {
-    $table->head = array(get_string('topic'), get_string('name'));
-    $table->align = array('center', 'left', 'left', 'left');
+    $table->head = [get_string('topic'), get_string('name')];
+    $table->align = ['center', 'left', 'left', 'left'];
 } else {
-    $table->head = array(get_string('name'));
-    $table->align = array('left', 'left', 'left');
+    $table->head = [get_string('name')];
+    $table->align = ['left', 'left', 'left'];
 }
 
 foreach ($readalouds as $readaloud) {
     if (!$readaloud->visible) {
         $link = html_writer::link(
-                new moodle_url('/mod/readaloud/view.php', array('id' => $readaloud->coursemodule)),
-                format_string($readaloud->name, true),
-                array('class' => 'dimmed'));
+            new moodle_url('/mod/readaloud/view.php', ['id' => $readaloud->coursemodule]),
+            format_string($readaloud->name, true),
+            ['class' => 'dimmed']
+        );
     } else {
         $link = html_writer::link(
-                new moodle_url('/mod/readaloud/view.php', array('id' => $readaloud->coursemodule)),
-                format_string($readaloud->name, true));
+            new moodle_url('/mod/readaloud/view.php', ['id' => $readaloud->coursemodule]),
+            format_string($readaloud->name, true)
+        );
     }
 
     if ($course->format == 'weeks' or $course->format == 'topics') {
-        $table->data[] = array($readaloud->section, $link);
+        $table->data[] = [$readaloud->section, $link];
     } else {
-        $table->data[] = array($link);
+        $table->data[] = [$link];
     }
 }
 

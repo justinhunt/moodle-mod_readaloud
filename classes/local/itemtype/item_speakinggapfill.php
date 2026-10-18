@@ -29,8 +29,7 @@ use renderable;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class item_speakinggapfill extends item {
-
-    //the item type
+    // the item type
     public const ITEMTYPE = constants::TYPE_SGAPFILL;
 
 
@@ -38,9 +37,9 @@ class item_speakinggapfill extends item {
      * The class constructor.
      *
      */
-    public function __construct($itemrecord, $moduleinstance=false, $context=false){
+    public function __construct($itemrecord, $moduleinstance = false, $context = false) {
         parent::__construct($itemrecord, $moduleinstance, $context);
-        $this->needs_speechrec=true;
+        $this->needs_speechrec = true;
     }
 
     /**
@@ -95,26 +94,25 @@ class item_speakinggapfill extends item {
         return $testitem;
     }
 
-    public static function validate_import($newrecord,$cm){
+    public static function validate_import($newrecord, $cm) {
         $error = new \stdClass();
         $error->col = '';
         $error->message = '';
 
-        if($newrecord->customtext1 == ''){
+        if ($newrecord->customtext1 == '') {
             $error->col = 'customtext1';
             $error->message = get_string('error:emptyfield', constants::M_COMPONENT);
             return $error;
         }
 
-        //return false to indicate no error
+        // return false to indicate no error
         return false;
     }
         /*
     * This is for use with importing, telling import class each column's is, db col name, readaloud specific data type
     */
-    public static function get_keycolumns()
-    {
-        //get the basic key columns and customize a little for instances of this item type
+    public static function get_keycolumns() {
+        // get the basic key columns and customize a little for instances of this item type
         $keycols = parent::get_keycolumns();
         $keycols['int4'] = ['jsonname' => 'promptvoiceopt', 'type' => 'voiceopts', 'optional' => true, 'default' => null, 'dbname' => constants::POLLYOPTION];
         $keycols['text5'] = ['jsonname' => 'promptvoice', 'type' => 'voice', 'optional' => true, 'default' => null, 'dbname' => constants::POLLYVOICE];
@@ -133,7 +131,7 @@ class item_speakinggapfill extends item {
 
         // Sentences
         $sentences = [];
-        if(isset($this->itemrecord->customtext1)) {
+        if (isset($this->itemrecord->customtext1)) {
             $sentences = explode(PHP_EOL, $this->itemrecord->customtext1);
         }
         $sentencedata = $this->parse_gapfill_sentences($sentences);
@@ -144,15 +142,14 @@ class item_speakinggapfill extends item {
         if (utils::needs_lang_model($this->moduleinstance, $passage)) {
             $newpassagehash = utils::fetch_passagehash($this->language, $passage);
             if ($newpassagehash) {
-                //check if it has changed, if its a brand new one, if so register a langmodel
+                // check if it has changed, if its a brand new one, if so register a langmodel
                 if (!$olditemrecord || $olditemrecord->passagehash != ($this->region . '|' . $newpassagehash)) {
-
-                    //build a lang model
+                    // build a lang model
                     $ret = utils::fetch_lang_model($passage, $this->language, $this->region);
 
-                    //for doing a dry run
-                    //$ret=new \stdClass();
-                    //$ret->success=true;
+                    // for doing a dry run
+                    // $ret=new \stdClass();
+                    // $ret->success=true;
 
                     if ($ret && isset($ret->success) && $ret->success) {
                         $this->itemrecord->passagehash = $this->region . '|' . $newpassagehash;
@@ -160,13 +157,12 @@ class item_speakinggapfill extends item {
                     }
                 }
             }
-            //if we get here just set the new passage hash to the existing one
-            $this->itemrecord->passagehash =$olditemrecord->passagehash;
-        }else{
-            //I think this will never get here
-            $this->itemrecord->passagehash ='';
+            // if we get here just set the new passage hash to the existing one
+            $this->itemrecord->passagehash = $olditemrecord->passagehash;
+        } else {
+            // I think this will never get here
+            $this->itemrecord->passagehash = '';
         }
         return false;
     }
-
 }

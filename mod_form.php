@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -38,9 +37,7 @@ use mod_readaloud\utils;
  */
 class mod_readaloud_mod_form extends moodleform_mod
 {
-
-    public function __construct($current, $section, $cm, $course, $ajaxformdata = null, $customdata = null)
-    {
+    public function __construct($current, $section, $cm, $course, $ajaxformdata = null, $customdata = null) {
         global $CFG;
         $this->current = $current;
         $this->_instance = $current->instance;
@@ -57,7 +54,7 @@ class mod_readaloud_mod_form extends moodleform_mod
         $this->courseformat = course_get_format($course);
         // Guess module name if not set.
         if (is_null($this->_modname)) {
-            $matches = array();
+            $matches = [];
             if (!preg_match('/^mod_([^_]+)_mod_form$/', get_class($this), $matches)) {
                 debugging('Rename form to mod_xx_mod_form, where xx is name of your module');
                 print_error('unknownmodulename');
@@ -72,14 +69,13 @@ class mod_readaloud_mod_form extends moodleform_mod
     /**
      * Defines forms elements
      */
-    public function definition()
-    {
+    public function definition() {
         global $CFG, $COURSE;
 
         $mform = $this->_form;
 
-        //Add this activity specific form fields
-        //We want to do this procedurally because in setup tabs we want to show a subset of this form
+        // Add this activity specific form fields
+        // We want to do this procedurally because in setup tabs we want to show a subset of this form
         // with just the activity specific fields,and we use a custom form and the same elements
         $cmid = isset($this->_cm->id) ? $this->_cm->id : false;
         utils::add_mform_elements($mform, $this->context, $cmid);
@@ -87,7 +83,7 @@ class mod_readaloud_mod_form extends moodleform_mod
         // Grade.
         $this->standard_grading_coursemodule_elements();
 
-        //grade options for how to grade with multiple attempts.
+        // grade options for how to grade with multiple attempts.
         $gradeoptions = mod_readaloud\utils::get_grade_options();
         $mform->addElement('select', 'gradeoptions', get_string('gradeoptions', constants::M_COMPONENT), $gradeoptions);
         $mform->setDefault('gradeoptions', constants::M_GRADELATEST);
@@ -103,15 +99,13 @@ class mod_readaloud_mod_form extends moodleform_mod
         $this->standard_coursemodule_elements();
         // add standard buttons, common to all modules
         $this->add_action_buttons();
-
     }
 
     /**
      * This adds completion rules
      * See lib.php readaloud_get_completion_state()
      */
-    function add_completion_rules()
-    {
+    function add_completion_rules() {
         $mform = $this->_form;
         $suffixedfields = [];
         // All Steps Field
@@ -134,19 +128,20 @@ class mod_readaloud_mod_form extends moodleform_mod
             90 => '90%',
             100 => '100%',
         ];
-        $mform->addElement('select', $mingradefield ,
+        $mform->addElement(
+            'select',
+            $mingradefield,
             get_string('mingrade', constants::M_COMPONENT),
             $mingradeoptions
         );
-        $mform->addHelpButton($mingradefield , constants::COMPLETION_MINGRADE, constants::M_COMPONENT);
+        $mform->addHelpButton($mingradefield, constants::COMPLETION_MINGRADE, constants::M_COMPONENT);
         $suffixedfields[] = $mingradefield;
 
         return $suffixedfields;
     }
 
-    function completion_rule_enabled($data)
-    {
-        
+    function completion_rule_enabled($data) {
+
         $completionfields = [constants::COMPLETION_ALLSTEPS, constants::COMPLETION_MINGRADE];
         foreach ($completionfields as $field) {
             if (!empty($data[$this->get_suffixed_name($field)])) {
@@ -156,16 +151,14 @@ class mod_readaloud_mod_form extends moodleform_mod
         return false;
     }
 
-    public function data_preprocessing(&$formdata)
-    {
+    public function data_preprocessing(&$formdata) {
         if ($this->current->instance) {
             $formdata = utils::prepare_file_and_json_stuff($formdata, $this->context);
         }
     }
 
 
-    public function validation($data, $files)
-    {
+    public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
         if (!empty($data['viewend'])) {
@@ -181,8 +174,7 @@ class mod_readaloud_mod_form extends moodleform_mod
         return $errors;
     }
 
-     private function get_suffixed_name($completionfieldname)
-    {
+    private function get_suffixed_name($completionfieldname) {
         global $CFG;
         $m43 = $CFG->version >= 2023100900;
         $suffix = $m43 ? $this->get_suffix() : '';

@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/lib/formslib.php');
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 /**
  *
@@ -37,7 +37,6 @@ use \mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class modelaudiobreaksform extends \moodleform {
-
     /**
      * Defines forms elements
      */
@@ -46,30 +45,33 @@ class modelaudiobreaksform extends \moodleform {
 
         $mform = $this->_form;
 
-        //do we show the next button
-        //$shownext = $this->_customdata['shownext'];
-        //$mform->addElement('text', 'name', 'BB', array('size'=>70));
+        // do we show the next button
+        // $shownext = $this->_customdata['shownext'];
+        // $mform->addElement('text', 'name', 'BB', array('size'=>70));
 
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] = &$mform->createElement('cancel');
-        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savemodelaudiomarkup',constants::M_COMPONENT));
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savemodelaudiomarkup', constants::M_COMPONENT));
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
 
-        //	$mform->closeHeaderBefore('buttonar');
+        // $mform->closeHeaderBefore('buttonar');
 
-        //-------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------
         // Adding the "general" fieldset, where all the common settings are showed,
         $mform->addElement('hidden', 'action');
         $mform->addElement('hidden', 'n');
-        $mform->addElement('hidden', 'modelaudiobreaks', null,
-                array('class' => constants::M_MODELAUDIO_FORM_BREAKSFIELD, 'id' => constants::M_MODELAUDIO_FORM_BREAKSFIELD));
+        $mform->addElement(
+            'hidden',
+            'modelaudiobreaks',
+            null,
+            ['class' => constants::M_MODELAUDIO_FORM_BREAKSFIELD, 'id' => constants::M_MODELAUDIO_FORM_BREAKSFIELD]
+        );
 
         $mform->setType('action', PARAM_TEXT);
         $mform->setType('n', PARAM_INT);
         $mform->setType('modelaudiobreaks', PARAM_TEXT);
-        //-------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------
         // add standard buttons, common to all modules
         // $this->add_action_buttons();
     }
 }
-

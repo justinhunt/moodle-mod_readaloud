@@ -25,7 +25,7 @@
 namespace mod_readaloud\task;
 defined('MOODLE_INTERNAL') || die();
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 /**
  * The mod_readaloud scheduled task.
@@ -36,7 +36,6 @@ use \mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class readaloud_scheduled extends \core\task\scheduled_task {
-
     public function get_name() {
         // Shown in admin screens
         return get_string('readaloudtask', constants::M_COMPONENT);
@@ -47,8 +46,6 @@ class readaloud_scheduled extends \core\task\scheduled_task {
      */
     public function execute() {
         $trace = new \text_progress_trace();
-        //readaloud_dotask($trace);
+        // readaloud_dotask($trace);
     }
-
 }
-

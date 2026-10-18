@@ -34,15 +34,13 @@ use mod_readaloud\utils;
  */
 class custom_completion extends activity_custom_completion
 {
-
     /**
      * Fetches the completion state for a given completion rule.
      *
      * @param string $rule The completion rule.
      * @return int The completion state.
      */
-    public function get_state(string $rule): int
-    {
+    public function get_state(string $rule): int {
         global $DB;
 
         $this->validate_rule($rule);
@@ -56,8 +54,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public static function get_defined_custom_rules(): array
-    {
+    public static function get_defined_custom_rules(): array {
         return [
             constants::COMPLETION_ALLSTEPS,
             constants::COMPLETION_MINGRADE,
@@ -69,8 +66,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public function get_custom_rule_descriptions(): array
-    {
+    public function get_custom_rule_descriptions(): array {
 
         return [
             constants::COMPLETION_ALLSTEPS => get_string('completiondetail:allsteps', 'readaloud'),
@@ -83,8 +79,7 @@ class custom_completion extends activity_custom_completion
      *
      * @return array
      */
-    public function get_sort_order(): array
-    {
+    public function get_sort_order(): array {
         return [
             'completionview',
             constants::COMPLETION_ALLSTEPS,

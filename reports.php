@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -26,17 +25,17 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
-use \mod_readaloud\constants;
-use \mod_readaloud\utils;
+use mod_readaloud\constants;
+use mod_readaloud\utils;
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n = optional_param('n', 0, PARAM_INT);  // readaloud instance ID
-$format = optional_param('format', 'html', PARAM_TEXT); //export format csv or html
+$format = optional_param('format', 'html', PARAM_TEXT); // export format csv or html
 $showreport = optional_param('report', 'menu', PARAM_TEXT); // report type
 $userid = optional_param('userid', 0, PARAM_INT); // user id
 $attemptid = optional_param('attemptid', 0, PARAM_INT); // attempt id
 
-//paging details
+// paging details
 $paging = new stdClass();
 $paging->perpage = optional_param('perpage', -1, PARAM_INT);
 $paging->pageno = optional_param('pageno', 0, PARAM_INT);
@@ -44,39 +43,41 @@ $paging->sort = optional_param('sort', 'iddsc', PARAM_TEXT);
 
 if ($id) {
     $cm = get_coursemodule_from_id(constants::M_MODNAME, $id, 0, false, MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-    $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $cm->instance), '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $cm->instance], '*', MUST_EXIST);
 } else if ($n) {
-    $moduleinstance = $DB->get_record(constants::M_TABLE, array('id' => $n), '*', MUST_EXIST);
-    $course = $DB->get_record('course', array('id' => $moduleinstance->course), '*', MUST_EXIST);
+    $moduleinstance = $DB->get_record(constants::M_TABLE, ['id' => $n], '*', MUST_EXIST);
+    $course = $DB->get_record('course', ['id' => $moduleinstance->course], '*', MUST_EXIST);
     $cm = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
     error('You must specify a course_module ID or an instance ID');
 }
 
-$PAGE->set_url(constants::M_URL . '/reports.php',
-        array('id' => $cm->id, 'report' => $showreport, 'format' => $format, 'userid' => $userid, 'attemptid' => $attemptid));
+$PAGE->set_url(
+    constants::M_URL . '/reports.php',
+    ['id' => $cm->id, 'report' => $showreport, 'format' => $format, 'userid' => $userid, 'attemptid' => $attemptid]
+);
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
 require_capability('mod/readaloud:viewreports', $modulecontext);
 
-//Get an admin settings 
+// Get an admin settings
 $config = get_config(constants::M_COMPONENT);
 
-//set per page according to admin setting
-if(constants::M_USE_DATATABLES){
-    $paging=false;
-}elseif($paging->perpage==-1){
+// set per page according to admin setting
+if (constants::M_USE_DATATABLES) {
+    $paging = false;
+} else if ($paging->perpage == -1) {
     $paging->perpage = $config->attemptsperpage;
 }
 
 
 // Trigger module viewed event.
-$event = \mod_readaloud\event\course_module_viewed::create(array(
+$event = \mod_readaloud\event\course_module_viewed::create([
         'objectid' => $moduleinstance->id,
-        'context' => $modulecontext
-));
+        'context' => $modulecontext,
+]);
 $event->add_record_snapshot('course_modules', $cm);
 $event->add_record_snapshot('course', $course);
 $event->add_record_snapshot(constants::M_MODNAME, $moduleinstance);
@@ -87,30 +88,29 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-if($config->enablesetuptab){
+if ($config->enablesetuptab) {
     $PAGE->set_pagelayout('popup');
-}else{
+} else {
     $PAGE->set_pagelayout('incourse');
 }
 
 $PAGE->requires->jquery();
 
-$aph_opts = Array();
+$aph_opts = [];
 
-//this inits the grading helper JS
-$PAGE->requires->js_call_amd("mod_readaloud/hiddenplayerhelper", 'init', array($aph_opts));
+// this inits the grading helper JS
+$PAGE->requires->js_call_amd("mod_readaloud/hiddenplayerhelper", 'init', [$aph_opts]);
 
-//This puts all our display logic into the renderer.php files in this plugin
+// This puts all our display logic into the renderer.php files in this plugin
 $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
 $reportrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'report');
 
-//From here we actually display the page.
-//this is core renderer stuff
+// From here we actually display the page.
+// this is core renderer stuff
 $mode = "reports";
 $extraheader = "";
 switch ($showreport) {
-
-    //not a true report, separate implementation in renderer
+    // not a true report, separate implementation in renderer
     case 'menu':
         echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));
         echo $reportrenderer->render_reportmenu($moduleinstance, $cm);
@@ -187,16 +187,16 @@ switch ($showreport) {
 
 
 $groupmenu = '';
-if(isset($formdata->groupmenu)){
+if (isset($formdata->groupmenu)) {
     // fetch groupmode/menu/id for this activity
     if ($groupmode = groups_get_activity_groupmode($cm)) {
         $groupmenu = groups_print_activity_menu($cm, $PAGE->url, true);
         $groupmenu .= ' ';
         $formdata->groupid = groups_get_activity_group($cm);
-    }else{
+    } else {
         $formdata->groupid  = 0;
     }
-}else{
+} else {
     $formdata->groupid  = 0;
 }
 
@@ -207,31 +207,45 @@ $reportdescription = $report->fetch_formatted_description();
 switch ($format) {
     case 'csv':
         $reportrows = $report->fetch_formatted_rows(false);
-        $reportrenderer->render_section_csv($reportheading, $report->fetch_name(), $report->fetch_head(), $reportrows,
-                $report->fetch_fields());
+        $reportrenderer->render_section_csv(
+            $reportheading,
+            $report->fetch_name(),
+            $report->fetch_head(),
+            $reportrows,
+            $report->fetch_fields()
+        );
         exit;
     default:
-
         $reportrows = $report->fetch_formatted_rows(true, $paging);
         $allrowscount = $report->fetch_all_rows_count();
-        if(constants::M_USE_DATATABLES){
-
-            //css must be required before header sent out
-            $PAGE->requires->css( new \moodle_url('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css'));
+        if (constants::M_USE_DATATABLES) {
+            // css must be required before header sent out
+            $PAGE->requires->css(new \moodle_url('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css'));
             echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));
             echo $extraheader;
             echo $groupmenu;
-            echo $reportrenderer->render_section_html($reportheading,$reportdescription, $report->fetch_name(), $report->fetch_head(), $reportrows,
-                $report->fetch_fields());
-
-        }else {
+            echo $reportrenderer->render_section_html(
+                $reportheading,
+                $reportdescription,
+                $report->fetch_name(),
+                $report->fetch_head(),
+                $reportrows,
+                $report->fetch_fields()
+            );
+        } else {
             $pagingbar = $reportrenderer->show_paging_bar($allrowscount, $paging, $PAGE->url);
             echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('reports', constants::M_COMPONENT));
             echo $extraheader;
             echo $groupmenu;
             echo $pagingbar;
-            echo $reportrenderer->render_section_html($reportheading,$reportdescription, $report->fetch_name(), $report->fetch_head(), $reportrows,
-                $report->fetch_fields());
+            echo $reportrenderer->render_section_html(
+                $reportheading,
+                $reportdescription,
+                $report->fetch_name(),
+                $report->fetch_head(),
+                $reportrows,
+                $report->fetch_fields()
+            );
             echo $pagingbar;
         }
         echo $reportrenderer->show_reports_footer($moduleinstance, $cm, $formdata, $showreport);

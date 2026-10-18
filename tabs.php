@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -27,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 /// This file to be included so we can assume config.php has already been included.
 global $DB;
@@ -42,26 +41,37 @@ if (!isset($cm)) {
     $context = context_module::instance($cm->id);
 }
 if (!isset($course)) {
-    $course = $DB->get_record('course', array('id' => $moduleinstance->course));
+    $course = $DB->get_record('course', ['id' => $moduleinstance->course]);
 }
 
-$tabs = $row = $inactive = $activated = array();
+$tabs = $row = $inactive = $activated = [];
 $config = get_config(constants::M_COMPONENT);
 
-$row[] = new tabobject('view', "$CFG->wwwroot/mod/readaloud/view.php?id=$cm->id", get_string('view', constants::M_COMPONENT),
-        get_string('preview', constants::M_COMPONENT, format_string($moduleinstance->name)));
+$row[] = new tabobject(
+    'view',
+    "$CFG->wwwroot/mod/readaloud/view.php?id=$cm->id",
+    get_string('view', constants::M_COMPONENT),
+    get_string('preview', constants::M_COMPONENT, format_string($moduleinstance->name))
+);
 
 if (has_capability('mod/readaloud:viewreports', $context)) {
-    $row[] = new tabobject('grading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id",
-            get_string('grading', constants::M_COMPONENT), get_string('viewgrading', constants::M_COMPONENT));
-    //$row[] = new tabobject('machinegrading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id&action=machinegrading", get_string('machinegrading', constants::M_COMPONENT), get_string('viewmachinegrading', constants::M_COMPONENT));
+    $row[] = new tabobject(
+        'grading',
+        "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id",
+        get_string('grading', constants::M_COMPONENT),
+        get_string('viewgrading', constants::M_COMPONENT)
+    );
+    // $row[] = new tabobject('machinegrading', "$CFG->wwwroot/mod/readaloud/grading.php?id=$cm->id&action=machinegrading", get_string('machinegrading', constants::M_COMPONENT), get_string('viewmachinegrading', constants::M_COMPONENT));
     $row[] = new tabobject('reports', "$CFG->wwwroot/mod/readaloud/reports.php?id=$cm->id", get_string('reports', constants::M_COMPONENT), get_string('viewreports', constants::M_COMPONENT));
-
 }
 
-if(has_capability('mod/readaloud:manage', $context) && $config->enablesetuptab) {
-    $row[] = new tabobject('setup', "$CFG->wwwroot/mod/readaloud/setup.php?id=$cm->id",
-            get_string('setup', constants::M_COMPONENT), get_string('setup', constants::M_COMPONENT));
+if (has_capability('mod/readaloud:manage', $context) && $config->enablesetuptab) {
+    $row[] = new tabobject(
+        'setup',
+        "$CFG->wwwroot/mod/readaloud/setup.php?id=$cm->id",
+        get_string('setup', constants::M_COMPONENT),
+        get_string('setup', constants::M_COMPONENT)
+    );
 }
 
 if (has_capability('mod/readaloud:manage', $context)) {
@@ -70,9 +80,12 @@ if (has_capability('mod/readaloud:manage', $context)) {
     // Model audio.
     $row[] = new tabobject('modelaudio', "$CFG->wwwroot/mod/readaloud/modelaudio.php?id=$cm->id", get_string('modelaudio', constants::M_COMPONENT), get_string('modelaudio', constants::M_COMPONENT));
     // Admin tab.
-    $row[] = new tabobject('admintab', "$CFG->wwwroot/mod/readaloud/admintab.php?id=$cm->id",
-        get_string('admintab', constants::M_COMPONENT), get_string('viewadmintab', constants::M_COMPONENT));
-
+    $row[] = new tabobject(
+        'admintab',
+        "$CFG->wwwroot/mod/readaloud/admintab.php?id=$cm->id",
+        get_string('admintab', constants::M_COMPONENT),
+        get_string('viewadmintab', constants::M_COMPONENT)
+    );
 }
 
 if (has_capability('mod/readaloud:pushtoclones', $context) && $moduleinstance->masterinstance) {

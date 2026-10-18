@@ -32,7 +32,6 @@ use mod_readaloud\utils;
 global $OUTPUT;
 
 if ($hassiteconfig) {
-
     // Add category to navigation.
     $readaloudcat = new admin_category(
         'modsettingsreadaloudcat',
@@ -163,11 +162,11 @@ if ($hassiteconfig) {
         constants::REALTIMESTEPS_PRACTICEREAD => get_string('realtimesteps_practiceread', constants::M_COMPONENT),
      ];
      $mainsettings->add(new admin_setting_configselect(
-        constants::M_COMPONENT . '/streamingread',
-        get_string('streamingread', constants::M_COMPONENT),
-        get_string('streamingread_details', constants::M_COMPONENT),
-        constants::REALTIMESTEPS_PRACTICE,
-        $realtimestepoptions
+         constants::M_COMPONENT . '/streamingread',
+         get_string('streamingread', constants::M_COMPONENT),
+         get_string('streamingread_details', constants::M_COMPONENT),
+         constants::REALTIMESTEPS_PRACTICE,
+         $realtimestepoptions
      ));
 
     $realtimeoptions = [
@@ -266,10 +265,10 @@ if ($hassiteconfig) {
 
 
       $miscelleneoussettings->add(new admin_setting_configcheckbox(
-        constants::M_COMPONENT . '/enableai',
-        get_string('enableai', constants::M_COMPONENT),
-        get_string('enableai_details', constants::M_COMPONENT),
-        1
+          constants::M_COMPONENT . '/enableai',
+          get_string('enableai', constants::M_COMPONENT),
+          get_string('enableai_details', constants::M_COMPONENT),
+          1
       ));
 
     // We removed this to simplify things, can bring back as feature later.
@@ -444,7 +443,6 @@ if ($hassiteconfig) {
         $CFG->wwwroot . constants::M_URL . '/accountdashboard.php'
     );
     $ADMIN->add('modsettingsreadaloudcat', $accountdashboard);
-
 }
 
 $settings = null;

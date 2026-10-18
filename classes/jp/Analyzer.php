@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Created by PhpStorm.
  * User: ishineguy
@@ -19,7 +34,6 @@ namespace mod_readaloud\jp;
 
 
 class Analyzer {
-
     /**
      * Get string length.
      *
@@ -51,12 +65,12 @@ class Analyzer {
      * @see countKatakana()
      */
     public static function inspect($str) {
-        $result = array(
+        $result = [
                 'length' => 0,
                 'kanji' => 0,
                 'hiragana' => 0,
                 'katakana' => 0,
-        );
+        ];
 
         $result['length'] = self::length($str);
         $result['kanji'] = self::countKanji($str);
@@ -75,7 +89,7 @@ class Analyzer {
      * @return integer Returns the number of kanji.
      */
     public static function countKanji($str, $extended = false) {
-        $matches = array();
+        $matches = [];
 
         if ($extended) {
             return preg_match_all(Helper::PREG_PATTERN_KANJI_EXTENDED, $str, $matches);
@@ -92,7 +106,7 @@ class Analyzer {
      * @return integer Returns the number of hiragana.
      */
     public static function countHiragana($str) {
-        $matches = array();
+        $matches = [];
 
         return preg_match_all(Helper::PREG_PATTERN_HIRAGANA, $str, $matches);
     }
@@ -106,7 +120,7 @@ class Analyzer {
      * @return integer Returns the number of katakana
      */
     public static function countKatakana($str) {
-        $matches = array();
+        $matches = [];
 
         return preg_match_all(Helper::PREG_PATTERN_KATAKANA, $str, $matches);
     }

@@ -28,9 +28,7 @@ use mod_readaloud\utils;
 
 class passage_renderer extends \plugin_renderer_base
 {
-
-    public function render_attempt_scoresheader($passagehelper, $nograde = false)
-    {
+    public function render_attempt_scoresheader($passagehelper, $nograde = false) {
 
         $ret = "<hr/>";
 
@@ -59,11 +57,9 @@ class passage_renderer extends \plugin_renderer_base
         $ret .= "</div>";
 
         return $ret;
-
     }
 
-    public function render_gradenow($passagehelper, $language, $collapsespaces = false)
-    {
+    public function render_gradenow($passagehelper, $language, $collapsespaces = false) {
         $actionheader = $this->render_attempt_scoresheader($passagehelper);
         $ret = $this->render_attempt_header($passagehelper->attemptdetails('userfullname'));
         $ret .= $actionheader;
@@ -73,16 +69,14 @@ class passage_renderer extends \plugin_renderer_base
         return $ret;
     }
 
-    public function render_userreview($passagehelper, $language, $collapsespaces = false, $nograde = false)
-    {
+    public function render_userreview($passagehelper, $language, $collapsespaces = false, $nograde = false) {
         $actionheader = $this->render_attempt_scoresheader($passagehelper, $nograde);
         $passagereview = $this->render_attempted_passage($passagehelper, $language, $collapsespaces);
         $ret = $actionheader . $passagereview;
         return $ret;
     }
 
-    public function render_attempted_passage($passagehelper, $language, $collapsespaces = false)
-    {
+    public function render_attempted_passage($passagehelper, $language, $collapsespaces = false) {
 
         // we put some CSS at the top of the passage container to control things like padding word separation etc
         $extraclasses = 'reviewmode';
@@ -94,8 +88,7 @@ class passage_renderer extends \plugin_renderer_base
         return $thepassage;
     }
 
-    public function render_machinereview($passagehelper, $language, $debug = false)
-    {
+    public function render_machinereview($passagehelper, $language, $debug = false) {
         $actionheader = $this->render_attempt_scoresheader($passagehelper);
         $ret = $this->render_machinegrade_attempt_header($passagehelper->attemptdetails('userfullname'));
         $ret .= $actionheader;
@@ -108,8 +101,7 @@ class passage_renderer extends \plugin_renderer_base
         return $ret;
     }
 
-    public function render_machinereview_buttons($passagehelper)
-    {
+    public function render_machinereview_buttons($passagehelper) {
         $attemptid = $passagehelper->attemptdetails('id');
         $readaloudid = $passagehelper->attemptdetails('readaloudid');
         $url = new \moodle_url(
@@ -126,7 +118,7 @@ class passage_renderer extends \plugin_renderer_base
                 'type' => 'button',
                 'id' => constants::M_CLASS . '_spotcheckbutton',
                 'class' => constants::M_CLASS . '_spotcheckbutton btn btn-success',
-                'disabled' => true
+                'disabled' => true,
             ]
         );
 
@@ -136,7 +128,7 @@ class passage_renderer extends \plugin_renderer_base
             [
                 'type' => 'button',
                 'id' => constants::M_CLASS . '_transcriptcheckbutton',
-                'class' => constants::M_CLASS . '_transcriptcheckbutton btn btn-warning'
+                'class' => constants::M_CLASS . '_transcriptcheckbutton btn btn-warning',
             ]
         );
 
@@ -147,8 +139,7 @@ class passage_renderer extends \plugin_renderer_base
         return $ret;
     }
 
-    public function render_debuginfo($debugsequences, $transcript, $fulltranscript)
-    {
+    public function render_debuginfo($debugsequences, $transcript, $fulltranscript) {
         $divfulltranscript = \html_writer::div(
             '<pre>' . print_r(json_decode($fulltranscript), true) . '</pre>',
             constants::M_CLASS . '_grading_debugfulltranscript'
@@ -189,25 +180,22 @@ class passage_renderer extends \plugin_renderer_base
         return $ret;
     }
 
-    public function render_attempt_header($username)
-    {
+    public function render_attempt_header($username) {
         $ret = $this->output->heading(get_string('showingattempt', constants::M_COMPONENT, $username), 4);
         return $ret;
     }
 
-    public function render_machinegrade_attempt_header($username)
-    {
+    public function render_machinegrade_attempt_header($username) {
         $ret = $this->output->heading(get_string('showingmachinegradedattempt', constants::M_COMPONENT, $username), 3);
         return $ret;
     }
 
-    public function render_passage($passage, $language, $containerclass = false, $extraclasses = false)
-    {
+    public function render_passage($passage, $language, $containerclass = false, $extraclasses = false) {
         global $DB;
         $moduleinstance = $DB->get_record('readaloud', ['id' => $this->page->cm->instance], '*', MUST_EXIST);
 
         // load the HTML document
-        $doc = new \DOMDocument;
+        $doc = new \DOMDocument();
         // it will assume ISO-8859-1  encoding, so we need to hint it:
         // see: http://stackoverflow.com/questions/8218230/php-domdocument-loadhtml-not-encoding-utf-8-correctly
         $safepassage = htmlspecialchars($passage, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
@@ -220,7 +208,6 @@ class passage_renderer extends \plugin_renderer_base
         $wordcount = 0;
 
         foreach ($nodes as $node) {
-
             // if its empty space, move on
             $trimmednode = utils::super_trim($node->nodeValue);
             if (empty($trimmednode)) {
@@ -288,7 +275,7 @@ class passage_renderer extends \plugin_renderer_base
                 $extraclasses .= ' ' . constants::M_CLASS . '_rtl';
                 break;
             default:
-            // nothing special
+                // nothing special
         }
 
         $attributes = [];
@@ -304,8 +291,7 @@ class passage_renderer extends \plugin_renderer_base
         return $ret;
     }
 
-    public function render_passageactions()
-    {
+    public function render_passageactions() {
 
         $gradingbutton = \html_writer::tag(
             'button',
@@ -314,7 +300,7 @@ class passage_renderer extends \plugin_renderer_base
                 'type' => 'button',
                 'id' => constants::M_CLASS . '_gradingbutton',
                 'class' => constants::M_CLASS . '_gradingbutton btn btn-primary',
-                'disabled' => true
+                'disabled' => true,
             ]
         );
 
@@ -324,7 +310,7 @@ class passage_renderer extends \plugin_renderer_base
             [
                 'type' => 'button',
                 'id' => constants::M_CLASS . '_spotcheckbutton',
-                'class' => constants::M_CLASS . '_spotcheckbutton btn btn-success'
+                'class' => constants::M_CLASS . '_spotcheckbutton btn btn-success',
             ]
         );
 
@@ -334,7 +320,7 @@ class passage_renderer extends \plugin_renderer_base
             [
                 'type' => 'button',
                 'id' => constants::M_CLASS . '_transcriptcheckbutton',
-                'class' => constants::M_CLASS . '_transcriptcheckbutton btn btn-warning'
+                'class' => constants::M_CLASS . '_transcriptcheckbutton btn btn-warning',
             ]
         );
 
@@ -344,7 +330,7 @@ class passage_renderer extends \plugin_renderer_base
             [
                 'type' => 'button',
                 'id' => constants::M_CLASS . '_clearbutton',
-                'class' => constants::M_CLASS . '_clearbutton btn btn-link'
+                'class' => constants::M_CLASS . '_clearbutton btn btn-link',
             ]
         );
 
@@ -354,8 +340,7 @@ class passage_renderer extends \plugin_renderer_base
         return $container;
     }
 
-    public function render_audioplayer($audiourl)
-    {
+    public function render_audioplayer($audiourl) {
         $audioplayer = \html_writer::tag(
             'audio',
             '',
@@ -373,5 +358,4 @@ class passage_renderer extends \plugin_renderer_base
         );
         return $ret;
     }
-
 }

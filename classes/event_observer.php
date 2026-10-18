@@ -26,7 +26,7 @@ namespace mod_readaloud;
 
 defined('MOODLE_INTERNAL') || die();
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 /**
  * Event observer for mod_readaloud
@@ -36,7 +36,6 @@ use \mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class event_observer {
-
     /**
      * Triggered via course_deleted event.
      *
@@ -45,9 +44,9 @@ class event_observer {
      */
     public static function course_deleted(\core\event\course_deleted $event) {
         global $DB;
-        //constants::M_TABLE should be deleted elsewhere
-        $ret = $DB->delete_records(constants::M_USERTABLE, array('courseid' => $event->objectid));
-        $ret = $DB->delete_records(constants::M_AITABLE, array('courseid' => $event->objectid));
+        // constants::M_TABLE should be deleted elsewhere
+        $ret = $DB->delete_records(constants::M_USERTABLE, ['courseid' => $event->objectid]);
+        $ret = $DB->delete_records(constants::M_AITABLE, ['courseid' => $event->objectid]);
         return $ret;
     }
 }

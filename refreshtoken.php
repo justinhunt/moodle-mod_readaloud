@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -26,8 +25,8 @@
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
-use \mod_readaloud\utils;
-use \mod_readaloud\constants;
+use mod_readaloud\utils;
+use mod_readaloud\constants;
 
 require_login(0, false);
 $systemcontext = context_system::instance();

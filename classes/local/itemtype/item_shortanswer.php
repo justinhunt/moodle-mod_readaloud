@@ -29,7 +29,6 @@ use renderable;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class item_shortanswer extends item {
-
     // the item type
     public const ITEMTYPE = constants::TYPE_SHORTANSWER;
 
@@ -38,7 +37,7 @@ class item_shortanswer extends item {
      * The class constructor.
      *
      */
-    public function __construct($itemrecord, $moduleinstance=false, $context=false) {
+    public function __construct($itemrecord, $moduleinstance = false, $context = false) {
         parent::__construct($itemrecord, $moduleinstance, $context);
         $this->needs_speechrec = true;
     }
@@ -59,14 +58,14 @@ class item_shortanswer extends item {
 
         // sentences
         $sentences = [];
-        if(isset($testitem->customtext1)) {
+        if (isset($testitem->customtext1)) {
             $sentences = explode(PHP_EOL, $testitem->customtext1);
         }
         // build sentence objects containing display and phonetic text
         $testitem->phonetic = 'false';// $this->itemrecord->phonetic;
-        if(!empty($testitem->phonetic)) {
+        if (!empty($testitem->phonetic)) {
             $phonetics = explode(PHP_EOL, $testitem->phonetic);
-        }else{
+        } else {
             $phonetics = [];
         }
         $isssml = $testitem->voiceoption == constants::TTS_SSML;
@@ -105,7 +104,7 @@ class item_shortanswer extends item {
         $error->col = '';
         $error->message = '';
 
-        if($newrecord->customtext1 == ''){
+        if ($newrecord->customtext1 == '') {
             $error->col = 'customtext1';
             $error->message = get_string('error:emptyfield', constants::M_COMPONENT);
             return $error;
@@ -114,5 +113,4 @@ class item_shortanswer extends item {
         // return false to indicate no error
         return false;
     }
-
 }

@@ -43,7 +43,6 @@ use moodle_url;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends \plugin_renderer_base {
-
     /**
      * Returns the header for the module
      *
@@ -56,7 +55,7 @@ class renderer extends \plugin_renderer_base {
     public function header($moduleinstance, $cm, $currenttab = '', $itemid = null, $extrapagetitle = null) {
         global $CFG;
 
-        switch($this->page->pagelayout) {
+        switch ($this->page->pagelayout) {
             case 'popup':
                 $embed = 2;
                 break;
@@ -119,7 +118,7 @@ class renderer extends \plugin_renderer_base {
      * @param int $embed
      * @return mixed
      */
-    protected function get_readreport_data($moduleinstance, $modulecontext, $cm, $attempts = false, $attempt = false, $aigrade = false ) {
+    protected function get_readreport_data($moduleinstance, $modulecontext, $cm, $attempts = false, $attempt = false, $aigrade = false) {
 
         // Template data for read report.
         $tdata = [];
@@ -232,9 +231,15 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_machineregradeallbutton($moduleinstance) {
         $options = [];
-        $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/admintab.php',
-                ['n' => $moduleinstance->id, 'action' => 'machineregradeall']),
-                get_string('machineregradeall', constants::M_COMPONENT), 'post', $options);
+        $button = $this->output->single_button(
+            new \moodle_url(
+                constants::M_URL . '/admintab.php',
+                ['n' => $moduleinstance->id, 'action' => 'machineregradeall']
+            ),
+            get_string('machineregradeall', constants::M_COMPONENT),
+            'post',
+            $options
+        );
 
         $ret = \html_writer::div($button, constants::M_ADMINTAB_CONTAINER);
 
@@ -251,9 +256,15 @@ class renderer extends \plugin_renderer_base {
 
         $pushcorpusdetails = \html_writer::div(get_string('pushcorpus_details', constants::M_COMPONENT));
         $options = [];
-        $pushcorpusbutton = $this->output->single_button(new \moodle_url(constants::M_URL . '/admintab.php',
-            ['n' => $moduleinstance->id, 'action' => 'pushcorpus']),
-            get_string('pushcorpus_button', constants::M_COMPONENT), 'post', $options);
+        $pushcorpusbutton = $this->output->single_button(
+            new \moodle_url(
+                constants::M_URL . '/admintab.php',
+                ['n' => $moduleinstance->id, 'action' => 'pushcorpus']
+            ),
+            get_string('pushcorpus_button', constants::M_COMPONENT),
+            'post',
+            $options
+        );
 
         $ret = \html_writer::div($pushcorpusdetails . $pushcorpusbutton, constants::M_ADMINTAB_CONTAINER);
 
@@ -271,16 +282,24 @@ class renderer extends \plugin_renderer_base {
         $sectiontitle = get_string("pushalltogradebook", constants::M_COMPONENT);
         $heading = $this->output->heading($sectiontitle, 4);
 
-        if (utils::can_transcribe($moduleinstance) &&
+        if (
+            utils::can_transcribe($moduleinstance) &&
                 ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
-                $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY)) {
+                $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY)
+        ) {
             $options = [];
         } else {
             $options = ['disabled' => 'disabled'];
         }
-        $button = $this->output->single_button(new \moodle_url(constants::M_URL . '/admintab.php',
-                ['n' => $moduleinstance->id, 'action' => 'pushalltogradebook']),
-                get_string('pushalltogradebook', constants::M_COMPONENT), 'post', $options);
+        $button = $this->output->single_button(
+            new \moodle_url(
+                constants::M_URL . '/admintab.php',
+                ['n' => $moduleinstance->id, 'action' => 'pushalltogradebook']
+            ),
+            get_string('pushalltogradebook', constants::M_COMPONENT),
+            'post',
+            $options
+        );
 
         $ret = \html_writer::div($heading . $button, constants::M_ADMINTAB_CONTAINER);
 
@@ -356,9 +375,15 @@ class renderer extends \plugin_renderer_base {
         if ($rowcount == 0) {
             $html .= get_string("nomistranscriptions", constants::M_COMPONENT);
         } else {
-            $html .= \html_writer::tag('span', get_string("total_mistranscriptions",
-                    constants::M_COMPONENT, $totalmistranscriptions),
-                    ['class' => constants::M_CLASS . '_totalmistranscriptions']);
+            $html .= \html_writer::tag(
+                'span',
+                get_string(
+                    "total_mistranscriptions",
+                    constants::M_COMPONENT,
+                    $totalmistranscriptions
+                ),
+                ['class' => constants::M_CLASS . '_totalmistranscriptions']
+            );
             $html .= \html_writer::table($htmltable);
 
             // Set up datatables.
@@ -368,7 +393,6 @@ class renderer extends \plugin_renderer_base {
             $opts['tableprops'] = $tableprops;
             $this->page->requires->js_call_amd(constants::M_COMPONENT . "/datatables", 'init', [$opts]);
             $this->page->requires->css(new \moodle_url('https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css'));
-
         }
 
         return $html;
@@ -603,10 +627,13 @@ class renderer extends \plugin_renderer_base {
      * @param string|false $audiourl URL of the audio file, or false for empty source
      * @return string HTML for the hidden audio player
      */
-    public function render_hiddenaudioplayer($audiourl=false) {
+    public function render_hiddenaudioplayer($audiourl = false) {
         $src = $audiourl ? $audiourl : '';
-        $audioplayer = \html_writer::tag('audio', '',
-                ['src' => $src, 'id' => constants::M_HIDDEN_PLAYER, 'class' => constants::M_HIDDEN_PLAYER, 'crossorigin' => 'anonymous']);
+        $audioplayer = \html_writer::tag(
+            'audio',
+            '',
+            ['src' => $src, 'id' => constants::M_HIDDEN_PLAYER, 'class' => constants::M_HIDDEN_PLAYER, 'crossorigin' => 'anonymous']
+        );
 
         return $audioplayer;
     }
@@ -618,7 +645,7 @@ class renderer extends \plugin_renderer_base {
      */
     public function show_evaluated_message() {
         $displaytext = get_string('evaluatedmessage', constants::M_COMPONENT);
-        $ret = \html_writer::div($displaytext, constants::M_EVALUATED_MESSAGE. ' ' . constants::M_CLASS . '_center', ['id' => constants::M_EVALUATED_MESSAGE]);
+        $ret = \html_writer::div($displaytext, constants::M_EVALUATED_MESSAGE . ' ' . constants::M_CLASS . '_center', ['id' => constants::M_EVALUATED_MESSAGE]);
 
         return $ret;
     }
@@ -731,7 +758,7 @@ class renderer extends \plugin_renderer_base {
      * @param bool     $hasquizquestions Whether the activity has quiz questions (default false).
      * @return array Associative array containing the activity AMD configuration.
      */
-    public function fetch_activity_amd($cm, $moduleinstance, $token, $embed=0, $latestattempt=null, $templatecontext=[], $hasquizquestions = false) {
+    public function fetch_activity_amd($cm, $moduleinstance, $token, $embed = 0, $latestattempt = null, $templatecontext = [], $hasquizquestions = false) {
         global $CFG, $USER;
 
         // Here we set up any info we need to pass into javascript.
@@ -879,36 +906,47 @@ class renderer extends \plugin_renderer_base {
         $pushthings = ['passage', 'ttsmodelaudio', 'timelimit', 'targetwpm', 'questions', 'alternatives', 'modes', 'gradesettings', 'canexitearly'];
 
         foreach ($pushthings as $pushthing) {
-            switch($pushthing){
-                case 'passage': $action = constants::M_PUSH_PASSAGE;
+            switch ($pushthing) {
+                case 'passage':
+                    $action = constants::M_PUSH_PASSAGE;
                     break;
-                case 'ttsmodelaudio': $action = constants::M_PUSH_TTSMODELAUDIO;
+                case 'ttsmodelaudio':
+                    $action = constants::M_PUSH_TTSMODELAUDIO;
                     break;
-                case 'timelimit': $action = constants::M_PUSH_TIMELIMIT;
+                case 'timelimit':
+                    $action = constants::M_PUSH_TIMELIMIT;
                     break;
-                case 'targetwpm': $action = constants::M_PUSH_TARGETWPM;
+                case 'targetwpm':
+                    $action = constants::M_PUSH_TARGETWPM;
                     break;
-                case 'questions': $action = constants::M_PUSH_QUESTIONS;
+                case 'questions':
+                    $action = constants::M_PUSH_QUESTIONS;
                     break;
-                case 'alternatives': $action = constants::M_PUSH_ALTERNATIVES;
+                case 'alternatives':
+                    $action = constants::M_PUSH_ALTERNATIVES;
                     break;
-                case 'modes': $action = constants::M_PUSH_MODES;
+                case 'modes':
+                    $action = constants::M_PUSH_MODES;
                     break;
-                case 'gradesettings': $action = constants::M_PUSH_GRADESETTINGS;
+                case 'gradesettings':
+                    $action = constants::M_PUSH_GRADESETTINGS;
                     break;
-                case 'canexitearly': $action = constants::M_PUSH_CANEXITEARLY;
+                case 'canexitearly':
+                    $action = constants::M_PUSH_CANEXITEARLY;
                     break;
             }
             $templateitems[] = [
                 'title' => get_string('push' . $pushthing, constants::M_COMPONENT),
-                'description' => get_string('push' . $pushthing .'_desc', constants::M_COMPONENT),
-                'content' => $this->output->single_button(new \moodle_url( constants::M_URL . '/push.php',
-                    ['id' => $cm->id, 'action' => $action]), get_string('push' . $pushthing, constants::M_COMPONENT)),
+                'description' => get_string('push' . $pushthing . '_desc', constants::M_COMPONENT),
+                'content' => $this->output->single_button(new \moodle_url(
+                    constants::M_URL . '/push.php',
+                    ['id' => $cm->id, 'action' => $action]
+                ), get_string('push' . $pushthing, constants::M_COMPONENT)),
             ];
         }
 
         // Generate and return menu.
-        $ret = $this->output->render_from_template( constants::M_COMPONENT . '/manybuttonsmenu', ['items' => $templateitems]);
+        $ret = $this->output->render_from_template(constants::M_COMPONENT . '/manybuttonsmenu', ['items' => $templateitems]);
 
         return $ret;
     }
@@ -1020,7 +1058,6 @@ class renderer extends \plugin_renderer_base {
                     $passagehelper = new \mod_readaloud\passagehelper($latestattempt->id, $modulecontext->id);
                     $thepassage = $passagerenderer->render_attempted_passage($passagehelper, $moduleinstance->ttslanguage, $collapsespaces);
                     break;
-
             }
         } else {
             $evaluationstatus = false;
@@ -1198,8 +1235,15 @@ class renderer extends \plugin_renderer_base {
      * @param bool      $hasquizquestions Whether quiz has questions (default: false)
      * @return stdClass[]                 Array of step‐data objects.
      */
-    protected function get_steps_data($moduleinstance, $canattempt, $latestattempt, $stepsenabled,
-    $stepsopen, $stepscomplete, $hasquizquestions = false) {
+    protected function get_steps_data(
+        $moduleinstance,
+        $canattempt,
+        $latestattempt,
+        $stepsenabled,
+        $stepsopen,
+        $stepscomplete,
+        $hasquizquestions = false
+    ) {
         global $CFG;
 
         $modevisibility   = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
@@ -1210,12 +1254,12 @@ class renderer extends \plugin_renderer_base {
         $stepnumbers   = constants::STEPS;
 
         $stepdefs = [
-            'step_listen'   => ['mode' => 'preview',       'label' => 'mode_listen',   'icon' => 'listen'],
-            'step_practice' => ['mode' => 'landr',         'label' => 'mode_practice', 'icon' => 'practice'],
-            'step_shadow'   => ['mode' => 'shadow',        'label' => 'mode_shadow',   'icon' => 'shadow'],
-            'step_read'     => ['mode' => 'startnoshadow', 'label' => 'mode_read',     'icon' => 'read'],
-            'step_quiz'     => ['mode' => 'quiz',          'label' => 'mode_quiz',     'icon' => 'quiz'],
-            'step_report'   => ['mode' => 'fullreport',    'label' => 'mode_report',   'icon' => 'report'],
+            'step_listen'   => ['mode' => 'preview', 'label' => 'mode_listen', 'icon' => 'listen'],
+            'step_practice' => ['mode' => 'landr', 'label' => 'mode_practice', 'icon' => 'practice'],
+            'step_shadow'   => ['mode' => 'shadow', 'label' => 'mode_shadow', 'icon' => 'shadow'],
+            'step_read'     => ['mode' => 'startnoshadow', 'label' => 'mode_read', 'icon' => 'read'],
+            'step_quiz'     => ['mode' => 'quiz', 'label' => 'mode_quiz', 'icon' => 'quiz'],
+            'step_report'   => ['mode' => 'fullreport', 'label' => 'mode_report', 'icon' => 'report'],
         ];
         $statusicons = [
             'locked'   => 'locked',
@@ -1226,7 +1270,8 @@ class renderer extends \plugin_renderer_base {
         $stepsdata = [];
 
         foreach ($stepdefs as $key => $def) {
-            if (empty($stepsenabled[$key])
+            if (
+                empty($stepsenabled[$key])
                 || ($key === 'step_practice' && ! $hasaudiobreaks)
                 || ($key === 'step_shadow'   && ! $canshadowattempt)
                 || ($key === 'step_read'     && ! $canattempt)
@@ -1331,7 +1376,7 @@ class renderer extends \plugin_renderer_base {
         // In the case that passage segments have not been set (usually from an upgrade from an earlier version) set those now.
         if ($moduleinstance->passagesegments === null) {
             $olditem = false;
-            list($thephonetic, $thepassagesegments) = utils::update_create_phonetic_segments($moduleinstance, $olditem);
+            [$thephonetic, $thepassagesegments] = utils::update_create_phonetic_segments($moduleinstance, $olditem);
             if (!empty($thephonetic)) {
                 $DB->update_record(constants::M_TABLE, ['id' => $moduleinstance->id, 'phonetic' => $thephonetic, 'passagesegments' => $thepassagesegments]);
                 $moduleinstance->phonetic = $thephonetic;
@@ -1394,8 +1439,18 @@ class renderer extends \plugin_renderer_base {
         // If we are going to the dashboard we output that below.
         $passagerenderer = $this->page->get_renderer(constants::M_COMPONENT, 'passage');
         if ($attempts && $reviewattempts) {
-            $attemptreviewhtml = $renderer->show_attempt_for_review($moduleinstance, $attempts,
-            $havehumaneval, $haveaieval, $collapsespaces, $latestattempt, $token, $modulecontext, $passagerenderer, $embed);
+            $attemptreviewhtml = $renderer->show_attempt_for_review(
+                $moduleinstance,
+                $attempts,
+                $havehumaneval,
+                $haveaieval,
+                $collapsespaces,
+                $latestattempt,
+                $token,
+                $modulecontext,
+                $passagerenderer,
+                $embed
+            );
             echo $attemptreviewhtml;
             return;
         }
@@ -1411,8 +1466,11 @@ class renderer extends \plugin_renderer_base {
         $problembox = '';
         $token = "";
         if (empty($config->apiuser) || empty($config->apisecret)) {
-            $message = get_string('nocredentials', constants::M_COMPONENT,
-            $CFG->wwwroot . constants::M_PLUGINSETTINGS);
+            $message = get_string(
+                'nocredentials',
+                constants::M_COMPONENT,
+                $CFG->wwwroot . constants::M_PLUGINSETTINGS
+            );
             $problembox = $this->show_problembox($message);
         } else {
             // Fetch token.
@@ -1431,13 +1489,13 @@ class renderer extends \plugin_renderer_base {
         }
 
         $modelaudiorenderer = $this->page->get_renderer(
-        constants::M_COMPONENT,
-        'modelaudio'
+            constants::M_COMPONENT,
+            'modelaudio'
         );
         $modelaudiohtml = $modelaudiorenderer->render_modelaudio_player(
-        $moduleinstance,
-        $token,
-        false
+            $moduleinstance,
+            $token,
+            false
         );
 
         $welcomemessage = get_string('welcomemenu', constants::M_COMPONENT) .
@@ -1526,7 +1584,7 @@ class renderer extends \plugin_renderer_base {
         $modevisibility = $this->get_mode_visibility($moduleinstance, $canattempt, $latestattempt);
         $readreport = $this->get_readreport_data($moduleinstance, $modulecontext, $cm, $attempts, $latestattempt, $latestaigrade);
 
-        $stepsdata = $this->get_steps_data (
+        $stepsdata = $this->get_steps_data(
             $moduleinstance,
             $canattempt,
             $latestattempt,
@@ -1594,11 +1652,20 @@ class renderer extends \plugin_renderer_base {
             'welcomemessage' => $welcomemessage,
             'practice' => $practicedata['practice'],
             'practice_rtl' => $practicedata['practice_rtl'],
-            ], $this->get_all_constants());
+            ],
+            $this->get_all_constants()
+        );
 
         // Fetch AMD data, passing the existing templatecontext to be stored in JSON for JavaScript.
-        $activityamddata = $this->fetch_activity_amd($cm, $moduleinstance, $token,
-            $embed, $latestattempt, $templatecontext, $hasquizquestions);
+        $activityamddata = $this->fetch_activity_amd(
+            $cm,
+            $moduleinstance,
+            $token,
+            $embed,
+            $latestattempt,
+            $templatecontext,
+            $hasquizquestions
+        );
         $activityembedtags = $this->embed_activitydata_on_page($cm, $activityamddata);
 
         // Add the AMD data (well the embed tags) to the templatecontext.

@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/lib/formslib.php');
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 /**
  * Gradenow form for mod_readaloud
@@ -37,7 +37,6 @@ use \mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class gradenowform extends \moodleform {
-
     /**
      * Defines forms elements
      */
@@ -47,40 +46,64 @@ class gradenowform extends \moodleform {
         $mform = $this->_form;
         $mform->addElement('header', 'General', '');
 
-        //do we show the next button
-        $shownext =false;
-        if(isset($this->_customdata)) {
+        // do we show the next button
+        $shownext = false;
+        if (isset($this->_customdata)) {
             $shownext = $this->_customdata['shownext'];
         }
-        //$mform->addElement('text', 'name', 'BB', array('size'=>70));
+        // $mform->addElement('text', 'name', 'BB', array('size'=>70));
 
-        $buttonarray = array();
+        $buttonarray = [];
         $buttonarray[] = &$mform->createElement('cancel');
         $buttonarray[] = &$mform->createElement('submit', 'submitbutton', get_string('savechanges'));
         if ($shownext) {
             $buttonarray[] = &$mform->createElement('submit', 'submitbutton2', get_string('saveandnext', constants::M_COMPONENT));
         }
-        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->addGroup($buttonarray, 'buttonar', '', [' '], false);
 
-        //	$mform->closeHeaderBefore('buttonar');
+        // $mform->closeHeaderBefore('buttonar');
 
-        //-------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------
         // Adding the "general" fieldset, where all the common settings are showed,
         $mform->addElement('hidden', 'action');
         $mform->addElement('hidden', 'attemptid');
         $mform->addElement('hidden', 'n');
-        $mform->addElement('hidden', 'sessiontime', null,
-                array('class' => constants::M_GRADING_FORM_SESSIONTIME, 'id' => constants::M_GRADING_FORM_SESSIONTIME));
-        $mform->addElement('hidden', 'sessionerrors', null,
-                array('class' => constants::M_GRADING_FORM_SESSIONERRORS, 'id' => constants::M_GRADING_FORM_SESSIONERRORS));
-        $mform->addElement('hidden', 'wpm', null,
-                array('class' => constants::M_GRADING_FORM_WPM, 'id' => constants::M_GRADING_FORM_WPM));
-        $mform->addElement('hidden', 'accuracy', null,
-                array('class' => constants::M_GRADING_FORM_ACCURACY, 'id' => constants::M_GRADING_FORM_ACCURACY));
-        $mform->addElement('hidden', 'sessionscore', null,
-                array('class' => constants::M_GRADING_FORM_SESSIONSCORE, 'id' => constants::M_GRADING_FORM_SESSIONSCORE));
-        $mform->addElement('hidden', 'sessionendword', null,
-                array('class' => constants::M_GRADING_FORM_SESSIONENDWORD, 'id' => constants::M_GRADING_FORM_SESSIONENDWORD));
+        $mform->addElement(
+            'hidden',
+            'sessiontime',
+            null,
+            ['class' => constants::M_GRADING_FORM_SESSIONTIME, 'id' => constants::M_GRADING_FORM_SESSIONTIME]
+        );
+        $mform->addElement(
+            'hidden',
+            'sessionerrors',
+            null,
+            ['class' => constants::M_GRADING_FORM_SESSIONERRORS, 'id' => constants::M_GRADING_FORM_SESSIONERRORS]
+        );
+        $mform->addElement(
+            'hidden',
+            'wpm',
+            null,
+            ['class' => constants::M_GRADING_FORM_WPM, 'id' => constants::M_GRADING_FORM_WPM]
+        );
+        $mform->addElement(
+            'hidden',
+            'accuracy',
+            null,
+            ['class' => constants::M_GRADING_FORM_ACCURACY, 'id' => constants::M_GRADING_FORM_ACCURACY]
+        );
+        $mform->addElement(
+            'hidden',
+            'sessionscore',
+            null,
+            ['class' => constants::M_GRADING_FORM_SESSIONSCORE, 'id' => constants::M_GRADING_FORM_SESSIONSCORE]
+        );
+        $mform->addElement(
+            'hidden',
+            'sessionendword',
+            null,
+            ['class' => constants::M_GRADING_FORM_SESSIONENDWORD, 'id' => constants::M_GRADING_FORM_SESSIONENDWORD]
+        );
         $mform->setType('action', PARAM_TEXT);
         $mform->setType('attemptid', PARAM_INT);
         $mform->setType('n', PARAM_INT);
@@ -90,9 +113,8 @@ class gradenowform extends \moodleform {
         $mform->setType('accuracy', PARAM_INT);
         $mform->setType('wpm', PARAM_INT);
         $mform->setType('sessionendword', PARAM_INT);
-        //-------------------------------------------------------------------------------
+        // -------------------------------------------------------------------------------
         // add standard buttons, common to all modules
         // $this->add_action_buttons();
     }
 }
-

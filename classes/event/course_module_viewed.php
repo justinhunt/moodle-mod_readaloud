@@ -25,7 +25,7 @@
 namespace mod_readaloud\event;
 defined('MOODLE_INTERNAL') || die();
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 /**
  * The mod_readaloud course module viewed event class.
  *
@@ -35,7 +35,6 @@ use \mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_module_viewed extends \core\event\course_module_viewed {
-
     /**
      * Init method.
      */
@@ -46,11 +45,10 @@ class course_module_viewed extends \core\event\course_module_viewed {
     }
 
     public static function get_objectid_mapping() {
-        return array('db' => constants::M_TABLE, 'restore' => 'readaloud');
+        return ['db' => constants::M_TABLE, 'restore' => 'readaloud'];
     }
     public static function get_other_mapping() {
         // Nothing to map.
         return false;
     }
 }
-

@@ -27,13 +27,13 @@ use mod_readaloud\utils;
 use mod_readaloud\local\itemtype\item;
 
 require_once("../../../config.php");
-require_once($CFG->dirroot.'/mod/readaloud/lib.php');
+require_once($CFG->dirroot . '/mod/readaloud/lib.php');
 
 
 global $USER, $DB;
 
 // first get the nfo passed in to set up the page
-$itemid = optional_param('itemid', 0 , PARAM_INT);
+$itemid = optional_param('itemid', 0, PARAM_INT);
 $id     = required_param('id', PARAM_INT);         // Course Module ID
 $type  = optional_param('type', constants::NONE, PARAM_TEXT);
 $action = optional_param('action', 'edit', PARAM_TEXT);
@@ -58,7 +58,7 @@ $PAGE->set_pagelayout('incourse');
 // are we in new or edit mode?
 if ($itemid) {
     $item = $DB->get_record(constants::M_QTABLE, ['id' => $itemid, constants::M_MODNAME . 'id' => $cm->instance], '*', MUST_EXIST);
-    if(!$item){
+    if (!$item) {
         print_error('could not find item of id:' . $itemid);
     }
     $type = $item->type;
@@ -71,28 +71,30 @@ if ($itemid) {
 $redirecturl = new moodle_url('/mod/readaloud/rsquestion/rsquestions.php', ['id' => $cm->id]);
 
     // handle delete actions
-if($action == 'confirmdelete'){
+if ($action == 'confirmdelete') {
     // TODO more intelligent detection of question usage
-    $usecount = $DB->count_records(constants::M_USERTABLE, [constants::M_MODNAME .'id' => $cm->instance]);
-    if($usecount > 0){
+    $usecount = $DB->count_records(constants::M_USERTABLE, [constants::M_MODNAME . 'id' => $cm->instance]);
+    if ($usecount > 0) {
          redirect($redirecturl, get_string('iteminuse', constants::M_COMPONENT), 10);
     }
 
         $renderer = $PAGE->get_renderer(constants::M_COMPONENT);
         $rsquestionrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'rsquestion');
         echo $renderer->header($moduleinstance, $cm, 'rsquestions', null, get_string('confirmitemdeletetitle', constants::M_COMPONENT));
-        echo $rsquestionrenderer->confirm(get_string("confirmitemdelete", constants::M_COMPONENT, $item->name),
-        new moodle_url('/mod/readaloud/rsquestion/managersquestions.php', ['action' => 'delete', 'id' => $cm->id, 'itemid' => $itemid]),
-        $redirecturl);
+        echo $rsquestionrenderer->confirm(
+            get_string("confirmitemdelete", constants::M_COMPONENT, $item->name),
+            new moodle_url('/mod/readaloud/rsquestion/managersquestions.php', ['action' => 'delete', 'id' => $cm->id, 'itemid' => $itemid]),
+            $redirecturl
+        );
     echo $renderer->footer();
     return;
 
     /////// Delete item NOW////////
-}else if ($action == 'delete'){
+} else if ($action == 'delete') {
     require_sesskey();
     $success = helper::delete_item($moduleinstance, $itemid, $context);
     redirect($redirecturl);
-}else if($action == "moveup" || $action == "movedown"){
+} else if ($action == "moveup" || $action == "movedown") {
     helper::move_item($moduleinstance, $itemid, $action);
     redirect($redirecturl);
 }
@@ -106,11 +108,12 @@ $filemanageroptions = \mod_readaloud\local\itemtype\item::fetch_filemanager_opti
 
 // get the mform for our item
 $itemformclass  = utils::fetch_itemform_classname($type);
-if(!$itemformclass){
+if (!$itemformclass) {
     throw new \moodle_exception('No item type specified');
     return 0;
 }
-$mform = new $itemformclass(null,
+$mform = new $itemformclass(
+    null,
     ['editoroptions' => $editoroptions,
         'filemanageroptions' => $filemanageroptions,
         'moduleinstance' => $moduleinstance]
@@ -127,30 +130,28 @@ if ($data = $mform->get_data()) {
     require_sesskey();
     $data->type = $type;
 
-  
 
 
 
-    if($edit){
+
+    if ($edit) {
         $theitem = utils::fetch_item_from_itemrecord($data, $moduleinstance);
         $olditem = $item;
-    }else{
+    } else {
         $theitem = utils::fetch_item_from_itemrecord($data, $moduleinstance);
         $olditem = false;
         // echo json_encode($data,JSON_PRETTY_PRINT);
         // die;
-
     }
 
     // remove bad accents and things that mess up transcription (kind of like clear but permanent)
     $theitem->deaccent();
 
     $result = $theitem->update_insert_item();
-    if($result->error == true){
+    if ($result->error == true) {
         print_error($result->message);
         redirect($redirecturl);
-
-    }else{
+    } else {
         $theitem = $result->item;
     }
 
@@ -166,7 +167,7 @@ if ($edit) {
 
     // make sure the media upload fields are in the correct state
     $fs = get_file_storage();
-    $files = $fs->get_area_files( $context->id,  constants::M_COMPONENT, constants::MEDIAQUESTION, $data->itemid);
+    $files = $fs->get_area_files($context->id, constants::M_COMPONENT, constants::MEDIAQUESTION, $data->itemid);
     if ($files) {
         $data->addmedia = 1;
     } else {
@@ -181,9 +182,16 @@ if ($edit) {
     if (!empty($data->{constants::QUESTIONTEXTAREA})) {
         $edoptions = constants::ITEMTEXTAREA_EDOPTIONS;
         $edoptions['context'] = $context;
-        $data->{constants::QUESTIONTEXTAREA. 'format'} = FORMAT_HTML;
-        $data = file_prepare_standard_editor($data, constants::QUESTIONTEXTAREA, $edoptions, $context, constants::M_COMPONENT,
-        constants::TEXTQUESTION_FILEAREA, $data->itemid);
+        $data->{constants::QUESTIONTEXTAREA . 'format'} = FORMAT_HTML;
+        $data = file_prepare_standard_editor(
+            $data,
+            constants::QUESTIONTEXTAREA,
+            $edoptions,
+            $context,
+            constants::M_COMPONENT,
+            constants::TEXTQUESTION_FILEAREA,
+            $data->itemid
+        );
         $data->addtextarea = 1;
     } else {
         $data->addtextarea = 0;
@@ -191,9 +199,14 @@ if ($edit) {
 
     // init our itemmedia upload file field
     $draftitemid = file_get_submitted_draft_itemid(constants::MEDIAQUESTION);
-    file_prepare_draft_area($draftitemid, $context->id, constants::M_COMPONENT,
-    constants::MEDIAQUESTION, $data->itemid,
-    $filemanageroptions);
+    file_prepare_draft_area(
+        $draftitemid,
+        $context->id,
+        constants::M_COMPONENT,
+        constants::MEDIAQUESTION,
+        $data->itemid,
+        $filemanageroptions
+    );
     $data->{constants::MEDIAQUESTION} = $draftitemid;
 
     // show the fields by default if they have some content
@@ -204,17 +217,20 @@ if ($edit) {
     // Init file upload areas for item answers
     for ($i = 1; $i <= constants::MAXANSWERS; $i++) {
         $draftitemid = file_get_submitted_draft_itemid(constants::FILEANSWER . $i);
-        file_prepare_draft_area($draftitemid, $context->id, constants::M_COMPONENT,
-                constants::FILEANSWER . $i, $data->itemid,
-                $filemanageroptions);
+        file_prepare_draft_area(
+            $draftitemid,
+            $context->id,
+            constants::M_COMPONENT,
+            constants::FILEANSWER . $i,
+            $data->itemid,
+            $filemanageroptions
+        );
         $data->{constants::FILEANSWER . $i} = $draftitemid;
     }
 
     $PAGE->requires->js_call_amd(constants::M_COMPONENT . '/mediaprompts', 'init', [$visibility]);
-
-
 } else {
-    $data = new stdClass;
+    $data = new stdClass();
     $data->itemid = null;
     $data->visible = 1;
     $data->type = $type;

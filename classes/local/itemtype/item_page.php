@@ -29,8 +29,7 @@ use renderable;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class item_page extends item {
-
-    //the item type
+    // the item type
     public const ITEMTYPE = constants::TYPE_PAGE;
 
 
@@ -42,7 +41,7 @@ class item_page extends item {
      */
     public function export_for_template(\renderer_base $output) {
 
-        $testitem= new \stdClass();
+        $testitem = new \stdClass();
         $testitem = $this->get_common_elements($testitem);
         $testitem = $this->get_text_answer_elements($testitem);
         $testitem = $this->get_polly_options($testitem);
@@ -50,5 +49,4 @@ class item_page extends item {
 
         return $testitem;
     }
-
 }

@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
 /**
  * Created by PhpStorm.
  * User: ishineguy
@@ -54,34 +69,31 @@ class Helper
      *
      * @return array An array of strings.
      */
-    public static function split($str, $length = 1, $yoon = false)
-    {
+    public static function split($str, $length = 1, $yoon = false) {
         // First split the given string into single characters ; default and
         // most common case.
         $chrs = preg_split("//u", $str, 0, PREG_SPLIT_NO_EMPTY);
-        if($length === 1 && !$yoon) {
+        if ($length === 1 && !$yoon) {
             return $chrs;
         }
 
         // ... handle cases where length != 1
         $str_length = count($chrs);
-        $concatChrs = array();
+        $concatChrs = [];
         for ($i = 0, $j = -1, $k = -1; $i < $str_length; $i++) {
-
             // With yoon set to TRUE, consider the base syllable and the yoon
             // character as a single character.
             $skip = false;
             $k++;
-            if($yoon && preg_match(self::PREG_PATTERN_KANA_YOON, $chrs[$i])) {
+            if ($yoon && preg_match(self::PREG_PATTERN_KANA_YOON, $chrs[$i])) {
                 $skip = true;
                 $k--;
             }
 
-            if(!$skip && $k % $length === 0) {
+            if (!$skip && $k % $length === 0) {
                 $j++;
                 $concatChrs[$j] = $chrs[$i];
-            }
-            else {
+            } else {
                 $concatChrs[$j] .= $chrs[$i];
             }
         }
@@ -100,8 +112,7 @@ class Helper
      *
      * @see mb_substr()
      */
-    public static function subString($str, $begin, $length)
-    {
+    public static function subString($str, $begin, $length) {
         return mb_substr($str, $begin, $length, 'UTF-8');
     }
 
@@ -116,8 +127,7 @@ class Helper
      *
      * @see subString()
      */
-    public static function charAt($str, $index)
-    {
+    public static function charAt($str, $index) {
         return self::subString($str, $index, 1);
     }
 
@@ -132,8 +142,7 @@ class Helper
      *
      * @see mb_substr_count()
      */
-    public static function countSubString($str, $needle)
-    {
+    public static function countSubString($str, $needle) {
         return mb_substr_count($str, $needle, 'UTF-8');
     }
 
@@ -146,10 +155,9 @@ class Helper
      *
      * @return array An array of kanji substrings.
      */
-    public static function extractKanji($str, $length = 0)
-    {
+    public static function extractKanji($str, $length = 0) {
         // No length given, extract kanji substrings as it is.
-        if(!$length) {
+        if (!$length) {
             return preg_split(self::PREG_PATTERN_NOT_KANJI, $str, 0, PREG_SPLIT_NO_EMPTY);
         }
 
@@ -172,10 +180,9 @@ class Helper
      *
      * @return array An array of hiragana substrings.
      */
-    public static function extractHiragana($str, $length = 0, $yoon = false)
-    {
+    public static function extractHiragana($str, $length = 0, $yoon = false) {
         // No length given, extract hiragana substrings as it is.
-        if(!$length) {
+        if (!$length) {
             return preg_split(self::PREG_PATTERN_NOT_HIRAGANA, $str, 0, PREG_SPLIT_NO_EMPTY);
         }
 
@@ -198,10 +205,9 @@ class Helper
      *
      * @return array An array of katakana substrings.
      */
-    public static function extractKatakana($str, $length = 0, $yoon = false)
-    {
+    public static function extractKatakana($str, $length = 0, $yoon = false) {
         // No length given, extract katakana substrings as it is.
-        if(!$length) {
+        if (!$length) {
             return preg_split(self::PREG_PATTERN_NOT_KATAKANA, $str, 0, PREG_SPLIT_NO_EMPTY);
         }
 
@@ -224,10 +230,9 @@ class Helper
      *
      * @return array An array of kana substrings.
      */
-    public static function extractKana($str, $length = 0, $yoon = false)
-    {
+    public static function extractKana($str, $length = 0, $yoon = false) {
         // No length given, extract kana substrings as it is.
-        if(!$length) {
+        if (!$length) {
             return preg_split(self::PREG_PATTERN_NOT_KANA, $str, 0, PREG_SPLIT_NO_EMPTY);
         }
 
@@ -244,8 +249,7 @@ class Helper
      * @param  string $str The input string.
      * @return string A cleaned string.
      */
-    public static function trim($str)
-    {
+    public static function trim($str) {
         return preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $str);
     }
 
@@ -258,26 +262,25 @@ class Helper
      *
      * @return string Cleaned string.
      */
-    public static function removeMacrons($str)
-    {
-        if ( !preg_match('/[\x80-\xff]/', $str) ) {
+    public static function removeMacrons($str) {
+        if (!preg_match('/[\x80-\xff]/', $str)) {
             return $str;
         }
 
-        $chars = array(
+        $chars = [
             // Some romanization system may use circumflex accent rather than macron
-                chr(195).chr(130) => 'A', chr(195).chr(162) => 'a',
-                chr(195).chr(142) => 'I', chr(195).chr(174) => 'i',
-                chr(195).chr(155) => 'U', chr(195).chr(187) => 'u',
-                chr(195).chr(138) => 'E', chr(195).chr(170) => 'e',
-                chr(195).chr(148) => 'O', chr(195).chr(180) => 'o',
+                chr(195) . chr(130) => 'A', chr(195) . chr(162) => 'a',
+                chr(195) . chr(142) => 'I', chr(195) . chr(174) => 'i',
+                chr(195) . chr(155) => 'U', chr(195) . chr(187) => 'u',
+                chr(195) . chr(138) => 'E', chr(195) . chr(170) => 'e',
+                chr(195) . chr(148) => 'O', chr(195) . chr(180) => 'o',
             // Macrons
-                chr(196).chr(128) => 'A', chr(196).chr(129) => 'a',
-                chr(196).chr(170) => 'I', chr(196).chr(171) => 'i',
-                chr(197).chr(170) => 'U', chr(197).chr(171) => 'u',
-                chr(196).chr(146) => 'E', chr(196).chr(147) => 'e',
-                chr(197).chr(140) => 'O', chr(197).chr(141) => 'o',
-        );
+                chr(196) . chr(128) => 'A', chr(196) . chr(129) => 'a',
+                chr(196) . chr(170) => 'I', chr(196) . chr(171) => 'i',
+                chr(197) . chr(170) => 'U', chr(197) . chr(171) => 'u',
+                chr(196) . chr(146) => 'E', chr(196) . chr(147) => 'e',
+                chr(197) . chr(140) => 'O', chr(197) . chr(141) => 'o',
+        ];
 
         return strtr($str, $chars);
     }
@@ -291,8 +294,7 @@ class Helper
      * @return string Converted string.
      *
      */
-    public static function convertKatakanaToHiragana($str)
-    {
+    public static function convertKatakanaToHiragana($str) {
         return mb_convert_kana($str, 'c', 'UTF-8');
     }
 
@@ -304,8 +306,7 @@ class Helper
      *
      * @return string Converted string.
      */
-    public static function convertHiraganaToKatakana($str)
-    {
+    public static function convertHiraganaToKatakana($str) {
         return mb_convert_kana($str, 'C', 'UTF-8');
     }
 }

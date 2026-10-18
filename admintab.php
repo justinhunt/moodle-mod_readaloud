@@ -44,8 +44,10 @@ if ($id) {
     print_error(0, 'You must specify a course_module ID or an instance ID');
 }
 
-$PAGE->set_url(constants::M_URL . '/admintab.php',
-        ['id' => $cm->id]);
+$PAGE->set_url(
+    constants::M_URL . '/admintab.php',
+    ['id' => $cm->id]
+);
 require_login($course, true, $cm);
 $modulecontext = context_module::instance($cm->id);
 
@@ -66,8 +68,10 @@ if ($adata) {
 $gtform = new \mod_readaloud\form\guidedtranscriptionform();
 $gtdata = $gtform->get_data();
 if ($gtdata) {
-    if ($gtdata->usecorpus == constants::GUIDEDTRANS_CORPUS &&
-        (empty($moduleinstance->corpushash) || $gtdata->corpusrange != $moduleinstance->corpusrange)) {
+    if (
+        $gtdata->usecorpus == constants::GUIDEDTRANS_CORPUS &&
+        (empty($moduleinstance->corpushash) || $gtdata->corpusrange != $moduleinstance->corpusrange)
+    ) {
         $gtdata->corpushash = utils::fetch_current_corpushash($moduleinstance, $gtdata->corpusrange);
     }
 
@@ -75,36 +79,39 @@ if ($gtdata) {
     if (isset($gtdata->corpushash)) {
         $updatefields[] = 'corpushash';
     }
-    switch($gtdata->applysettingsrange){
+    switch ($gtdata->applysettingsrange) {
         case constants::APPLY_ACTIVITY:
             foreach ($updatefields as $thefield) {
                 $DB->set_field(constants::M_TABLE, $thefield, $gtdata->{$thefield}, ['id' => $moduleinstance->id, 'ttslanguage' => $moduleinstance->ttslanguage]);
             }
             break;
         case constants::APPLY_COURSE:
-            foreach($updatefields as $thefield) {
+            foreach ($updatefields as $thefield) {
                 $DB->set_field(constants::M_TABLE, $thefield, $gtdata->{$thefield}, ['course' => $moduleinstance->course, 'ttslanguage' => $moduleinstance->ttslanguage]);
             }
             break;
         case constants::APPLY_SITE:
-            foreach($updatefields as $thefield) {
+            foreach ($updatefields as $thefield) {
                 $DB->set_field(constants::M_TABLE, $thefield, $gtdata->{$thefield}, ['ttslanguage' => $moduleinstance->ttslanguage]);
             }
             break;
     }
 
-    $url = new \moodle_url(constants::M_URL . '/admintab.php',
+    $url = new \moodle_url(
+        constants::M_URL . '/admintab.php',
         ['id' => $cm->id,
-            'action' => 'menu']);
+        'action' => 'menu']
+    );
     redirect($url, get_string('usecorpuschanged', constants::M_COMPONENT), 5);
 }
 
 switch ($action) {
-
     case 'machineregradeall':
-        $url = new \moodle_url(constants::M_URL . '/admintab.php',
-                ['id' => $cm->id,
-                        'action' => 'menu']);
+        $url = new \moodle_url(
+            constants::M_URL . '/admintab.php',
+            ['id' => $cm->id,
+            'action' => 'menu']
+        );
         $aievals = $DB->get_records(constants::M_AITABLE, ['readaloudid' => $moduleinstance->id]);
         if (!$aievals) {
             redirect($url, get_string('noattemptsregrade', constants::M_COMPONENT));
@@ -125,28 +132,33 @@ switch ($action) {
         }
         break;
     case 'pushalltogradebook':
-        $url = new \moodle_url(constants::M_URL . '/admintab.php',
-                ['id' => $cm->id,
-                        'action' => 'menu']);
-        if (($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
-                        $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY)
-            && utils::can_transcribe($moduleinstance)) {
+        $url = new \moodle_url(
+            constants::M_URL . '/admintab.php',
+            ['id' => $cm->id,
+            'action' => 'menu']
+        );
+        if (
+            ($moduleinstance->machgrademethod == constants::MACHINEGRADE_HYBRID ||
+                        $moduleinstance->machgrademethod == constants::MACHINEGRADE_MACHINEONLY) &&
+            utils::can_transcribe($moduleinstance)
+        ) {
             readaloud_update_grades($moduleinstance);
         }
         redirect($url, get_string('machinegradespushed', constants::M_COMPONENT), 5);
         break;
 
     case 'pushcorpus':
-        $url = new \moodle_url(constants::M_URL . '/admintab.php',
+        $url = new \moodle_url(
+            constants::M_URL . '/admintab.php',
             ['id' => $cm->id,
-                'action' => 'menu']);
+            'action' => 'menu']
+        );
         utils::push_corpus($moduleinstance, $moduleinstance->corpusrange);
         redirect($url, get_string('corpuspushed', constants::M_COMPONENT), 5);
         break;
 
     case 'menu':
     default:
-
 }
 
 /// Set up the page header
@@ -154,9 +166,9 @@ $PAGE->set_title(format_string($moduleinstance->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($modulecontext);
 
-if($config->enablesetuptab){
+if ($config->enablesetuptab) {
     $PAGE->set_pagelayout('popup');
-}else{
+} else {
     $PAGE->set_pagelayout('incourse');
 }
 
@@ -171,8 +183,10 @@ $tableofmistranscriptions = $renderer->show_all_mistranscriptions($mistranscript
 
 echo $renderer->header($moduleinstance, $cm, $mode, null, get_string('admintab', constants::M_COMPONENT));
 
-echo $renderer->show_admintab_heading(get_string('admintabtitle', constants::M_COMPONENT),
-        get_string('admintabinstructions', constants::M_COMPONENT));
+echo $renderer->show_admintab_heading(
+    get_string('admintabtitle', constants::M_COMPONENT),
+    get_string('admintabinstructions', constants::M_COMPONENT)
+);
 
 // This is the estimate of errors based on comparing human grades to machine grades
 // echo $renderer->show_currenterrorestimate(utils::estimate_errors($moduleinstance->id));

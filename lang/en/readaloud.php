@@ -28,7 +28,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['modulename'] = 'Poodll ReadAloud';
-$string['modulenameplural'] = 'Poodll ReadAlouds';
 $string['modulename_help'] =
         'ReadAloud gives students practice and feedback reading passages aloud. It can be entirely automatically graded and helps teachers assess and understand their students second language reading ability. The process is as follows:
         
@@ -39,6 +38,7 @@ $string['modulename_help'] =
 3. Students READ the entire passage aloud.
         
 4. Students and teachers can see the FEEDBACK and RESULTS.';
+$string['modulenameplural'] = 'Poodll ReadAlouds';
 $string['readaloudfieldset'] = 'Custom example fieldset';
 $string['readaloudname'] = 'Poodll ReadAloud';
 $string['readaloudname_help'] =

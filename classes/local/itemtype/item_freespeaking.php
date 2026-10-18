@@ -29,15 +29,14 @@ use renderable;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class item_freespeaking extends item {
-
     // The item type.
     public const ITEMTYPE = constants::TYPE_FREESPEAKING;
 
      /**
-     * The class constructor.
-     *
-     */
-    public function __construct($itemrecord, $moduleinstance=false, $context = false) {
+      * The class constructor.
+      *
+      */
+    public function __construct($itemrecord, $moduleinstance = false, $context = false) {
         parent::__construct($itemrecord, $moduleinstance, $context);
         $this->needs_speechrec = true;
     }
@@ -133,5 +132,4 @@ class item_freespeaking extends item {
         $keycols['text4'] = ['jsonname' => 'aigradefeedbacklanguage', 'type' => 'string', 'optional' => true, 'default' => 'en-US', 'dbname' => constants::AIGRADE_FEEDBACK_LANGUAGE];
         return $keycols;
     }
-
 }

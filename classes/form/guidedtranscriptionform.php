@@ -60,7 +60,6 @@ use mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class guidedtranscriptionform extends \moodleform {
-
     /**
      * Add the required basic elements to the form.
      *
@@ -90,6 +89,5 @@ class guidedtranscriptionform extends \moodleform {
 
         // add the action buttons
         $this->add_action_buttons(get_string('cancel'), get_string('save'));
-
     }
 }

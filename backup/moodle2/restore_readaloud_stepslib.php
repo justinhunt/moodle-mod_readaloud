@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,7 +20,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use \mod_readaloud\constants;
+use mod_readaloud\constants;
 
 /**
  * Define all the restore steps that will be used by the restore_readaloud_activity_task
@@ -31,13 +30,12 @@ use \mod_readaloud\constants;
  * Structure step to restore one readaloud activity
  */
 class restore_readaloud_activity_structure_step extends restore_activity_structure_step {
-
     /** @var int steps bitmask of the restored activity, used to set attempt status for old backups */
     protected $activitysteps = 0;
 
     protected function define_structure() {
 
-        $paths = array();
+        $paths = [];
 
         $userinfo = $this->get_setting_value('userinfo'); // are we including userinfo?
 
@@ -49,9 +47,11 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $oneactivity = new restore_path_element(constants::M_MODNAME, '/activity/readaloud');
         $paths[] = $oneactivity;
 
-        //rsquestions
-        $rsquestions = new restore_path_element(constants::M_QTABLE,
-                '/activity/readaloud/rsquestions/rsquestion');
+        // rsquestions
+        $rsquestions = new restore_path_element(
+            constants::M_QTABLE,
+            '/activity/readaloud/rsquestions/rsquestion'
+        );
         $paths[] = $rsquestions;
 
         // End here if no-user data has been selected
@@ -62,14 +62,18 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         ////////////////////////////////////////////////////////////////////////
         // XML interesting paths - user data
         ////////////////////////////////////////////////////////////////////////
-        //attempts
-        $attempts = new restore_path_element(constants::M_USERTABLE,
-                '/activity/readaloud/attempts/attempt');
+        // attempts
+        $attempts = new restore_path_element(
+            constants::M_USERTABLE,
+            '/activity/readaloud/attempts/attempt'
+        );
         $paths[] = $attempts;
 
-        //airesults
-        $airesults = new restore_path_element(constants::M_AITABLE,
-                '/activity/readaloud/attempts/attempt/airesults/airesult');
+        // airesults
+        $airesults = new restore_path_element(
+            constants::M_AITABLE,
+            '/activity/readaloud/attempts/attempt/airesults/airesult'
+        );
         $paths[] = $airesults;
 
         // Return the paths wrapped into standard activity structure
@@ -114,10 +118,10 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->timecreated = $this->apply_date_offset($data->timecreated);
-        if(isset($data->viewstart) && !empty($data->viewstart)){
+        if (isset($data->viewstart) && !empty($data->viewstart)) {
             $data->viewstart = $this->apply_date_offset($data->viewstart);
         }
-        if(isset($data->viewend) && !empty($data->viewend)){
+        if (isset($data->viewend) && !empty($data->viewend)) {
             $data->viewend = $this->apply_date_offset($data->viewend);
         }
 
@@ -151,8 +155,7 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
 
         $data->timemodified = $this->apply_date_offset($data->timemodified);
 
-
-        $data->{constants::M_MODNAME .'id'} = $this->get_new_parentid(constants::M_MODNAME);
+        $data->{constants::M_MODNAME . 'id'} = $this->get_new_parentid(constants::M_MODNAME);
         $data = $this->replace_nulls_with_defaults(constants::M_QTABLE, $data);
         $newquestionid = $DB->insert_record(constants::M_QTABLE, $data);
         $this->set_mapping(constants::M_QTABLE, $oldid, $newquestionid, true); // Mapping with files
@@ -180,9 +183,9 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $newitemid = $DB->insert_record(constants::M_USERTABLE, $data);
 
         // Mapping without files
-        //here we set the table name as the "key" to the mapping, but its actually arbitrary
-        //'we would need to use the "key" later when calling add_related_files for the itemid in the moodle files area
-        //IF we had files for this set of data. )
+        // here we set the table name as the "key" to the mapping, but its actually arbitrary
+        // 'we would need to use the "key" later when calling add_related_files for the itemid in the moodle files area
+        // IF we had files for this set of data. )
         $this->set_mapping(constants::M_USERTABLE, $oldid, $newitemid, true);
     }
 
@@ -200,9 +203,9 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $newitemid = $DB->insert_record(constants::M_AITABLE, $data);
 
         // Mapping without files
-        //here we set the table name as the "key" to the mapping, but its actually arbitrary
-        //'we would need to use the "key" later when calling add_related_files for the itemid in the moodle files area
-        //IF we had files for this set of data. )
+        // here we set the table name as the "key" to the mapping, but its actually arbitrary
+        // 'we would need to use the "key" later when calling add_related_files for the itemid in the moodle files area
+        // IF we had files for this set of data. )
         $this->set_mapping(constants::M_AITABLE, $oldid, $newitemid, true);
     }
 
@@ -214,20 +217,19 @@ class restore_readaloud_activity_structure_step extends restore_activity_structu
         $this->add_related_files(constants::M_COMPONENT, 'feedback', null);
         $this->add_related_files(constants::M_COMPONENT, constants::PASSAGEPICTURE_FILEAREA, null);
 
-        //question stuff
-        //do question areas
+        // question stuff
+        // do question areas
         $this->add_related_files(constants::M_COMPONENT, constants::TEXTQUESTION_FILEAREA, constants::M_QTABLE);
 
-        //do answer areas
-        for($anumber=1;$anumber<=constants::MAXANSWERS;$anumber++) {
+        // do answer areas
+        for ($anumber = 1; $anumber <= constants::MAXANSWERS; $anumber++) {
             $this->add_related_files(constants::M_COMPONENT, constants::TEXTANSWER_FILEAREA . $anumber, constants::M_QTABLE);
             $this->add_related_files(constants::M_COMPONENT, constants::FILEANSWER . $anumber, constants::M_QTABLE);
         }
 
-
         $userinfo = $this->get_setting_value('userinfo'); // are we including userinfo?
         if ($userinfo) {
-           // $this->add_related_files(constants::M_COMPONENT, constants::M_FILEAREA_SUBMISSIONS, constants::M_USERTABLE);
+            // $this->add_related_files(constants::M_COMPONENT, constants::M_FILEAREA_SUBMISSIONS, constants::M_USERTABLE);
         }
     }
 }

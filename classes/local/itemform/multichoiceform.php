@@ -26,32 +26,39 @@ namespace mod_readaloud\local\itemform;
 use mod_readaloud\constants;
 
 class multichoiceform extends baseform {
-
-
     public $type = constants::TYPE_MULTICHOICE;
 
     public function custom_definition() {
         // add a heading for this form
         $this->add_itemsettings_heading();
         $this->add_showlistorreadoptions(constants::LISTENORREAD, get_string('listenorread', constants::M_COMPONENT), constants::LISTENORREAD_READ);
-        $this->add_voiceselect(constants::POLLYVOICE, get_string('choosemultiaudiovoice', constants::M_COMPONENT),
+        $this->add_voiceselect(
+            constants::POLLYVOICE,
+            get_string('choosemultiaudiovoice', constants::M_COMPONENT),
             constants::LISTENORREAD,
-            [constants::LISTENORREAD_READ, constants::LISTENORREAD_IMAGE]);
-        $this->add_voiceoptions(constants::POLLYOPTION, get_string('choosevoiceoption', constants::M_COMPONENT),
+            [constants::LISTENORREAD_READ, constants::LISTENORREAD_IMAGE]
+        );
+        $this->add_voiceoptions(
+            constants::POLLYOPTION,
+            get_string('choosevoiceoption', constants::M_COMPONENT),
             constants::LISTENORREAD,
-            [constants::LISTENORREAD_READ, constants::LISTENORREAD_IMAGE]);
+            [constants::LISTENORREAD_READ, constants::LISTENORREAD_IMAGE]
+        );
         $this->add_confirmchoice(constants::CONFIRMCHOICE, get_string('confirmchoice_formlabel', constants::M_COMPONENT));
 
         $this->add_correctanswer();
         for ($i = 1; $i <= constants::MAXANSWERS; $i++) {
             // $required = $i == 1;
-             $required = false; //this should be true for first two options, but with images involved, how to do that?
+             $required = false; // this should be true for first two options, but with images involved, how to do that?
              $this->add_textboxresponse($i, 'answer' . $i, $required);
-             $this->add_imageresponse_upload($i, 'answer' . $i, false,
-             constants::LISTENORREAD,
-             [constants::LISTENORREAD_LISTEN, constants::LISTENORREAD_READ, constants::LISTENORREAD_LISTENANDREAD]);
-         }
+             $this->add_imageresponse_upload(
+                 $i,
+                 'answer' . $i,
+                 false,
+                 constants::LISTENORREAD,
+                 [constants::LISTENORREAD_LISTEN, constants::LISTENORREAD_READ, constants::LISTENORREAD_LISTENANDREAD]
+             );
+        }
         // $this->add_repeating_textboxes('sentence',5);
     }
-
 }

@@ -43,7 +43,6 @@ use mod_readaloud\constants;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class attempt_submitted extends \core\event\base {
-
     /**
      * Create instance of event.
      *
@@ -105,9 +104,11 @@ class attempt_submitted extends \core\event\base {
      */
     public function get_url() {
 
-        return new \moodle_url('/mod/readaloud/reports.php',
+        return new \moodle_url(
+            '/mod/readaloud/reports.php',
             ['report' => 'userattempts', 'attemptid' => $this->objectid, 'userid' => $this->userid,
-             'id' => $this->contextinstanceid]);
+            'id' => $this->contextinstanceid]
+        );
     }
 
     /**
@@ -118,7 +119,6 @@ class attempt_submitted extends \core\event\base {
      */
     protected function validate_data() {
         parent::validate_data();
-
     }
 
     public static function get_objectid_mapping(): array {
