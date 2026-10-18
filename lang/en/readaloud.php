@@ -113,6 +113,7 @@ $string['readaloud:addinstance'] = 'Add a new Read Aloud';
 
 $string['readaloud:manage'] = 'Can manage Read Aloud instances';
 $string['readaloud:manageattempts'] = 'Can manage Read Aloud attempts';
+$string['readaloud:managequestions'] = 'Can manage Read Aloud quiz questions';
 $string['readaloud:preview'] = 'Can preview Read Aloud activities';
 $string['readaloud:pushtoclones'] = 'Can push settings to clones';
 $string['readaloud:submit'] = 'Can submit Read Aloud attempts';
