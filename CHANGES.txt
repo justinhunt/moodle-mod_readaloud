@@ -1,3 +1,6 @@
+2.1.32 (Build 2026101800)
+- Fixed broken text generation and simplification
+
 2.1.31 (Build 2026092500)
 - Added streaming speech recognition for read mode
 - Fixed DB column setting inconsistencies on upgraded sites
