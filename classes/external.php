@@ -21,18 +21,9 @@
  * @author  Justin Hunt - Poodll.com
  */
 
-global $CFG;
-
-// This is for pre M4.0 and post M4.0 to work on same code base
-require_once($CFG->libdir . '/externallib.php');
-
-/*
- * This is for M4.0 and later
 use core_external\external_api;
 use core_external\external_function_parameters;
 use core_external\external_value;
-*/
-
 use mod_readaloud\utils;
 use mod_readaloud\diff;
 use mod_readaloud\alphabetconverter;
@@ -669,7 +660,8 @@ class mod_readaloud_external extends external_api {
 
         // If its "all" we return everything.
         if ($requestedcontextitems == 'all') {
-            return $appcontextobj;
+            ob_clean();
+            return json_encode($appcontextobj);
         }
 
         // Else we make an item array and loop it.
