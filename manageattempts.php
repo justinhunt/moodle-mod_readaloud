@@ -51,7 +51,7 @@ require_capability('mod/readaloud:manageattempts', $context);
 if ($action == 'delete' && $attemptid > 0) {
     $attempt = $DB->get_record(constants::M_USERTABLE, ['id' => $attemptid, 'readaloudid' => $cm->instance], '*', MUST_EXIST);
     if (!$attempt) {
-        print_error('could not find attempt of id:' . $attemptid);
+        throw new \moodle_exception('could not find attempt of id:' . $attemptid);
     }
 } else {
     $edit = false;
@@ -79,10 +79,10 @@ switch ($action) {
         require_sesskey();
         $attempt = $DB->get_record(constants::M_USERTABLE, ['id' => $attemptid, 'readaloudid' => $cm->instance], '*', MUST_EXIST);
         if (!groups_user_groups_visible($course, $attempt->userid, $cm)) {
-            print_error("You do not have permssion to delete this user");
+            throw new \moodle_exception("You do not have permssion to delete this user");
             redirect($redirecturl);
         } else if (!$DB->delete_records(constants::M_USERTABLE, ['id' => $attemptid])) {
-            print_error("Could not delete attempt");
+            throw new \moodle_exception("Could not delete attempt");
             redirect($redirecturl);
         }
         // delete AI grades for this attempt too
@@ -102,7 +102,7 @@ switch ($action) {
         // if no groups, or can see all groups then the SQL is simple
         if ($supergrouper || $groupsmode != SEPARATEGROUPS) {
             if (!$DB->delete_records(constants::M_USERTABLE, ['readaloudid' => $moduleinstance->id])) {
-                print_error("Could not delete attempts (all)");
+                throw new \moodle_exception("Could not delete attempts (all)");
                 redirect($redirecturl);
             }
             // delete AI grades for this activity too

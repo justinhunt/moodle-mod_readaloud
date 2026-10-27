@@ -44,7 +44,7 @@ if ($id) {
     $course     = $DB->get_record('course', ['id' => $moduleinstance->course], '*', MUST_EXIST);
     $cm         = get_coursemodule_from_instance(constants::M_TABLE, $moduleinstance->id, $course->id, false, MUST_EXIST);
 } else {
-    print_error('You must specify a course_module ID or an instance ID');
+    throw new \moodle_exception('You must specify a course_module ID or an instance ID');
 }
 
 $PAGE->set_url(

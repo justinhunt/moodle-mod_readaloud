@@ -59,7 +59,7 @@ $PAGE->set_pagelayout('incourse');
 if ($itemid) {
     $item = $DB->get_record(constants::M_QTABLE, ['id' => $itemid, constants::M_MODNAME . 'id' => $cm->instance], '*', MUST_EXIST);
     if (!$item) {
-        print_error('could not find item of id:' . $itemid);
+        throw new \moodle_exception('could not find item of id:' . $itemid);
     }
     $type = $item->type;
     $edit = true;
@@ -149,7 +149,7 @@ if ($data = $mform->get_data()) {
 
     $result = $theitem->update_insert_item();
     if ($result->error == true) {
-        print_error($result->message);
+        throw new \moodle_exception($result->message);
         redirect($redirecturl);
     } else {
         $theitem = $result->item;

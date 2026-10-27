@@ -1,6 +1,7 @@
 2.1.34 (Build 2026102700)
 - Use the core_external web service classes (the old global names log debugging notices on Moodle 5.3)
 - Fixed fetching all view data in one web service call
+- Replaced calls to print_error() and error(), which no longer exist in Moodle, so error pages show their message instead of a fatal error
 
 2.1.33 (Build 2026101801)
 - Add missing lang string for the managequestions capability

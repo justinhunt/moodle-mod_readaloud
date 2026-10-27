@@ -924,7 +924,7 @@ abstract class item implements renderable, templatable {
         $ret = false;
 
         if (!$DB->delete_records(constants::M_QTABLE, ['id' => $itemid])) {
-            print_error("Could not delete item");
+            throw new \moodle_exception("Could not delete item");
             return $ret;
         }
         // remove files
