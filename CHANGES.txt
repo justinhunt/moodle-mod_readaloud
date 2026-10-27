@@ -2,6 +2,8 @@
 - Use the core_external web service classes (the old global names log debugging notices on Moodle 5.3)
 - Fixed fetching all view data in one web service call
 - Replaced calls to print_error() and error(), which no longer exist in Moodle, so error pages show their message instead of a fatal error
+- Use the core_form/changechecker module after saving a modal form: the old YUI form change checker no longer exists in Moodle 5.3
+- Use the current select-all checkbox attributes on the items page (data-toggle="master" is deprecated since Moodle 4.5)
 
 2.1.33 (Build 2026101801)
 - Add missing lang string for the managequestions capability
