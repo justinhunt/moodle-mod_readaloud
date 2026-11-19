@@ -923,7 +923,13 @@ abstract class item implements renderable, templatable {
         global $DB;
         $ret = false;
 
-        if (!$DB->delete_records(constants::M_QTABLE, ['id' => $itemid])) {
+        // Only delete an item of the activity that this context belongs to.
+        $cm = get_coursemodule_from_id(constants::M_MODNAME, $context->instanceid, 0, false, MUST_EXIST);
+        if (!$DB->record_exists(constants::M_QTABLE, ['id' => $itemid, constants::M_MODNAME . 'id' => $cm->instance])) {
+            throw new \moodle_exception('invalidrecord', 'error', '', constants::M_QTABLE);
+        }
+
+        if (!$DB->delete_records(constants::M_QTABLE, ['id' => $itemid, constants::M_MODNAME . 'id' => $cm->instance])) {
             throw new \moodle_exception("Could not delete item");
             return $ret;
         }

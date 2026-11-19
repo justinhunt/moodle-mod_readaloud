@@ -92,10 +92,11 @@ if ($action == 'confirmdelete') {
     /////// Delete item NOW////////
 } else if ($action == 'delete') {
     require_sesskey();
-    $success = helper::delete_item($moduleinstance, $itemid, $context);
+    $success = item::delete_item($itemid, $context);
     redirect($redirecturl);
 } else if ($action == "moveup" || $action == "movedown") {
-    helper::move_item($moduleinstance, $itemid, $action);
+    $direction = $action == 'moveup' ? 'up' : 'down';
+    \mod_readaloud\local\itemform\helper::move_item($moduleinstance, $itemid, $direction);
     redirect($redirecturl);
 }
 
@@ -129,6 +130,8 @@ if ($mform->is_cancelled()) {
 if ($data = $mform->get_data()) {
     require_sesskey();
     $data->type = $type;
+    // Save under the item loaded (and checked) above, never an id posted with the form.
+    $data->itemid = $edit ? $item->id : 0;
 
 
 

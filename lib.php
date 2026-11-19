@@ -1073,6 +1073,7 @@ function readaloud_output_fragment_preview($args) {
     global $DB, $PAGE;
     $args = (object) $args;
     $context = $args->context;
+    require_capability('mod/readaloud:itemview', $context);
     $config = get_config('mod_readaloud');
     $cm         = get_coursemodule_from_id('readaloud', $context->instanceid, 0, false, MUST_EXIST);
     $course     = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);

@@ -448,6 +448,7 @@ class mod_readaloud_external extends external_api {
 
         // We always must call validate_context in a webservice.
         self::validate_context($context);
+        require_capability('mod/readaloud:itemedit', $context);
 
         // DO DELETE
         // get the objects we need
@@ -489,6 +490,7 @@ class mod_readaloud_external extends external_api {
 
         // We always must call validate_context in a webservice.
         self::validate_context($context);
+        require_capability('mod/readaloud:itemedit', $context);
 
         // DO move
         // get the objects we need
@@ -528,6 +530,7 @@ class mod_readaloud_external extends external_api {
 
         // We always must call validate_context in a webservice.
         self::validate_context($context);
+        require_capability('mod/readaloud:itemedit', $context);
 
         // DO move
         // get the objects we need

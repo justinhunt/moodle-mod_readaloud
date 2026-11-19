@@ -51,6 +51,7 @@ $rsquestionrenderer = $PAGE->get_renderer(constants::M_COMPONENT, 'rsquestion');
 
 if ($action === 'bulkdelete') {
     confirm_sesskey();
+    require_capability('mod/readaloud:itemedit', $context);
     $questionids = optional_param_array('deletequestionid', [], PARAM_INT);
     foreach ($questionids as $questionid) {
         \mod_readaloud\local\itemtype\item::delete_item($questionid, $context);
